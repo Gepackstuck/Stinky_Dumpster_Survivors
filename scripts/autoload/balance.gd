@@ -28,9 +28,9 @@ const PERK_DOUBLE_SHOT_SPREAD_DEG: float = 10.0
 # --- Волны (как в Brotato, см. docs/BROTATO_REFERENCE.md) ---
 const WAVE_COUNT: int = 15
 const WAVE_DURATION_FIRST_SEC: float = 20.0
-const WAVE_DURATION_STEP_SEC: float = 10.0
-const WAVE_DURATION_MAX_SEC: float = 150.0
-const WAVE_DURATION_FINAL_SEC: float = 180.0      # последняя волна (боссы)
+const WAVE_DURATION_STEP_SEC: float = 4.0
+const WAVE_DURATION_MAX_SEC: float = 70.0
+const WAVE_DURATION_FINAL_SEC: float = 120.0      # последняя волна (боссы)
 const WAVE_ENEMIES_BASE: int = 10                    # врагов за 1-ю волну (в Brotato их на старте совсем немного)
 const WAVE_ENEMIES_PER_WAVE: int = 12                 # + столько врагов за каждую следующую волну (≈190 к последней)
 const MAX_ALIVE_ENEMIES: int = 100                    # потолок врагов на карте — как в Brotato
