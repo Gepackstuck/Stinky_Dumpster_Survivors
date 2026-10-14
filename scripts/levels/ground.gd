@@ -4,7 +4,8 @@ extends Sprite2D
 
 const DECALS: Texture2D = preload("res://assets/sprites/ground_decals.png")
 const CELL: float = 24.0
-const DECAL_ALPHA: float = 0.6
+const DECAL_ALPHA: float = 0.45
+const DECAL_TINT: Color = Color(0.85, 0.6, 0.68)  # приглушает зелёное: декали не должны путаться с опытом
 
 
 func _ready() -> void:
@@ -23,7 +24,7 @@ func _ready() -> void:
 		decal.flip_h = randf() < 0.5
 		decal.flip_v = randf() < 0.5
 		decal.rotation = (PI * 0.5) * randi_range(0, 3)
-		decal.modulate = Color(1.0, 1.0, 1.0, DECAL_ALPHA)
+		decal.modulate = Color(DECAL_TINT, DECAL_ALPHA)
 		decal.position = Vector2(randf_range(0.0, arena), randf_range(0.0, arena)).round()
 		add_child(decal)
 
@@ -38,6 +39,6 @@ func _on_bin_destroyed(at: Vector2) -> void:
 	decal.region_rect = Rect2(Vector2(randi_range(0, kinds - 1) * CELL, 0.0), Vector2(CELL, CELL))
 	decal.flip_h = randf() < 0.5
 	decal.rotation = (PI * 0.5) * randi_range(0, 3)
-	decal.modulate = Color(1.0, 1.0, 1.0, 0.95)
+	decal.modulate = Color(DECAL_TINT, 0.8)
 	decal.position = to_local(at).round()
 	add_child(decal)
