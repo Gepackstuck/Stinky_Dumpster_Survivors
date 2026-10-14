@@ -98,6 +98,9 @@ func _end_wave() -> void:
 			pickup.attract(player)
 	await get_tree().create_timer(Balance.WAVE_END_COLLECT_SEC, false).timeout
 	if GameState.run_active:
+		var bonus: int = Balance.WAVE_END_BONUS_XP_BASE + Balance.WAVE_END_BONUS_XP_PER_WAVE * GameState.wave
+		EventBus.xp_collected.emit(bonus)
+		HitFx.popup(get_tree(), player.global_position + Vector2(0.0, -16.0), "+%d XP: ПОКОПАЛСЯ В ПОМОЙКЕ" % bonus, Color(0.968627, 1, 0, 1), 18.0, 1.4)
 		if player.has_method(&"heal_full"):
 			player.call(&"heal_full")
 		EventBus.wave_ended.emit(GameState.wave)

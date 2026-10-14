@@ -48,6 +48,8 @@ const ELITE_CHANCE: float = 0.6
 const HORDE_GROUP_MULT: float = 2.0
 const ELITE_SPAWN_SEC: float = 2.0
 const FINAL_BOSS_SPAWN_SEC: float = 1.5
+const WAVE_END_BONUS_XP_BASE: int = 6          # «копание в помойке» в конце волны (аналог Harvesting в Brotato)
+const WAVE_END_BONUS_XP_PER_WAVE: int = 2
 const WAVE_END_COLLECT_SEC: float = 1.5           # время на авто-сбор материалов после волны
 const WAVE_HP_GROWTH: float = 0.18          # +15% HP за каждую волну после первой
 const PLAYER_MAX_HIT_FRACTION: float = 0.34   # один удар не снимает больше трети максимума HP (нет ваншотов)
@@ -130,7 +132,7 @@ const ENEMIES: Dictionary = {
 	&"cockroach": {"hp": 5.0, "damage": 2.0, "speed": 140.0, "xp": 1, "coins": 2},
 	&"wifi_ghost": {"hp": 25.0, "damage": 3.0, "speed": 70.0, "xp": 4, "coins": 2},
 	# Враги Шага 4 (поведение как в Brotato): group_mult — множитель размера группы.
-	&"chaser": {"hp": 6.0, "damage": 1.0, "speed": 150.0, "xp": 1, "coins": 1, "radius": 5.0, "group_mult": 1.8},
+	&"chaser": {"hp": 6.0, "damage": 1.0, "speed": 88.0, "xp": 1, "coins": 1, "radius": 5.0, "group_mult": 1.8},
 	&"charger": {"hp": 24.0, "damage": 2.0, "speed": 70.0, "xp": 3, "coins": 1, "radius": 8.0, "group_mult": 0.7,
 			"brain": "res://scripts/enemies/brains/charger_brain.gd"},
 	&"spitter": {"hp": 16.0, "damage": 1.0, "speed": 60.0, "xp": 3, "coins": 1, "radius": 7.0, "group_mult": 0.7,

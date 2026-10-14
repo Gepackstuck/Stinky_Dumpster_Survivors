@@ -1660,10 +1660,12 @@ def draw_border_sheet():
 
 
 def sheet(frames):
+    """Лист кадров; вокруг каждого кадра 1 px прозрачного поля (для шейдерной обводки)."""
     w, h = frames[0].size
+    w, h = w + 2, h + 2
     out = new_img(w * len(frames), h)
     for i, f in enumerate(frames):
-        out.paste(f, (i * w, 0))
+        out.paste(f, (i * w + 1, 1))
     return out
 
 

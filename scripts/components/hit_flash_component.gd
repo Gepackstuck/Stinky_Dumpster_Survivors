@@ -16,6 +16,11 @@ func _ready() -> void:
 	sprite.material = _material
 
 
+## Цвет внешней обводки (игрок и враги разные, чтобы читались на земле).
+func set_outline(color: Color) -> void:
+	_material.set_shader_parameter(&"outline_color", color)
+
+
 func flash(color: Color) -> void:
 	if _tween != null and _tween.is_valid():
 		_tween.kill()
