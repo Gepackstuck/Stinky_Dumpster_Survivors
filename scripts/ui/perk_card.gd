@@ -39,6 +39,18 @@ func setup(perk_id: StringName, hotkey_index: int, frame_variant: int) -> void:
 		_description.text += "\n(х%d)" % (stacks + 1)
 
 
+## Карточка товара Ларька: цена, тир (цветом), заморозка.
+func setup_offer(offer: Dictionary, hotkey_index: int, frame_variant: int) -> void:
+	texture_normal = _frame_texture(frame_variant, 0)
+	texture_focused = _frame_texture(frame_variant, 1)
+	_perk_id = offer["id"]
+	_icon.texture = ShopLibrary.icon(offer)
+	_hotkey.text = str(hotkey_index)
+	_title.text = ShopLibrary.title(offer) + "\nТИР " + StatLibrary.TIER_NAMES[offer["tier"] - 1]
+	_title.add_theme_color_override(&"font_color", StatLibrary.tier_color(offer["tier"]))
+	_description.text = ShopLibrary.description(offer)
+
+
 ## Карточка стата: иконка, название цветом тира, «ТИР I..IV» и описание.
 func setup_stat(stat_id: StringName, tier: int, hotkey_index: int, frame_variant: int) -> void:
 	texture_normal = _frame_texture(frame_variant, 0)

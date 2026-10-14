@@ -16,10 +16,13 @@ var _ricochets: int = 0
 var _ricochet_range: float = 0.0
 
 
+var tier: int = 1  # тир I-IV, ставится до add_child
+
+
 func _ready() -> void:
 	var stats: Dictionary = Balance.WEAPONS[weapon_id]
-	_damage = stats["damage"]
-	_cooldown_sec = stats["cooldown"]
+	_damage = stats["damage"] * Balance.WEAPON_TIER_DAMAGE[tier - 1]
+	_cooldown_sec = stats["cooldown"] * Balance.WEAPON_TIER_COOLDOWN[tier - 1]
 	_ricochets = stats.get("ricochets", 0)
 	_ricochet_range = stats.get("ricochet_range", 0.0)
 	_range_sq = Balance.WEAPON_TARGET_RANGE * Balance.WEAPON_TARGET_RANGE

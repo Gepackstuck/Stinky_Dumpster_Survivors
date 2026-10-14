@@ -11,10 +11,13 @@ var _radius: float = 60.0
 var _wave: float = -1.0  # 0..1 — прогресс кольца, -1 — не рисуем
 
 
+var tier: int = 1  # тир I-IV, ставится до add_child
+
+
 func _ready() -> void:
 	var stats: Dictionary = Balance.WEAPONS[weapon_id]
-	_damage = stats["damage"]
-	_cooldown_sec = stats["cooldown"]
+	_damage = stats["damage"] * Balance.WEAPON_TIER_DAMAGE[tier - 1]
+	_cooldown_sec = stats["cooldown"] * Balance.WEAPON_TIER_COOLDOWN[tier - 1]
 	_radius = stats["radius"]
 	EventBus.player_died.connect(set_physics_process.bind(false))
 

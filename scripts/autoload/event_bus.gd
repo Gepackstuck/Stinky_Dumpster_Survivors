@@ -23,6 +23,9 @@ signal xp_drop_requested(at: Vector2, value: int)   # враг просит ур
 @warning_ignore("unused_signal")
 signal bin_destroyed(at: Vector2)                   # бак разбит: на его месте остаётся мусор до конца забега
 
+@warning_ignore("unused_signal")
+signal weapons_changed                              # набор оружия игрока поменялся (купил, скрестил, переработал)
+
 # --- Подбираемое ---
 @warning_ignore("unused_signal")
 signal xp_collected(amount: int)

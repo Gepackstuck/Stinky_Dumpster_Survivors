@@ -145,6 +145,20 @@ const STAT_TIER2_CHANCE_PER_LEVEL: float = 0.04    # шанс II-тира на �
 const STAT_TIER3_CHANCE_PER_LEVEL: float = 0.025   # III-тир = (ур-5)*это, до 0.3
 const STAT_TIER4_CHANCE_PER_LEVEL: float = 0.01    # IV-тир = (ур-15)*это, до 0.1
 const STAT_GUARANTEED_TIER: Dictionary = {5: 2, 10: 3, 15: 3, 20: 3}  # гарантированный минимум тира по уровню; с 25-го каждый 5-й — IV
+# --- Оружие и Ларёк (Brotato) ---
+const WEAPON_SLOTS: int = 6
+const WEAPON_TIER_DAMAGE: Array[float] = [1.0, 1.6, 2.4, 3.6]      # множитель урона по тирам I-IV
+const WEAPON_TIER_COOLDOWN: Array[float] = [1.0, 0.92, 0.85, 0.75]  # множитель паузы между атаками
+const WEAPON_PRICE: Dictionary = {&"lighter": 20, &"sock": 24, &"slingshot": 22, &"mop": 26}
+const PERK_PRICE: Dictionary = {&"speed": 14, &"regen": 16, &"double_shot": 30, &"loot_goblin": 12}
+const SHOP_SLOTS: int = 4
+const SHOP_PRICE_TIER_MULT: Array[float] = [1.0, 2.0, 3.5, 6.0]
+const SHOP_PRICE_WAVE_GROWTH: float = 0.08          # цена *(1 + это * волна)
+const SHOP_WEAPON_CHANCE: float = 0.6               # шанс, что слот — оружие, а не перк
+const SHOP_TIER2_PER_WAVE: float = 0.05             # II-тир: (волна-1)*это, до 0.5
+const SHOP_TIER3_PER_WAVE: float = 0.03             # III-тир: (волна-3)*это, до 0.35
+const SHOP_TIER4_PER_WAVE: float = 0.015            # IV-тир: (волна-7)*это, до 0.2
+const RECYCLE_FRACTION: float = 0.5                 # возврат говна за переработку
 const REROLL_BASE_COST: int = 2
 const REROLL_WAVE_FACTOR: float = 0.5               # + волна * это
 const REROLL_STEP_COST: int = 1                     # + за каждый реролл в эту волну

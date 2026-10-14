@@ -31,6 +31,7 @@ func _ready() -> void:
 	_health.died.connect(_on_died)
 	_magnet.area_entered.connect(_on_magnet_area_entered)
 	EventBus.perk_chosen.connect(_on_perk_chosen)
+	EventBus.weapons_changed.connect(_sync_weapons)
 	_update_magnet_radius()
 	_health.setup(Balance.PLAYER_MAX_HP)
 
@@ -76,34 +77,36 @@ func _on_magnet_area_entered(area: Area2D) -> void:
 		(area as XpPickup).attract(self)
 
 
-func _on_perk_chosen(perk_id: StringName) -> void:
+func _on_perk_chosen(_perk_id: StringName) -> void:
 	_update_magnet_radius()
 	_health.set_max(Balance.PLAYER_MAX_HP + GameState.bonus_max_hp)
-	_add_weapon(perk_id)
 
 
-## Оружия-перки: каждое — отдельный узел-автоатака на игроке.
-func _add_weapon(perk_id: StringName) -> void:
-	var weapon: Node2D = null
-	match perk_id:
-		PerkLibrary.W_LIGHTER:
-			var lighter: WeaponBase = WeaponBase.new()
-			lighter.weapon_id = &"lighter"
-			weapon = lighter
-		PerkLibrary.W_SOCK:
-			var aura: AuraWeapon = AuraWeapon.new()
-			aura.weapon_id = &"sock"
-			weapon = aura
-		PerkLibrary.W_SLINGSHOT:
-			var sling: WeaponBase = WeaponBase.new()
-			sling.weapon_id = &"slingshot"
-			weapon = sling
-		PerkLibrary.W_MOP:
-			var mop: MeleeWeapon = MeleeWeapon.new()
-			mop.weapon_id = &"mop"
-			weapon = mop
-	if weapon != null:
-		add_child(weapon)
+## Оружие игрока: каждое — отдельный узел-автоатака, пересобираем при любом изменении набора.
+func _sync_weapons() -> void:
+	for node: Node in get_tree().get_nodes_in_group(&"weapon_nodes"):
+		node.queue_free()
+	for entry: Dictionary in GameState.weapons:
+		var weapon: Node2D = null
+		match entry["id"]:
+			&"lighter", &"slingshot":
+				var shooter: WeaponBase = WeaponBase.new()
+				shooter.weapon_id = entry["id"]
+				shooter.tier = entry["tier"]
+				weapon = shooter
+			&"sock":
+				var aura: AuraWeapon = AuraWeapon.new()
+				aura.weapon_id = &"sock"
+				aura.tier = entry["tier"]
+				weapon = aura
+			&"mop":
+				var mop: MeleeWeapon = MeleeWeapon.new()
+				mop.weapon_id = &"mop"
+				mop.tier = entry["tier"]
+				weapon = mop
+		if weapon != null:
+			weapon.add_to_group(&"weapon_nodes")
+			add_child(weapon)
 
 
 func _on_hurt(raw_damage: float) -> void:

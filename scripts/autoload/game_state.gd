@@ -32,6 +32,8 @@ var dodge_percent: float = 0.0
 var crit_percent: float = 0.0
 var bonus_max_hp: float = 0.0
 var reroll_count: int = 0
+var weapons: Array[Dictionary] = []    # оружие игрока: {id, tier}, до WEAPON_SLOTS штук
+var shop_offers: Array[Dictionary] = []  # витрина Ларька (замороженные переходят на след. волну)
 
 
 func _ready() -> void:
@@ -58,6 +60,8 @@ func reset_run() -> void:
 	run_active = true
 	perk_stacks.clear()
 	stat_totals.clear()
+	weapons.clear()
+	shop_offers.clear()
 	reroll_count = 0
 	_recompute_perk_stats()
 	EventBus.run_started.emit()
@@ -69,9 +73,71 @@ func get_perk_stacks(perk_id: StringName) -> int:
 
 ## Применить выбранный перк (+1 стак) и пересчитать статы.
 func apply_perk(perk_id: StringName) -> void:
+	if perk_id in PerkLibrary.WEAPON_PERKS:
+		add_weapon(StringName(String(perk_id).trim_prefix("w_")))
+		return
 	perk_stacks[perk_id] = get_perk_stacks(perk_id) + 1
 	_recompute_perk_stats()
 	EventBus.perk_chosen.emit(perk_id)
+
+
+## Добавить оружие в свободный слот. false — слоты заняты.
+func add_weapon(weapon_id: StringName, tier: int = 1) -> bool:
+	if weapons.size() >= Balance.WEAPON_SLOTS:
+		return false
+	weapons.append({"id": weapon_id, "tier": tier})
+	EventBus.weapons_changed.emit()
+	EventBus.perk_chosen.emit(StringName("w_" + String(weapon_id)))
+	return true
+
+
+## Слот с таким же оружием и тиром (для скрещивания при полных слотах), -1 если нет.
+func find_weapon(weapon_id: StringName, tier: int) -> int:
+	if tier >= 4:
+		return -1
+	for i: int in weapons.size():
+		if weapons[i]["id"] == weapon_id and weapons[i]["tier"] == tier:
+			return i
+	return -1
+
+
+## Другой слот с тем же оружием и тиром, чтобы скрестить со слотом `index`; -1 если нет.
+func find_merge_partner(index: int) -> int:
+	var w: Dictionary = weapons[index]
+	if w["tier"] >= 4:
+		return -1
+	for i: int in weapons.size():
+		if i != index and weapons[i]["id"] == w["id"] and weapons[i]["tier"] == w["tier"]:
+			return i
+	return -1
+
+
+## Скрестить слот `index` с парой: остаётся одно оружие тиром выше.
+func merge_weapons(index: int) -> bool:
+	var partner: int = find_merge_partner(index)
+	if partner < 0:
+		return false
+	weapons[index]["tier"] += 1
+	weapons.remove_at(partner)
+	EventBus.weapons_changed.emit()
+	return true
+
+
+func weapon_recycle_value(index: int) -> int:
+	var w: Dictionary = weapons[index]
+	var base: float = Balance.WEAPON_PRICE.get(w["id"], 10)
+	return maxi(roundi(base * Balance.SHOP_PRICE_TIER_MULT[w["tier"] - 1] * Balance.RECYCLE_FRACTION), 1)
+
+
+## Сдать оружие: вернуть часть говна. Последнее оружие сдать нельзя.
+func recycle_weapon(index: int) -> int:
+	if weapons.size() <= 1:
+		return 0
+	var value: int = weapon_recycle_value(index)
+	coins += value
+	weapons.remove_at(index)
+	EventBus.weapons_changed.emit()
+	return value
 
 
 ## Применить карточку стата нужного тира.
