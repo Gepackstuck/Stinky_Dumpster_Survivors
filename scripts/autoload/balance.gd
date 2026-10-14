@@ -54,11 +54,13 @@ const PLAYER_MAX_HIT_FRACTION: float = 0.34   # один удар не сним�
 const WAVE_DAMAGE_GROWTH: float = 0.10       # +10% урона врагов за волну
 const WAVE_SPEED_GROWTH: float = 0.03        # +3% скорости за волну
 const WAVE_SPEED_MAX_MULT: float = 1.4
-const WAVE_ENEMY_UNLOCK: Dictionary = {     # с какой волны тип может выпасть
-	&"squid_gopnik": 1, &"microbe": 2, &"npc_bot": 3, &"cockroach": 4, &"wifi_ghost": 6,
+const WAVE_ENEMY_UNLOCK: Dictionary = {     # с какой волны тип может выпасть (15 волн)
+	&"squid_gopnik": 1, &"chaser": 2, &"microbe": 3, &"charger": 3, &"npc_bot": 4, &"spitter": 4,
+	&"looter": 4, &"cockroach": 5, &"bruiser": 6, &"wifi_ghost": 7,
 }
 const WAVE_ENEMY_WEIGHTS: Dictionary = {    # вес в взвешенном рандоме
-	&"squid_gopnik": 10, &"microbe": 6, &"npc_bot": 6, &"cockroach": 4, &"wifi_ghost": 3,
+	&"squid_gopnik": 10, &"chaser": 8, &"microbe": 5, &"charger": 6, &"npc_bot": 5, &"spitter": 5,
+	&"looter": 1, &"cockroach": 4, &"bruiser": 4, &"wifi_ghost": 3,
 }
 const FINAL_BOSS_POOL: Array[StringName] = [&"boss_zakhar", &"boss_minion"]  # боссы 20-й волны: один или оба
 const ELITE_ID: StringName = &"boss_mega_hamster"                           # элита на волнах 11–12, 14–15, 17–18
@@ -127,6 +129,15 @@ const ENEMIES: Dictionary = {
 	&"npc_bot": {"hp": 15.0, "damage": 2.0, "speed": 50.0, "xp": 2, "coins": 1},
 	&"cockroach": {"hp": 5.0, "damage": 2.0, "speed": 140.0, "xp": 1, "coins": 2},
 	&"wifi_ghost": {"hp": 25.0, "damage": 3.0, "speed": 70.0, "xp": 4, "coins": 2},
+	# Враги Шага 4 (поведение как в Brotato): group_mult — множитель размера группы.
+	&"chaser": {"hp": 6.0, "damage": 1.0, "speed": 150.0, "xp": 1, "coins": 1, "radius": 5.0, "group_mult": 1.8},
+	&"charger": {"hp": 24.0, "damage": 2.0, "speed": 70.0, "xp": 3, "coins": 1, "radius": 8.0, "group_mult": 0.7,
+			"brain": "res://scripts/enemies/brains/charger_brain.gd"},
+	&"spitter": {"hp": 16.0, "damage": 1.0, "speed": 60.0, "xp": 3, "coins": 1, "radius": 7.0, "group_mult": 0.7,
+			"brain": "res://scripts/enemies/brains/spitter_brain.gd"},
+	&"bruiser": {"hp": 80.0, "damage": 3.0, "speed": 55.0, "xp": 8, "coins": 3, "radius": 11.0, "group_mult": 0.3},
+	&"looter": {"hp": 40.0, "damage": 1.0, "speed": 85.0, "xp": 25, "coins": 10, "radius": 7.0, "group_mult": 0.0,
+			"brain": "res://scripts/enemies/brains/looter_brain.gd"},
 	# Босс-заглушка Шага 3 (особое поведение — позже); radius — размер тела в px.
 	&"boss_mega_hamster": {"hp": 600.0, "damage": 5.0, "speed": 35.0, "xp": 30, "coins": 20, "radius": 16.0},
 	&"boss_zakhar": {"hp": 900.0, "damage": 4.0, "speed": 45.0, "xp": 40, "coins": 25, "radius": 14.0,

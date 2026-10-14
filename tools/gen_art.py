@@ -152,6 +152,121 @@ def finish(img, silhouette):
     return out
 
 
+# ---------------------------------------------------------------- враги Шага 4
+def draw_chaser(frame, seed=31):
+    """12x12: гнида — бледная вошь с красными пятнами и двумя разными глазами, дёргает лапками."""
+    rng = random.Random(seed)
+    w = h = 12
+    body = new_mask(w, h); blob(body, 6, 6, 4, 3, rng, 0.5, 10)
+    legs = new_mask(w, h)
+    for i, x in enumerate((2, 4, 6, 8)):
+        o = 1 if (i + frame) % 2 else -1
+        line(legs, [(x, 8), (x + o, 11)], 1); line(legs, [(x, 4), (x - o, 1)], 1)
+    sil = union(body, legs)
+    img = new_img(w, h)
+    paint(img, sil, BLACK); paint(img, body, WHITE); dither(img, body, GREEN, "dots")
+    for x, y in ((4, 6), (7, 5), (6, 8)): px(img, x, y, RED)
+    eye(img, 8, 5, 1, 1, 0, 0, rng); px(img, 4, 5, RED); px(img, 4, 4, YELLOW)
+    return finish(img, sil)
+
+
+def draw_charger(frame, seed=32):
+    """20x20: кабан-бомж — розовая тушка в синем шарфе, клыки, красные глаза, бодает вправо."""
+    rng = random.Random(seed)
+    w = h = 20
+    body = new_mask(w, h); blob(body, 9, 11, 8, 6, rng, 0.8, 14)
+    head = new_mask(w, h); blob(head, 16, 11, 4, 4, rng, 0.6, 10)
+    snout = new_mask(w, h); rect(snout, 18, 11, 19, 13)
+    ear = new_mask(w, h); poly(ear, [(14, 8), (16, 4), (17, 8)])
+    legs = new_mask(w, h)
+    o = 1 if frame else 0
+    rect(legs, 4 + o, 16, 5 + o, 19); rect(legs, 12 - o, 16, 13 - o, 19)
+    sil = union(body, head, snout, ear, legs)
+    img = new_img(w, h)
+    paint(img, sil, PINK); dither(img, body, BROWN, "dots"); paint(img, legs, BROWN)
+    scarf = new_mask(w, h); rect(scarf, 12, 9, 14, 15); paint(img, scarf, BLUE); dither(img, scarf, CYAN, "stripes")
+    tusk = new_mask(w, h); poly(tusk, [(16, 14), (17, 17), (18, 14)]); paint(img, tusk, YELLOW)
+    eye(img, 16, 9, 2, 1, 1, 0, rng); px(img, 16, 8, RED); px(img, 15, 8, RED)
+    px(img, 19, 12, BLACK); px(img, 19, 13, BLACK)
+    for x, y in ((3, 9), (6, 12), (9, 8), (8, 14)): px(img, x, y, rng.choice([BLACK, GREEN, YELLOW]))
+    for x in (1, 2): px(img, x, 8 + frame, GREEN)
+    return finish(img, sil)
+
+
+def draw_spitter(frame, seed=33):
+    """16x16: плюющийся — жёлто-зелёная жаба с огромной пастью и глазами на стебельках."""
+    rng = random.Random(seed)
+    w = h = 16
+    body = new_mask(w, h); blob(body, 8, 10, 6, 4, rng, 0.6, 12)
+    stalks = new_mask(w, h); line(stalks, [(5, 7), (4, 3)], 1); line(stalks, [(11, 7), (12, 4)], 1)
+    legs = new_mask(w, h); rect(legs, 3 + frame, 13, 4 + frame, 15); rect(legs, 11 - frame, 13, 12 - frame, 15)
+    sil = union(body, stalks, legs)
+    img = new_img(w, h)
+    paint(img, sil, YELLOW); dither(img, body, GREEN, "checker"); paint(img, legs, BROWN)
+    mouth = new_mask(w, h); rect(mouth, 5, 9, 12, 10 + frame * 2); paint(img, mouth, BLACK)
+    for x in (5, 7, 9, 11): px(img, x, 9, WHITE)
+    px(img, 8, 11 + frame * 2, PINK)
+    for k in range(2 + frame): px(img, 13 + k, 10 + k, CYAN)  # слюна летит
+    eye(img, 4, 3, 2, 1, 0, 1, rng); eye(img, 12, 4, 1, 1, 0, 1, rng)
+    for x, y in ((6, 7), (10, 8), (8, 12)): px(img, x, y, RED)
+    return finish(img, sil)
+
+
+def draw_bruiser(frame, seed=34):
+    """24x24: жиртрест — огромный синий в трениках, крошечная голова, пузо с волосами, топает."""
+    rng = random.Random(seed)
+    w = h = 24
+    bob = 1 if frame else 0
+    belly = new_mask(w, h); blob(belly, 12, 14 + bob, 10, 8, rng, 1.0, 18)
+    head = new_mask(w, h); blob(head, 12, 5 + bob, 4, 3, rng, 0.5, 10)
+    arms = new_mask(w, h); blob(arms, 2, 14 + bob, 2, 4, rng, 0.5, 8); blob(arms, 22, 14 + bob, 2, 4, rng, 0.5, 8)
+    legs = new_mask(w, h)
+    rect(legs, 6 + frame, 20, 9 + frame, 23); rect(legs, 15 - frame, 20, 18 - frame, 23)
+    sil = union(belly, head, arms, legs)
+    img = new_img(w, h)
+    paint(img, sil, BLUE); dither(img, belly, BLACK, "checker"); paint(img, legs, BROWN)
+    paint(img, head, PINK); paint(img, arms, PINK)
+    nav = new_mask(w, h); blob(nav, 12, 15 + bob, 3, 3, rng, 0.4, 8); paint(img, nav, PINK); dither(img, nav, BROWN, "dots")
+    px(img, 12, 15 + bob, BLACK)
+    for x, y in ((9, 13), (15, 13), (10, 18), (14, 18), (12, 12)): px(img, x, y + bob, BLACK)
+    stripe = new_mask(w, h); rect(stripe, 3, 18 + bob, 20, 18 + bob); paint(img, stripe, WHITE)
+    eye(img, 10, 5 + bob, 1, 1, 0, 0, rng); eye(img, 14, 5 + bob, 2, 1, 0, 0, rng)
+    px(img, 12, 7 + bob, BLACK); px(img, 11, 7 + bob, BLACK)
+    for x, y in ((4, 10), (19, 11), (7, 20)): px(img, x, y + bob, YELLOW)
+    return finish(img, sil)
+
+
+def draw_looter(frame, seed=35):
+    """16x16: крыса-ворюга — драная белая крыса с мешком добра и красными глазами, удирает вправо."""
+    rng = random.Random(seed)
+    w = h = 16
+    body = new_mask(w, h); blob(body, 8, 10, 5, 3, rng, 0.5, 10)
+    head = new_mask(w, h); blob(head, 13, 9, 2, 2, rng, 0.3, 8)
+    ear = new_mask(w, h); rect(ear, 12, 6, 13, 7)
+    tail = new_mask(w, h); line(tail, [(3, 10), (1, 8 - frame), (0, 11)], 1)
+    legs = new_mask(w, h); rect(legs, 5 + frame, 13, 6 + frame, 14); rect(legs, 10 - frame, 13, 11 - frame, 14)
+    sack = new_mask(w, h); blob(sack, 6, 7, 3, 3, rng, 0.5, 10)
+    sil = union(body, head, ear, tail, legs, sack)
+    img = new_img(w, h)
+    paint(img, sil, WHITE); dither(img, body, BROWN, "dots"); paint(img, tail, PINK); paint(img, legs, PINK)
+    paint(img, sack, YELLOW); dither(img, sack, BROWN, "checker")
+    px(img, 6, 6, BLACK); px(img, 7, 6, BLACK); px(img, 6, 8, BLACK); px(img, 7, 8, BLACK)  # знак «деньги»
+    eye(img, 13, 8, 1, 1, 1, 0, rng); px(img, 13, 7, RED)
+    px(img, 15, 9, BLACK); px(img, 15, 10, PINK)
+    for x, y in ((9, 10), (10, 11)): px(img, x, y, BLACK)
+    px(img, 4 + frame * 3, 4, YELLOW)  # звякает монетка
+    return finish(img, sil)
+
+
+def draw_proj_spit(frame, seed=36):
+    """8x8: плевок — циановая капля с зелёным."""
+    rng = random.Random(seed)
+    w = h = 8
+    m = new_mask(w, h); blob(m, 4, 4, 2 + frame, 2, rng, 0.3, 8)
+    img = new_img(w, h); paint(img, m, CYAN); px(img, 3, 3, WHITE); px(img, 5, 5, GREEN)
+    return finish(img, m)
+
+
 # ---------------------------------------------------------------- игрок
 def draw_player_up(frame, seed=17):
     """24x24, вид сзади: те же габариты, что у вида спереди; внизу огромная обосранная жопа."""
@@ -1556,6 +1671,10 @@ def build_step1():
     for name, fn in (("proj_carrot", draw_proj_carrot), ("proj_wrench", draw_proj_wrench), ("proj_poop", draw_proj_poop),
                      ("hazard_stink_cloud", draw_stink_cloud), ("hazard_poop_puddle", draw_poop_puddle)):
         sheet([fn(0), fn(1)]).save(SPRITES + name + ".png")
+    for name, fn in (("chaser", draw_chaser), ("charger", draw_charger), ("spitter", draw_spitter),
+                     ("bruiser", draw_bruiser), ("looter", draw_looter)):
+        sheet([fn(0), fn(1)]).save(SPRITES + "enemy_" + name + ".png")
+    sheet([draw_proj_spit(0), draw_proj_spit(1)]).save(SPRITES + "proj_spit.png")
     for name, fn in (("microbe", draw_microbe), ("npc_bot", draw_npc_bot), ("cockroach", draw_cockroach),
                      ("wifi_ghost", draw_wifi_ghost), ("boss_mega_hamster", draw_boss_hamster),
                      ("boss_zakhar", draw_boss_zakhar), ("boss_minion", draw_boss_minion)):

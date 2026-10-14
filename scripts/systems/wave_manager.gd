@@ -61,7 +61,9 @@ func _spawn_due_groups() -> void:
 	var wave: int = GameState.wave
 	while not _spawn_times.is_empty() and _spawn_times[0] <= _wave_elapsed:
 		_spawn_times.remove_at(0)
-		spawner.spawn_group(WaveRules.pick_enemy_id(wave), WaveRules.group_size(wave), WaveRules.hp_mult(wave))
+		var enemy_id: StringName = WaveRules.pick_enemy_id(wave)
+		var size: int = maxi(roundi(WaveRules.group_size(wave) * float(Balance.ENEMIES[enemy_id].get("group_mult", 1.0))), 1)
+		spawner.spawn_group(enemy_id, size, WaveRules.hp_mult(wave))
 
 
 func _spawn_special_units() -> void:
