@@ -246,7 +246,7 @@ func _on_xp_collected(amount: int) -> void:
 	if not run_active:
 		return
 	xp += amount
-	_coin_remainder += float(amount) * (1.0 + coin_bonus)  # как в Brotato: «говно» = и опыт, и деньги
+	_coin_remainder += float(amount) * Balance.COIN_PER_XP * (1.0 + coin_bonus)  # деньги — доля от опыта, копить придётся
 	var whole: int = floori(_coin_remainder)
 	coins += whole
 	_coin_remainder -= float(whole)
