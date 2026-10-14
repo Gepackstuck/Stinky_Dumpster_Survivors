@@ -12,6 +12,7 @@ var _life_left: float = 0.0
 var _spin: float = 0.0
 var _landing_hazard: PackedScene = null
 var _active: bool = false
+var source_id: StringName = &""
 
 
 func _ready() -> void:
@@ -47,7 +48,8 @@ func _on_area_entered(area: Area2D) -> void:
 	if not _active or _damage <= 0.0:
 		return
 	if area is HurtboxComponent:
-		(area as HurtboxComponent).receive_hit(_damage)
+		if (area as HurtboxComponent).receive_hit(_damage):
+			GameState.last_damage_source = source_id
 		_finish(false)
 
 
@@ -55,14 +57,15 @@ func _finish(landed: bool) -> void:
 	_active = false
 	set_physics_process(false)
 	if landed and _landing_hazard != null:
-		_spawn_hazard.call_deferred(_landing_hazard, global_position)
+		_spawn_hazard.call_deferred(_landing_hazard, global_position, source_id)
 	PoolManager.release(self)
 
 
-static func _spawn_hazard(scene: PackedScene, at: Vector2) -> void:
+static func _spawn_hazard(scene: PackedScene, at: Vector2, source: StringName = &"") -> void:
 	var tree: SceneTree = Engine.get_main_loop() as SceneTree
 	if tree == null or tree.current_scene == null:
 		return
 	var hazard: TimedHazard = scene.instantiate() as TimedHazard
 	tree.current_scene.add_child(hazard)
+	hazard.source_id = source
 	hazard.setup(at, Balance.MINION_PUDDLE_RADIUS, Balance.MINION_PUDDLE_DAMAGE, Balance.MINION_PUDDLE_LIFETIME_SEC)

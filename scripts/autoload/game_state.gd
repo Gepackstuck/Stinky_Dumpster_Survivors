@@ -15,6 +15,7 @@ var wave_note: String = ""       # подпись для баннера (име�
 var special_waves: Dictionary = {}  # номер волны -> elite/horde/boss (бросается в начале забега)
 var time: float = 0.0
 var run_active: bool = false
+var last_damage_source: StringName = &""   # кто нанёс последний удар по игроку (экран смерти)
 
 # Перки и производные статы (пересчитываются в _recompute_perk_stats()).
 var perk_stacks: Dictionary[StringName, int] = {}
@@ -71,6 +72,7 @@ func reset_run() -> void:
 	special_waves = {}
 	time = 0.0
 	run_active = true
+	last_damage_source = &""
 	perk_stacks.clear()
 	stat_totals.clear()
 	items.clear()

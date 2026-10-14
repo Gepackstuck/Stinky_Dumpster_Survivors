@@ -69,6 +69,7 @@ func setup(target: Node2D, spawn_position: Vector2, id: StringName = &"squid_gop
 	forced_sec = 0.0
 	_health.setup(stats["hp"] * hp_mult)
 	_hitbox.damage = stats["damage"] * WaveRules.damage_mult(GameState.wave)
+	_hitbox.source_id = id
 	_target = target
 	if _brain != null:
 		_brain.queue_free()

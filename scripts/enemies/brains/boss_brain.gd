@@ -34,4 +34,5 @@ func shoot(texture: Texture2D, direction: Vector2, damage: float, speed: float, 
 		spin_rad: float = 0.0, landing_hazard: PackedScene = null) -> void:
 	var shot: EnemyProjectile = PoolManager.acquire(PROJECTILE_SCENE) as EnemyProjectile
 	boss.get_tree().current_scene.add_child(shot)
+	shot.source_id = boss.enemy_id
 	shot.launch(boss.global_position, direction, damage, speed, lifetime_sec, texture, spin_rad, landing_hazard)

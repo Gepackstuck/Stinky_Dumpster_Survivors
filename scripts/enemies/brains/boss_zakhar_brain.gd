@@ -56,6 +56,7 @@ func _fart() -> void:
 	HitFx.burst(boss.get_tree(), boss.global_position, Color(0.2235, 1.0, 0.0784), 16, 70.0, 3.0, 0.6)
 	var cloud: TimedHazard = CLOUD_SCENE.instantiate() as TimedHazard
 	boss.get_tree().current_scene.add_child(cloud)
+	cloud.source_id = boss.enemy_id
 	cloud.setup(boss.global_position, Balance.ZAKHAR_FART_RADIUS, Balance.ZAKHAR_FART_DAMAGE, Balance.ZAKHAR_FART_LIFETIME_SEC)
 
 

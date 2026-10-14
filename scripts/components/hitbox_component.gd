@@ -4,6 +4,7 @@ extends Area2D
 ## каждый физический кадр пытается ударить; частоту ограничивает неуязвимость у Hurtbox.
 
 @export var damage: float = 0.0
+var source_id: StringName = &""   # кто бьёт (для экрана смерти: «что убило»)
 
 var _targets: Array[HurtboxComponent] = []
 
@@ -22,7 +23,8 @@ func _exit_tree() -> void:
 func _physics_process(_delta: float) -> void:
 	for target: HurtboxComponent in _targets:
 		if is_instance_valid(target):
-			target.receive_hit(damage)
+			if target.receive_hit(damage):
+				GameState.last_damage_source = source_id
 
 
 func _on_area_entered(area: Area2D) -> void:

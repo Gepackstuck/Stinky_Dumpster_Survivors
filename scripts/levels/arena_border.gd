@@ -83,6 +83,7 @@ func _add_wire(side: Node2D, center_x: float, cell: int) -> void:
 func _add_shock_area(side: Node2D, center_x: float) -> void:
 	var hitbox: HitboxComponent = HitboxComponent.new()
 	hitbox.damage = Balance.WIRE_SHOCK_DAMAGE
+	hitbox.source_id = &"wire"
 	hitbox.collision_layer = 0
 	hitbox.collision_mask = 1
 	var shape: RectangleShape2D = RectangleShape2D.new()

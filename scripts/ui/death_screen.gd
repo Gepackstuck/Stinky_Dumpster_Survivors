@@ -36,16 +36,18 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _on_player_died() -> void:
-	_show_result(FlavorText.random_death())
+	_show_result(FlavorText.random_death(), true)
 
 
 func _on_run_won() -> void:
 	_show_result(FlavorText.random_win())
 
 
-func _show_result(title: String) -> void:
+func _show_result(title: String, died: bool = false) -> void:
 	_title.text = title
-	_stats.text = "УБИТО: %d     УРОВЕНЬ: %d" % [GameState.kills, GameState.level]
+	_stats.text = "УБИТО: %d     УРОВЕНЬ: %d     ВОЛНА: %d" % [GameState.kills, GameState.level, GameState.wave]
+	if died:
+		_stats.text += "\nУБИЛ ТЕБЯ: %s" % EnemyNames.title(GameState.last_damage_source) if GameState.last_damage_source != &"" else ""
 	_scatter_decor()
 	_root.show()
 	_retry.grab_focus()
