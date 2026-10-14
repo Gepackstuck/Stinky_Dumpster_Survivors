@@ -101,7 +101,7 @@ func _on_player_died() -> void:
 
 
 func _on_run_won() -> void:
-	_show_result(FlavorText.random_win())
+	pass   # победа: на арене открываются ворота (main_level.gd), панель не нужна
 
 
 func _show_result(title: String, died: bool = false) -> void:
@@ -119,7 +119,8 @@ func _show_result(title: String, died: bool = false) -> void:
 
 
 func _on_retry() -> void:
-	SceneFlow.go("res://scenes/ui/graveyard.tscn", Vector2.UP)
+	SceneFlow.from_arena = true
+	SceneFlow.go("res://scenes/ui/graveyard.tscn", Vector2.DOWN)
 
 
 ## Каждая смерть — новый фон: случайная рамка и случайные декорации с границы арены, кроме зоны панели.

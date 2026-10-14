@@ -6,6 +6,7 @@ extends CanvasLayer
 const SLIDE_SEC: float = 0.55
 
 var _busy: bool = false
+var from_arena: bool = false   # на кладбище пришли через ворота арены: герой входит оттуда
 
 
 func _ready() -> void:
@@ -13,7 +14,9 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 
 
-## direction: DOWN - камера едет вниз (старый кадр уходит вверх), UP - вверх, ZERO - просто затемнение.
+## Кладбище стоит ПОД ареной. direction: старый кадр уезжает в сторону, противоположную движению камеры:
+## на арену (камера вверх) старый кадр уходит ВНИЗ (передать Vector2.UP), с арены на кладбище - вверх (Vector2.DOWN).
+## Vector2.ZERO - просто затемнение.
 func go(path: String, direction: Vector2 = Vector2.DOWN) -> void:
 	if _busy:
 		return

@@ -81,3 +81,11 @@ static func sprite_sheet(id: StringName) -> Texture2D:
 		return load(path) as Texture2D
 	var image: Image = Image.load_from_file(ProjectSettings.globalize_path(path))
 	return ImageTexture.create_from_image(image) if image != null else null
+
+
+## Текстура по пути; если редактор ещё не импортировал свежий PNG - читаем файл напрямую.
+static func load_texture(path: String) -> Texture2D:
+	if ResourceLoader.exists(path):
+		return load(path) as Texture2D
+	var image: Image = Image.load_from_file(ProjectSettings.globalize_path(path))
+	return ImageTexture.create_from_image(image) if image != null else null

@@ -11,10 +11,12 @@ const RED: Color = Color(1.0, 0.1, 0.2)
 
 
 func _ready() -> void:
-	set_anchors_preset(Control.PRESET_FULL_RECT)
+	size = Vector2(480.0, 270.0)
+	mouse_filter = Control.MOUSE_FILTER_STOP
+	z_index = 100
 	var back: ColorRect = ColorRect.new()
-	back.color = Color(0.03, 0.02, 0.04, 0.97)
-	back.set_anchors_preset(Control.PRESET_FULL_RECT)
+	back.color = Color(0.03, 0.02, 0.04, 1.0)
+	back.size = Vector2(480.0, 270.0)
 	add_child(back)
 	_text("ОРУЖИЕ. ЧТО ОТКРЫТО, ЧТО НЕТ", Vector2(0.0, 8.0), 480.0, YELLOW, HORIZONTAL_ALIGNMENT_CENTER)
 	var ids: Array[StringName] = []

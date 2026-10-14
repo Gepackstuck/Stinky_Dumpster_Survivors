@@ -9,6 +9,9 @@ const GAME_SCENE: String = "res://scenes/levels/main.tscn"
 const SCREEN: Vector2 = Vector2(480.0, 270.0)
 const WALK_SEC: float = 0.8   # герой вылезает из ямы и идёт вниз к арене
 const GRAVE_TOP: float = 34.0
+const GATE_POS: Vector2 = Vector2(240.0, 252.0)   # ворота на арену: внизу по центру (арена под кладбищем в бесконечной петле)
+var _gate_tex: Texture2D = CharacterLibrary.load_texture("res://assets/sprites/gate.png")
+const ARRIVE_SEC: float = 1.0
 const GRAVE_STEP: float = 72.0
 const GRAVE_W: float = 48.0
 const GROUND: Texture2D = preload("res://assets/sprites/ground_tile.png")
@@ -41,6 +44,10 @@ var _leaving: bool = false
 var _book: Control = null
 var _walker: Node2D = null
 var _walk_time: float = 0.0
+var _walk_from: Vector2 = Vector2.ZERO
+var _arriving: bool = false
+var _speech: Label = null
+var _speech_left: float = 0.0
 
 
 func _ready() -> void:
@@ -62,6 +69,20 @@ func _ready() -> void:
 	_build_menu_button()
 	_refresh()
 	Profile.announce(_fresh)
+	if SceneFlow.from_arena and Profile.is_unlocked(_ids[_selected]):
+		SceneFlow.from_arena = false
+		_start_arrival.call_deferred()
+
+
+## Герой вернулся с арены: выходит из ворот и идёт к своей яме.
+func _start_arrival() -> void:
+	_leaving = true
+	_arriving = true
+	_walker = _sitters[_selected]
+	_walk_from = Vector2(240.0, -24.0)   # приходит сверху экрана
+	_say("ОХ БЛЯТЬ")
+	_walk_time = 0.0
+	_arrow.hide()
 
 
 func _build_menu_button() -> void:
@@ -96,6 +117,14 @@ func _to_menu() -> void:
 		SceneFlow.go(MENU_SCENE, Vector2.UP)
 
 
+## Реплика героя над головой (исчезает сама).
+func _say(text: String) -> void:
+	var label: Label = _label(text, Vector2(0.0, 0.0), 80.0, YELLOW, HORIZONTAL_ALIGNMENT_CENTER)
+	label.z_index = 30
+	_speech = label
+	_speech_left = 1.4
+
+
 func _build_background() -> void:
 	var back: ColorRect = ColorRect.new()
 	back.color = Color(0.05, 0.07, 0.05)
@@ -111,6 +140,12 @@ func _build_background() -> void:
 	ground.size = SCREEN
 	ground.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(ground)
+	var gate: TextureRect = TextureRect.new()
+	gate.texture = _gate_tex
+	gate.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	gate.position = GATE_POS - _gate_tex.get_size() * 0.5
+	gate.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(gate)
 
 
 func _label(text: String, pos: Vector2, width: float, color: Color, align: HorizontalAlignment = HORIZONTAL_ALIGNMENT_LEFT) -> Label:
@@ -217,7 +252,7 @@ func _build_panel() -> void:
 	_minus = _label("", Vector2(244.0, 168.0), 200.0, RED)
 	_weapon = _label("", Vector2(36.0, 206.0), 408.0, YELLOW)
 	_status = _label("", Vector2(36.0, 218.0), 408.0, GREEN)
-	_hint = _label("A / D - ВЫБОР     ПРОБЕЛ - НА ПОМОЙКУ     ESC - МЕНЮ", Vector2(0.0, 246.0), SCREEN.x, GREY, HORIZONTAL_ALIGNMENT_CENTER)
+	_hint = _label("A/D - ВЫБОР  ПРОБЕЛ - НА ПОМОЙКУ\nESC - МЕНЮ  TAB - ОРУЖИЕ", Vector2(8.0, 240.0), 200.0, GREY)
 
 
 func _input(event: InputEvent) -> void:
@@ -269,6 +304,7 @@ func _choose() -> void:
 	GameState.character = id
 	_leaving = true
 	_walker = _sitters[_selected]
+	_walk_from = _walker.global_position
 	_walk_time = 0.0
 	_arrow.hide()
 	await get_tree().create_timer(WALK_SEC).timeout
@@ -306,13 +342,34 @@ func _place_arrow() -> void:
 
 func _process(delta: float) -> void:
 	_time += delta
+	if _speech != null:
+		_speech_left -= delta
+		if _speech_left <= 0.0:
+			_speech.queue_free()
+			_speech = null
 	if _walker != null:
 		_walk_time += delta
 		_walker.z_index = 20
-		_walker.position.y = 30.0 + _walk_time * 260.0
+		var span: float = ARRIVE_SEC if _arriving else WALK_SEC
+		var t: float = clampf(_walk_time / span, 0.0, 1.0)
+		var rest: Vector2 = _graves[_selected].position + Vector2(GRAVE_W * 0.5, 30.0)
+		var gate_point: Vector2 = GATE_POS + Vector2(0.0, 10.0)
+		var from: Vector2 = _walk_from
+		var to: Vector2 = rest if _arriving else gate_point
+		_walker.global_position = (from.lerp(to, t)).round()
+		if _speech != null:
+			_speech.position = _walker.global_position + Vector2(-40.0, -26.0)
+		_walker.scale = Vector2.ONE if _arriving else Vector2.ONE * (1.0 - 0.4 * t)
 		var body: Sprite2D = _walker.get_child(0) as Sprite2D
 		if body != null:
-			body.frame = 8 + int(_walk_time * 10.0) % 4
+			body.frame = (8 + int(_walk_time * 10.0) % 4) if t < 1.0 or not _arriving else 8
+		if _arriving and t >= 1.0:
+			_arriving = false
+			_leaving = false
+			_walker.scale = Vector2.ONE
+			_walker.z_index = 0
+			_walker = null
+			_arrow.show()
 		return
 	for i: int in _graves.size():
 		var chosen: bool = i == _selected
