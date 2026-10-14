@@ -13,8 +13,8 @@ extends CanvasLayer
 @onready var _stats: Label = $Root/Stats
 @onready var _hint: Label = $Root/Hint
 
-const HINT_CARDS: String = "A/D - ВЫБОР   ПРОБЕЛ - ВЗЯТЬ   1-4 - БЫСТРО   S - РЕРОЛЛ   W - НАЗАД"
-const HINT_READY: String = "ПРОБЕЛ - В БОЙ"
+const HINT_CARDS: String = "A/D - ВЫБОР   ПРОБЕЛ/E - ВЗЯТЬ   1-4 - БЫСТРО   S - РЕРОЛЛ   W - НАЗАД"
+const HINT_READY: String = "ПРОБЕЛ/E - В БОЙ"
 
 const PERK_MARK: int = 0  # в очереди: 0 = бесплатный перк/оружие Ларька, >0 = уровень (карточка статов)
 
