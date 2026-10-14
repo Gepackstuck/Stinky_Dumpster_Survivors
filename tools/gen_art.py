@@ -181,8 +181,10 @@ def draw_player_up(frame, seed=17):
     cheeks = inter(cheeks, body)
     paint(img, cheeks, GREEN); dither(img, cheeks, YELLOW, "dots")
     crack = new_mask(w, h); line(crack, [(12, 11 + bob), (12, 20 + bob)], 1); paint(img, crack, BLACK)
-    stain = new_mask(w, h); blob(stain, 12, 16 + bob, 4, 3, rng, 0.8, 12)
+    stain = new_mask(w, h); blob(stain, 12, 16 + bob, 3, 4, rng, 0.5, 12)
     paint(img, stain, BROWN); dither(img, stain, BLACK, "checker")
+    for (x, y), c in (((11, 14), RED), ((13, 16), RED), ((12, 18), YELLOW), ((11, 17), PINK), ((13, 18), GREEN), ((10, 19), WHITE)):
+        px(img, x, y + bob, c)  # непереваренные помидоры, кукуруза и прочее
     for x, y in ((10, 19), (14, 19)): px(img, x, y + bob, BROWN)
     drip = new_mask(w, h); line(drip, [(12, 19 + bob), (12 + sway, 22)], 1); paint(img, drip, BROWN)
     # затылок и мухи
@@ -193,7 +195,7 @@ def draw_player_up(frame, seed=17):
     return finish(img, sil)
 
 
-def draw_player_down(frame, seed=19):
+def draw_player_down(frame, eye_state=0, seed=19):
     """24x24, вид спереди: идёт на нас и тупо пялится огромными разными глазами, язык наружу."""
     rng = random.Random(seed)
     w = h = 24
@@ -218,9 +220,10 @@ def draw_player_down(frame, seed=19):
     dither(img, inter(shade, union(body, arms)), BLACK, "checker")
     noise(img, body, [BROWN, BROWN, YELLOW], 4, rng)
     # огромные пучеглазые глаза, смотрят прямо на игрока, один больше другого
-    # глаза чередуются: то левый огромный, то правый
-    eye(img, 8, 9 + bob, 2 if frame else 4, 1 if frame else 2, 0, 0, rng)
-    eye(img, 16, 10 + bob, 4 if frame else 2, 2 if frame else 1, 0, 0, rng)
+    # глаза плавно чередуются: левый огромный → оба средние → правый огромный → оба средние
+    lr, rr = ((4, 2), (3, 3), (2, 4), (3, 3))[eye_state % 4]
+    eye(img, 8, 9 + bob, lr, 2 if lr >= 3 else 1, 0, 0, rng)
+    eye(img, 16, 10 + bob, rr, 2 if rr >= 3 else 1, 0, 0, rng)
     px(img, 7, 6 + bob, RED); px(img, 6, 11 + bob, RED); px(img, 17, 7 + bob, RED)
     # брови: одна задрана, другая нахмурена
     m = new_mask(w, h); line(m, [(4, 4 + bob), (10, 3 + bob)], 1); line(m, [(19, 6 + bob), (14, 7 + bob)], 1); paint(img, m, BLACK)
@@ -1538,8 +1541,10 @@ def sheet(frames):
 
 
 def build_step1():
-    rows = [sheet([draw_player(0), draw_player(1)]), sheet([draw_player_up(0), draw_player_up(1)]),
-            sheet([draw_player_down(0), draw_player_down(1)])]
+    # 4 кадра в ряду (ходьба 0-1-0-1; у «вниз» глаза плавно меняются по 4 состояниям)
+    rows = [sheet([draw_player(0), draw_player(1), draw_player(0), draw_player(1)]),
+            sheet([draw_player_up(0), draw_player_up(1), draw_player_up(0), draw_player_up(1)]),
+            sheet([draw_player_down(0, 0), draw_player_down(1, 1), draw_player_down(0, 2), draw_player_down(1, 3)])]
     ps = new_img(rows[0].size[0], rows[0].size[1] * 3)
     for i, r in enumerate(rows):
         ps.paste(r, (0, i * rows[0].size[1]))
@@ -1693,6 +1698,39 @@ def build_font(path_png=FONTS + "pixel_font.png", path_fnt=FONTS + "pixel_font.f
         lines.append(f"char id={code} x={x} y={y} width=5 height=7 xoffset=0 yoffset=0 xadvance={adv} page=0 chnl=15")
     open(path_fnt, "w", encoding="utf-8").write("\n".join(lines) + "\n")
     return glyphs
+
+
+_SMALL = {
+    "0": "###/#.#/#.#/#.#/###", "1": ".#./##./.#./.#./###", "2": "###/..#/###/#../###", "3": "###/..#/###/..#/###",
+    "4": "#.#/#.#/###/..#/..#", "5": "###/#../###/..#/###", "6": "###/#../###/#.#/###", "7": "###/..#/..#/.#./.#.",
+    "8": "###/#.#/###/#.#/###", "9": "###/#.#/###/..#/###", "У": "#.#/#.#/.##/..#/##.", "Р": "##./#.#/##./#../#..",
+    ".": "#", "Л": ".##/#.#/#.#/#.#/#.#", "В": "##./#.#/##./#.#/##.",
+}
+
+
+def build_small_font(path_png=FONTS + "pixel_font_small.png", path_fnt=FONTS + "pixel_font_small.fnt"):
+    """Мелкий шрифт 3x5 (цифры, «УР.», «Л», «В»): для подписей рядом с крупными числами."""
+    names = sorted(_SMALL.keys())
+    cell_w, cell_h, cols = 4, 6, 8
+    rows = (len(names) + cols - 1) // cols
+    atlas = new_img(cols * cell_w, rows * cell_h)
+    lines = ['info face="pixel_font_small" size=5 bold=0 italic=0 charset="" unicode=1 stretchH=100 smooth=0 aa=0 padding=0,0,0,0 spacing=0,0',
+             f"common lineHeight=6 base=5 scaleW={cols * cell_w} scaleH={rows * cell_h} pages=1 packed=0",
+             'page id=0 file="pixel_font_small.png"', f"chars count={len(names) + 1}",
+             "char id=32 x=0 y=0 width=0 height=0 xoffset=0 yoffset=0 xadvance=3 page=0 chnl=15"]
+    for i, ch in enumerate(names):
+        cx, cy = (i % cols) * cell_w, (i // cols) * cell_h
+        rws = _SMALL[ch].split("/")
+        for y, row in enumerate(rws):
+            for x, c in enumerate(row):
+                if c == "#":
+                    atlas.putpixel((cx + x, cy + y), (255, 255, 255, 255))
+        wd = max(len(r) for r in rws)
+        yo = 4 if ch == "." else 0
+        lines.append(f"char id={ord(ch)} x={cx} y={cy} width={wd} height={1 if ch == '.' else 5} xoffset=0 yoffset={yo} xadvance={wd + 1} page=0 chnl=15")
+    atlas.save(path_png)
+    open(path_fnt, "w", encoding="utf-8").write("\n".join(lines) + "\n")
+
 
 
 def render_text(text, glyphs, color=WHITE, scale=1):
@@ -2265,6 +2303,7 @@ def draw_banners():
 
 def build_step2():
     glyphs = build_font()
+    build_small_font()
     for name, fn in (("perk_speed", icon_speed), ("perk_regen", icon_regen),
                      ("perk_double_shot", icon_double), ("perk_loot_goblin", icon_goblin),
                      ("perk_w_lighter", icon_lighter), ("perk_w_sock", icon_sock), ("perk_w_slingshot", icon_slingshot), ("perk_w_mop", icon_mop),

@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://scripts/ui/hud.gd" id="1_hud"]
 [ext_resource type="Texture2D" path="res://assets/ui/hud_heart.png" id="2_heart"]
 [ext_resource type="Texture2D" path="res://assets/ui/level_badge.png" id="9_badge"]
+[ext_resource type="FontFile" path="res://assets/fonts/pixel_font_small.fnt" id="10_small"]
 [ext_resource type="Texture2D" path="res://assets/ui/hp_bar_under.png" id="3_hpu"]
 [ext_resource type="Texture2D" path="res://assets/ui/hp_bar_fill.png" id="4_hpf"]
 [ext_resource type="Texture2D" path="res://assets/ui/xp_bar_under.png" id="5_xpu"]
@@ -61,17 +62,27 @@ offset_right = 33.0
 offset_bottom = 32.0
 texture = ExtResource("9_badge")
 
-[node name="LevelLabel" type="Label" parent="Root/LevelBadge"]
+[node name="LevelPrefix" type="Label" parent="Root/LevelBadge"]
 layout_mode = 0
-offset_left = 0.0
-offset_top = 3.0
-offset_right = 30.0
+offset_left = 3.0
+offset_top = 5.0
+offset_right = 15.0
 offset_bottom = 12.0
-text = "УР.1"
-horizontal_alignment = 1
+theme_override_fonts/font = ExtResource("10_small")
+theme_override_font_sizes/font_size = 5
+text = "УР."
 theme_override_colors/font_color = Color(0.968627, 1, 0, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 
+[node name="LevelLabel" type="Label" parent="Root/LevelBadge"]
+layout_mode = 0
+offset_left = 15.0
+offset_top = 3.0
+offset_right = 29.0
+offset_bottom = 12.0
+text = "1"
+theme_override_colors/font_color = Color(0.968627, 1, 0, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 [node name="XpBar" type="TextureProgressBar" parent="Root"]
 layout_mode = 0
 offset_left = 37.0
