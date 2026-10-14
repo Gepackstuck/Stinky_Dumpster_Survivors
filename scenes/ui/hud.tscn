@@ -76,9 +76,9 @@ theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 
 [node name="LevelLabel" type="Label" parent="Root/LevelBadge"]
 layout_mode = 0
-offset_left = 15.0
+offset_left = 18.0
 offset_top = 3.0
-offset_right = 29.0
+offset_right = 30.0
 offset_bottom = 12.0
 text = "1"
 theme_override_colors/font_color = Color(0.968627, 1, 0, 1)
