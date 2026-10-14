@@ -331,7 +331,7 @@ func _refresh_shop() -> void:
 	_refresh_slots()
 	_refresh_items()
 	if _start_mode:
-		_title.text = "ВЫБЕРИ СВОЮ ХУЙНЮ"
+		_title.text = "ВЫБЕРИ СВОЙ ХЛАМ"
 		_title.add_theme_color_override(&"font_color", Color(0.968627, 1.0, 0.0))
 		_backdrop.modulate = BACKDROP_SHOP
 		_counter_base = "ЭТИМ ТЫ БУДЕШЬ УБИВАТЬ"

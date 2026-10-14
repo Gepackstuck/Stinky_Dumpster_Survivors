@@ -47,6 +47,11 @@ func _ready() -> void:
 	_place()
 
 
+## Где сейчас оружие в руках (мировые координаты): отсюда вылетают снаряды.
+func sprite_global() -> Vector2:
+	return _sprite.global_position if _sprite != null else get_parent().global_position
+
+
 func _on_fired(direction: Vector2) -> void:
 	if direction != Vector2.ZERO:
 		_aim = direction

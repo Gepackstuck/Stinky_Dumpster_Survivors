@@ -1,5 +1,5 @@
 extends BossBrain
-## Миньон-ебанат: дёргается из стороны в сторону, кидает гаечные ключи веером и лобит говно, оставляющее лужу.
+## Миньон-псих: дёргается из стороны в сторону, кидает гаечные ключи веером и лобит говно, оставляющее лужу.
 
 const WRENCH: Texture2D = preload("res://assets/sprites/proj_wrench.png")
 const POOP: Texture2D = preload("res://assets/sprites/proj_poop.png")

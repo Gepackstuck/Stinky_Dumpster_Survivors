@@ -1,6 +1,6 @@
 class_name MainMenu
 extends Control
-## Главное меню: «Пошла ебаторя» ведёт на кладбище, «Я ливаю» закрывает игру.
+## Главное меню: «Погнали» ведёт на кладбище, «Я ливаю» закрывает игру.
 
 const GRAVEYARD_SCENE: String = "res://scenes/ui/graveyard.tscn"
 const UI_BUTTONS: GDScript = preload("res://scripts/ui/ui_buttons.gd")
@@ -44,7 +44,7 @@ func _ready() -> void:
 	_hero.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	_hero.position = Vector2(SCREEN.x * 0.5, 112.0)
 	add_child(_hero)
-	_start = _button("ПОШЛА ЕБАТОРИЯ", 140.0)
+	_start = _button("ПОГНАЛИ", 140.0)
 	_quit = _button("Я ЛИВАЮ", 176.0)
 	UI_BUTTONS.skin(_start, 0)
 	UI_BUTTONS.skin(_quit, 4)

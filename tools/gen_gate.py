@@ -1,62 +1,48 @@
-"""Ворота 48x32 в стиле арены: столбы, доски, колючая проволока, череп на перемычке. Запуск: python3 tools/gen_gate.py"""
-import random
+"""Ворота 48x32: просто железо и колючая проволока (столбы, решётчатые створки). Запуск: python3 tools/gen_gate.py"""
 import sys
 
 sys.path.insert(0, "tools")
-from gen_art import BLACK, BROWN, GREY, PINK, RED, WHITE, YELLOW, finish, line, new_img, new_mask, paint, px, rect, union
+from gen_art import BLACK, GREY, RED, finish, new_img, new_mask, paint, px, rect, union
 from PIL import Image
 
 W, H = 48, 32
-POST = (120, 120, 126)
+IRON = (120, 120, 126)
+DARK_IRON = (70, 70, 78)
+WIRE = (200, 200, 215)
 
 
 def gate():
-    rng = random.Random(7)
-    posts = new_mask(W, H); rect(posts, 1, 4, 4, 31); rect(posts, 43, 4, 46, 31)
-    beam = new_mask(W, H); rect(beam, 1, 4, 46, 9)
-    planks = new_mask(W, H); rect(planks, 5, 16, 14, 31); rect(planks, 33, 16, 42, 31)
-    wire = new_mask(W, H)
-    for y0 in (1, 12):   # два ряда колючки: поверх перемычки и под ней
-        pts = [(1, y0 + 1)]
-        for x in range(5, 47, 4):
-            pts.append((x, y0 + (2 if (x // 4) % 2 else 0)))
-        line(wire, pts, 0)
-    sil = union(posts, beam, planks, wire)
+    posts = new_mask(W, H); rect(posts, 1, 5, 4, 31); rect(posts, 43, 5, 46, 31)
+    leaf_l = new_mask(W, H); rect(leaf_l, 5, 14, 13, 31)
+    leaf_r = new_mask(W, H); rect(leaf_r, 34, 14, 42, 31)
+    bars = new_mask(W, H)
+    for x in (6, 9, 12, 35, 38, 41):
+        rect(bars, x, 15, x, 30)
+    rails = new_mask(W, H)
+    for y in (16, 22, 29):
+        rect(rails, 5, y, 13, y); rect(rails, 34, y, 42, y)
+    sil = union(posts, leaf_l, leaf_r)
     img = new_img(W, H)
-    paint(img, planks, BROWN)
-    paint(img, posts, POST)
-    paint(img, beam, BROWN)
-    paint(img, wire, GREY)
+    paint(img, union(leaf_l, leaf_r), (20, 20, 26))   # просвет между прутьями
+    paint(img, posts, IRON)
+    paint(img, bars, DARK_IRON)
+    paint(img, rails, IRON)
     out = finish(img, sil)
-    # доски: щели и гвозди
-    for x in (8, 11, 36, 39):
-        for y in range(17, 31):
-            px(out, x, y, (60, 34, 16))
-    for x, y in ((6, 18), (13, 19), (34, 18), (41, 19), (6, 28), (41, 28)):
-        px(out, x, y, YELLOW)
-    # проволока: рваный зигзаг между столбами
-    for y0 in (1, 12):
+    # блики и ржавчина на столбах
+    for y in range(7, 31, 4):
+        px(out, 2, y, (170, 170, 178)); px(out, 44, y, (170, 170, 178))
+    for x, y in ((3, 12), (3, 25), (45, 18), (45, 28)):
+        px(out, x, y, (120, 60, 30))
+    # колючая проволока поверх: две волны через весь проём и катушка сверху
+    for y0 in (3, 10):
         for x in range(1, 47):
-            px(out, x, y0 + 1 + (1 if (x // 2) % 2 else 0), (200, 200, 215))
-    # колючки на проволоке
-    for y0 in (1, 12):
-        for x in range(5, 45, 8):
+            px(out, x, y0 + (1 if (x // 3) % 2 else 0), WIRE)
+        for x in range(4, 45, 7):
             for dx, dy in ((0, 0), (-1, -1), (1, -1), (-1, 1), (1, 1)):
-                px(out, x + dx, y0 + 1 + dy, BLACK if (dx or dy) else RED)
-    # череп на перемычке и мухи
-    for x in range(21, 27):
-        for y in range(4, 8):
-            px(out, x, y, WHITE)
-    for x, y in ((22, 5), (25, 5)):
-        px(out, x, y, BLACK)
-    px(out, 23, 7, BLACK); px(out, 24, 7, BLACK)
-    for x, y in ((8, 6), (38, 7), (14, 8)):
-        px(out, x, y, BLACK)
-    # столбы: розовые «шляпки» и грязь
-    for x in (2, 44):
-        px(out, x, 4, PINK); px(out, x + 1, 4, PINK)
-    for _ in range(10):
-        px(out, rng.choice((2, 3, 44, 45)), rng.randint(10, 30), (60, 40, 30))
+                px(out, x + dx, y0 + dy, BLACK if (dx or dy) else RED)
+    for x in (2, 44):   # остриё на столбах
+        for dy in range(3):
+            px(out, x + 1 - (1 if dy == 2 else 0), 4 - dy, IRON if dy < 2 else BLACK)
     return out
 
 

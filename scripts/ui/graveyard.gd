@@ -9,6 +9,7 @@ const MENU_SCENE: String = "res://scenes/ui/main_menu.tscn"
 const GAME_SCENE: String = "res://scenes/levels/main.tscn"
 const SCREEN: Vector2 = Vector2(480.0, 270.0)
 const WALK_SEC: float = 0.8   # герой вылезает из ямы и идёт вниз к арене
+const VISIBLE: int = 6   # столько могил видно, остальные прокручиваются
 const GRAVE_TOP: float = 34.0
 const GATE_POS: Vector2 = Vector2(240.0, 252.0)   # ворота на арену: внизу по центру (арена под кладбищем в бесконечной петле)
 var _gate_tex: Texture2D = CharacterLibrary.load_texture("res://assets/sprites/gate.png")
@@ -81,7 +82,7 @@ func _start_arrival() -> void:
 	_arriving = true
 	_walker = _sitters[_selected]
 	_walk_from = Vector2(240.0, -24.0)   # приходит сверху экрана
-	_say("ОХ БЛЯТЬ")
+	_say("ОХ, ЧЁРТ")
 	_walk_time = 0.0
 	_arrow.hide()
 
@@ -176,7 +177,7 @@ func _build_header() -> void:
 func _build_grave(i: int) -> void:
 	var id: StringName = _ids[i]
 	var unlocked: bool = Profile.is_unlocked(id)
-	var x: float = (SCREEN.x - GRAVE_STEP * _ids.size()) * 0.5 + GRAVE_STEP * (i + 0.5) - GRAVE_W * 0.5
+	var x: float = (SCREEN.x - GRAVE_STEP * mini(_ids.size(), VISIBLE)) * 0.5 + GRAVE_STEP * (i + 0.5) - GRAVE_W * 0.5
 	var root: Control = Control.new()
 	root.position = Vector2(x, GRAVE_TOP)
 	root.size = Vector2(GRAVE_W, 70.0)
@@ -338,7 +339,17 @@ func _refresh() -> void:
 	_place_arrow()
 
 
+## Окно из VISIBLE могил едет за выбором.
+func _apply_scroll() -> void:
+	var scroll: int = clampi(_selected - int(VISIBLE * 0.5), 0, maxi(_ids.size() - VISIBLE, 0))
+	var left: float = (SCREEN.x - GRAVE_STEP * mini(_ids.size(), VISIBLE)) * 0.5 - GRAVE_W * 0.5
+	for i: int in _graves.size():
+		_graves[i].position.x = left + GRAVE_STEP * (i - scroll + 0.5)
+		_graves[i].visible = i >= scroll and i < scroll + VISIBLE
+
+
 func _place_arrow() -> void:
+	_apply_scroll()
 	var root: Control = _graves[_selected]
 	_arrow.position = Vector2(root.position.x + GRAVE_W * 0.5 - ARROW.get_width() * 0.5, root.position.y + 70.0)
 

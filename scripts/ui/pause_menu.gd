@@ -33,7 +33,7 @@ func _ready() -> void:
 	_restart.pressed.connect(_on_restart)
 	_inventory_button.pressed.connect(_open_inventory)
 	_build_inventory()
-	_quit.pressed.connect(func() -> void: _ask("ТОЧНО ВЫЙТИ ИЗ ИГРЫ?\nВСЁ ЗАКРОЕТСЯ, ПРОГРЕСС ЗАБЕГА\nПОХЕРИТСЯ.", "ДА, ВАЛЮ ОТСЮДА", func() -> void: get_tree().quit()))
+	_quit.pressed.connect(func() -> void: _ask("ТОЧНО ВЫЙТИ ИЗ ИГРЫ?\nВСЁ ЗАКРОЕТСЯ, ПРОГРЕСС ЗАБЕГА\nПРОПАДЁТ.", "ДА, ВАЛЮ ОТСЮДА", func() -> void: get_tree().quit()))
 	_build_menu_button()
 	_build_confirm()
 
@@ -53,7 +53,7 @@ func _build_menu_button() -> void:
 	for i: int in order.size():
 		order[i].position = Vector2(order[i].position.x if i != 3 else _quit.position.x, ys[i])
 		order[i].size.y = 18.0
-	_menu_button.pressed.connect(func() -> void: _ask("ТОЧНО В МЕНЮ?\nВЕСЬ ПРОГРЕСС ЗАБЕГА\nПОХЕРИТСЯ.", "ДА, ПОХЕРИТЬ", func() -> void: SceneFlow.go("res://scenes/ui/main_menu.tscn", Vector2.UP)))
+	_menu_button.pressed.connect(func() -> void: _ask("ТОЧНО В МЕНЮ?\nВЕСЬ ПРОГРЕСС ЗАБЕГА\nПРОПАДЁТ.", "ДА, ПРОПАДАЙ", func() -> void: SceneFlow.go("res://scenes/ui/main_menu.tscn", Vector2.UP)))
 	_quit.text = "! ВАЛИТЬ ОТСЮДА !"
 	_quit.add_theme_color_override(&"font_color", Color(1.0, 0.1, 0.2))
 	_quit.add_theme_color_override(&"font_hover_color", Color(1.0, 0.1, 0.2))
@@ -87,7 +87,7 @@ func _build_confirm() -> void:
 	text.add_theme_color_override(&"font_color", Color(0.968627, 1.0, 0.0))
 	_confirm.add_child(text)
 	_confirm_yes = Button.new()
-	_confirm_yes.text = "ДА, ПОХЕРИТЬ"
+	_confirm_yes.text = "ДА, ПРОПАДАЙ"
 	_confirm_yes.position = Vector2(100.0, 150.0)
 	_confirm_yes.size = Vector2(130.0, 22.0)
 	UI_BUTTONS.skin(_confirm_yes, 4)

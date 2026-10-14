@@ -79,7 +79,7 @@ const ELITE_ID: StringName = &"boss_mega_hamster"                           # э
 const BOSS_NAMES: Dictionary = {
 	&"boss_mega_hamster": "МЕГА-ХОМЯК",
 	&"boss_zakhar": "ЗАХАР ИЗ МОРКОВСКА",
-	&"boss_minion": "МИНЬОН-ЕБАНАТ",
+	&"boss_minion": "МИНЬОН-ПСИХ",
 }
 
 # --- Боссы: Захар из Морковска ---
@@ -95,7 +95,7 @@ const ZAKHAR_KICK_WINDUP_SEC: float = 0.45      # замах — мигает ж
 const ZAKHAR_KICK_SPEED: float = 280.0
 const ZAKHAR_KICK_DURATION_SEC: float = 0.25
 
-# --- Боссы: Миньон-ебанат ---
+# --- Боссы: Миньон-псих ---
 const MINION_WRENCH_INTERVAL_SEC: float = 1.8
 const MINION_WRENCH_DAMAGE: float = 7.0
 const MINION_WRENCH_SPEED: float = 150.0
@@ -106,7 +106,7 @@ const MINION_POOP_SPEED: float = 110.0
 const MINION_PUDDLE_RADIUS: float = 22.0
 const MINION_PUDDLE_DAMAGE: float = 4.0
 const MINION_PUDDLE_LIFETIME_SEC: float = 4.0
-const MINION_STRAFE_SPEED: float = 45.0         # «ебанутые» дёрганья в стороны
+const MINION_STRAFE_SPEED: float = 45.0         # «психованные» дёрганья в стороны
 const PROJECTILE_BOSS_LIFETIME_SEC: float = 3.0
 
 # --- Отдача от попаданий ---
@@ -124,7 +124,7 @@ const GROUND_DECAL_AREA_PX2: float = 9000.0  # одна декаль пола н
 const CAMERA_ZOOM: float = 1.0  # только целое: дробный зум рвёт пиксели (виден шум); «дальше» = больше viewport
 
 # --- Предметы (рюкзак Ларька): плюсы/минусы к статам + особые эффекты ---
-# «Обосранные портки Supreme»: шанс, что враг в контакте охуевает от вони и не подходит.
+# «Обосранные портки Supreme»: шанс, что враг в контакте шарахается от вони и не подходит.
 const ITEM_STINKY_PANTS_REPEL_CHANCE: float = 15.0
 const SHOP_COMPANION_WEIGHT: int = 4               # питомцы и структуры выпадают в 4 раза чаще обычных предметов
 const SHOP_ITEM_CHANCE: float = 0.4                 # шанс, что слот витрины — предмет
@@ -387,7 +387,7 @@ const SHOP_PRICES: Dictionary = {
 
 # --- Персонажи кладбища (Шаг 8). mods/fx - как у предметов; weapon - стартовое оружие (пусто - выбор в начале).
 # unlock: open | kills | coins | deaths | wins (накопительные счётчики профиля).
-const CHARACTER_ORDER: Array[StringName] = [&"hobo", &"squid", &"clerk", &"janitor", &"uncle_vitya", &"blogger"]
+const CHARACTER_ORDER: Array[StringName] = [&"hobo", &"squid", &"clerk", &"janitor", &"uncle_vitya", &"blogger", &"granny", &"courier", &"pigeon", &"punk"]
 const CHARACTERS: Dictionary = {
 	&"hobo": {"weapon": &"", "mods": {&"max_hp": 4.0, &"pickup": 15.0}, "unlock": &"open", "need": 0, "tint": Color(1.0, 1.0, 1.0), "hat": &"ushanka"},
 	&"squid": {"weapon": &"mop", "mods": {&"damage": 15.0, &"speed": 8.0, &"max_hp": -3.0}, "unlock": &"open", "need": 0, "tint": Color(0.65, 0.85, 1.0), "hat": &"cigarette"},
@@ -395,4 +395,8 @@ const CHARACTERS: Dictionary = {
 	&"janitor": {"weapon": &"sock", "mods": {&"armor": 3.0, &"max_hp": 6.0, &"speed": -8.0, &"pickup": 20.0}, "unlock": &"kills", "need": 300, "tint": Color(1.0, 0.85, 0.6), "hat": &"helmet"},
 	&"uncle_vitya": {"weapon": &"lighter", "mods": {&"dodge": 12.0, &"damage": -8.0}, "fx": {&"burn": 20.0}, "unlock": &"deaths", "need": 1, "tint": Color(1.0, 0.7, 0.7), "hat": &"vodka"},
 	&"blogger": {"weapon": &"laser_pointer", "mods": {&"damage": -12.0, &"crit": 8.0}, "fx": {&"coin_bonus": 40.0}, "unlock": &"coins", "need": 600, "tint": Color(0.8, 1.0, 0.8), "hat": &"gold_tooth"},
+	&"granny": {"weapon": &"slipper", "mods": {&"max_hp": 6.0, &"armor": 2.0, &"speed": -10.0}, "fx": {&"thorns": 3.0}, "unlock": &"kills", "need": 600, "tint": Color(1, 1, 1), "hat": &"scarf"},
+	&"courier": {"weapon": &"spray_can", "mods": {&"speed": 20.0, &"attack_speed": 8.0, &"max_hp": -4.0}, "fx": {&"coin_bonus": 25.0}, "unlock": &"coins", "need": 1000, "tint": Color(1, 1, 1), "hat": &"bottle_cap"},
+	&"pigeon": {"weapon": &"condensed_milk", "mods": {&"dodge": 10.0, &"speed": 10.0, &"max_hp": -5.0}, "fx": {&"lifesteal": 5.0}, "unlock": &"deaths", "need": 5, "tint": Color(1, 1, 1), "hat": &"dried_fish"},
+	&"punk": {"weapon": &"frying_pan", "mods": {&"damage": 10.0, &"armor": -1.0, &"speed": 6.0}, "fx": {&"pets": 1.0}, "unlock": &"wins", "need": 1, "tint": Color(1, 1, 1), "hat": &"crowbar"},
 }

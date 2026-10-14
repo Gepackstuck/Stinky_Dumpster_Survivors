@@ -30,4 +30,4 @@ func _heal_allies() -> void:
 			healed = true
 	if healed:
 		HitFx.burst(boss.get_tree(), boss.global_position, Color(0.2235, 1.0, 0.0784), 10, Balance.HEALER_RADIUS, 2.0, 0.5, true)
-		HitFx.popup(boss.get_tree(), boss.global_position + Vector2(0.0, -10.0), "+ЛЕЧУ, СУКА", Color(0.2235, 1.0, 0.0784), 12.0, 0.8)
+		HitFx.popup(boss.get_tree(), boss.global_position + Vector2(0.0, -10.0), "+ЛЕЧУ, ТЕРПИ", Color(0.2235, 1.0, 0.0784), 12.0, 0.8)

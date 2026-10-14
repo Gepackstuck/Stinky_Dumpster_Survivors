@@ -4,6 +4,7 @@ extends Node2D
 ## Шаг 1: единственное оружие — заглушка на статах `lighter`.
 
 const PROJECTILE_SCENE: PackedScene = preload("res://scenes/weapons/projectile.tscn")
+const MUZZLE_DIST: float = 6.0                # кончик оружия от его центра
 const RETARGET_INTERVAL_SEC: float = 0.1  # как часто искать цель, пока врагов в радиусе нет
 
 signal fired(direction: Vector2)  # выстрел: для показа оружия в руках
@@ -86,8 +87,18 @@ func _find_nearest_enemy() -> Node2D:
 	return nearest
 
 
+## Откуда вылетает снаряд: из кончика оружия в руках героя (а не из центра тела).
+func _muzzle(target: Node2D) -> Vector2:
+	for child: Node in get_children():
+		if child.has_method(&"sprite_global"):
+			var hand: Vector2 = child.call(&"sprite_global")
+			return hand + hand.direction_to(target.global_position) * MUZZLE_DIST
+	return global_position
+
+
 func _fire(target: Node2D) -> void:
-	var base_direction: Vector2 = global_position.direction_to(target.global_position)
+	var origin: Vector2 = _muzzle(target)
+	var base_direction: Vector2 = origin.direction_to(target.global_position)
 	var count: int = _pellets + GameState.extra_projectiles
 	var damage: float = GameState.roll_damage(_damage)
 	var spread: float = deg_to_rad(Balance.PERK_DOUBLE_SHOT_SPREAD_DEG)
@@ -98,7 +109,7 @@ func _fire(target: Node2D) -> void:
 			angle += deg_to_rad(randf_range(-_jitter_deg, _jitter_deg))
 		var projectile: Projectile = PoolManager.acquire(PROJECTILE_SCENE) as Projectile
 		root.add_child(projectile)
-		projectile.launch(global_position, base_direction.rotated(angle), damage, _proj_speed, _proj_life)
+		projectile.launch(origin, base_direction.rotated(angle), damage, _proj_speed, _proj_life)
 		projectile.pierce = _pierce
 		projectile.ricochets = _ricochets
 		projectile.ricochet_range = _ricochet_range
