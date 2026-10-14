@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" path="res://assets/ui/button_wide_hover.png" id="5_btnh"]
 [ext_resource type="Texture2D" path="res://assets/ui/button.png" id="6_btns"]
 [ext_resource type="Texture2D" path="res://assets/ui/button_hover.png" id="7_btnsh"]
+[ext_resource type="Texture2D" path="res://assets/sprites/ground_tile.png" id="8_ground"]
 [ext_resource type="PackedScene" path="res://scenes/ui/perk_card.tscn" id="3_card"]
 
 [sub_resource type="StyleBoxTexture" id="SB_n"]
@@ -33,13 +34,15 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Backdrop" type="ColorRect" parent="Root"]
+[node name="Backdrop" type="TextureRect" parent="Root"]
+modulate = Color(0.32, 0.28, 0.3, 1)
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+texture = ExtResource("8_ground")
+stretch_mode = 1
 mouse_filter = 2
-color = Color(0.17, 0.095, 0.05, 1)
 
 [node name="Dim" type="TextureRect" parent="Root"]
 layout_mode = 1
