@@ -33,6 +33,15 @@ var crit_percent: float = 0.0
 var bonus_max_hp: float = 0.0
 var reroll_count: int = 0
 var weapons: Array[Dictionary] = []    # оружие игрока: {id, tier}, до WEAPON_SLOTS штук
+var items: Dictionary[StringName, int] = {}   # рюкзак: id предмета -> штук
+var coin_bonus: float = 0.0        # +доля к говну с дропа
+var repel_percent: float = 0.0
+var thorns_damage: float = 0.0
+var explode_percent: float = 0.0
+var lifesteal_percent: float = 0.0
+var discount_percent: float = 0.0
+var _item_stats: Dictionary[StringName, float] = {}
+var _coin_remainder: float = 0.0
 var shop_offers: Array[Dictionary] = []  # витрина Ларька (замороженные переходят на след. волну)
 
 
@@ -60,6 +69,8 @@ func reset_run() -> void:
 	run_active = true
 	perk_stacks.clear()
 	stat_totals.clear()
+	items.clear()
+	_coin_remainder = 0.0
 	weapons.clear()
 	shop_offers.clear()
 	reroll_count = 0
@@ -149,7 +160,37 @@ func apply_stat(stat_id: StringName, tier: int) -> void:
 
 
 func stat_total(stat_id: StringName) -> float:
-	return stat_totals.get(stat_id, 0.0)
+	return stat_totals.get(stat_id, 0.0) + _item_stats.get(stat_id, 0.0)
+
+
+func item_count(item_id: StringName) -> int:
+	return items.get(item_id, 0)
+
+
+## Положить предмет в рюкзак (+1 штука) и пересчитать статы.
+func add_item(item_id: StringName) -> void:
+	items[item_id] = item_count(item_id) + 1
+	_recompute_perk_stats()
+	EventBus.perk_chosen.emit(StringName("item_" + String(item_id)))
+	EventBus.items_changed.emit()
+
+
+func _recompute_items() -> void:
+	_item_stats.clear()
+	var fx: Dictionary[StringName, float] = {}
+	for item_id: StringName in items:
+		var count: int = items[item_id]
+		var data: Dictionary = Balance.ITEMS[item_id]
+		for stat_id: StringName in data.get("mods", {}):
+			_item_stats[stat_id] = _item_stats.get(stat_id, 0.0) + data["mods"][stat_id] * count
+		for key: StringName in data.get("fx", {}):
+			fx[key] = fx.get(key, 0.0) + data["fx"][key] * count
+	coin_bonus = fx.get(&"coin_bonus", 0.0) / 100.0
+	repel_percent = minf(fx.get(&"repel", 0.0), 75.0)
+	thorns_damage = fx.get(&"thorns", 0.0)
+	explode_percent = minf(fx.get(&"explode", 0.0), 75.0)
+	lifesteal_percent = minf(fx.get(&"lifesteal", 0.0), 60.0)
+	discount_percent = minf(fx.get(&"discount", 0.0), 60.0)
 
 
 ## Урон выстрела с учётом статов, перков и крита.
@@ -165,6 +206,7 @@ func cooldown_for(base_sec: float) -> float:
 
 
 func _recompute_perk_stats() -> void:
+	_recompute_items()
 	var speed: int = get_perk_stacks(PerkLibrary.SPEED)
 	var goblin: int = get_perk_stacks(PerkLibrary.LOOT_GOBLIN)
 	var shots: int = get_perk_stacks(PerkLibrary.DOUBLE_SHOT)
@@ -196,7 +238,10 @@ func _on_xp_collected(amount: int) -> void:
 	if not run_active:
 		return
 	xp += amount
-	coins += amount  # как в Brotato: «говно» = и опыт, и деньги
+	_coin_remainder += float(amount) * (1.0 + coin_bonus)  # как в Brotato: «говно» = и опыт, и деньги
+	var whole: int = floori(_coin_remainder)
+	coins += whole
+	_coin_remainder -= float(whole)
 	while xp >= xp_to_next:
 		xp -= xp_to_next
 		level += 1

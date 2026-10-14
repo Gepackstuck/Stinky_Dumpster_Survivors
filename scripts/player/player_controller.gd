@@ -32,6 +32,7 @@ func _ready() -> void:
 	_magnet.area_entered.connect(_on_magnet_area_entered)
 	EventBus.perk_chosen.connect(_on_perk_chosen)
 	EventBus.weapons_changed.connect(_sync_weapons)
+	EventBus.enemy_died.connect(_on_enemy_died_item_fx)
 	_update_magnet_radius()
 	_health.setup(Balance.PLAYER_MAX_HP)
 
@@ -79,7 +80,7 @@ func _on_magnet_area_entered(area: Area2D) -> void:
 
 func _on_perk_chosen(_perk_id: StringName) -> void:
 	_update_magnet_radius()
-	_health.set_max(Balance.PLAYER_MAX_HP + GameState.bonus_max_hp)
+	_health.set_max(maxf(Balance.PLAYER_MAX_HP + GameState.bonus_max_hp, 10.0))
 
 
 ## Оружие игрока: каждое — отдельный узел-автоатака, пересобираем при любом изменении набора.
@@ -123,6 +124,9 @@ func _on_hurt(raw_damage: float) -> void:
 	if randf() * 100.0 < GameState.dodge_percent:
 		HitFx.popup(get_tree(), global_position + Vector2(0.0, -12.0), "МИМО!", Color(0.0, 0.94, 1.0), 14.0, 0.7)
 		return
+	if randf() * 100.0 < GameState.repel_percent:
+		_stink_repel()
+		return
 	var reduced: float = raw_damage * Balance.ARMOR_K / (Balance.ARMOR_K + GameState.armor)
 	var damage: float = maxf(minf(roundf(reduced), _health.max_health * Balance.PLAYER_MAX_HIT_FRACTION), 1.0)
 	EventBus.player_hit.emit(damage)
@@ -132,6 +136,52 @@ func _on_hurt(raw_damage: float) -> void:
 	HitFx.burst(get_tree(), global_position + Vector2(0.0, 4.0), Color(0.2235, 1.0, 0.0784), 12, 60.0, 3.0, 0.7, true)
 	HitFx.burst(get_tree(), global_position + Vector2(0.0, 4.0), Color(0.9686, 1.0, 0.0), 5, 45.0, 2.0, 0.7, true)
 	_health.take_damage(damage)
+	if GameState.thorns_damage > 0.0:
+		_thorns_hit()
+
+
+## «Обосранные портки»: вонь сдувает врагов вокруг, урон по тебе не проходит.
+func _stink_repel() -> void:
+	HitFx.popup(get_tree(), global_position + Vector2(0.0, -12.0), "ВОНЬ!", Color(0.2235, 1.0, 0.0784), 14.0, 0.8)
+	HitFx.burst(get_tree(), global_position, Color(0.2235, 1.0, 0.0784), 18, Balance.ITEM_REPEL_RADIUS * 1.6, 3.0, 0.8, true)
+	var radius_sq: float = Balance.ITEM_REPEL_RADIUS * Balance.ITEM_REPEL_RADIUS
+	for node: Node in get_tree().get_nodes_in_group(&"enemies"):
+		var enemy: EnemyBase = node as EnemyBase
+		if enemy != null and global_position.distance_squared_to(enemy.global_position) <= radius_sq:
+			enemy.shove((enemy.global_position - global_position).normalized() * Balance.ITEM_REPEL_PUSH)
+
+
+## «Колючая проволока»: враги вплотную получают урон в ответ.
+func _thorns_hit() -> void:
+	var radius_sq: float = Balance.ITEM_THORNS_RADIUS * Balance.ITEM_THORNS_RADIUS
+	for node: Node in get_tree().get_nodes_in_group(&"enemies"):
+		var enemy: EnemyBase = node as EnemyBase
+		if enemy != null and global_position.distance_squared_to(enemy.global_position) <= radius_sq:
+			enemy.hit_by_weapon(GameState.thorns_damage * GameState.damage_mult, (enemy.global_position - global_position).normalized() * 80.0)
+
+
+func _on_enemy_died_item_fx(enemy_id: StringName, at: Vector2) -> void:
+	if Balance.ENEMIES.get(enemy_id, {}).get("neutral", false) or not GameState.run_active:
+		return
+	if randf() * 100.0 < GameState.lifesteal_percent:
+		_health.heal(Balance.ITEM_LIFESTEAL_HP)
+		HitFx.popup(get_tree(), global_position + Vector2(0.0, -12.0), "+1 ХП", Color(1.0, 0.0, 0.2), 12.0, 0.6)
+	if randf() * 100.0 < GameState.explode_percent:
+		_explode.call_deferred(at)
+
+
+## «Взрывной понос»: убитый враг рвётся и задевает соседей.
+func _explode(at: Vector2) -> void:
+	if not is_inside_tree():
+		return
+	HitFx.burst(get_tree(), at, Color(0.58, 0.34, 0.12), 14, Balance.ITEM_EXPLODE_RADIUS * 2.0, 3.0, 0.6, true)
+	HitFx.burst(get_tree(), at, Color(0.968627, 1.0, 0.0), 8, Balance.ITEM_EXPLODE_RADIUS * 1.5, 2.0, 0.5, true)
+	var radius_sq: float = Balance.ITEM_EXPLODE_RADIUS * Balance.ITEM_EXPLODE_RADIUS
+	for group: StringName in [&"enemies", &"neutrals"]:
+		for node: Node in get_tree().get_nodes_in_group(group):
+			var enemy: EnemyBase = node as EnemyBase
+			if enemy != null and at.distance_squared_to(enemy.global_position) <= radius_sq:
+				enemy.hit_by_weapon(Balance.ITEM_EXPLODE_DAMAGE * GameState.damage_mult, (enemy.global_position - at).normalized() * 140.0)
 
 
 func heal(amount: float) -> void:

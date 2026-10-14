@@ -116,9 +116,38 @@ const ENEMY_PLAYER_MIN_DISTANCE: float = 10.0  # ближе враг не под
 const GROUND_DECAL_AREA_PX2: float = 9000.0  # одна декаль пола на столько px² арены
 const CAMERA_ZOOM: float = 1.0  # только целое: дробный зум рвёт пиксели (виден шум); «дальше» = больше viewport
 
-# --- Предметы ---
-# «Обосранные портки Supreme»: шанс, что враг в контакте охуевает от вони и не подходит (реализация — шаг с предметами).
-const ITEM_STINKY_PANTS_REPEL_CHANCE: float = 0.15
+# --- Предметы (рюкзак Ларька): плюсы/минусы к статам + особые эффекты ---
+# «Обосранные портки Supreme»: шанс, что враг в контакте охуевает от вони и не подходит.
+const ITEM_STINKY_PANTS_REPEL_CHANCE: float = 15.0
+const SHOP_ITEM_CHANCE: float = 0.4                 # шанс, что слот витрины — предмет
+const ITEM_REPEL_RADIUS: float = 46.0               # враги в этом радиусе отлетают от вони
+const ITEM_REPEL_PUSH: float = 320.0
+const ITEM_THORNS_RADIUS: float = 34.0
+const ITEM_EXPLODE_RADIUS: float = 44.0
+const ITEM_EXPLODE_DAMAGE: float = 22.0             # * множитель урона
+const ITEM_LIFESTEAL_HP: float = 1.0
+# tier: 1-4 (цвет рамки), price: цена в говне до роста по волнам, limit: макс. штук (0 — без лимита),
+# mods: статы (как у карточек уровня; можно с минусом), fx: coin_bonus/repel/thorns/explode/lifesteal/discount (на штуку)
+const ITEMS: Dictionary = {
+	&"cigarette": {"tier": 1, "price": 14, "limit": 0, "mods": {&"speed": 6.0, &"max_hp": -3.0}},
+	&"sandwich": {"tier": 1, "price": 15, "limit": 0, "mods": {&"max_hp": 8.0, &"dodge": -3.0}},
+	&"holey_sock": {"tier": 1, "price": 13, "limit": 0, "mods": {&"dodge": 6.0, &"armor": -1.0}},
+	&"pot": {"tier": 1, "price": 16, "limit": 0, "mods": {&"armor": 2.0, &"speed": -3.0}},
+	&"energy_can": {"tier": 1, "price": 16, "limit": 0, "mods": {&"attack_speed": 10.0, &"max_hp": -4.0}},
+	&"poop_wallet": {"tier": 1, "price": 18, "limit": 0, "fx": {&"coin_bonus": 10.0}},
+	&"old_milk": {"tier": 2, "price": 26, "limit": 0, "mods": {&"regen": 3.0, &"damage": -4.0}},
+	&"nail_knuckles": {"tier": 2, "price": 28, "limit": 0, "mods": {&"damage": 10.0, &"dodge": -4.0}},
+	&"dirty_glasses": {"tier": 2, "price": 26, "limit": 0, "mods": {&"crit": 6.0, &"armor": -1.0}},
+	&"junk_magnet": {"tier": 2, "price": 24, "limit": 0, "mods": {&"pickup": 40.0, &"damage": -3.0}},
+	&"stinky_pants": {"tier": 2, "price": 30, "limit": 4, "fx": {&"repel": ITEM_STINKY_PANTS_REPEL_CHANCE}},
+	&"foil_hat": {"tier": 3, "price": 40, "limit": 0, "mods": {&"dodge": 10.0, &"attack_speed": -5.0}},
+	&"shawarma": {"tier": 3, "price": 42, "limit": 0, "mods": {&"max_hp": 14.0, &"regen": 2.0, &"speed": -6.0}},
+	&"coupon": {"tier": 3, "price": 38, "limit": 5, "fx": {&"discount": 8.0}},
+	&"barbed_wire": {"tier": 3, "price": 40, "limit": 0, "fx": {&"thorns": 6.0}, "mods": {&"armor": 1.0}},
+	&"diarrhea": {"tier": 4, "price": 70, "limit": 3, "fx": {&"explode": 20.0}},
+	&"bloody_rag": {"tier": 4, "price": 68, "limit": 4, "fx": {&"lifesteal": 8.0}},
+	&"golden_toilet": {"tier": 4, "price": 90, "limit": 1, "mods": {&"damage": 14.0, &"crit": 8.0, &"armor": 2.0, &"speed": -8.0}},
+}
 
 # --- Забег ---
 const MAX_ENEMIES_ON_SCREEN: int = 500  # CONVENTIONS.md
@@ -155,7 +184,7 @@ const PERK_PRICE: Dictionary = {&"speed": 14, &"regen": 16, &"double_shot": 30, 
 const SHOP_SLOTS: int = 4
 const SHOP_PRICE_TIER_MULT: Array[float] = [1.0, 2.0, 3.5, 6.0]
 const SHOP_PRICE_WAVE_GROWTH: float = 0.08          # цена *(1 + это * волна)
-const SHOP_WEAPON_CHANCE: float = 0.6               # шанс, что слот — оружие, а не перк
+const SHOP_WEAPON_CHANCE: float = 0.45              # шанс, что слот — оружие (предмет — SHOP_ITEM_CHANCE, иначе перк)
 const SHOP_TIER2_PER_WAVE: float = 0.05             # II-тир: (волна-1)*это, до 0.5
 const SHOP_TIER3_PER_WAVE: float = 0.03             # III-тир: (волна-3)*это, до 0.35
 const SHOP_TIER4_PER_WAVE: float = 0.015            # IV-тир: (волна-7)*это, до 0.2

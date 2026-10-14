@@ -2710,6 +2710,176 @@ def icon_mop():
     return out
 
 
+
+# ---------------------------------------------------------------- предметы (16x16)
+def _item(layers, dots=(), dither_on=None):
+    """layers: [(маска, цвет)]; dots: [(x, y, цвет)] поверх обводки; dither_on: (индекс слоя, цвет, шаблон)."""
+    sil = union(*[m for m, _ in layers])
+    img = new_img(16, 16)
+    for i, (m, c) in enumerate(layers):
+        paint(img, m, c)
+        if dither_on and dither_on[0] == i:
+            dither(img, m, dither_on[1], dither_on[2])
+    out = finish(img, sil)
+    for x, y, c in dots:
+        px(out, x, y, c)
+    return out
+
+
+def _m():
+    return new_mask(16, 16)
+
+
+def item_cigarette():
+    """Окурок: бычок с рыжим фильтром, красный огонёк и дым."""
+    body = _m(); rect(body, 2, 10, 11, 12)
+    tip = _m(); rect(tip, 2, 10, 4, 12)
+    ember = _m(); rect(ember, 11, 10, 13, 12)
+    return _item([(body, WHITE), (tip, BROWN), (ember, RED)], [(12, 11, YELLOW), (13, 7, GREY), (12, 5, GREY), (13, 3, GREY), (7, 11, BROWN)])
+
+
+def item_sandwich():
+    """Протухший сэндвич: хлеб, зелёная плесень, выглядывающая начинка."""
+    top = _m(); rect(top, 2, 3, 13, 6)
+    mid = _m(); rect(mid, 1, 7, 14, 8)
+    bot = _m(); rect(bot, 2, 9, 13, 12)
+    return _item([(top, BROWN), (mid, PINK), (bot, BROWN)], [(4, 4, GREEN), (5, 4, GREEN), (10, 5, GREEN), (7, 10, GREEN), (11, 11, GREEN), (8, 8, YELLOW), (3, 8, GREEN)])
+
+
+def item_holey_sock():
+    """Дырявый носок: серый, дыра с пальцем, заплатка."""
+    leg = _m(); rect(leg, 4, 1, 8, 9)
+    foot = _m(); rect(foot, 4, 8, 12, 12)
+    return _item([(leg, GREY), (foot, GREY)], [(10, 10, BLACK), (11, 10, BLACK), (11, 11, PINK), (5, 3, PINK), (6, 3, PINK), (6, 4, PINK), (5, 6, BLACK), (7, 2, BLACK)])
+
+
+def item_pot():
+    """Ржавая кастрюля: коричневая, с ручками и дыркой, рыжая ржа."""
+    body = _m(); rect(body, 3, 5, 12, 12)
+    lid = _m(); rect(lid, 2, 4, 13, 5)
+    knob = _m(); rect(knob, 7, 2, 8, 3)
+    handle = _m(); rect(handle, 0, 7, 2, 8); rect(handle, 13, 7, 15, 8)
+    return _item([(body, BROWN), (lid, GREY), (knob, GREY), (handle, GREY)], [(6, 8, BLACK), (7, 8, BLACK), (10, 10, YELLOW), (4, 11, YELLOW), (9, 7, RED)], (0, YELLOW, "dots_off"))
+
+
+def item_energy_can():
+    """Банка энергетика: кислотно-зелёная банка с молнией."""
+    can = _m(); rect(can, 4, 3, 11, 13)
+    top = _m(); rect(top, 4, 2, 11, 3)
+    return _item([(can, GREEN), (top, GREY)], [(8, 5, BLACK), (7, 6, BLACK), (6, 7, BLACK), (7, 8, BLACK), (8, 9, BLACK), (7, 10, BLACK), (6, 11, BLACK), (9, 4, YELLOW), (5, 5, WHITE)])
+
+
+def item_poop_wallet():
+    """Кошелёк с говном: коричневый кошель, из него торчит завиток."""
+    wallet = _m(); rect(wallet, 2, 6, 13, 13)
+    flap = _m(); rect(flap, 2, 6, 13, 8)
+    swirl = _m(); poly(swirl, [(5, 6), (10, 6), (9, 3), (7, 2), (6, 4)])
+    return _item([(wallet, PINK), (flap, BLUE), (swirl, BROWN)], [(11, 10, YELLOW), (12, 10, YELLOW), (8, 4, GREEN), (7, 3, BLACK), (8, 11, BLACK)])
+
+
+def item_old_milk():
+    """Просроченная сгущёнка: вздутая банка, зелёная жижа."""
+    can = _m(); rect(can, 4, 4, 11, 14)
+    lid = _m(); rect(lid, 3, 3, 12, 4)
+    return _item([(can, BLUE), (lid, GREY)], [(5, 6, YELLOW), (6, 6, YELLOW), (7, 7, YELLOW), (6, 10, GREEN), (7, 11, GREEN), (9, 12, GREEN), (10, 2, GREEN), (11, 1, GREEN), (5, 13, GREEN)], (0, WHITE, "checker"))
+
+
+def item_nail_knuckles():
+    """Кастет из гвоздей: серый кастет с торчащими гвоздями."""
+    ring = _m(); rect(ring, 2, 7, 13, 12)
+    holes = _m()
+    nails = _m()
+    for x in (3, 6, 9, 12):
+        line(nails, [(x, 7), (x, 3)], 1)
+    return _item([(nails, WHITE), (ring, GREY)], [(4, 9, BLACK), (5, 9, BLACK), (7, 9, BLACK), (8, 9, BLACK), (10, 9, BLACK), (11, 9, BLACK), (3, 2, RED), (6, 2, RED), (9, 2, RED), (12, 2, RED)])
+
+
+def item_dirty_glasses():
+    """Грязные очки: две линзы, разные, замотаны изолентой."""
+    l = _m(); rect(l, 1, 5, 6, 10)
+    r = _m(); rect(r, 9, 5, 14, 10)
+    bridge = _m(); rect(bridge, 6, 6, 9, 7)
+    return _item([(l, BLACK), (r, BLACK), (bridge, BLACK)], [(2, 6, CYAN), (3, 6, CYAN), (2, 7, CYAN), (11, 7, GREEN), (12, 7, GREEN), (12, 8, GREEN), (4, 9, BROWN), (13, 9, BROWN), (7, 6, YELLOW)])
+
+
+def item_junk_magnet():
+    """Магнит с помойки: красно-синяя подкова, прилипший хлам."""
+    u = _m(); rect(u, 2, 2, 5, 12); rect(u, 10, 2, 13, 12); rect(u, 2, 9, 13, 12)
+    redt = _m(); rect(redt, 2, 2, 5, 5)
+    bluet = _m(); rect(bluet, 10, 2, 13, 5)
+    hole = _m(); rect(hole, 6, 2, 9, 8)
+    base = minus(u, hole)
+    return _item([(base, GREY), (minus(redt, hole), RED), (minus(bluet, hole), BLUE)], [(3, 13, WHITE), (11, 13, YELLOW), (7, 13, GREEN), (7, 0, GREEN), (7, 1, GREEN)])
+
+
+def item_stinky_pants():
+    """Обосранные портки: розовые трусы, коричневое пятно, зелёные волны."""
+    body = _m(); poly(body, [(2, 3), (13, 3), (13, 8), (10, 13), (9, 13), (8, 9), (7, 9), (6, 13), (5, 13), (2, 8)])
+    band = _m(); rect(band, 2, 3, 13, 4)
+    return _item([(body, PINK), (band, YELLOW)], [(6, 6, BROWN), (7, 6, BROWN), (8, 7, BROWN), (7, 7, BROWN), (6, 7, BROWN), (4, 1, GREEN), (7, 0, GREEN), (10, 1, GREEN), (11, 14, GREEN), (3, 14, GREEN)])
+
+
+def item_foil_hat():
+    """Шапка из фольги: мятый серебристый конус, блики."""
+    cone = _m(); poly(cone, [(8, 1), (13, 12), (3, 12)])
+    brim = _m(); rect(brim, 2, 12, 14, 13)
+    return _item([(cone, WHITE), (brim, GREY)], [(7, 4, CYAN), (6, 7, GREY), (9, 6, GREY), (8, 9, CYAN), (5, 10, GREY), (11, 10, PINK), (8, 1, YELLOW)])
+
+
+def item_shawarma():
+    """Тухлая шаурма: лаваш-конус, торчит салат и мясо, зелёное облако."""
+    wrap = _m(); poly(wrap, [(3, 6), (12, 4), (10, 14), (6, 14)])
+    top = _m(); rect(top, 3, 3, 12, 6)
+    return _item([(wrap, YELLOW), (top, GREEN)], [(5, 4, BROWN), (7, 3, BROWN), (10, 5, BROWN), (7, 9, BROWN), (8, 10, BROWN), (9, 8, RED), (13, 1, GREEN), (14, 3, GREEN)])
+
+
+def item_coupon():
+    """Талон бомжа: розовая бумажка с зубчиками и надписью %."""
+    sheet = _m(); rect(sheet, 2, 3, 13, 12)
+    ticks = _m()
+    for y in range(3, 13, 2):
+        px_m = ticks; px_m.putpixel((2, y), 0)
+    return _item([(sheet, YELLOW)], [(5, 5, RED), (9, 8, RED), (6, 6, RED), (7, 7, RED), (8, 8, RED), (5, 8, RED), (9, 5, RED), (4, 11, BLACK), (6, 11, BLACK), (8, 11, BLACK), (11, 11, BLACK)])
+
+
+def item_barbed_wire():
+    """Колючая проволока: серая спираль с шипами."""
+    coil = _m()
+    line(coil, [(1, 11), (4, 5), (7, 11), (10, 5), (13, 11)], 1)
+    return _item([(coil, GREY)], [(4, 3, RED), (4, 4, RED), (10, 3, RED), (10, 4, RED), (7, 13, RED), (1, 13, RED), (13, 13, RED), (3, 8, WHITE), (9, 8, WHITE)])
+
+
+def item_diarrhea():
+    """Взрывной понос: коричневая бомба-кучка, фитиль и искры."""
+    pile = _m(); blob(pile, 8, 10, 6, 4, random.Random(41), 0.5, 12)
+    top = _m(); blob(top, 8, 6, 4, 3, random.Random(42), 0.4, 10)
+    fuse = _m(); line(fuse, [(8, 3), (10, 1)], 1)
+    return _item([(pile, BROWN), (top, BROWN), (fuse, WHITE)], [(11, 0, YELLOW), (12, 1, RED), (10, 0, RED), (6, 9, GREEN), (10, 11, GREEN), (5, 6, YELLOW), (8, 7, BLACK), (7, 12, BLACK)])
+
+
+def item_bloody_rag():
+    """Кровавая тряпка: драная тряпка, красные пятна и капли."""
+    rag = _m(); poly(rag, [(2, 3), (13, 2), (14, 9), (11, 8), (9, 14), (7, 9), (4, 13), (2, 8)])
+    return _item([(rag, WHITE)], [(5, 5, RED), (6, 5, RED), (6, 6, RED), (10, 4, RED), (11, 6, RED), (9, 9, RED), (8, 11, RED), (4, 9, RED), (12, 8, BLACK), (4, 4, GREY)])
+
+
+def item_golden_toilet():
+    """Золотой унитаз: жёлтый толчок, бачок, глаза в чаше."""
+    tank = _m(); rect(tank, 3, 1, 12, 5)
+    bowl = _m(); blob(bowl, 8, 9, 6, 3, random.Random(43), 0.3, 12)
+    stand = _m(); rect(stand, 6, 11, 10, 14)
+    return _item([(tank, YELLOW), (bowl, YELLOW), (stand, YELLOW)], [(5, 3, WHITE), (6, 3, WHITE), (9, 8, WHITE), (10, 8, BLACK), (6, 9, GREEN), (7, 9, BLACK), (11, 3, BROWN), (4, 11, BROWN)])
+
+
+ITEM_ICONS = [
+    ("cigarette", item_cigarette), ("sandwich", item_sandwich), ("holey_sock", item_holey_sock), ("pot", item_pot),
+    ("energy_can", item_energy_can), ("poop_wallet", item_poop_wallet), ("old_milk", item_old_milk),
+    ("nail_knuckles", item_nail_knuckles), ("dirty_glasses", item_dirty_glasses), ("junk_magnet", item_junk_magnet),
+    ("stinky_pants", item_stinky_pants), ("foil_hat", item_foil_hat), ("shawarma", item_shawarma), ("coupon", item_coupon),
+    ("barbed_wire", item_barbed_wire), ("diarrhea", item_diarrhea), ("bloody_rag", item_bloody_rag), ("golden_toilet", item_golden_toilet),
+]
+
+
 PANEL_W, PANEL_H = 360, 160
 
 
@@ -2745,6 +2915,8 @@ def build_step2():
                      ("perk_w_lighter", icon_lighter), ("perk_w_sock", icon_sock), ("perk_w_slingshot", icon_slingshot), ("perk_w_mop", icon_mop),
                      ("hud_heart", lambda: draw_heart(14))):
         fn().save(UI + name + ".png")
+    for item_id, item_fn in ITEM_ICONS:
+        item_fn().save(UI + "item_" + item_id + ".png")
     draw_card_frames().save(UI + "card_frames.png")
     draw_pointer_sheet().save(UI + "enemy_pointers.png")
     draw_frame(200, 28, GREEN, PINK, 303, chamfer=5, drips=6, eyes=False, clean=True).save(UI + "button_wide.png")

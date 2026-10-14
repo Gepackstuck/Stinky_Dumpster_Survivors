@@ -37,6 +37,9 @@ const COUNTER_COLOR: Color = Color(1.0, 0.78, 0.98)  # подпись под з�
 const BACKDROP_SHOP: Color = Color(0.32, 0.28, 0.3)
 const BACKDROP_LEVEL: Color = Color(0.3, 0.1, 0.34)
 var _counter_base: String = ""
+var _item_grid: GridContainer = null     # рюкзак предметов (слева внизу в Ларьке)
+const ITEM_GRID_COLUMNS: int = 7
+const ITEM_GRID_MAX: int = 14
 
 
 func _ready() -> void:
@@ -45,6 +48,7 @@ func _ready() -> void:
 		_cards[i].pressed.connect(_on_card_pressed.bind(i))
 		_cards[i].mouse_entered.connect(_select_card.bind(i))  # мышь — запасной вариант
 	_build_slot_buttons()
+	_build_item_grid()
 	_build_slot_menu()
 	_next_button.pressed.connect(_on_next_pressed)
 	_reroll_button.pressed.connect(_on_reroll_pressed)
@@ -88,6 +92,47 @@ func _build_slot_menu() -> void:
 		column.add_child(button)
 		_menu_buttons.append(button)
 	_root.add_child(_menu)
+
+
+func _build_item_grid() -> void:
+	_item_grid = GridContainer.new()
+	_item_grid.columns = ITEM_GRID_COLUMNS
+	_item_grid.position = Vector2(8.0, 224.0)
+	_item_grid.add_theme_constant_override(&"h_separation", 0)
+	_item_grid.add_theme_constant_override(&"v_separation", 0)
+	_item_grid.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_root.add_child(_item_grid)
+
+
+## Рюкзак: иконка каждого предмета, число штук справа внизу, рамка цветом тира.
+func _refresh_items() -> void:
+	for child: Node in _item_grid.get_children():
+		child.queue_free()
+	_item_grid.visible = _shop_mode
+	var shown: int = 0
+	for item_id: StringName in GameState.items:
+		if shown >= ITEM_GRID_MAX:
+			break
+		shown += 1
+		var cell: Control = Control.new()
+		cell.custom_minimum_size = Vector2(16.0, 16.0)
+		cell.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var icon: TextureRect = TextureRect.new()
+		icon.texture = ItemLibrary.icon(item_id)
+		icon.size = Vector2(16.0, 16.0)
+		icon.modulate = Color.WHITE.lerp(StatLibrary.tier_color(ItemLibrary.tier(item_id)), 0.25)
+		icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		cell.add_child(icon)
+		var count: int = GameState.items[item_id]
+		if count > 1:
+			var label: Label = Label.new()
+			label.text = str(count)
+			label.position = Vector2(8.0, 6.0)
+			label.add_theme_color_override(&"font_color", Color(0.968627, 1.0, 0.0))
+			label.add_theme_color_override(&"font_shadow_color", Color.BLACK)
+			label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			cell.add_child(label)
+		_item_grid.add_child(cell)
 
 
 func _build_slot_buttons() -> void:
@@ -282,6 +327,7 @@ func _refresh_shop() -> void:
 	_toast_label.text = ""
 	_counter.add_theme_color_override(&"font_color", COUNTER_COLOR)
 	_refresh_slots()
+	_refresh_items()
 	if _start_mode:
 		_title.text = "ВЫБЕРИ СВОЮ ХУЙНЮ"
 		_title.add_theme_color_override(&"font_color", Color(0.968627, 1.0, 0.0))

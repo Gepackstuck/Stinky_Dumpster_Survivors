@@ -230,6 +230,12 @@ func hit_by_weapon(damage: float, push: Vector2 = Vector2.ZERO) -> void:
 		_knockback = push
 
 
+## Толчок без урона (вонь портков).
+func shove(push: Vector2) -> void:
+	if not _dead and not _neutral:
+		_knockback = push
+
+
 func _on_hurt(damage: float) -> void:
 	if _dead:
 		return

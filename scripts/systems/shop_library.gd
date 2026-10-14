@@ -15,7 +15,16 @@ static func base_price(kind: StringName, id: StringName) -> float:
 
 
 static func price(kind: StringName, id: StringName, tier: int, wave: int) -> int:
-	return maxi(roundi(base_price(kind, id) * Balance.SHOP_PRICE_TIER_MULT[tier - 1] * (1.0 + Balance.SHOP_PRICE_WAVE_GROWTH * wave)), 1)
+	var raw: float = float(Balance.ITEMS[id]["price"]) if kind == &"item" else base_price(kind, id) * Balance.SHOP_PRICE_TIER_MULT[tier - 1]
+	raw *= 1.0 + Balance.SHOP_PRICE_WAVE_GROWTH * wave
+	return maxi(roundi(raw * (1.0 - GameState.discount_percent / 100.0)), 1)
+
+
+## Пересчитать цены уже лежащих на витрине товаров (после покупки талона бомжа).
+static func reprice(offers: Array[Dictionary], wave: int) -> void:
+	for offer: Dictionary in offers:
+		if not offer["sold"]:
+			offer["price"] = price(offer["kind"], offer["id"], offer["tier"], wave)
 
 
 static func roll_tier(wave: int) -> int:
@@ -41,7 +50,22 @@ static func new_offer(wave: int) -> Dictionary:
 		if cap == 0 or GameState.get_perk_stacks(perk_id) < cap:
 			perk_pool.append(perk_id)
 	var offer: Dictionary = {"locked": false, "sold": false}
-	if randf() < Balance.SHOP_WEAPON_CHANCE or perk_pool.is_empty():
+	var roll: float = randf()
+	if roll >= Balance.SHOP_WEAPON_CHANCE and roll < Balance.SHOP_WEAPON_CHANCE + Balance.SHOP_ITEM_CHANCE:
+		var item_tier: int = roll_tier(wave)
+		var candidates: Array[StringName] = []
+		for t: int in range(item_tier, 0, -1):  # нет такого тира — берём ниже
+			candidates = ItemLibrary.pool(t)
+			if not candidates.is_empty():
+				item_tier = t
+				break
+		if not candidates.is_empty():
+			offer["kind"] = &"item"
+			offer["id"] = candidates[randi() % candidates.size()]
+			offer["tier"] = item_tier
+			offer["price"] = price(&"item", offer["id"], item_tier, wave)
+			return offer
+	if roll < Balance.SHOP_WEAPON_CHANCE or perk_pool.is_empty():
 		var weapon_perk: StringName = PerkLibrary.WEAPON_PERKS[randi() % PerkLibrary.WEAPON_PERKS.size()]
 		offer["kind"] = &"weapon"
 		offer["id"] = StringName(String(weapon_perk).trim_prefix("w_"))
@@ -68,12 +92,16 @@ static func fill_offers(existing: Array[Dictionary], wave: int, keep_unlocked: b
 
 
 static func title(offer: Dictionary) -> String:
+	if offer["kind"] == &"item":
+		return ItemLibrary.title(offer["id"])
 	if offer["kind"] == &"weapon":
 		return PerkLibrary.title(perk_id_of(offer["id"]))
 	return PerkLibrary.title(offer["id"])
 
 
 static func icon(offer: Dictionary) -> Texture2D:
+	if offer["kind"] == &"item":
+		return ItemLibrary.icon(offer["id"])
 	if offer["kind"] == &"weapon":
 		return PerkLibrary.icon(perk_id_of(offer["id"]))
 	return PerkLibrary.icon(offer["id"])
@@ -81,7 +109,9 @@ static func icon(offer: Dictionary) -> Texture2D:
 
 static func description(offer: Dictionary) -> String:
 	var text: String = ""
-	if offer["kind"] == &"weapon":
+	if offer["kind"] == &"item":
+		text += ItemLibrary.description(offer["id"])
+	elif offer["kind"] == &"weapon":
 		var stats: Dictionary = Balance.WEAPONS[offer["id"]]
 		var tier: int = offer["tier"]
 		text += "%s\nУРОН: %d\nПАУЗА: %.2f С" % [stats.get("tag", "ОРУЖИЕ"), roundi(stats["damage"] * Balance.WEAPON_TIER_DAMAGE[tier - 1]), stats["cooldown"] * Balance.WEAPON_TIER_COOLDOWN[tier - 1]]
@@ -98,7 +128,10 @@ static func why_not(offer: Dictionary) -> String:
 		return "УЖЕ КУПЛЕНО."
 	if GameState.coins < offer["price"]:
 		return "НЕ ХВАТАЕТ ГОВНА, БОМЖ."
-	if offer["kind"] == &"weapon":
+	if offer["kind"] == &"item":
+		if ItemLibrary.at_limit(offer["id"]):
+			return "БОЛЬШЕ ТАКОГО НЕ ВЛЕЗЕТ."
+	elif offer["kind"] == &"weapon":
 		if GameState.weapons.size() >= Balance.WEAPON_SLOTS and GameState.find_weapon(offer["id"], offer["tier"]) < 0:
 			return "СЛОТЫ ЗАБИТЫ. ПЕРЕРАБОТАЙ ХЛАМ."
 	else:
@@ -111,7 +144,10 @@ static func why_not(offer: Dictionary) -> String:
 static func buy(offer: Dictionary) -> void:
 	GameState.coins -= offer["price"]
 	offer["sold"] = true
-	if offer["kind"] == &"weapon":
+	if offer["kind"] == &"item":
+		GameState.add_item(offer["id"])
+		reprice(GameState.shop_offers, GameState.wave + 1)
+	elif offer["kind"] == &"weapon":
 		if GameState.weapons.size() < Balance.WEAPON_SLOTS:
 			GameState.add_weapon(offer["id"], offer["tier"])
 		else:
