@@ -5,12 +5,16 @@ extends CanvasLayer
 @onready var _hp_bar: TextureProgressBar = $Root/HpBar
 @onready var _xp_bar: TextureProgressBar = $Root/XpBar
 @onready var _level_label: Label = $Root/LevelLabel
+@onready var _timer_label: Label = $Root/TimerLabel
+@onready var _wave_label: Label = $Root/WaveLabel
 @onready var _kills_label: Label = $Root/KillsLabel
 
 var _last_hp: float = -1.0
 var _last_level: int = -1
 var _last_kills: int = -1
 var _last_xp: int = -1
+var _last_second: int = -1
+var _last_wave: int = -1
 
 
 func _process(_delta: float) -> void:
@@ -28,3 +32,10 @@ func _process(_delta: float) -> void:
 	if GameState.kills != _last_kills:
 		_last_kills = GameState.kills
 		_kills_label.text = "УБИТО %d" % GameState.kills
+	var second: int = ceili(GameState.wave_time_left)
+	if second != _last_second:
+		_last_second = second
+		_timer_label.text = str(second)
+	if GameState.wave != _last_wave:
+		_last_wave = GameState.wave
+		_wave_label.text = "ВОЛНА %d/%d" % [GameState.wave, Balance.WAVE_COUNT]

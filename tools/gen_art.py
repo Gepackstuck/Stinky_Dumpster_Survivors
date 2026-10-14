@@ -268,6 +268,266 @@ def draw_squid(frame, seed=11):
     return finish(img, sil)
 
 
+# ---------------------------------------------------------------- новые враги (Шаг 3)
+def draw_microbe(frame, seed=21):
+    """16x16: гигантский микроб — пухлый жёлто-зелёный комок с шипами и тремя разными глазами."""
+    rng = random.Random(seed)
+    w = h = 16
+    body = new_mask(w, h); blob(body, 8, 8, 6, 6, rng, 1.0, 14)
+    spikes = new_mask(w, h)
+    for i, (x, y) in enumerate(((8, 0), (14, 4), (15, 9), (12, 14), (4, 14), (0, 9), (1, 4))):
+        o = 1 if (i + frame) % 2 else 0
+        rect(spikes, x, y + o, x + 1, y + 1 + o)
+    sil = union(body, spikes)
+    img = new_img(w, h)
+    paint(img, sil, GREEN); dither(img, body, YELLOW, "checker"); dither(img, inter(body, pattern(w, h, "stripes3")), BLACK, "dots_off")
+    eye(img, 5, 6, 2, 2, 0, 1, rng); eye(img, 10, 5, 1, 1, 0, 0, rng); eye(img, 9, 9, 2, 2, 1, 0, rng)
+    for x in (5, 7, 9): px(img, x, 12, BLACK); px(img, x, 13, WHITE) if frame else None
+    px(img, 6, 13, RED); px(img, 12, 8, BROWN); px(img, 3, 9, BROWN)
+    return finish(img, sil)
+
+
+def draw_npc_bot(frame, seed=22):
+    """16x16: NPC-бот — серый коробок с пустым взглядом, один глаз красный, мигающая антенна."""
+    rng = random.Random(seed)
+    w = h = 16
+    head = new_mask(w, h); rect(head, 3, 2, 12, 8)
+    torso = new_mask(w, h); rect(torso, 4, 9, 11, 13)
+    legs = new_mask(w, h); rect(legs, 4, 14, 5, 15); rect(legs, 10, 14, 11, 15)
+    arms = new_mask(w, h); rect(arms, 1, 9 + frame, 2, 12 + frame); rect(arms, 13, 9 + (1 - frame), 14, 12 + (1 - frame))
+    ant = new_mask(w, h); rect(ant, 7, 0, 8, 1)
+    sil = union(head, torso, legs, arms, ant)
+    img = new_img(w, h)
+    paint(img, sil, GREY); dither(img, union(head, torso), WHITE, "dots"); dither(img, torso, BLACK, "stripes3")
+    paint(img, ant, YELLOW if frame else RED)
+    eyes = new_mask(w, h); rect(eyes, 4, 4, 6, 6); rect(eyes, 9, 4, 11, 6); paint(img, eyes, BLACK)
+    px(img, 5, 5, RED); px(img, 10, 5, WHITE)
+    for x in range(5, 11): px(img, x, 7, BLACK)
+    px(img, 7, 11, GREEN); px(img, 8, 11, GREEN); px(img, 6, 10, RED)
+    return finish(img, sil)
+
+
+def draw_cockroach(frame, seed=23):
+    """16x16: таракан-курьер — брюхо с коричневыми надкрыльями, красные глаза, сумка-«посылка»."""
+    rng = random.Random(seed)
+    w = h = 16
+    body = new_mask(w, h); blob(body, 8, 9, 6, 4, rng, 0.5, 12)
+    head = new_mask(w, h); blob(head, 13, 9, 2, 2, rng, 0.3, 8)
+    legs = new_mask(w, h)
+    for i, x in enumerate((4, 7, 10)):
+        o = 1 if (i + frame) % 2 else -1
+        line(legs, [(x, 12), (x + o, 15)], 1); line(legs, [(x, 6), (x - o, 3)], 1)
+    ant = new_mask(w, h); line(ant, [(14, 7), (15, 3)], 1); line(ant, [(15, 8), (15 - frame, 5)], 1)
+    sil = union(body, head, legs, ant)
+    img = new_img(w, h)
+    paint(img, sil, BROWN); dither(img, body, BLACK, "dots"); dither(img, head, RED, "checker")
+    for x in range(3, 12): px(img, x, 9, BLACK)
+    parcel = new_mask(w, h); rect(parcel, 5, 5, 9, 8); paint(img, parcel, YELLOW)
+    px(img, 6, 6, BLACK); px(img, 8, 7, BLACK); px(img, 7, 5, RED)
+    px(img, 13, 8, RED); px(img, 14, 8, WHITE)
+    for x in (2, 3): px(img, x, 9 + frame, GREEN)
+    return finish(img, sil)
+
+
+def draw_wifi_ghost(frame, seed=24):
+    """16x16: вай-фай призрак — голубая простыня с дырами вместо глаз и значком Wi-Fi над головой."""
+    rng = random.Random(seed)
+    w = h = 16
+    body = new_mask(w, h); blob(body, 8, 8, 5, 5, rng, 0.5, 12); rect(body, 3, 8, 12, 13)
+    skirt = new_mask(w, h)
+    for i, x in enumerate(range(3, 13, 2)):
+        rect(skirt, x, 14, x + 1, 14 + ((i + frame) % 2))
+    sil = union(body, skirt)
+    img = new_img(w, h)
+    paint(img, sil, CYAN); dither(img, body, WHITE, "checker"); dither(img, inter(body, pattern(w, h, "stripes3")), BLUE, "dots")
+    holes = new_mask(w, h); rect(holes, 5, 6, 6, 8); rect(holes, 9, 6, 10, 9); paint(img, holes, BLACK)
+    mouth = new_mask(w, h); blob(mouth, 8, 11, 2, 1, rng, 0.3, 8); paint(img, mouth, BLACK)
+    px(img, 7, 11, RED)
+    arcs = [(4, 0), (5, 0), (6, 0), (7, 0)] if not frame else [(5, 0), (6, 0)]
+    for x, y in arcs: px(img, x + 2, y, YELLOW)
+    px(img, 8, 2, YELLOW); px(img, 7, 1, YELLOW); px(img, 9, 1, YELLOW)
+    return finish(img, sil)
+
+
+def draw_boss_hamster(frame, seed=25):
+    """40x32: Мега-Хомяк — гора коричневого мяса, раздутые щёки, глаза разного размера, пасть в крови."""
+    rng = random.Random(seed)
+    w, h = 40, 32
+    body = new_mask(w, h); blob(body, 20, 18, 17, 12, rng, 1.5, 20)
+    ears = new_mask(w, h); blob(ears, 8, 5, 4, 4, rng, 0.6, 10); blob(ears, 32, 5, 4, 4, rng, 0.6, 10)
+    cheeks = new_mask(w, h); blob(cheeks, 7, 20, 6, 5, rng, 0.9, 12); blob(cheeks, 33, 20, 6, 5, rng, 0.9, 12)
+    feet = new_mask(w, h)
+    off = 1 if frame else 0
+    rect(feet, 9, 28, 15, 30 + off); rect(feet, 25, 28, 31, 30 + (1 - off))
+    sil = union(body, ears, cheeks, feet)
+    img = new_img(w, h)
+    paint(img, sil, BROWN)
+    dither(img, body, (150, 90, 45), "checker"); dither(img, cheeks, PINK, "dots"); dither(img, ears, PINK, "checker")
+    dither(img, inter(body, pattern(w, h, "stripes3")), BLACK, "dots_off")
+    eye(img, 13, 11, 4, 3, 1, 1, rng); eye(img, 26, 12, 2, 2, -1, 0, rng)
+    for x, y in ((11, 8), (12, 8), (13, 8), (14, 8), (24, 9), (25, 9), (27, 9)): px(img, x, y, BLACK)
+    for x, y in ((10, 10), (15, 12), (12, 14)): px(img, x, y, RED)
+    mouth = new_mask(w, h); rect(mouth, 12, 20, 28, 25); paint(img, mouth, BLACK)
+    for x in range(13, 28, 3):
+        px(img, x, 20, WHITE); px(img, x, 21, WHITE); px(img, x + 1, 25, WHITE)
+    for x in range(14, 27, 2): px(img, x, 23, RED)
+    for k in range(5 + frame * 2): px(img, 16, 26 + k % 4, GREEN); px(img, 24, 26 + (k + 1) % 4, GREEN)
+    nose = new_mask(w, h); rect(nose, 19, 17, 21, 18); paint(img, nose, PINK)
+    return finish(img, sil)
+
+
+# ---------------------------------------------------------------- новые боссы и их атаки
+ORANGE_A, ORANGE_B = RED, YELLOW  # «морковный» оттенок = красно-жёлтый дизеринг (палитра без оранжевого)
+
+
+def draw_boss_zakhar(frame, seed=31):
+    """44x44: Захар из Морковска — уродский кролик: один глаз огромный в прожилках, второй крохотный, кривые зубы, морковка в лапе."""
+    rng = random.Random(seed)
+    w = h = 44
+    body = new_mask(w, h); blob(body, 22, 28, 13, 12, rng, 1.2, 18)
+    head = new_mask(w, h); blob(head, 22, 15, 10, 9, rng, 1.0, 16)
+    ear_l = new_mask(w, h); poly(ear_l, [(13, 8), (10, 0), (15, 0), (18, 8)])
+    ear_r = new_mask(w, h); poly(ear_r, [(26, 8), (31, 1), (36, 6 + frame), (29, 10)])   # правое ухо обвисшее
+    legs = new_mask(w, h); rect(legs, 11, 38, 17, 41 + frame); rect(legs, 27, 38, 33, 41 + (1 - frame))
+    arm = new_mask(w, h); line(arm, [(33, 26), (39, 22 + frame * 2)], 3)
+    carrot = new_mask(w, h); poly(carrot, [(37, 17 + frame * 2), (43, 20 + frame * 2), (40, 33 + frame * 2)])
+    sil = union(body, head, ear_l, ear_r, legs, arm, carrot)
+    img = new_img(w, h)
+    paint(img, sil, WHITE)
+    dither(img, union(body, head), (150, 150, 160), "checker")
+    dither(img, inter(body, pattern(w, h, "stripes3")), BLACK, "dots_off")
+    paint(img, ear_l, PINK); dither(img, ear_l, WHITE, "checker"); paint(img, ear_r, PINK); dither(img, ear_r, BROWN, "dots")
+    paint(img, carrot, ORANGE_A); dither(img, carrot, ORANGE_B, "stripes")
+    for x, y in ((40, 17 + frame * 2), (41, 16 + frame * 2), (39, 16 + frame * 2), (42, 18 + frame * 2)): px(img, x, y, GREEN)
+    belly = new_mask(w, h); blob(belly, 22, 31, 7, 6, rng, 0.8, 12); paint(img, belly, PINK); dither(img, belly, RED, "dots")
+    for x, y in ((19, 30), (22, 33), (25, 29)): px(img, x, y, BLACK)  # кишки/пупок
+    eye(img, 16, 14, 5, 3, 1, 1, rng); eye(img, 28, 13, 2, 2, 0, 0, rng)
+    for x, y in ((14, 11), (15, 18), (13, 15), (19, 12)): px(img, x, y, RED)
+    for x, y in ((12, 9), (13, 9), (14, 9), (15, 10), (26, 10), (27, 10), (28, 10)): px(img, x, y, BLACK)  # злые брови
+    mouth = new_mask(w, h); rect(mouth, 16, 20, 28, 23); paint(img, mouth, BLACK)
+    for x in (17, 19, 24, 26): px(img, x, 20, YELLOW); px(img, x, 21, YELLOW)
+    px(img, 21, 20, WHITE); px(img, 22, 20, WHITE)
+    px(img, 19, 24 + frame, GREEN); px(img, 26, 24 + (1 - frame), GREEN)
+    nose = new_mask(w, h); rect(nose, 21, 17, 23, 18); paint(img, nose, PINK)
+    for k in range(4 + frame * 2): px(img, 7 - k % 3, 34 + k, GREEN)  # пердёж сзади
+    return finish(img, sil)
+
+
+def draw_boss_minion(frame, seed=32):
+    """32x36: Миньон-ебанат — жёлтый, один глаз огромный в очках, второй крохотный, язык вывален, ржавый ключ в лапе."""
+    rng = random.Random(seed)
+    w, h = 32, 36
+    body = new_mask(w, h); blob(body, 16, 20, 10, 14, rng, 1.0, 18)
+    hair = new_mask(w, h)
+    for i, x in enumerate((11, 14, 17, 20)):
+        line(hair, [(x, 7), (x + (i - 1) * 2 + frame, 1)], 1)
+    legs = new_mask(w, h); rect(legs, 10, 32, 14, 34 + frame); rect(legs, 18, 32, 22, 34 + (1 - frame))
+    arm_l = new_mask(w, h); line(arm_l, [(7, 20), (3, 25 + frame)], 2)
+    arm_r = new_mask(w, h); line(arm_r, [(25, 20), (30, 14 - frame * 2)], 2)
+    wrench = new_mask(w, h); line(wrench, [(30, 14 - frame * 2), (30, 5 - frame * 2)], 2); rect(wrench, 28, 3 - frame * 2, 31, 5 - frame * 2)
+    sil = union(body, hair, legs, arm_l, arm_r, wrench)
+    img = new_img(w, h)
+    paint(img, sil, YELLOW)
+    dither(img, body, WHITE, "dots")
+    over = new_mask(w, h); rect(over, 7, 24, 25, 33); paint(img, minus(over, wrench), BLUE); dither(img, over, BLACK, "checker")
+    paint(img, hair, BLACK)
+    paint(img, wrench, GREY)
+    goggle = new_mask(w, h); rect(goggle, 6, 11, 26, 13); paint(img, goggle, BLACK)
+    eye(img, 12, 13, 5, 3, 1, 1, rng); eye(img, 21, 12, 2, 2, 0, 0, rng)
+    for x, y in ((9, 10), (10, 17), (14, 10), (8, 14)): px(img, x, y, RED)
+    mouth = new_mask(w, h); rect(mouth, 10, 19, 22, 22); paint(img, mouth, BLACK)
+    for x in (11, 13, 15, 19): px(img, x, 19, WHITE)
+    tongue = new_mask(w, h); rect(tongue, 16, 21, 19, 25 + frame); paint(img, tongue, PINK)
+    px(img, 17, 25 + frame, RED)
+    for x, y in ((11, 15), (23, 9), (7, 22), (21, 28)): px(img, x, y, BROWN)  # говно на нём
+    px(img, 25, 26, BROWN); px(img, 26, 27, BROWN)
+    return finish(img, sil)
+
+
+def draw_proj_carrot(frame):
+    """12x12: летящая морковка (красно-жёлтая) с зелёной ботвой, 2 кадра — повёрнута."""
+    img = new_img(12, 12); sil = new_mask(12, 12)
+    if frame == 0:
+        poly(sil, [(1, 10), (3, 6), (9, 2), (10, 4), (5, 9)])
+        paint(img, sil, ORANGE_A); dither(img, sil, ORANGE_B, "stripes")
+        for x, y in ((9, 1), (10, 1), (10, 2), (11, 3)): px(img, x, y, GREEN)
+    else:
+        poly(sil, [(1, 2), (5, 3), (10, 9), (8, 10), (2, 5)])
+        paint(img, sil, ORANGE_A); dither(img, sil, ORANGE_B, "stripes")
+        for x, y in ((0, 1), (1, 0), (2, 1), (0, 3)): px(img, x, y, GREEN)
+    return finish(img, sil)
+
+
+def draw_proj_wrench(frame):
+    """12x12: гаечный ключ, вращается (2 кадра)."""
+    img = new_img(12, 12); sil = new_mask(12, 12)
+    if frame == 0:
+        line(sil, [(2, 10), (9, 3)], 2); blob(sil, 9, 3, 2, 2, random.Random(1), 0.3, 8)
+    else:
+        line(sil, [(2, 2), (9, 9)], 2); blob(sil, 9, 9, 2, 2, random.Random(2), 0.3, 8)
+    paint(img, sil, GREY); dither(img, sil, WHITE, "dots")
+    px(img, 9 if frame == 0 else 9, 3 if frame == 0 else 9, BLACK)
+    px(img, 4, 8 if frame == 0 else 4, RED)
+    return finish(img, sil)
+
+
+def draw_proj_poop(frame):
+    """10x10: летящий комок говна с мухой."""
+    rng = random.Random(5 + frame)
+    img = new_img(10, 10); sil = new_mask(10, 10)
+    blob(sil, 5, 6, 3.5, 3, rng, 0.8, 10); rect(sil, 4, 2, 6, 3)
+    paint(img, sil, BROWN); dither(img, sil, BLACK, "dots_off")
+    px(img, 4, 5, YELLOW); px(img, 7, 7, GREEN)
+    px(img, 1 + frame * 6, 1, BLACK)
+    return finish(img, sil)
+
+
+def draw_stink_cloud(frame, seed=41):
+    """56x56: облако пердежа — зелёные комки с жёлтыми прожилками, дизеринг, завитки; 2 кадра колышутся."""
+    rng = random.Random(seed)
+    w = h = 56
+    img = new_img(w, h)
+    cloud = new_mask(w, h)
+    for cx, cy, r in ((28, 28, 16), (16, 30, 10), (40, 30, 11), (28, 15, 9), (27, 42, 9)):
+        o = 1 if frame else -1
+        blob(cloud, cx + o, cy - o, r, r - 2, rng, 2.0, 14)
+    paint(img, cloud, GREEN)
+    dither(img, cloud, YELLOW, "checker")
+    dither(img, inter(cloud, pattern(w, h, "stripes3")), BLACK, "dots_off")
+    ring = minus(dilate4(cloud), cloud)
+    dither(img, ring, GREEN, "dots")
+    for _ in range(14): px(img, rng.randint(8, 48), rng.randint(8, 48), rng.choice([WHITE, BLACK, BROWN]))
+    for (x, y) in ((22, 26), (34, 30)): eye(img, x, y, 2, 2, frame, 0, rng)
+    return img
+
+
+def draw_poop_puddle(frame, seed=42):
+    """48x28: лужа говна с пузырями и мухами, 2 кадра."""
+    rng = random.Random(seed)
+    w, h = 48, 28
+    img = new_img(w, h)
+    pool = new_mask(w, h)
+    blob(pool, 24, 14, 20, 10, rng, 2.0, 16)
+    paint(img, dilate4(pool), BLACK)
+    paint(img, pool, BROWN); dither(img, pool, BLACK, "dots_off"); dither(img, inter(pool, pattern(w, h, "stripes3")), GREEN, "dots")
+    for (x, y) in ((14, 12), (28, 16), (36, 11), (20, 18)):
+        b = new_mask(w, h); blob(b, x, y, 2 + frame, 2 + frame, rng, 0.2, 8)
+        paint(img, b, YELLOW); px(img, x, y, WHITE)
+    for x in (10, 22, 34): px(img, x + frame, 3 + (x % 3), BLACK)
+    return img
+
+
+def draw_spawn_marker(frame):
+    """14x14: кривой красный крест «тут сейчас появится враг», 2 кадра мигания."""
+    img = new_img(14, 14)
+    col = RED if frame == 0 else YELLOW
+    sil = new_mask(14, 14)
+    line(sil, [(2, 2), (11, 11)], 3); line(sil, [(11, 2), (2, 11)], 3)
+    paint(img, dilate4(sil), BLACK); paint(img, sil, col)
+    px(img, 6, 6, WHITE); px(img, 7, 7, WHITE)
+    return img
+
+
 # ---------------------------------------------------------------- мелочи
 def draw_projectile(frame):
     """4x4: жёлтая искра, на втором кадре мигает розовым."""
@@ -1201,6 +1461,14 @@ def build_step1():
     sheet([draw_squid(0), draw_squid(1)]).save(SPRITES + "enemy_squid_gopnik.png")
     sheet([draw_projectile(0), draw_projectile(1)]).save(SPRITES + "projectile.png")
     sheet([draw_xp(0), draw_xp(1)]).save(SPRITES + "xp_pixel.png")
+    sheet([draw_spawn_marker(0), draw_spawn_marker(1)]).save(SPRITES + "spawn_marker.png")
+    for name, fn in (("proj_carrot", draw_proj_carrot), ("proj_wrench", draw_proj_wrench), ("proj_poop", draw_proj_poop),
+                     ("hazard_stink_cloud", draw_stink_cloud), ("hazard_poop_puddle", draw_poop_puddle)):
+        sheet([fn(0), fn(1)]).save(SPRITES + name + ".png")
+    for name, fn in (("microbe", draw_microbe), ("npc_bot", draw_npc_bot), ("cockroach", draw_cockroach),
+                     ("wifi_ghost", draw_wifi_ghost), ("boss_mega_hamster", draw_boss_hamster),
+                     ("boss_zakhar", draw_boss_zakhar), ("boss_minion", draw_boss_minion)):
+        sheet([fn(0), fn(1)]).save(SPRITES + "enemy_" + name + ".png")
     draw_ground().save(SPRITES + "ground_tile.png")
 
 
@@ -1721,6 +1989,17 @@ def draw_death_panels():
     return sheet
 
 
+BANNER_W, BANNER_H = 320, 52
+
+
+def draw_banners():
+    """Плашки для баннеров волны (зелёно-розовая) и босса (красно-жёлтая, с глазами): 320x52."""
+    sheet = new_img(BANNER_W * 2, BANNER_H)
+    sheet.paste(draw_frame(BANNER_W, BANNER_H, GREEN, PINK, 71, chamfer=6, drips=8, clean=True, corner="bones", ring_w=3, deco_n=6), (0, 0))
+    sheet.paste(draw_frame(BANNER_W, BANNER_H, RED, YELLOW, 72, chamfer=7, drips=10, clean=True, corner="eyes", ring_w=4, deco_n=8), (BANNER_W, 0))
+    return sheet
+
+
 def build_step2():
     glyphs = build_font()
     for name, fn in (("perk_speed", icon_speed), ("perk_regen", icon_regen),
@@ -1728,6 +2007,7 @@ def build_step2():
                      ("hud_heart", lambda: draw_heart(14))):
         fn().save(UI + name + ".png")
     draw_card_frames().save(UI + "card_frames.png")
+    draw_banners().save(UI + "banners.png")
     draw_select_arrow().save(UI + "select_arrow.png")
     draw_frame(96, 22, RED, PINK, 202, chamfer=4, drips=3, eyes=False).save(UI + "button.png")
     draw_frame(96, 22, YELLOW, GREEN, 202, chamfer=4, drips=5, eyes=False).save(UI + "button_hover.png")

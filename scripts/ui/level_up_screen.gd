@@ -15,6 +15,8 @@ func _ready() -> void:
 		_cards[i].chosen.connect(_on_card_chosen)
 		_cards[i].mouse_entered.connect(_select.bind(i))  # наведение мыши = выбор карточки для A/D
 	EventBus.player_leveled_up.connect(_on_leveled_up)
+	EventBus.wave_ended.connect(_on_wave_ended)
+	EventBus.run_won.connect(func() -> void: _root.hide())
 	EventBus.player_died.connect(_on_player_died)
 
 
@@ -36,16 +38,23 @@ func _unhandled_input(event: InputEvent) -> void:
 			return
 
 
+## Как в Brotato: уровни копятся во время волны, выбор — после её конца.
 func _on_leveled_up(_new_level: int) -> void:
 	_pending += 1
-	if not _root.visible:
+
+
+func _on_wave_ended(_wave: int) -> void:
+	if _pending > 0:
 		_show_choices()
+	else:
+		EventBus.levelups_done.emit()
 
 
 func _show_choices() -> void:
 	var choices: Array[StringName] = PerkLibrary.pick_choices(Balance.LEVEL_UP_CHOICES)
 	if choices.is_empty():
 		_pending = 0
+		EventBus.levelups_done.emit()
 		return
 	var frames: Array[int] = []
 	for v: int in PerkCard.FRAME_VARIANTS:
@@ -70,6 +79,7 @@ func _on_card_chosen(perk_id: StringName) -> void:
 	else:
 		_root.hide()
 		get_tree().paused = false
+		EventBus.levelups_done.emit()
 
 
 func _on_player_died() -> void:

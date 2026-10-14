@@ -9,6 +9,7 @@ var _speed: float = 0.0
 
 
 func _ready() -> void:
+	add_to_group(&"pickups")
 	set_physics_process(false)
 
 

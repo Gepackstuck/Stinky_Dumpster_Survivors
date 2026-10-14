@@ -26,6 +26,7 @@ func _ready() -> void:
 	_root.hide()
 	_retry.pressed.connect(_on_retry)
 	EventBus.player_died.connect(_on_player_died)
+	EventBus.run_won.connect(_on_run_won)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -35,7 +36,15 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _on_player_died() -> void:
-	_title.text = FlavorText.random_death()
+	_show_result(FlavorText.random_death())
+
+
+func _on_run_won() -> void:
+	_show_result(FlavorText.random_win())
+
+
+func _show_result(title: String) -> void:
+	_title.text = title
 	_stats.text = "УБИТО: %d     УРОВЕНЬ: %d" % [GameState.kills, GameState.level]
 	_scatter_decor()
 	_root.show()

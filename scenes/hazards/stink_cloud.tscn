@@ -1,0 +1,26 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/hazards/timed_hazard.gd" id="1_hz"]
+[ext_resource type="Script" path="res://scripts/components/frame_animator_component.gd" id="2_anim"]
+[ext_resource type="Texture2D" path="res://assets/sprites/hazard_stink_cloud.png" id="3_tex"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_hz"]
+radius = 26.0
+
+[node name="Hazard" type="Area2D"]
+collision_layer = 0
+collision_mask = 1
+z_index = -1
+script = ExtResource("1_hz")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture_filter = 1
+texture = ExtResource("3_tex")
+hframes = 2
+
+[node name="FrameAnimator" type="Node" parent="." node_paths=PackedStringArray("sprite")]
+script = ExtResource("2_anim")
+sprite = NodePath("../Sprite2D")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_hz")

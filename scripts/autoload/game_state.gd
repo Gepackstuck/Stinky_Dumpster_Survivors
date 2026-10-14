@@ -9,6 +9,10 @@ var level: int = 1
 var coins: int = 0
 var kills: int = 0
 var wave: int = 0
+var wave_time_left: float = 0.0   # обратный отсчёт текущей волны (как в Brotato)
+var wave_kind: StringName = &"normal"  # normal / elite / horde / boss
+var wave_note: String = ""       # подпись для баннера (имена боссов и т.п.)
+var special_waves: Dictionary = {}  # номер волны -> elite/horde/boss (бросается в начале забега)
 var time: float = 0.0
 var run_active: bool = false
 
@@ -37,6 +41,10 @@ func reset_run() -> void:
 	coins = 0
 	kills = 0
 	wave = 0
+	wave_time_left = 0.0
+	wave_kind = &"normal"
+	wave_note = ""
+	special_waves = {}
 	time = 0.0
 	run_active = true
 	perk_stacks.clear()
