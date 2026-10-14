@@ -1659,6 +1659,112 @@ def draw_border_sheet():
 
 
 
+# ---------------------------------------------------------------- враги Шага 4б
+def draw_healer(frame, seed=61):
+    """16x16: знахарка — бледно-зелёная колба в грязном колпаке с красным крестом, шприц в руке."""
+    rng = random.Random(seed)
+    w = h = 16
+    bob = frame
+    body = new_mask(w, h); blob(body, 8, 10 + bob, 5, 5, rng, 0.6, 12)
+    cap = new_mask(w, h); rect(cap, 4, 2 + bob, 11, 5 + bob)
+    legs = new_mask(w, h); rect(legs, 5, 14, 6, 15); rect(legs, 10, 14, 11, 15)
+    syringe = new_mask(w, h); line(syringe, [(12, 9 + bob), (15, 6 + bob - frame)], 1)
+    sil = union(body, cap, legs, syringe)
+    img = new_img(w, h)
+    paint(img, body, GREEN); dither(img, body, WHITE, "checker"); paint(img, legs, BROWN)
+    paint(img, cap, WHITE); dither(img, cap, PINK, "dots")
+    px(img, 7, 3 + bob, RED); px(img, 8, 3 + bob, RED); px(img, 7, 4 + bob, RED); px(img, 8, 4 + bob, RED)
+    px(img, 6, 3 + bob, RED); px(img, 9, 4 + bob, RED)
+    paint(img, syringe, CYAN)
+    px(img, 15, 5 + bob - frame, RED)
+    eye(img, 6, 8 + bob, 2, 1, 0, 1, rng); eye(img, 10, 9 + bob, 1, 1, 0, 0, rng)
+    m = new_mask(w, h); rect(m, 6, 12 + bob, 10, 12 + bob); paint(img, m, BLACK)
+    for x, y in ((5, 11), (11, 12), (8, 13)): px(img, x, y + bob, YELLOW)
+    return finish(img, sil)
+
+
+def draw_egg(frame, seed=62):
+    """14x16: яйцо-личинка — пятнистое яйцо в трещинах, внутри что-то глазеет; качается."""
+    rng = random.Random(seed)
+    w, h = 14, 16
+    dx = frame
+    egg = new_mask(w, h); blob(egg, 6 + dx, 8, 5, 7, rng, 0.5, 14)
+    img = new_img(w, h)
+    paint(img, egg, YELLOW); dither(img, egg, WHITE, "checker")
+    for x, y in ((4, 4), (8, 6), (5, 11), (9, 11), (7, 3)):
+        px(img, x + dx, y, GREEN); px(img, x + dx + 1, y, GREEN)
+    crack = new_mask(w, h)
+    pts = [(5 + dx, 6), (7 + dx, 8), (6 + dx, 10)] if frame == 0 else [(4 + dx, 5), (7 + dx, 8), (5 + dx, 10), (7 + dx, 12)]
+    line(crack, pts, 1); paint(img, crack, BLACK)
+    hole = new_mask(w, h); rect(hole, 6 + dx, 7, 8 + dx, 9); paint(img, hole, RED)
+    eye(img, 7 + dx, 8, 1, 1, 0, frame, rng)
+    for x, y in ((3, 10), (10, 8)): px(img, x + dx, y, BROWN)
+    return finish(img, egg)
+
+
+def draw_mamka(frame, seed=63):
+    """24x24: мамка — розовая жирная туша, брюхо шевелится от личинок, глазки разного размера."""
+    rng = random.Random(seed)
+    w = h = 24
+    bob = frame
+    belly = new_mask(w, h); blob(belly, 12, 14 + bob, 10, 8, rng, 1.0, 18)
+    head = new_mask(w, h); blob(head, 12, 5 + bob, 5, 4, rng, 0.5, 12)
+    legs = new_mask(w, h); rect(legs, 5 + frame, 20, 8 + frame, 23); rect(legs, 15 - frame, 20, 18 - frame, 23)
+    sil = union(belly, head, legs)
+    img = new_img(w, h)
+    paint(img, sil, PINK); dither(img, belly, BROWN, "checker"); paint(img, legs, BROWN)
+    paint(img, head, PINK)
+    # личинки шевелятся под кожей
+    for i, (x, y) in enumerate(((8, 13), (14, 11), (11, 17), (16, 16))):
+        o = (frame + i) % 2
+        m = new_mask(w, h); rect(m, x, y + o + bob, x + 2, y + o + bob + 1); paint(img, m, WHITE)
+        px(img, x + 2, y + o + bob, BLACK)
+    nav = new_mask(w, h); blob(nav, 12, 15 + bob, 2, 2, rng, 0.3, 8); paint(img, nav, BROWN)
+    eye(img, 10, 4 + bob, 2, 1, 0, 1, rng); eye(img, 15, 5 + bob, 1, 1, 0, 0, rng)
+    m = new_mask(w, h); rect(m, 10, 8 + bob, 15, 8 + bob + frame); paint(img, m, BLACK)
+    for x, y in ((6, 10), (18, 12), (9, 19), (15, 19)): px(img, x, y + bob, YELLOW)
+    for x, y in ((12, 11), (7, 16)): px(img, x, y + bob, RED)
+    return finish(img, sil)
+
+
+def draw_glutton(frame, seed=64):
+    """16x16: обжора — жёлто-коричневый шар, вся морда — пасть с зубами, в зубах застряло говно."""
+    rng = random.Random(seed)
+    w = h = 16
+    body = new_mask(w, h); blob(body, 8, 8, 7, 7, rng, 0.6, 14)
+    legs = new_mask(w, h); rect(legs, 4, 14, 5, 15); rect(legs, 10, 14, 11, 15)
+    sil = union(body, legs)
+    img = new_img(w, h)
+    paint(img, sil, YELLOW); dither(img, body, BROWN, "checker"); paint(img, legs, BROWN)
+    mouth = new_mask(w, h); rect(mouth, 3, 8, 12, 11 + frame * 2); paint(img, mouth, BLACK)
+    for x in (3, 5, 7, 9, 11): px(img, x, 8, WHITE); px(img, x, 11 + frame * 2, WHITE)
+    tongue = new_mask(w, h); rect(tongue, 6, 10 + frame, 9, 10 + frame * 2); paint(img, tongue, PINK)
+    px(img, 8, 9, BROWN); px(img, 9, 9, BROWN)  # застряло говно
+    eye(img, 5, 4, 2, 1, 1, 0, rng); eye(img, 11, 5, 1, 1, -1, 0, rng)
+    for x, y in ((2, 6), (13, 7), (8, 2)): px(img, x, y, RED)
+    return finish(img, sil)
+
+
+def draw_trash_bin(frame, seed=65):
+    """16x16: мусорный бак — зелёный, ржавый, из-под крышки глядят два разных глаза, воняет мухами."""
+    rng = random.Random(seed)
+    w = h = 16
+    tub = new_mask(w, h); rect(tub, 3, 6, 12, 14)
+    lid = new_mask(w, h); rect(lid, 2, 3 - frame, 13, 5 - frame)
+    wheels = new_mask(w, h); rect(wheels, 3, 15, 4, 15); rect(wheels, 11, 15, 12, 15)
+    sil = union(tub, lid, wheels)
+    img = new_img(w, h)
+    paint(img, tub, GREEN); dither(img, tub, BLACK, "checker"); paint(img, lid, BLUE); dither(img, lid, BLACK, "dots")
+    paint(img, wheels, BLACK)
+    for y in (8, 11): 
+        for x in range(3, 13): px(img, x, y, BLACK)
+    for x, y in ((4, 13), (9, 12), (11, 9)): px(img, x, y, BROWN)
+    px(img, 6, 14, RED); px(img, 10, 7, RED)
+    eye(img, 6, 7, 1, 1, 0, 0, rng); eye(img, 10, 7, 2, 1, 0, 1, rng)
+    for x, y in ((1 + frame, 1), (14 - frame, 2), (7, 0 + frame)): px(img, x, y, BLACK)  # мухи
+    return finish(img, sil)
+
+
 def sheet(frames):
     """Лист кадров; вокруг каждого кадра 1 px прозрачного поля (для шейдерной обводки)."""
     w, h = frames[0].size
@@ -1686,7 +1792,9 @@ def build_step1():
                      ("hazard_stink_cloud", draw_stink_cloud), ("hazard_poop_puddle", draw_poop_puddle)):
         sheet([fn(0), fn(1)]).save(SPRITES + name + ".png")
     for name, fn in (("chaser", draw_chaser), ("charger", draw_charger), ("spitter", draw_spitter),
-                     ("bruiser", draw_bruiser), ("looter", draw_looter)):
+                     ("bruiser", draw_bruiser), ("looter", draw_looter),
+                     ("healer", draw_healer), ("egg", draw_egg), ("mamka", draw_mamka),
+                     ("glutton", draw_glutton), ("trash_bin", draw_trash_bin)):
         sheet([fn(0), fn(1)]).save(SPRITES + "enemy_" + name + ".png")
     sheet([draw_proj_spit(0), draw_proj_spit(1)]).save(SPRITES + "proj_spit.png")
     for name, fn in (("microbe", draw_microbe), ("npc_bot", draw_npc_bot), ("cockroach", draw_cockroach),
@@ -1990,6 +2098,74 @@ def draw_heart(size=14, seed=3):
         px(img, size // 2 - 2, yy, BLACK)
         px(img, size // 2 + 1, yy, BLACK)
     return finish(img, m)
+
+
+# ---------------------------------------------------------------- иконки статов
+def _icon_base():
+    return 16, 16, new_img(16, 16)
+
+
+def stat_max_hp():
+    w, h, img = _icon_base(); rng = random.Random(71)
+    m = new_mask(w, h); blob(m, 5, 5, 3, 3, rng, 0.3, 10); blob(m, 10, 5, 3, 3, rng, 0.3, 10); poly(m, [(2, 6), (13, 6), (7, 14)])
+    paint(img, m, RED); dither(img, m, PINK, "dots")
+    cross = new_mask(w, h); rect(cross, 6, 4, 8, 10); rect(cross, 4, 6, 10, 8); paint(img, cross, WHITE)
+    return finish(img, m)
+
+
+def stat_damage():
+    w, h, img = _icon_base(); rng = random.Random(72)
+    fist = new_mask(w, h); blob(fist, 8, 9, 5, 5, rng, 0.5, 12)
+    paint(img, fist, YELLOW); dither(img, fist, BROWN, "checker")
+    for x in (5, 7, 9, 11): rect(m := new_mask(w, h), x, 5, x, 8); paint(img, m, BLACK)
+    for x, y in ((2, 2), (13, 3), (14, 12)): px(img, x, y, RED); px(img, x + 1, y - 1, RED)
+    return finish(img, fist)
+
+
+def stat_attack_speed():
+    w, h, img = _icon_base()
+    bolt = new_mask(w, h); poly(bolt, [(9, 1), (3, 9), (7, 9), (5, 15), (13, 6), (8, 6), (11, 1)])
+    paint(img, bolt, YELLOW); dither(img, bolt, WHITE, "dots")
+    for y in (3, 7, 12): px(img, 1, y, CYAN); px(img, 2, y, CYAN)
+    return finish(img, bolt)
+
+
+def stat_armor():
+    w, h, img = _icon_base()
+    lid = new_mask(w, h); poly(lid, [(2, 3), (13, 3), (13, 9), (8, 14), (2, 9)])
+    paint(img, lid, WHITE); dither(img, lid, BLUE, "checker")
+    h_ = new_mask(w, h); rect(h_, 6, 1, 9, 2); paint(img, h_, BLACK)
+    for x, y in ((4, 6), (10, 8), (7, 10)): px(img, x, y, BROWN)
+    px(img, 8, 6, RED)
+    return finish(img, union(lid, h_))
+
+
+def stat_dodge():
+    w, h, img = _icon_base(); rng = random.Random(75)
+    g = new_mask(w, h); blob(g, 8, 7, 4, 5, rng, 0.4, 12); rect(g, 4, 8, 12, 13)
+    paint(img, g, WHITE); dither(img, g, CYAN, "checker")
+    for x in (5, 8, 11): px(img, x, 14, BLACK)
+    eye(img, 6, 6, 1, 1, 0, 0, rng); eye(img, 10, 6, 1, 1, 0, 0, rng)
+    for y in (4, 8, 12): px(img, 1, y, CYAN); px(img, 2, y, CYAN)
+    return finish(img, union(g))
+
+
+def stat_pickup():
+    w, h, img = _icon_base()
+    u = new_mask(w, h); rect(u, 3, 2, 5, 9); rect(u, 10, 2, 12, 9); rect(u, 3, 9, 12, 12)
+    hole = new_mask(w, h); rect(hole, 6, 2, 9, 8); 
+    u = minus(u, hole)
+    paint(img, u, RED); rect(t := new_mask(w, h), 3, 2, 5, 4); rect(t, 10, 2, 12, 4); paint(img, t, WHITE)
+    for x, y in ((7, 14), (9, 15), (6, 0)): px(img, x, y, GREEN)
+    return finish(img, u)
+
+
+def stat_crit():
+    w, h, img = _icon_base()
+    star = new_mask(w, h); poly(star, [(8, 0), (10, 6), (15, 6), (11, 9), (13, 15), (8, 11), (3, 15), (5, 9), (1, 6), (6, 6)])
+    paint(img, star, YELLOW); dither(img, star, RED, "dots")
+    eye(img, 8, 8, 1, 1, 0, 0, random.Random(77))
+    return finish(img, star)
 
 
 def icon_speed():
@@ -2439,6 +2615,8 @@ def build_step2():
     build_small_font()
     for name, fn in (("perk_speed", icon_speed), ("perk_regen", icon_regen),
                      ("perk_double_shot", icon_double), ("perk_loot_goblin", icon_goblin),
+                     ("stat_max_hp", stat_max_hp), ("stat_damage", stat_damage), ("stat_attack_speed", stat_attack_speed), ("stat_armor", stat_armor), ("stat_dodge", stat_dodge), ("stat_pickup", stat_pickup), ("stat_crit", stat_crit),
+                     ("stat_speed", icon_speed), ("stat_regen", icon_regen),
                      ("perk_w_lighter", icon_lighter), ("perk_w_sock", icon_sock), ("perk_w_slingshot", icon_slingshot), ("perk_w_mop", icon_mop),
                      ("hud_heart", lambda: draw_heart(14))):
         fn().save(UI + name + ".png")

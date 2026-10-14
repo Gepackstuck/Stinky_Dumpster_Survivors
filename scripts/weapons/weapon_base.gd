@@ -35,7 +35,7 @@ func _physics_process(delta: float) -> void:
 		_cooldown_left = RETARGET_INTERVAL_SEC
 		return
 	_fire(target)
-	_cooldown_left = _cooldown_sec
+	_cooldown_left = GameState.cooldown_for(_cooldown_sec)
 
 
 func _find_nearest_enemy() -> Node2D:
@@ -53,7 +53,7 @@ func _find_nearest_enemy() -> Node2D:
 func _fire(target: Node2D) -> void:
 	var base_direction: Vector2 = global_position.direction_to(target.global_position)
 	var count: int = 1 + GameState.extra_projectiles
-	var damage: float = _damage * GameState.projectile_damage_mult
+	var damage: float = GameState.roll_damage(_damage)
 	var spread: float = deg_to_rad(Balance.PERK_DOUBLE_SHOT_SPREAD_DEG)
 	var root: Node = get_tree().current_scene
 	for i: int in count:

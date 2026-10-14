@@ -43,16 +43,16 @@ func _physics_process(delta: float) -> void:
 			target = enemy
 	if target == null:
 		return
-	_cooldown_left = _cooldown_sec
+	_cooldown_left = GameState.cooldown_for(_cooldown_sec)
 	_swing_dir = global_position.direction_to(target.global_position).angle()
 	_swing = 0.0
-	for node: Node in get_tree().get_nodes_in_group(&"enemies"):
+	for node: Node in get_tree().get_nodes_in_group(&"enemies") + get_tree().get_nodes_in_group(&"neutrals"):
 		var enemy: EnemyBase = node as EnemyBase
 		if enemy == null:
 			continue
 		var to: Vector2 = enemy.global_position - global_position
 		if to.length() <= _reach and absf(angle_difference(_swing_dir, to.angle())) <= _half_arc:
-			enemy.hit_by_weapon(_damage * GameState.projectile_damage_mult, to.normalized() * _knockback)
+			enemy.hit_by_weapon(GameState.roll_damage(_damage), to.normalized() * _knockback)
 
 
 func _draw() -> void:

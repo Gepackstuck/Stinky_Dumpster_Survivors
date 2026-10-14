@@ -4,6 +4,8 @@
 [ext_resource type="Texture2D" path="res://assets/ui/dim_checker.png" id="2_dim"]
 [ext_resource type="Texture2D" path="res://assets/ui/button_wide.png" id="4_btn"]
 [ext_resource type="Texture2D" path="res://assets/ui/button_wide_hover.png" id="5_btnh"]
+[ext_resource type="Texture2D" path="res://assets/ui/button.png" id="6_btns"]
+[ext_resource type="Texture2D" path="res://assets/ui/button_hover.png" id="7_btnsh"]
 [ext_resource type="PackedScene" path="res://scenes/ui/perk_card.tscn" id="3_card"]
 
 [sub_resource type="StyleBoxTexture" id="SB_n"]
@@ -11,6 +13,12 @@ texture = ExtResource("4_btn")
 
 [sub_resource type="StyleBoxTexture" id="SB_h"]
 texture = ExtResource("5_btnh")
+
+[sub_resource type="StyleBoxTexture" id="SB_rn"]
+texture = ExtResource("6_btns")
+
+[sub_resource type="StyleBoxTexture" id="SB_rh"]
+texture = ExtResource("7_btnsh")
 
 [node name="LevelUpScreen" type="CanvasLayer"]
 process_mode = 3
@@ -69,11 +77,11 @@ theme_override_colors/font_shadow_color = Color(0.0392157, 0.0392157, 0.0392157,
 
 [node name="Cards" type="HBoxContainer" parent="Root"]
 layout_mode = 0
-offset_left = 64.0
+offset_left = 10.0
 offset_top = 56.0
-offset_right = 416.0
+offset_right = 470.0
 offset_bottom = 206.0
-theme_override_constants/separation = 8
+theme_override_constants/separation = 4
 alignment = 1
 
 [node name="Card1" parent="Root/Cards" instance=ExtResource("3_card")]
@@ -85,13 +93,16 @@ layout_mode = 2
 [node name="Card3" parent="Root/Cards" instance=ExtResource("3_card")]
 layout_mode = 2
 
+[node name="Card4" parent="Root/Cards" instance=ExtResource("3_card")]
+layout_mode = 2
+
 [node name="Hint" type="Label" parent="Root"]
 layout_mode = 0
 offset_left = 0.0
 offset_top = 210.0
 offset_right = 480.0
 offset_bottom = 219.0
-text = "A/D - ВЫБОР   ПРОБЕЛ - ВЗЯТЬ   1/2/3 - БЫСТРО"
+text = "A/D - ВЫБОР   ПРОБЕЛ - ВЗЯТЬ   1-4 - БЫСТРО   R - РЕРОЛЛ"
 horizontal_alignment = 1
 theme_override_colors/font_color = Color(0.909804, 0.909804, 0.909804, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
@@ -114,3 +125,33 @@ theme_override_styles/hover = SubResource("SB_h")
 theme_override_styles/pressed = SubResource("SB_h")
 theme_override_styles/focus = SubResource("SB_h")
 theme_override_styles/disabled = SubResource("SB_n")
+
+[node name="RerollButton" type="Button" parent="Root"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 236.0
+offset_right = 114.0
+offset_bottom = 262.0
+text = "РЕРОЛЛ 2"
+theme_override_colors/font_color = Color(0.968627, 1, 0, 1)
+theme_override_colors/font_hover_color = Color(0.968627, 1, 0, 1)
+theme_override_colors/font_focus_color = Color(0.968627, 1, 0, 1)
+theme_override_colors/font_pressed_color = Color(0.968627, 1, 0, 1)
+theme_override_colors/font_shadow_color = Color(1, 0.0627451, 0.941176, 1)
+theme_override_colors/font_disabled_color = Color(0.3, 0.3, 0.3, 1)
+theme_override_styles/normal = SubResource("SB_rn")
+theme_override_styles/hover = SubResource("SB_rh")
+theme_override_styles/pressed = SubResource("SB_rh")
+theme_override_styles/focus = SubResource("SB_rh")
+theme_override_styles/disabled = SubResource("SB_rn")
+
+[node name="Coins" type="Label" parent="Root"]
+layout_mode = 0
+offset_left = 360.0
+offset_top = 245.0
+offset_right = 474.0
+offset_bottom = 254.0
+text = "ГОВНА: 0"
+horizontal_alignment = 2
+theme_override_colors/font_color = Color(0.58, 0.34, 0.12, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)

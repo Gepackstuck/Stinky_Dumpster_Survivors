@@ -28,13 +28,13 @@ func _physics_process(delta: float) -> void:
 	_cooldown_left -= delta
 	if _cooldown_left > 0.0:
 		return
-	_cooldown_left = _cooldown_sec
+	_cooldown_left = GameState.cooldown_for(_cooldown_sec)
 	var r_sq: float = _radius * _radius
 	var hit_any: bool = false
-	for node: Node in get_tree().get_nodes_in_group(&"enemies"):
+	for node: Node in get_tree().get_nodes_in_group(&"enemies") + get_tree().get_nodes_in_group(&"neutrals"):
 		var enemy: EnemyBase = node as EnemyBase
 		if enemy != null and global_position.distance_squared_to(enemy.global_position) <= r_sq:
-			enemy.hit_by_weapon(_damage * GameState.projectile_damage_mult)
+			enemy.hit_by_weapon(GameState.roll_damage(_damage))
 			hit_any = true
 	if hit_any:
 		_wave = 0.0

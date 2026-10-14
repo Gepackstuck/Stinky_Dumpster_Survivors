@@ -23,6 +23,15 @@ var pickup_radius_mult: float = 1.0
 var extra_projectiles: int = 0
 var projectile_damage_mult: float = 1.0
 var regen_hp: float = 0.0
+# Статы с карточек уровня (суммы значений по тирам).
+var stat_totals: Dictionary[StringName, float] = {}
+var damage_mult: float = 1.0
+var attack_speed_mult: float = 1.0
+var armor: float = 0.0
+var dodge_percent: float = 0.0
+var crit_percent: float = 0.0
+var bonus_max_hp: float = 0.0
+var reroll_count: int = 0
 
 
 func _ready() -> void:
@@ -48,6 +57,8 @@ func reset_run() -> void:
 	time = 0.0
 	run_active = true
 	perk_stacks.clear()
+	stat_totals.clear()
+	reroll_count = 0
 	_recompute_perk_stats()
 	EventBus.run_started.emit()
 
@@ -63,20 +74,51 @@ func apply_perk(perk_id: StringName) -> void:
 	EventBus.perk_chosen.emit(perk_id)
 
 
+## Применить карточку стата нужного тира.
+func apply_stat(stat_id: StringName, tier: int) -> void:
+	var value: float = Balance.STAT_VALUES[stat_id][tier - 1]
+	stat_totals[stat_id] = stat_totals.get(stat_id, 0.0) + value
+	_recompute_perk_stats()
+	EventBus.perk_chosen.emit(StringName("stat_" + String(stat_id)))
+
+
+func stat_total(stat_id: StringName) -> float:
+	return stat_totals.get(stat_id, 0.0)
+
+
+## Урон выстрела с учётом статов, перков и крита.
+func roll_damage(base: float) -> float:
+	var result: float = base * projectile_damage_mult * damage_mult
+	if randf() * 100.0 < crit_percent:
+		result *= Balance.CRIT_DAMAGE_MULT
+	return result
+
+
+func cooldown_for(base_sec: float) -> float:
+	return base_sec / attack_speed_mult
+
+
 func _recompute_perk_stats() -> void:
 	var speed: int = get_perk_stacks(PerkLibrary.SPEED)
 	var goblin: int = get_perk_stacks(PerkLibrary.LOOT_GOBLIN)
 	var shots: int = get_perk_stacks(PerkLibrary.DOUBLE_SHOT)
 	var regen: int = get_perk_stacks(PerkLibrary.REGEN)
-	move_speed_mult = (1.0 + Balance.PERK_SPEED_BONUS * speed) * pow(Balance.PERK_LOOT_GOBLIN_MOVE_SPEED_MULT, goblin)
-	pickup_radius_mult = 1.0 + (Balance.PERK_LOOT_GOBLIN_PICKUP_RADIUS_MULT - 1.0) * goblin
+	move_speed_mult = (1.0 + Balance.PERK_SPEED_BONUS * speed + stat_total(&"speed") / 100.0) * pow(Balance.PERK_LOOT_GOBLIN_MOVE_SPEED_MULT, goblin)
+	pickup_radius_mult = 1.0 + (Balance.PERK_LOOT_GOBLIN_PICKUP_RADIUS_MULT - 1.0) * goblin + stat_total(&"pickup") / 100.0
+	damage_mult = 1.0 + stat_total(&"damage") / 100.0
+	attack_speed_mult = 1.0 + stat_total(&"attack_speed") / 100.0
+	armor = stat_total(&"armor")
+	dodge_percent = minf(stat_total(&"dodge"), Balance.DODGE_MAX_PERCENT)
+	crit_percent = stat_total(&"crit")
+	bonus_max_hp = stat_total(&"max_hp")
 	extra_projectiles = Balance.PERK_DOUBLE_SHOT_EXTRA_PROJECTILES * shots
 	projectile_damage_mult = pow(Balance.PERK_DOUBLE_SHOT_DAMAGE_MULT, shots)
-	regen_hp = Balance.PERK_REGEN_HP * regen
+	regen_hp = Balance.PERK_REGEN_HP * regen + Balance.REGEN_HP_PER_POINT * stat_total(&"regen")
 
 
-func _on_enemy_died(_enemy_id: StringName, _position: Vector2) -> void:
-	kills += 1
+func _on_enemy_died(enemy_id: StringName, _position: Vector2) -> void:
+	if not Balance.ENEMIES.get(enemy_id, {}).get("neutral", false):
+		kills += 1
 
 
 ## Сколько XP нужно, чтобы выйти с уровня `at_level` на следующий.

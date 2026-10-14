@@ -43,6 +43,10 @@ func clear_all() -> void:
 		var enemy: EnemyBase = node as EnemyBase
 		if enemy != null:
 			enemy.vanish()
+	for node: Node in get_tree().get_nodes_in_group(&"neutrals"):
+		var bin: EnemyBase = node as EnemyBase
+		if bin != null:
+			bin.vanish()
 
 
 func _add_marker(at: Vector2, enemy_id: StringName, hp_mult: float) -> void:

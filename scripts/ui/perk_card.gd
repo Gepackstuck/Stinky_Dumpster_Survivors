@@ -32,10 +32,23 @@ func setup(perk_id: StringName, hotkey_index: int, frame_variant: int) -> void:
 	_icon.texture = PerkLibrary.icon(perk_id)
 	_hotkey.text = str(hotkey_index)
 	_title.text = PerkLibrary.title(perk_id)
+	_title.add_theme_color_override(&"font_color", Color(0.968627, 1, 0, 1))
 	var stacks: int = GameState.get_perk_stacks(perk_id)
 	_description.text = PerkLibrary.description(perk_id)
 	if stacks > 0:
 		_description.text += "\n(х%d)" % (stacks + 1)
+
+
+## Карточка стата: иконка, название цветом тира, «ТИР I..IV» и описание.
+func setup_stat(stat_id: StringName, tier: int, hotkey_index: int, frame_variant: int) -> void:
+	texture_normal = _frame_texture(frame_variant, 0)
+	texture_focused = _frame_texture(frame_variant, 1)
+	_perk_id = stat_id
+	_icon.texture = StatLibrary.icon(stat_id)
+	_hotkey.text = str(hotkey_index)
+	_title.text = StatLibrary.title(stat_id) + "\nТИР " + StatLibrary.TIER_NAMES[tier - 1]
+	_title.add_theme_color_override(&"font_color", StatLibrary.tier_color(tier))
+	_description.text = StatLibrary.description(stat_id, tier)
 
 
 func _frame_texture(variant: int, row: int) -> AtlasTexture:

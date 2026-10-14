@@ -79,6 +79,7 @@ func _on_magnet_area_entered(area: Area2D) -> void:
 
 func _on_perk_chosen(perk_id: StringName) -> void:
 	_update_magnet_radius()
+	_health.set_max(Balance.PLAYER_MAX_HP + GameState.bonus_max_hp)
 	_add_weapon(perk_id)
 
 
@@ -107,7 +108,11 @@ func _add_weapon(perk_id: StringName) -> void:
 
 
 func _on_hurt(raw_damage: float) -> void:
-	var damage: float = maxf(minf(roundf(raw_damage), Balance.PLAYER_MAX_HP * Balance.PLAYER_MAX_HIT_FRACTION), 1.0)
+	if randf() * 100.0 < GameState.dodge_percent:
+		HitFx.popup(get_tree(), global_position + Vector2(0.0, -12.0), "МИМО!", Color(0.0, 0.94, 1.0), 14.0, 0.7)
+		return
+	var reduced: float = raw_damage * Balance.ARMOR_K / (Balance.ARMOR_K + GameState.armor)
+	var damage: float = maxf(minf(roundf(reduced), _health.max_health * Balance.PLAYER_MAX_HIT_FRACTION), 1.0)
 	EventBus.player_hit.emit(damage)
 	_flash.flash(Color(1.0, 0.0, 0.2))
 	_shake = Balance.PLAYER_HIT_SHAKE
@@ -115,6 +120,10 @@ func _on_hurt(raw_damage: float) -> void:
 	HitFx.burst(get_tree(), global_position + Vector2(0.0, 4.0), Color(0.2235, 1.0, 0.0784), 12, 60.0, 3.0, 0.7, true)
 	HitFx.burst(get_tree(), global_position + Vector2(0.0, 4.0), Color(0.9686, 1.0, 0.0), 5, 45.0, 2.0, 0.7, true)
 	_health.take_damage(damage)
+
+
+func heal(amount: float) -> void:
+	_health.heal(amount)
 
 
 ## Полное лечение между волнами (как в Brotato).

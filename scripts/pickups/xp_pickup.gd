@@ -21,6 +21,10 @@ func setup(at: Vector2, value: int) -> void:
 	set_physics_process(false)
 
 
+func amount() -> int:
+	return _value
+
+
 ## Начать лететь к цели (вызывает магнит игрока).
 func attract(target: Node2D) -> void:
 	if _target != null:

@@ -17,6 +17,9 @@ signal perk_chosen(perk_id: StringName)
 @warning_ignore("unused_signal")
 signal enemy_died(enemy_id: StringName, position: Vector2)
 
+@warning_ignore("unused_signal")
+signal xp_drop_requested(at: Vector2, value: int)   # враг просит уронить XP (обжора)
+
 # --- Подбираемое ---
 @warning_ignore("unused_signal")
 signal xp_collected(amount: int)

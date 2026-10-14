@@ -59,10 +59,12 @@ const WAVE_SPEED_MAX_MULT: float = 1.4
 const WAVE_ENEMY_UNLOCK: Dictionary = {     # с какой волны тип может выпасть (15 волн)
 	&"squid_gopnik": 1, &"chaser": 2, &"microbe": 3, &"charger": 3, &"npc_bot": 4, &"spitter": 4,
 	&"looter": 4, &"cockroach": 5, &"bruiser": 6, &"wifi_ghost": 7,
+	&"healer": 5, &"glutton": 6, &"egg": 8, &"mamka": 9,
 }
 const WAVE_ENEMY_WEIGHTS: Dictionary = {    # вес в взвешенном рандоме
 	&"squid_gopnik": 10, &"chaser": 8, &"microbe": 5, &"charger": 6, &"npc_bot": 5, &"spitter": 5,
 	&"looter": 1, &"cockroach": 4, &"bruiser": 4, &"wifi_ghost": 3,
+	&"healer": 3, &"glutton": 3, &"egg": 2, &"mamka": 2,
 }
 const FINAL_BOSS_POOL: Array[StringName] = [&"boss_zakhar", &"boss_minion"]  # боссы 20-й волны: один или оба
 const ELITE_ID: StringName = &"boss_mega_hamster"                           # элита на волнах 11–12, 14–15, 17–18
@@ -122,7 +124,42 @@ const MAX_ENEMIES_ON_SCREEN: int = 500  # CONVENTIONS.md
 
 # --- XP / уровни ---
 const XP_LEVEL_FACTOR: float = 1.0      # XP до следующего уровня = FACTOR * (уровень + 3)^2 (как в Brotato, масштаб под наши дропы)
-const LEVEL_UP_CHOICES: int = 3
+const LEVEL_UP_CHOICES: int = 4
+# Статы при повышении уровня (Brotato): значения по тирам I-IV.
+const STAT_VALUES: Dictionary = {
+	&"max_hp": [3.0, 6.0, 9.0, 12.0],
+	&"regen": [2.0, 3.0, 4.0, 5.0],
+	&"damage": [5.0, 8.0, 12.0, 16.0],
+	&"attack_speed": [5.0, 10.0, 15.0, 20.0],
+	&"speed": [3.0, 6.0, 9.0, 12.0],
+	&"armor": [1.0, 2.0, 3.0, 4.0],
+	&"dodge": [3.0, 6.0, 9.0, 12.0],
+	&"pickup": [15.0, 30.0, 45.0, 60.0],
+	&"crit": [3.0, 5.0, 7.0, 9.0],
+}
+const STAT_TIER2_CHANCE_PER_LEVEL: float = 0.04    # шанс II-тира на карточку = (ур-1)*это, до 0.5
+const STAT_TIER3_CHANCE_PER_LEVEL: float = 0.025   # III-тир = (ур-5)*это, до 0.3
+const STAT_TIER4_CHANCE_PER_LEVEL: float = 0.01    # IV-тир = (ур-15)*это, до 0.1
+const STAT_GUARANTEED_TIER: Dictionary = {5: 2, 10: 3, 15: 3, 20: 3}  # гарантированный минимум тира по уровню; с 25-го каждый 5-й — IV
+const REROLL_BASE_COST: int = 2
+const REROLL_WAVE_FACTOR: float = 0.5               # + волна * это
+const REROLL_STEP_COST: int = 1                     # + за каждый реролл в эту волну
+const ARMOR_K: float = 15.0                         # урон *= K/(K+броня)
+const DODGE_MAX_PERCENT: float = 60.0
+const CRIT_DAMAGE_MULT: float = 2.0
+const REGEN_HP_PER_POINT: float = 0.6               # хп за интервал на 1 очко регена
+const BIN_COUNT_BASE: int = 2                       # мусорных баков на волну
+const BIN_COUNT_WAVES_PER_EXTRA: int = 4            # +1 бак за столько волн
+const BIN_HEAL_CHANCE: float = 0.4
+const BIN_HEAL_HP: float = 3.0
+const HEALER_RADIUS: float = 60.0
+const HEALER_INTERVAL_SEC: float = 2.5
+const HEALER_FRACTION: float = 0.15
+const EGG_HATCH_SEC: float = 5.0
+const MAMKA_SPAWN_COUNT: int = 3
+const GLUTTON_EAT_RADIUS: float = 140.0
+const GLUTTON_GROW_STEP: float = 0.08
+const GLUTTON_MAX_SCALE: float = 1.9
 
 # --- Враги: hp, damage, speed, xp, coins (GDD) ---
 const ENEMIES: Dictionary = {
@@ -140,6 +177,17 @@ const ENEMIES: Dictionary = {
 	&"bruiser": {"hp": 80.0, "damage": 3.0, "speed": 55.0, "xp": 8, "coins": 3, "radius": 11.0, "group_mult": 0.3},
 	&"looter": {"hp": 40.0, "damage": 1.0, "speed": 85.0, "xp": 25, "coins": 10, "radius": 7.0, "group_mult": 0.0,
 			"brain": "res://scripts/enemies/brains/looter_brain.gd"},
+	# Враги Шага 4б (Brotato: healer, slasher egg, spawner, gobbler, tree).
+	&"healer": {"hp": 18.0, "damage": 1.0, "speed": 55.0, "xp": 4, "coins": 1, "radius": 7.0, "group_mult": 0.4,
+			"brain": "res://scripts/enemies/brains/healer_brain.gd"},
+	&"egg": {"hp": 12.0, "damage": 0.0, "speed": 0.0, "xp": 2, "coins": 0, "radius": 6.0, "group_mult": 0.3, "contact": false,
+			"brain": "res://scripts/enemies/brains/egg_brain.gd"},
+	&"mamka": {"hp": 70.0, "damage": 2.0, "speed": 45.0, "xp": 6, "coins": 2, "radius": 10.0, "group_mult": 0.25,
+			"brain": "res://scripts/enemies/brains/mamka_brain.gd"},
+	&"glutton": {"hp": 30.0, "damage": 2.0, "speed": 70.0, "xp": 5, "coins": 2, "radius": 8.0, "group_mult": 0.4,
+			"brain": "res://scripts/enemies/brains/glutton_brain.gd"},
+	&"trash_bin": {"hp": 25.0, "damage": 0.0, "speed": 0.0, "xp": 5, "coins": 0, "radius": 8.0, "group_mult": 0.0,
+			"contact": false, "neutral": true, "brain": "res://scripts/enemies/brains/bin_brain.gd"},
 	# Босс-заглушка Шага 3 (особое поведение — позже); radius — размер тела в px.
 	&"boss_mega_hamster": {"hp": 600.0, "damage": 5.0, "speed": 35.0, "xp": 30, "coins": 20, "radius": 16.0},
 	&"boss_zakhar": {"hp": 900.0, "damage": 4.0, "speed": 45.0, "xp": 40, "coins": 25, "radius": 14.0,

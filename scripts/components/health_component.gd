@@ -18,6 +18,14 @@ func setup(max_hp: float) -> void:
 	health_changed.emit(current_health, max_health)
 
 
+## Сменить максимум: при росте текущее ХП растёт на столько же (как в Brotato).
+func set_max(new_max: float) -> void:
+	var delta: float = new_max - max_health
+	max_health = new_max
+	current_health = clampf(current_health + maxf(delta, 0.0), 1.0, max_health)
+	health_changed.emit(current_health, max_health)
+
+
 func take_damage(amount: float) -> void:
 	if _is_dead or amount <= 0.0:
 		return

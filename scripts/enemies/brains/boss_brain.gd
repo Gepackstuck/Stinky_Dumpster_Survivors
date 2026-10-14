@@ -17,6 +17,11 @@ func physics_tick(_delta: float) -> void:
 	pass
 
 
+## Вызывается, когда враг убит (не при исчезновении в конце волны).
+func on_death() -> void:
+	pass
+
+
 func direction_to_target() -> Vector2:
 	return boss.global_position.direction_to(target.global_position)
 

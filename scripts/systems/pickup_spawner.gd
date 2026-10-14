@@ -9,6 +9,7 @@ const XP_PICKUP_SCENE: PackedScene = preload("res://scenes/pickups/xp_pickup.tsc
 
 func _ready() -> void:
 	EventBus.enemy_died.connect(_on_enemy_died)
+	EventBus.xp_drop_requested.connect(func(at: Vector2, value: int) -> void: _spawn_xp.call_deferred(at, value))
 
 
 func _on_enemy_died(enemy_id: StringName, death_position: Vector2) -> void:
@@ -18,6 +19,8 @@ func _on_enemy_died(enemy_id: StringName, death_position: Vector2) -> void:
 
 
 func _spawn_xp(at: Vector2, value: int) -> void:
+	if value <= 0:
+		return
 	var pickup: XpPickup = PoolManager.acquire(XP_PICKUP_SCENE) as XpPickup
 	pickups_root.add_child(pickup)
 	var scatter: Vector2 = Vector2(

@@ -54,6 +54,10 @@ func _start_wave(wave: int) -> void:
 	_bosses_spawned = false
 	_bosses_alive = 0
 	_fighting = true
+	@warning_ignore("integer_division")
+	var bins: int = Balance.BIN_COUNT_BASE + (wave - 1) / Balance.BIN_COUNT_WAVES_PER_EXTRA
+	for i: int in bins:
+		spawner.spawn_single(&"trash_bin", 1.0)
 	EventBus.wave_started.emit(wave)
 
 

@@ -20,6 +20,7 @@ var _dead: bool = false
 var _shapes_ready: bool = false
 var _knockback: Vector2 = Vector2.ZERO
 var _brain: BossBrain = null
+var _neutral: bool = false
 
 # Управление движением для «мозгов» боссов.
 var speed_mult: float = 1.0
@@ -37,6 +38,15 @@ func _ready() -> void:
 func setup(target: Node2D, spawn_position: Vector2, id: StringName = &"squid_gopnik", hp_mult: float = 1.0) -> void:
 	enemy_id = id
 	var stats: Dictionary = Balance.ENEMIES[enemy_id]
+	_neutral = stats.get("neutral", false)
+	if _neutral:
+		remove_from_group(&"enemies")
+		add_to_group(&"neutrals")
+	else:
+		remove_from_group(&"neutrals")
+		add_to_group(&"enemies")
+	_sprite.scale = Vector2.ONE
+	_hitbox.set_deferred(&"monitoring", stats.get("contact", true))
 	_sprite.texture = _texture_for(enemy_id)
 	_apply_size(stats.get("radius", BASE_RADIUS))
 	_speed = stats["speed"] * WaveRules.speed_mult(GameState.wave)
@@ -78,6 +88,8 @@ func _physics_process(delta: float) -> void:
 
 ## Мягкое расталкивание: враг не заходит внутрь игрока, а отъезжает — через толпу можно проломиться.
 func _keep_distance_from_target() -> void:
+	if _speed <= 0.0:
+		return
 	var offset: Vector2 = global_position - _target.global_position
 	var distance: float = offset.length()
 	if distance < Balance.ENEMY_PLAYER_MIN_DISTANCE and distance > 0.001:
@@ -91,6 +103,38 @@ func vanish() -> void:
 	_dead = true
 	HitFx.burst(get_tree(), global_position, Color(0.2235, 1.0, 0.0784), 6, 60.0)
 	PoolManager.release(self)
+
+
+## Лечение долей от максимума (знахарка, обжора).
+func heal_percent(fraction: float) -> void:
+	if _dead:
+		return
+	_health.heal(_health.max_health * fraction)
+	_flash.flash(Color(0.2235, 1.0, 0.0784))
+
+
+## Обжора растёт: спрайт крупнее (до предела), здоровья чуть добавляется.
+func grow(step: float) -> void:
+	_sprite.scale = Vector2.ONE * minf(_sprite.scale.x + step, Balance.GLUTTON_MAX_SCALE)
+
+
+## Яйцо лопается: враг исчезает без дропа и убийства, на его месте вылупляется другой.
+func hatch_into(id: StringName) -> void:
+	if _dead:
+		return
+	_dead = true
+	HitFx.burst(get_tree(), global_position, Color(0.968627, 1.0, 0.0), 10, 80.0, 3.0, 0.5)
+	spawn_enemy.call_deferred(get_parent(), _target, id, global_position, WaveRules.hp_mult(GameState.wave))
+	PoolManager.release(self)
+
+
+## Создать врага вне очереди спавна (вылупление, дети мамки).
+static func spawn_enemy(parent: Node, target: Node2D, id: StringName, at: Vector2, hp_mult: float) -> void:
+	if not is_instance_valid(parent) or not is_instance_valid(target):
+		return
+	var enemy: EnemyBase = PoolManager.acquire(load("res://scenes/enemies/enemy_base.tscn") as PackedScene) as EnemyBase
+	parent.add_child(enemy)
+	enemy.setup(target, at, id, hp_mult)
 
 
 func flash(color: Color) -> void:
@@ -135,7 +179,7 @@ func _on_hurt(damage: float) -> void:
 	if _dead:
 		return
 	_flash.flash(Color.WHITE)
-	if is_instance_valid(_target):
+	if is_instance_valid(_target) and not _neutral:
 		_knockback = _target.global_position.direction_to(global_position) * Balance.ENEMY_KNOCKBACK_SPEED
 	HitFx.burst(get_tree(), global_position, Color(1.0, 0.0, 0.2), 5, 70.0)
 	HitFx.popup(get_tree(), global_position + Vector2(0.0, -10.0), str(int(damage)), Color.WHITE)
@@ -149,4 +193,6 @@ func _on_died() -> void:
 	HitFx.burst(get_tree(), global_position, Color(1.0, 0.0625, 0.9412), 14, 110.0, 3.0, 0.5)
 	HitFx.burst(get_tree(), global_position, Color(0.2235, 1.0, 0.0784), 8, 80.0, 2.0, 0.5)
 	EventBus.enemy_died.emit(enemy_id, global_position)
+	if _brain != null:
+		_brain.on_death()
 	PoolManager.release(self)
