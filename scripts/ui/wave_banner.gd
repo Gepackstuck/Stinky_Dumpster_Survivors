@@ -51,7 +51,7 @@ func _show(variant: int, title: String, subtitle: String, color: Color) -> void:
 	if _tween != null and _tween.is_valid():
 		_tween.kill()
 	_root.modulate.a = 1.0
-	_root.position = Vector2(0.0, -BANNER_SIZE.y)
+	_root.position = Vector2(roundf((480.0 - BANNER_SIZE.x) * 0.5), -BANNER_SIZE.y)  # по центру экрана
 	_tween = create_tween()
 	_tween.tween_property(_root, "position:y", SHOWN_Y, SLIDE_SEC)
 	_tween.tween_interval(HOLD_SEC)
