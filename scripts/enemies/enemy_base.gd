@@ -106,6 +106,22 @@ func vanish() -> void:
 	PoolManager.release(self)
 
 
+## Мерзость из бака: от удара летят объедки, слизь и мухи, бак трясётся; при разбитии — взрыв помоев.
+func _bin_hit_fx(final: bool) -> void:
+	var tree: SceneTree = get_tree()
+	var at: Vector2 = global_position + Vector2(0.0, -4.0)
+	var junk: Array[Color] = [Color(0.2235, 1.0, 0.0784), Color(0.58, 0.34, 0.12), Color(1.0, 1.0, 1.0),
+			Color(0.968627, 1.0, 0.0), Color(0.0, 0.3, 1.0), Color(1.0, 0.0627, 0.9412), Color(1.0, 0.0, 0.2)]
+	var pieces: int = 3 if not final else 6
+	for i: int in pieces:
+		HitFx.burst(tree, at, junk[randi() % junk.size()], 4 if not final else 8, 90.0 if not final else 150.0, 3.0, 0.7, true)
+	HitFx.burst(tree, at, Color(0.0, 0.0, 0.0), 3, 60.0, 2.0, 1.0, true)  # мухи
+	if not final:
+		var tween: Tween = create_tween()
+		_sprite.position = Vector2(randf_range(-2.0, 2.0), 0.0)
+		tween.tween_property(_sprite, "position", Vector2.ZERO, 0.12)
+
+
 ## Лечение долей от максимума (знахарка, обжора).
 func heal_percent(fraction: float) -> void:
 	if _dead:
@@ -180,9 +196,12 @@ func _on_hurt(damage: float) -> void:
 	if _dead:
 		return
 	_flash.flash(Color.WHITE)
+	if _neutral:
+		_bin_hit_fx(false)
 	if is_instance_valid(_target) and not _neutral:
 		_knockback = _target.global_position.direction_to(global_position) * Balance.ENEMY_KNOCKBACK_SPEED
-	HitFx.burst(get_tree(), global_position, Color(1.0, 0.0, 0.2), 5, 70.0)
+	if not _neutral:
+		HitFx.burst(get_tree(), global_position, Color(1.0, 0.0, 0.2), 5, 70.0)
 	HitFx.popup(get_tree(), global_position + Vector2(0.0, -10.0), str(int(damage)), Color.WHITE)
 	_health.take_damage(damage)
 
@@ -191,8 +210,11 @@ func _on_died() -> void:
 	if _dead:
 		return
 	_dead = true
-	HitFx.burst(get_tree(), global_position, Color(1.0, 0.0625, 0.9412), 14, 110.0, 3.0, 0.5)
-	HitFx.burst(get_tree(), global_position, Color(0.2235, 1.0, 0.0784), 8, 80.0, 2.0, 0.5)
+	if _neutral:
+		_bin_hit_fx(true)
+	else:
+		HitFx.burst(get_tree(), global_position, Color(1.0, 0.0625, 0.9412), 14, 110.0, 3.0, 0.5)
+		HitFx.burst(get_tree(), global_position, Color(0.2235, 1.0, 0.0784), 8, 80.0, 2.0, 0.5)
 	EventBus.enemy_died.emit(enemy_id, global_position)
 	if _brain != null:
 		_brain.on_death()

@@ -190,7 +190,7 @@ const ENEMIES: Dictionary = {
 			"brain": "res://scripts/enemies/brains/mamka_brain.gd"},
 	&"glutton": {"hp": 30.0, "damage": 2.0, "speed": 70.0, "xp": 5, "coins": 2, "radius": 8.0, "group_mult": 0.4,
 			"brain": "res://scripts/enemies/brains/glutton_brain.gd"},
-	&"trash_bin": {"hp": 25.0, "damage": 0.0, "speed": 0.0, "xp": 5, "coins": 0, "radius": 8.0, "group_mult": 0.0,
+	&"trash_bin": {"hp": 40.0, "damage": 0.0, "speed": 0.0, "xp": 6, "coins": 0, "radius": 12.0, "group_mult": 0.0,
 			"contact": false, "neutral": true, "brain": "res://scripts/enemies/brains/bin_brain.gd"},
 	# Босс-заглушка Шага 3 (особое поведение — позже); radius — размер тела в px.
 	&"boss_mega_hamster": {"hp": 600.0, "damage": 5.0, "speed": 35.0, "xp": 30, "coins": 20, "radius": 16.0},

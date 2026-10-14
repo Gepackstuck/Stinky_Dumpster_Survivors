@@ -1746,22 +1746,36 @@ def draw_glutton(frame, seed=64):
 
 
 def draw_trash_bin(frame, seed=65):
-    """16x16: мусорный бак — зелёный, ржавый, из-под крышки глядят два разных глаза, воняет мухами."""
+    """24x24: мусорный бак — помятый зелёный, ржавые подтёки, ребристый, крышка приоткрыта, из бака торчит дрянь, два разных глаза, мухи."""
     rng = random.Random(seed)
-    w = h = 16
-    tub = new_mask(w, h); rect(tub, 3, 6, 12, 14)
-    lid = new_mask(w, h); rect(lid, 2, 3 - frame, 13, 5 - frame)
-    wheels = new_mask(w, h); rect(wheels, 3, 15, 4, 15); rect(wheels, 11, 15, 12, 15)
-    sil = union(tub, lid, wheels)
+    w = h = 24
+    lift = frame
+    tub = new_mask(w, h); poly(tub, [(4, 8), (20, 8), (18, 21), (6, 21)])
+    rim = new_mask(w, h); rect(rim, 3, 7, 21, 9)
+    lid = new_mask(w, h); poly(lid, [(2, 5 - lift), (22, 3 - lift * 2), (22, 6 - lift * 2), (2, 7 - lift)])
+    junk = new_mask(w, h); blob(junk, 8, 6 - lift, 3, 2, rng, 0.5, 8); blob(junk, 15, 6 - lift, 3, 2, rng, 0.5, 8)
+    wheels = new_mask(w, h); rect(wheels, 5, 22, 7, 23); rect(wheels, 17, 22, 19, 23)
+    sil = union(tub, rim, lid, junk, wheels)
     img = new_img(w, h)
-    paint(img, tub, GREEN); dither(img, tub, BLACK, "checker"); paint(img, lid, BLUE); dither(img, lid, BLACK, "dots")
+    paint(img, junk, BLUE); dither(img, junk, WHITE, "checker")
+    paint(img, tub, GREEN); dither(img, tub, (20, 120, 12), "checker")
+    paint(img, rim, GREY); paint(img, lid, BLUE); dither(img, lid, BLACK, "dots")
     paint(img, wheels, BLACK)
-    for y in (8, 11): 
-        for x in range(3, 13): px(img, x, y, BLACK)
-    for x, y in ((4, 13), (9, 12), (11, 9)): px(img, x, y, BROWN)
-    px(img, 6, 14, RED); px(img, 10, 7, RED)
-    eye(img, 6, 7, 1, 1, 0, 0, rng); eye(img, 10, 7, 2, 1, 0, 1, rng)
-    for x, y in ((1 + frame, 1), (14 - frame, 2), (7, 0 + frame)): px(img, x, y, BLACK)  # мухи
+    for x in (7, 11, 15):  # рёбра
+        for y in range(10, 21): px(img, x + (y - 10) // 8 * (-1 if x < 11 else 1 if x > 11 else 0), y, (20, 120, 12))
+    for y in (13, 18):
+        for x in range(5, 20): 
+            if (x + y) % 3: px(img, x, y, (20, 120, 12))
+    for x, y, n in ((6, 9, 6), (17, 9, 4), (12, 9, 8)):  # ржавые подтёки
+        for k in range(n): px(img, x, y + k, BROWN)
+    for _ in range(7): px(img, rng.randint(6, 18), rng.randint(10, 20), BROWN)
+    for x, y in ((10, 11), (13, 19)): px(img, x, y, RED); px(img, x + 1, y, PINK)
+    for k in range(4): px(img, 4 + k, 19 + k // 4, YELLOW)  # потёки мочи
+    px(img, 10, 4 - lift, WHITE); px(img, 11, 3 - lift, WHITE); px(img, 17, 5 - lift, PINK); px(img, 6, 5 - lift, YELLOW)  # торчит дрянь
+    eye(img, 8, 14, 1, 1, 0, 0, rng); eye(img, 15, 14, 2, 1, 0, 1, rng)
+    m = new_mask(w, h); rect(m, 8, 18 + frame, 15, 18 + frame); paint(img, m, BLACK)  # кривой рот
+    for x, y in ((1 + frame * 2, 1), (21 - frame * 2, 1), (12 + frame, 0), (3, 3 + frame)):
+        px(img, x, y, BLACK); px(img, x + 1, y, BLACK)  # мухи
     return finish(img, sil)
 
 

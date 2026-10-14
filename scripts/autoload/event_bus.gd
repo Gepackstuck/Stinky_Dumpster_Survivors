@@ -20,6 +20,9 @@ signal enemy_died(enemy_id: StringName, position: Vector2)
 @warning_ignore("unused_signal")
 signal xp_drop_requested(at: Vector2, value: int)   # враг просит уронить XP (обжора)
 
+@warning_ignore("unused_signal")
+signal bin_destroyed(at: Vector2)                   # бак разбит: на его месте остаётся мусор до конца забега
+
 # --- Подбираемое ---
 @warning_ignore("unused_signal")
 signal xp_collected(amount: int)
