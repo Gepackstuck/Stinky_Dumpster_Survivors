@@ -83,6 +83,7 @@ func _on_xp_collected(amount: int) -> void:
 	if not run_active:
 		return
 	xp += amount
+	coins += amount  # как в Brotato: «говно» = и опыт, и деньги
 	while xp >= xp_to_next:
 		xp -= xp_to_next
 		level += 1

@@ -7,7 +7,7 @@ const ARENA_SIZE: float = 520.0        # квадрат ARENA_SIZE x ARENA_SIZE,
 
 # --- Игрок (Шаг 1; в GDD чисел нет — стартовые значения) ---
 const PLAYER_MOVE_SPEED: float = 100.0
-const PLAYER_MAX_HP: float = 40.0
+const PLAYER_MAX_HP: float = 15.0
 const PLAYER_HURT_COOLDOWN_SEC: float = 0.5  # неуязвимость после попадания
 
 # --- Спавн врагов (Шаг 1: простой хардкод-спавнер) ---
@@ -26,11 +26,14 @@ const XP_DROP_SCATTER: float = 4.0           # разброс места пад�
 const PERK_DOUBLE_SHOT_SPREAD_DEG: float = 10.0
 
 # --- Волны (как в Brotato, см. docs/BROTATO_REFERENCE.md) ---
-const WAVE_COUNT: int = 20
+const WAVE_COUNT: int = 15
 const WAVE_DURATION_FIRST_SEC: float = 20.0
-const WAVE_DURATION_STEP_SEC: float = 5.0
-const WAVE_DURATION_MAX_SEC: float = 60.0
-const WAVE_DURATION_FINAL_SEC: float = 90.0       # 20-я волна (боссы)
+const WAVE_DURATION_STEP_SEC: float = 10.0
+const WAVE_DURATION_MAX_SEC: float = 150.0
+const WAVE_DURATION_FINAL_SEC: float = 180.0      # последняя волна (боссы)
+const WAVE_GROUP_INTERVAL_START_SEC: float = 2.6      # интервал между группами на 1-й волне
+const WAVE_GROUP_INTERVAL_END_SEC: float = 1.6        # на последней
+const MAX_ALIVE_ENEMIES: int = 160                    # потолок врагов на карте (производительность)
 const WAVE_GROUPS_BASE: int = 9                   # групп врагов за волну = BASE + номер волны
 const WAVE_GROUP_SIZE_BASE: int = 5               # размер группы = BASE + волна/4 (±1)
 const WAVE_GROUP_SIZE_WAVES_PER_STEP: int = 2
@@ -40,7 +43,7 @@ const SPAWN_MARKER_SEC: float = 1.0               # красный крест з
 const SPAWN_MIN_DISTANCE_FROM_PLAYER: float = 120.0
 const SPAWN_ARENA_MARGIN: float = 40.0
 const SPAWN_GROUP_SPREAD: float = 28.0
-const SPECIAL_WAVE_WINDOWS: Array = [[11, 12], [14, 15], [17, 18]]  # в каждом окне — элита или орда (последнее всегда элита)
+const SPECIAL_WAVE_WINDOWS: Array = [[7, 8], [10, 11], [13, 14]]  # в каждом окне — элита или орда (последнее всегда элита)
 const ELITE_CHANCE: float = 0.6
 const HORDE_GROUP_MULT: float = 2.0
 const ELITE_SPAWN_SEC: float = 2.0

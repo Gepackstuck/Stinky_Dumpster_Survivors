@@ -18,6 +18,10 @@ func _ready() -> void:
 
 ## Группа из count врагов одного типа в случайной точке арены.
 func spawn_group(enemy_id: StringName, count: int, hp_mult: float) -> void:
+	var room: int = Balance.MAX_ALIVE_ENEMIES - get_tree().get_nodes_in_group(&"enemies").size() - _markers.size()
+	count = mini(count, room)
+	if count <= 0:
+		return
 	var center: Vector2 = _random_arena_point()
 	for i: int in count:
 		var offset: Vector2 = Vector2(randf_range(-1.0, 1.0), randf_range(-1.0, 1.0)) * Balance.SPAWN_GROUP_SPREAD
