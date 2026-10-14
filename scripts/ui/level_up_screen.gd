@@ -10,6 +10,7 @@ extends CanvasLayer
 @onready var _next_button: Button = $Root/NextButton
 @onready var _reroll_button: Button = $Root/RerollButton
 @onready var _coins: Label = $Root/Coins
+@onready var _stats: Label = $Root/Stats
 
 const PERK_MARK: int = 0  # в очереди: 0 = бесплатный перк/оружие Ларька, >0 = уровень (карточка статов)
 
@@ -143,6 +144,8 @@ func _refresh_shop() -> void:
 	else:
 		_counter.text = "ОСТАЛОСЬ ВЗЯТЬ: %d   УРОВЕНЬ %d: ВЫБИРАЙ СТАТ" % [_queue.size(), _queue[0]]
 	_empty.visible = _queue.is_empty()
+	_stats.visible = _queue.is_empty()
+	_stats.text = _stats_text()
 	_reroll_button.visible = not _queue.is_empty()
 	_reroll_button.text = "РЕРОЛЛ %d" % _reroll_cost()
 	_reroll_button.disabled = GameState.coins < _reroll_cost()
@@ -151,6 +154,23 @@ func _refresh_shop() -> void:
 	var label: String = {&"elite": ": ЭЛИТА!", &"horde": ": ОРДА!", &"boss": ": БОССЫ!"}.get(kind, "")
 	_next_button.text = "ВОЛНА %d%s" % [next_wave, label]
 	_next_button.disabled = not _queue.is_empty()
+
+
+## Сводка прокачки в пустом Ларьке: «ТВОИ СТАТЫ» по взятым карточкам и перкам.
+func _stats_text() -> String:
+	var lines: Array[String] = ["ТВОИ СТАТЫ", ""]
+	for stat_id: StringName in StatLibrary.IDS:
+		var total: float = GameState.stat_total(stat_id)
+		if total > 0.0:
+			var unit: String = "" if stat_id in [&"max_hp", &"regen", &"armor"] else "%"
+			lines.append("%s: +%d%s" % [StatLibrary.title(stat_id), roundi(total), unit])
+	for perk_id: StringName in PerkLibrary.ALL:
+		var stacks: int = GameState.get_perk_stacks(perk_id)
+		if stacks > 0:
+			lines.append("%s%s" % [PerkLibrary.title(perk_id), "" if stacks == 1 else " х%d" % stacks])
+	if lines.size() == 2:
+		lines.append("ПОКА НИЧЕГО. ЛОХ.")
+	return "\n".join(lines)
 
 
 func _on_next_pressed() -> void:
