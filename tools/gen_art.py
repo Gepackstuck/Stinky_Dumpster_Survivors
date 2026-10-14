@@ -286,16 +286,22 @@ def draw_projectile(frame):
 
 
 def draw_xp(frame):
-    """4x4: зелёный пиксель XP с чёрной каймой, мигает белым."""
-    img = new_img(4, 4)
-    for y in range(4):
-        for x in range(4):
-            if (x in (0, 3)) and (y in (0, 3)):
-                continue
-            px(img, x, y, BLACK)
-    for x, y in ((1, 1), (2, 1), (1, 2), (2, 2)):
-        px(img, x, y, GREEN)
-    px(img, 1 if frame else 2, 1 if frame else 2, WHITE)
+    """10x12: небольшой светящийся зелёный шарик XP с дизеринг-свечением и вонючим завитком (2 кадра)."""
+    W, H = 10, 12
+    img = new_img(W, H)
+    cx, cy = 5, 7
+    glow = new_mask(W, H)
+    blob(glow, cx, cy, 4.5, 4, random.Random(1), 0.2, 12)
+    dither(img, glow, GREEN, "checker")
+    orb = new_mask(W, H)
+    blob(orb, cx, cy, 2.4, 2.4, random.Random(2), 0.2, 10)
+    paint(img, dilate4(orb), BLACK)
+    paint(img, orb, GREEN)
+    px(img, cx - 1, cy - 1, WHITE if not frame else YELLOW)
+    px(img, cx + 1, cy + 1, YELLOW)
+    wisp = ((4, 2), (5, 1), (4, 0)) if frame else ((5, 2), (4, 1), (5, 0))
+    for i, (x, y) in enumerate(wisp):
+        px(img, x, y, GREEN if i != 1 else YELLOW)
     return img
 
 
@@ -1669,6 +1675,19 @@ def draw_dim():
     return img
 
 
+def draw_select_arrow():
+    """16x14 стрелка вверх под выбранной карточкой: жёлтая с кислотной серединой и чёрным контуром."""
+    W, H = 16, 14
+    img = new_img(W, H)
+    tri = new_mask(W, H); poly(tri, [(8, 0), (15, 7), (11, 7), (11, 13), (5, 13), (5, 7), (1, 7)])
+    paint(img, dilate4(tri), BLACK)
+    paint(img, tri, YELLOW)
+    inner = new_mask(W, H); poly(inner, [(8, 3), (11, 7), (5, 7)]); rect(inner, 6, 7, 10, 12)
+    dither(img, inner, GREEN, "checker")
+    px(img, 8, 1, WHITE); px(img, 7, 2, WHITE)
+    return img
+
+
 CARD_W, CARD_H = 112, 150
 # (кольцо, кольцо2, seed, скос, капли, украшение углов) — вариантов много: каждая карточка берёт случайный
 CARD_VARIANTS = (
@@ -1689,6 +1708,19 @@ def draw_card_frames():
     return sheet
 
 
+PANEL_W, PANEL_H = 360, 160
+
+
+def draw_death_panels():
+    """Широкие рамки экрана смерти (4 варианта подряд, 360x160): чёрная начинка для читаемого текста."""
+    variants = ((PINK, RED, 11, 8, 14, "eyes", 3, 10), (GREEN, YELLOW, 22, 6, 10, "bones", 4, 12),
+                (CYAN, BLUE, 33, 10, 16, "poop", 3, 9), (RED, YELLOW, 44, 7, 12, "guts", 5, 11))
+    sheet = new_img(PANEL_W * len(variants), PANEL_H)
+    for i, (ring, ring2, seed, chamfer, drips, corner, rw, dn) in enumerate(variants):
+        sheet.paste(draw_frame(PANEL_W, PANEL_H, ring, ring2, seed, chamfer=chamfer, drips=drips, clean=True, corner=corner, ring_w=rw, deco_n=dn), (i * PANEL_W, 0))
+    return sheet
+
+
 def build_step2():
     glyphs = build_font()
     for name, fn in (("perk_speed", icon_speed), ("perk_regen", icon_regen),
@@ -1696,13 +1728,14 @@ def build_step2():
                      ("hud_heart", lambda: draw_heart(14))):
         fn().save(UI + name + ".png")
     draw_card_frames().save(UI + "card_frames.png")
+    draw_select_arrow().save(UI + "select_arrow.png")
     draw_frame(96, 22, RED, PINK, 202, chamfer=4, drips=3, eyes=False).save(UI + "button.png")
     draw_frame(96, 22, YELLOW, GREEN, 202, chamfer=4, drips=5, eyes=False).save(UI + "button_hover.png")
     bar_under(72, 10, PINK).save(UI + "hp_bar_under.png")
     bar_fill(68, 6, RED, PINK, 5).save(UI + "hp_bar_fill.png")
     bar_under(224, 10, GREEN).save(UI + "xp_bar_under.png")
     bar_fill(220, 6, GREEN, WHITE, 6).save(UI + "xp_bar_fill.png")
-    draw_death_bg().save(UI + "death_bg.png")
+    draw_death_panels().save(UI + "death_panels.png")
     draw_dim().save(UI + "dim_checker.png")
     draw_border_sheet().save(SPRITES + "arena_border.png")
     draw_decals().save(SPRITES + "ground_decals.png")

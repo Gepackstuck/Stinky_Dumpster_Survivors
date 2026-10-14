@@ -4,6 +4,7 @@
 [ext_resource type="Script" path="res://scripts/components/health_component.gd" id="2_health"]
 [ext_resource type="Script" path="res://scripts/components/hurtbox_component.gd" id="3_hurtbox"]
 [ext_resource type="Script" path="res://scripts/components/hitbox_component.gd" id="4_hitbox"]
+[ext_resource type="Script" path="res://scripts/components/hit_flash_component.gd" id="9_flash"]
 [ext_resource type="Script" path="res://scripts/components/frame_animator_component.gd" id="5_anim"]
 [ext_resource type="Texture2D" path="res://assets/sprites/enemy_squid_gopnik.png" id="6_tex"]
 
@@ -29,6 +30,10 @@ hframes = 2
 
 [node name="FrameAnimator" type="Node" parent="." node_paths=PackedStringArray("sprite")]
 script = ExtResource("5_anim")
+sprite = NodePath("../Sprite2D")
+
+[node name="HitFlash" type="Node" parent="." node_paths=PackedStringArray("sprite")]
+script = ExtResource("9_flash")
 sprite = NodePath("../Sprite2D")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]

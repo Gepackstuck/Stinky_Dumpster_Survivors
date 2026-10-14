@@ -4,6 +4,7 @@ extends CharacterBody2D
 
 @onready var _sprite: Sprite2D = $Sprite2D
 @onready var _animator: FrameAnimatorComponent = $FrameAnimator
+@onready var _flash: HitFlashComponent = $HitFlash
 @onready var _camera: Camera2D = $Camera2D
 @onready var _health: HealthComponent = $HealthComponent
 @onready var _hurtbox: HurtboxComponent = $Hurtbox
@@ -12,6 +13,7 @@ extends CharacterBody2D
 
 var _arena_max: Vector2 = Vector2.ZERO
 var _regen_timer: float = 0.0
+var _shake: float = 0.0
 
 
 func _ready() -> void:
@@ -41,11 +43,20 @@ func _physics_process(delta: float) -> void:
 	_animator.active = direction != Vector2.ZERO
 	move_and_slide()
 	global_position = global_position.clamp(Vector2.ZERO, _arena_max)
+	_update_shake(delta)
 	if GameState.regen_hp > 0.0:
 		_regen_timer += delta
 		if _regen_timer >= Balance.PERK_REGEN_INTERVAL_SEC:
 			_regen_timer -= Balance.PERK_REGEN_INTERVAL_SEC
 			_health.heal(GameState.regen_hp)
+
+
+func _update_shake(delta: float) -> void:
+	if _shake <= 0.0:
+		_camera.offset = Vector2.ZERO
+		return
+	_shake = maxf(_shake - Balance.SHAKE_DECAY * delta, 0.0)
+	_camera.offset = Vector2(randf_range(-_shake, _shake), randf_range(-_shake, _shake)).round()
 
 
 func _update_magnet_radius() -> void:
@@ -64,6 +75,11 @@ func _on_perk_chosen(_perk_id: StringName) -> void:
 
 func _on_hurt(damage: float) -> void:
 	EventBus.player_hit.emit(damage)
+	_flash.flash(Color(1.0, 0.0, 0.2))
+	_shake = Balance.PLAYER_HIT_SHAKE
+	# «пердим»: зелёное облако вонючих пикселей (без надписей)
+	HitFx.burst(get_tree(), global_position + Vector2(0.0, 4.0), Color(0.2235, 1.0, 0.0784), 12, 60.0, 3.0, 0.7, true)
+	HitFx.burst(get_tree(), global_position + Vector2(0.0, 4.0), Color(0.9686, 1.0, 0.0), 5, 45.0, 2.0, 0.7, true)
 	_health.take_damage(damage)
 
 

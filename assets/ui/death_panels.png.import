@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dfo6y2uc1l1mw"
-path="res://.godot/imported/death_bg.png-f1c578589146462a8371b64ca13af68e.ctex"
+uid="uid://gl8o5botpqq0"
+path="res://.godot/imported/death_panels.png-4f6ad92bdfab26255e5b10385a7dd43d.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/ui/death_bg.png"
-dest_files=["res://.godot/imported/death_bg.png-f1c578589146462a8371b64ca13af68e.ctex"]
+source_file="res://assets/ui/death_panels.png"
+dest_files=["res://.godot/imported/death_panels.png-4f6ad92bdfab26255e5b10385a7dd43d.ctex"]
 
 [params]
 
