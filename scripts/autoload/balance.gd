@@ -278,6 +278,7 @@ const PET_DAMAGE: float = 6.0
 const PET_BITE_SEC: float = 0.55
 const PET_SPEED: float = 120.0
 const PET_AGGRO_RANGE: float = 110.0              # от игрока: дальше крыса не бегает за врагом
+const GHOST_ALPHA: float = 0.32                    # призраки почти прозрачные, не отвлекают
 const GHOST_DRUNK_DAMAGE: float = 14.0           # призрак друга-алкаша: шатается и бьёт с пьяной силой
 const GHOST_DRUNK_HIT_SEC: float = 0.9
 const GHOST_DRUNK_SPEED: float = 85.0

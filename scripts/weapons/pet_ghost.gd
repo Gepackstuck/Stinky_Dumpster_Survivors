@@ -17,7 +17,7 @@ func _ready() -> void:
 	_sprite.texture = load("res://assets/sprites/pet_ghost_%s.png" % kind) as Texture2D
 	_sprite.hframes = 2
 	_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	_sprite.modulate = Color(1.0, 1.0, 1.0, 0.82)
+	_sprite.modulate = Color(1.0, 1.0, 1.0, Balance.GHOST_ALPHA)
 	add_child(_sprite)
 	_home = Vector2.from_angle(randf() * TAU) * Balance.PET_LEASH_DIST
 	_heal_left = Balance.GHOST_GRANNY_HEAL_SEC
