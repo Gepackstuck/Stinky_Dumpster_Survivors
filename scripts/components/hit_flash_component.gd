@@ -21,6 +21,13 @@ func set_outline(color: Color) -> void:
 	_material.set_shader_parameter(&"outline_color", color)
 
 
+## Обводка по доле здоровья: мало — моча, много — красный, полупрозрачная.
+func set_outline_by_health(fraction: float) -> void:
+	var c: Color = Balance.OUTLINE_LOW_HP_COLOR.lerp(Balance.OUTLINE_FULL_HP_COLOR, pow(clampf(fraction, 0.0, 1.0), Balance.OUTLINE_HP_CURVE))
+	c.a = Balance.OUTLINE_ALPHA
+	set_outline(c)
+
+
 func flash(color: Color) -> void:
 	if _tween != null and _tween.is_valid():
 		_tween.kill()

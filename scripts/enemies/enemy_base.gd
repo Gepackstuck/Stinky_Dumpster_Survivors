@@ -32,6 +32,7 @@ var forced_sec: float = 0.0
 func _ready() -> void:
 	_hurtbox.hurt.connect(_on_hurt)
 	_health.died.connect(_on_died)
+	_health.health_changed.connect(func(current: float, maximum: float) -> void: _flash.set_outline_by_health(current / maxf(maximum, 1.0)))
 
 
 ## Инициализировать (или заново инициализировать при выдаче из пула).

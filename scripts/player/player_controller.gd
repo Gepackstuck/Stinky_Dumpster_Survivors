@@ -25,7 +25,6 @@ func _ready() -> void:
 	_camera.limit_top = -border
 	_camera.limit_right = int(Balance.ARENA_SIZE) + border
 	_camera.limit_bottom = int(Balance.ARENA_SIZE) + border
-	_flash.set_outline(Color(0.0, 0.94, 1.0, 0.9))  # игрок — циановая подсветка
 	_hurtbox.invulnerability_sec = Balance.PLAYER_HURT_COOLDOWN_SEC
 	_hurtbox.hurt.connect(_on_hurt)
 	_health.health_changed.connect(_on_health_changed)
@@ -133,6 +132,7 @@ func heal_full() -> void:
 
 func _on_health_changed(current: float, maximum: float) -> void:
 	GameState.hp = current
+	_flash.set_outline_by_health(current / maxf(maximum, 1.0))
 	GameState.max_hp = maximum
 
 

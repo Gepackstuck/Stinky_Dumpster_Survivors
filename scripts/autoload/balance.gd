@@ -124,6 +124,10 @@ const MAX_ENEMIES_ON_SCREEN: int = 500  # CONVENTIONS.md
 
 # --- XP / уровни ---
 const XP_LEVEL_FACTOR: float = 1.0      # XP до следующего уровня = FACTOR * (уровень + 3)^2 (как в Brotato, масштаб под наши дропы)
+const OUTLINE_ALPHA: float = 0.45                 # прозрачность обводки персонажей (тоньше на вид)
+const OUTLINE_LOW_HP_COLOR: Color = Color(1.0, 0.93, 0.0)   # мало ХП — моча
+const OUTLINE_FULL_HP_COLOR: Color = Color(1.0, 0.0, 0.2)   # полное ХП — красный
+const OUTLINE_HP_CURVE: float = 2.0
 const LEVEL_UP_CHOICES: int = 4
 # Статы при повышении уровня (Brotato): значения по тирам I-IV.
 const STAT_VALUES: Dictionary = {
