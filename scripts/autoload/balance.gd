@@ -1,7 +1,25 @@
 extends Node
 ## Все балансные числа игры (источник: GDD.md, CONVENTIONS.md, TASKS.md).
 ## Autoload: Balance. Числа не хардкодить в сценах — брать отсюда.
-## TODO(MP1): параметры игрока (скорость, HP) — в GDD их нет, добавить в Шаге 1.
+
+# --- Арена (Шаг 1) ---
+const ARENA_SIZE: float = 2000.0        # квадрат ARENA_SIZE x ARENA_SIZE, старт в центре
+
+# --- Игрок (Шаг 1; в GDD чисел нет — стартовые значения) ---
+const PLAYER_MOVE_SPEED: float = 100.0
+const PLAYER_MAX_HP: float = 100.0
+const PLAYER_HURT_COOLDOWN_SEC: float = 0.5  # неуязвимость после попадания
+
+# --- Спавн врагов (Шаг 1: простой хардкод-спавнер) ---
+const ENEMY_TARGET_COUNT: int = 20
+const ENEMY_SPAWN_RADIUS_MIN: float = 200.0  # за пределами экрана (половина диагонали ~184)
+const ENEMY_SPAWN_RADIUS_MAX: float = 240.0
+const ENEMY_RESPAWN_INTERVAL_SEC: float = 1.0
+
+# --- Автоатака (Шаг 1) ---
+const WEAPON_TARGET_RANGE: float = 180.0
+const PROJECTILE_SPEED: float = 220.0
+const PROJECTILE_LIFETIME_SEC: float = 1.2
 
 # --- Забег ---
 const RUN_DURATION_SEC: float = 900.0   # 15 минут до победы (GDD)

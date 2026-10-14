@@ -1,6 +1,26 @@
 [gd_scene format=3]
 
+[ext_resource type="Script" path="res://scripts/levels/main_level.gd" id="1_main"]
+[ext_resource type="Script" path="res://scripts/levels/floor_marks.gd" id="2_floor"]
+[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="3_player"]
+[ext_resource type="Script" path="res://scripts/systems/spawner.gd" id="4_spawner"]
+
 [node name="Main" type="ColorRect"]
 offset_right = 320.0
 offset_bottom = 180.0
 color = Color(0.909804, 0.909804, 0.909804, 1)
+script = ExtResource("1_main")
+
+[node name="FloorMarks" type="Node2D" parent="."]
+script = ExtResource("2_floor")
+
+[node name="Enemies" type="Node2D" parent="."]
+
+[node name="Player" parent="." instance=ExtResource("3_player")]
+
+[node name="Spawner" type="Node" parent="." node_paths=PackedStringArray("player", "enemies_root")]
+script = ExtResource("4_spawner")
+player = NodePath("../Player")
+enemies_root = NodePath("../Enemies")
+
+[node name="RespawnTimer" type="Timer" parent="Spawner"]

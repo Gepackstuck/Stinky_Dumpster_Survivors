@@ -22,6 +22,7 @@ scripts/
   autoload/       — синглтоны (EventBus, GameState, Balance, AudioManager, PoolManager)
   components/     — переиспользуемые ноды (HealthComponent, HurtboxComponent, ...)
   systems/        — менеджеры (Spawner, WaveManager, PoolManager)
+  player/ enemies/ weapons/ levels/ — скрипты сущностей, зеркалят scenes/
 assets/
   sprites/
   sfx/
