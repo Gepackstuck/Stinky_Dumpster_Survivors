@@ -15,6 +15,7 @@ static func group_count(wave: int, kind: StringName) -> int:
 	var total: int = Balance.WAVE_ENEMIES_BASE + Balance.WAVE_ENEMIES_PER_WAVE * (maxi(wave, 1) - 1)
 	var avg_size: float = float(Balance.WAVE_GROUP_SIZE_BASE + floori(float(wave - 1) / float(Balance.WAVE_GROUP_SIZE_WAVES_PER_STEP)) + 1)
 	var count: int = maxi(roundi(float(total) / avg_size), Balance.WAVE_MIN_GROUPS)
+	count = maxi(count, ceili(duration_sec(wave) / Balance.WAVE_MAX_GAP_SEC))  # поле не должно пустеть надолго
 	if kind == &"horde":
 		count = int(count * Balance.HORDE_GROUP_MULT)
 	return count
@@ -42,8 +43,11 @@ static func spawn_times(wave: int, kind: StringName) -> Array[float]:
 	var count: int = group_count(wave, kind)
 	var last: float = duration_sec(wave) * Balance.WAVE_SPAWN_END_FRACTION
 	var times: Array[float] = [Balance.WAVE_FIRST_GROUP_SEC]
-	for i: int in count - 1:
-		times.append(randf_range(Balance.WAVE_FIRST_GROUP_SEC, last))
+	# равномерно по окну волны (с разбросом внутри своей доли), а не чистый рандом — иначе бывают дыры
+	var step: float = (last - Balance.WAVE_FIRST_GROUP_SEC) / float(maxi(count - 1, 1))
+	for i: int in range(1, count):
+		var centre: float = Balance.WAVE_FIRST_GROUP_SEC + step * i
+		times.append(clampf(centre + randf_range(-step, step) * 0.4, Balance.WAVE_FIRST_GROUP_SEC, last))
 	times.sort()
 	return times
 

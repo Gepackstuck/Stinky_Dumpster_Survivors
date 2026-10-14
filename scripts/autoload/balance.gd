@@ -37,6 +37,7 @@ const MAX_ALIVE_ENEMIES: int = 100                    # потолок враг�
 const WAVE_MIN_GROUPS: int = 3                       # минимум групп за волну
 const WAVE_GROUP_SIZE_BASE: int = 2               # размер группы = BASE + (волна-1)/STEP (±1, +1)
 const WAVE_GROUP_SIZE_WAVES_PER_STEP: int = 3
+const WAVE_MAX_GAP_SEC: float = 4.0               # максимум секунд между группами врагов (минимум групп = длительность / это)
 const WAVE_FIRST_GROUP_SEC: float = 0.5
 const WAVE_SPAWN_END_FRACTION: float = 0.85       # последняя группа не позже 85% времени волны
 const SPAWN_MARKER_SEC: float = 1.0               # красный крест за секунду до появления
