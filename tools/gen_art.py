@@ -391,7 +391,8 @@ def stamp_puddle(seed, color, glow):
 
 
 def draw_ground(seed=5, size=128):
-    """Бесшовная тайловая помойка: грязь, лужи крови и слизи, кишки, говно, кости, глаза."""
+    """Бесшовная тайловая помойка. Спокойная: грязь + редкий приглушённый декор,
+    чтобы не мешать читать врагов и снаряды."""
     rng = random.Random(seed)
     img = Image.new("RGBA", (size, size), BROWN + (255,))
 
@@ -402,53 +403,33 @@ def draw_ground(seed=5, size=128):
                 fn(m, dx, dy)
         return m
 
+    deco = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+
     def put(spr, x, y):
         for dx in (-size, 0, size):
             for dy in (-size, 0, size):
-                img.paste(spr, (x + dx, y + dy), spr)
+                deco.paste(spr, (x + dx, y + dy), spr)
 
-    # тёмные пятна грязи (дизеринг)
-    for _ in range(26):
+    DARK = (74, 42, 20)  # тёмно-коричневый для грязи: тише чёрного
+    for _ in range(22):
         cx, cy = rng.randrange(size), rng.randrange(size)
         r, r2 = rng.randint(4, 9), rng.randint(2, 5)
         m = region(lambda m, dx, dy: blob(m, cx + dx, cy + dy, r, r2, rng, 1.2, 12))
-        dither(img, m, BLACK, rng.choice(["dots", "dots", "checker"]))
-    # трещины
-    for _ in range(10):
-        x, y = rng.randrange(size), rng.randrange(size)
-        pts = [(x, y)]
-        for _ in range(rng.randint(3, 5)):
-            x += rng.randint(-3, 3)
-            y += rng.randint(1, 3)
-            pts.append((x, y))
-        m = region(lambda m, dx, dy: line(m, [(a + dx, b + dy) for a, b in pts], 1))
-        paint(img, m, BLACK)
-    # лужи: кровь и ядовитая слизь
-    put(stamp_puddle(1, RED, WHITE), 12, 20)
-    put(stamp_puddle(2, RED, WHITE), 84, 96)
-    put(stamp_puddle(3, GREEN, WHITE), 60, 40)
-    put(stamp_puddle(4, GREEN, YELLOW), 20, 100)
-    # кишки
-    for i, (x, y) in enumerate(((30, 12), (88, 60), (8, 70), (70, 118))):
-        put(stamp_guts(10 + i, rng.randint(14, 22)), x, y)
-    # куски жизни
-    for i, (x, y) in enumerate(((50, 86), (104, 24), (28, 52))):
-        put(stamp_poop(20 + i), x, y)
-    for i, (x, y) in enumerate(((100, 108), (40, 68), (118, 8), (72, 24))):
-        put(stamp_bone(30 + i), x, y)
-    for i, (x, y) in enumerate(((64, 70), (6, 110), (110, 78))):
-        put(stamp_eyeball(40 + i), x, y)
-    # мусор и мухи
-    junk = [WHITE, YELLOW, CYAN, GREEN, BLUE]
-    for _ in range(14):
-        x, y = rng.randrange(size), rng.randrange(size)
-        img.putpixel((x, y), rng.choice(junk) + (255,))
-    for _ in range(36):
-        img.putpixel((rng.randrange(size), rng.randrange(size)), BLACK + (255,))
+        dither(img, m, DARK, "dots")
+    # редкий декор (по одному), потом приглушаем
+    put(stamp_puddle(1, RED, WHITE), 14, 22)
+    put(stamp_puddle(3, GREEN, WHITE), 78, 86)
+    put(stamp_guts(10, 16), 84, 20)
+    put(stamp_poop(20), 40, 70)
+    put(stamp_bone(30), 100, 110)
+    put(stamp_eyeball(40), 22, 108)
+    # приглушение: декор лежит поверх грязи на 45% непрозрачности
+    a = deco.getchannel("A").point(lambda v: int(v * 0.45))
+    deco.putalpha(a)
+    img.alpha_composite(deco)
     return img.convert("RGBA")
 
 
-# ---------------------------------------------------------------- сборка
 def sheet(frames):
     w, h = frames[0].size
     out = new_img(w * len(frames), h)
@@ -639,7 +620,7 @@ def wobbly_mask(w, h, inset, chamfer, rng, step=7, jit=1.0):
     return m
 
 
-def draw_frame(w, h, ring, ring2, seed, chamfer=5, drips=4, eyes=True):
+def draw_frame(w, h, ring, ring2, seed, chamfer=5, drips=4, eyes=True, clean=False):
     """Кривая рамка: чёрный контур, кишечная полоса (ring/ring2), чёрная начинка с грязью."""
     rng = random.Random(seed)
     img = new_img(w, h)
@@ -651,8 +632,9 @@ def draw_frame(w, h, ring, ring2, seed, chamfer=5, drips=4, eyes=True):
     paint(img, m1, ring)
     dither(img, m1, ring2, "stripes")
     paint(img, m2, BLACK)
-    dither(img, m2, BROWN, "dots_off")
-    noise(img, m2, [GREEN, CYAN, PINK, YELLOW], max(3, w * h // 500), rng)
+    if not clean:
+        dither(img, m2, BROWN, "dots_off")
+        noise(img, m2, [GREEN, CYAN, PINK, YELLOW], max(3, w * h // 500), rng)
     for _ in range(drips):  # слизь капает сверху
         x = rng.randrange(8, w - 8)
         for k in range(rng.randint(2, 5)):
@@ -926,8 +908,8 @@ def build_step2():
                      ("perk_double_shot", icon_double), ("perk_loot_goblin", icon_goblin),
                      ("hud_heart", lambda: draw_heart(14))):
         fn().save(UI + name + ".png")
-    draw_frame(84, 112, PINK, RED, 101, chamfer=6, drips=5).save(UI + "card.png")
-    draw_frame(84, 112, YELLOW, GREEN, 101, chamfer=6, drips=7).save(UI + "card_hover.png")
+    draw_frame(84, 112, PINK, RED, 101, chamfer=6, drips=5, clean=True).save(UI + "card.png")
+    draw_frame(84, 112, YELLOW, GREEN, 101, chamfer=6, drips=7, clean=True).save(UI + "card_hover.png")
     draw_frame(96, 22, RED, PINK, 202, chamfer=4, drips=3, eyes=False).save(UI + "button.png")
     draw_frame(96, 22, YELLOW, GREEN, 202, chamfer=4, drips=5, eyes=False).save(UI + "button_hover.png")
     bar_under(72, 10, PINK).save(UI + "hp_bar_under.png")
