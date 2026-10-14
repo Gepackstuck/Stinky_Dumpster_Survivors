@@ -36,7 +36,7 @@ func reset_run() -> void:
 	max_hp = Balance.PLAYER_MAX_HP
 	hp = max_hp
 	xp = 0
-	xp_to_next = Balance.XP_FIRST_LEVEL
+	xp_to_next = xp_needed(1)
 	level = 1
 	coins = 0
 	kills = 0
@@ -79,6 +79,11 @@ func _on_enemy_died(_enemy_id: StringName, _position: Vector2) -> void:
 	kills += 1
 
 
+## Сколько XP нужно, чтобы выйти с уровня `at_level` на следующий.
+static func xp_needed(at_level: int) -> int:
+	return ceili(Balance.XP_LEVEL_FACTOR * pow(at_level + 3, 2))
+
+
 func _on_xp_collected(amount: int) -> void:
 	if not run_active:
 		return
@@ -87,7 +92,7 @@ func _on_xp_collected(amount: int) -> void:
 	while xp >= xp_to_next:
 		xp -= xp_to_next
 		level += 1
-		xp_to_next = ceili(xp_to_next * Balance.XP_LEVEL_GROWTH)
+		xp_to_next = xp_needed(level)
 		EventBus.player_leveled_up.emit(level)
 
 

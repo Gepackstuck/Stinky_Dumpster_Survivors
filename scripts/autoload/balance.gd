@@ -117,8 +117,7 @@ const ITEM_STINKY_PANTS_REPEL_CHANCE: float = 0.15
 const MAX_ENEMIES_ON_SCREEN: int = 500  # CONVENTIONS.md
 
 # --- XP / уровни ---
-const XP_FIRST_LEVEL: int = 5           # порог первого уровня (TASKS.md, Шаг 2)
-const XP_LEVEL_GROWTH: float = 1.5      # каждый следующий порог +50%
+const XP_LEVEL_FACTOR: float = 1.5      # XP до следующего уровня = FACTOR * (уровень + 3)^2 (как в Brotato, масштаб под наши дропы)
 const LEVEL_UP_CHOICES: int = 3
 
 # --- Враги: hp, damage, speed, xp, coins (GDD) ---

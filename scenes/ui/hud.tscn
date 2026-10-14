@@ -58,15 +58,15 @@ script = ExtResource("7_ptr")
 layout_mode = 0
 offset_left = 3.0
 offset_top = 18.0
-offset_right = 33.0
+offset_right = 35.0
 offset_bottom = 32.0
 texture = ExtResource("9_badge")
 
 [node name="LevelPrefix" type="Label" parent="Root/LevelBadge"]
 layout_mode = 0
-offset_left = 3.0
+offset_left = 6.0
 offset_top = 5.0
-offset_right = 15.0
+offset_right = 18.0
 offset_bottom = 12.0
 theme_override_fonts/font = ExtResource("10_small")
 theme_override_font_sizes/font_size = 5
@@ -76,9 +76,9 @@ theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 
 [node name="LevelLabel" type="Label" parent="Root/LevelBadge"]
 layout_mode = 0
-offset_left = 18.0
+offset_left = 19.0
 offset_top = 3.0
-offset_right = 30.0
+offset_right = 31.0
 offset_bottom = 12.0
 text = "1"
 theme_override_colors/font_color = Color(0.968627, 1, 0, 1)

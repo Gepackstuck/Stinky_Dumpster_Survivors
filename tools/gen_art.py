@@ -2321,7 +2321,7 @@ def build_step2():
     bar_fill(68, 6, WHITE, (170, 170, 170), 5).save(UI + "hp_bar_fill.png")  # белая: цвет задаётся tint из кода
     bar_under(72, 10, GREEN).save(UI + "xp_bar_under.png")
     bar_fill(68, 6, WHITE, (170, 170, 170), 6).save(UI + "xp_bar_fill.png")
-    draw_frame(30, 14, GREEN, PINK, 404, chamfer=2, drips=0, eyes=False, clean=True).save(UI + "level_badge.png")
+    draw_frame(32, 14, GREEN, PINK, 404, chamfer=2, drips=0, eyes=False, clean=True).save(UI + "level_badge.png")
     draw_death_panels().save(UI + "death_panels.png")
     draw_dim().save(UI + "dim_checker.png")
     draw_border_sheet().save(SPRITES + "arena_border.png")
