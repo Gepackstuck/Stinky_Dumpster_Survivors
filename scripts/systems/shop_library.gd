@@ -88,7 +88,7 @@ static func description(offer: Dictionary) -> String:
 	else:
 		text += PerkLibrary.description(offer["id"])
 	if offer["locked"]:
-		text += "\n[ЗАМОРОЖЕНО]"
+		text += "\nЗАМОРОЖЕНО"
 	return text
 
 

@@ -1833,16 +1833,18 @@ def icon_laser():
 
 
 def icon_slipper():
-    """Тапок: рваный коричневый шлёпанец, розовая перемычка, подошва в говне."""
-    rng = random.Random(81)
+    """Тапок сбоку: плоская подошва, розовый мысок-«булка», пустая пятка, пятно говна."""
     w = h = 16
-    sole = new_mask(w, h); blob(sole, 8, 10, 6, 3, rng, 0.5, 12)
-    strap = new_mask(w, h); line(strap, [(5, 9), (8, 5), (11, 9)], 2)
-    sil = union(sole, strap)
-    img = new_img(w, h); paint(img, sole, BROWN); dither(img, sole, BLACK, "dots"); paint(img, strap, PINK)
+    sole = new_mask(w, h); rect(sole, 1, 11, 14, 13); rect(sole, 0, 12, 0, 12); rect(sole, 15, 12, 15, 12)
+    toe = new_mask(w, h); blob(toe, 10, 8, 5, 3, random.Random(5), 0.2, 14); rect(toe, 8, 8, 14, 10)
+    back = new_mask(w, h); rect(back, 2, 9, 4, 10)
+    sil = union(sole, toe, back)
+    img = new_img(w, h); paint(img, sole, BROWN); dither(img, sole, BLACK, "dots")
+    paint(img, back, BROWN); paint(img, toe, PINK)
     out = finish(img, sil)
-    for x, y in ((4, 12), (9, 12), (12, 11)): px(out, x, y, GREEN)
-    px(out, 8, 7, YELLOW); px(out, 6, 10, RED)
+    for x in range(5, 8): px(out, x, 10, BLACK)   # тёмный проём для ноги
+    for x, y in ((9, 6), (11, 6), (13, 8)): px(out, x, y, WHITE)  # ворс
+    px(out, 12, 9, RED); px(out, 4, 14, GREEN); px(out, 8, 14, GREEN); px(out, 2, 11, YELLOW)
     return out
 
 
@@ -1862,13 +1864,15 @@ def icon_milk():
 
 
 def draw_proj_slipper(frame):
-    """12x8: летящий тапок (вращается): подошва с перемычкой, вонь за ним."""
-    img = new_img(12, 8)
-    sole = new_mask(12, 8); rect(sole, 1, 3 + frame, 10, 6 + frame)
-    strap = new_mask(12, 8); rect(strap, 4, 1 + frame, 7, 3 + frame)
-    sil = union(sole, strap)
-    paint(img, sole, BROWN); dither(img, sole, BLACK, "dots"); paint(img, strap, PINK)
-    px(img, 2, 5 + frame, GREEN); px(img, 9, 4 + frame, GREEN)
+    """14x8: летящий тапок сбоку (кадр 2 — слегка наклонён): подошва + розовый мысок."""
+    img = new_img(14, 8)
+    d = frame
+    sole = new_mask(14, 8); rect(sole, 0, 5 - d, 12, 6 - d)
+    toe = new_mask(14, 8); rect(toe, 7, 2 - d, 12, 4 - d); rect(toe, 6, 3 - d, 12, 4 - d)
+    sil = union(sole, toe)
+    paint(img, sole, BROWN); dither(img, sole, BLACK, "dots"); paint(img, toe, PINK)
+    for x in range(2, 5): px(img, x, 4 - d, BLACK)
+    px(img, 9, 2 - d, WHITE); px(img, 1, 6 - d, GREEN)
     return finish(img, sil)
 
 

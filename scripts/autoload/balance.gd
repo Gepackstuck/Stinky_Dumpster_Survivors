@@ -51,7 +51,7 @@ const FINAL_BOSS_SPAWN_SEC: float = 1.5
 const WAVE_END_BONUS_XP_BASE: int = 6          # «копание в помойке» в конце волны (аналог Harvesting в Brotato)
 const WAVE_END_BONUS_XP_PER_WAVE: int = 2
 const WAVE_END_COLLECT_SEC: float = 1.5           # время на авто-сбор материалов после волны
-const WAVE_HP_GROWTH: float = 0.18          # +15% HP за каждую волну после первой
+const WAVE_HP_GROWTH: float = 0.30          # +30% HP за каждую волну после первой
 const PLAYER_MAX_HIT_FRACTION: float = 0.34   # один удар не снимает больше трети максимума HP (нет ваншотов)
 const WAVE_DAMAGE_GROWTH: float = 0.10       # +10% урона врагов за волну
 const WAVE_SPEED_GROWTH: float = 0.03        # +3% скорости за волну
@@ -147,7 +147,7 @@ const STAT_TIER4_CHANCE_PER_LEVEL: float = 0.01    # IV-тир = (ур-15)*эт�
 const STAT_GUARANTEED_TIER: Dictionary = {5: 2, 10: 3, 15: 3, 20: 3}  # гарантированный минимум тира по уровню; с 25-го каждый 5-й — IV
 # --- Оружие и Ларёк (Brotato) ---
 const WEAPON_SLOTS: int = 6
-const WEAPON_TIER_DAMAGE: Array[float] = [1.0, 1.6, 2.4, 3.6]      # множитель урона по тирам I-IV
+const WEAPON_TIER_DAMAGE: Array[float] = [1.0, 1.5, 2.0, 2.7]      # множитель урона по тирам I-IV
 const WEAPON_TIER_COOLDOWN: Array[float] = [1.0, 0.92, 0.85, 0.75]  # множитель паузы между атаками
 const WEAPON_PRICE: Dictionary = {&"lighter": 22, &"sock": 24, &"slingshot": 22, &"mop": 26, &"laser_pointer": 24, &"slipper": 30, &"condensed_milk": 22}
 const PERK_PRICE: Dictionary = {&"speed": 14, &"regen": 16, &"double_shot": 30, &"loot_goblin": 12}
@@ -182,28 +182,28 @@ const GLUTTON_MAX_SCALE: float = 1.9
 
 # --- Враги: hp, damage, speed, xp, coins (GDD) ---
 const ENEMIES: Dictionary = {
-	&"squid_gopnik": {"hp": 20.0, "damage": 2.0, "speed": 60.0, "xp": 2, "coins": 1},
-	&"microbe": {"hp": 30.0, "damage": 2.0, "speed": 40.0, "xp": 3, "coins": 1},
-	&"npc_bot": {"hp": 15.0, "damage": 2.0, "speed": 50.0, "xp": 2, "coins": 1},
-	&"cockroach": {"hp": 5.0, "damage": 2.0, "speed": 140.0, "xp": 1, "coins": 2},
-	&"wifi_ghost": {"hp": 25.0, "damage": 3.0, "speed": 70.0, "xp": 4, "coins": 2},
+	&"squid_gopnik": {"hp": 40.0, "damage": 2.0, "speed": 60.0, "xp": 2, "coins": 1},
+	&"microbe": {"hp": 60.0, "damage": 2.0, "speed": 40.0, "xp": 3, "coins": 1},
+	&"npc_bot": {"hp": 32.0, "damage": 2.0, "speed": 50.0, "xp": 2, "coins": 1},
+	&"cockroach": {"hp": 9.0, "damage": 2.0, "speed": 140.0, "xp": 1, "coins": 2},
+	&"wifi_ghost": {"hp": 50.0, "damage": 3.0, "speed": 70.0, "xp": 4, "coins": 2},
 	# Враги Шага 4 (поведение как в Brotato): group_mult — множитель размера группы.
-	&"chaser": {"hp": 6.0, "damage": 1.0, "speed": 88.0, "xp": 1, "coins": 1, "radius": 5.0, "group_mult": 1.8},
-	&"charger": {"hp": 24.0, "damage": 2.0, "speed": 70.0, "xp": 3, "coins": 1, "radius": 8.0, "group_mult": 0.7,
+	&"chaser": {"hp": 10.0, "damage": 1.0, "speed": 88.0, "xp": 1, "coins": 1, "radius": 5.0, "group_mult": 1.8},
+	&"charger": {"hp": 50.0, "damage": 2.0, "speed": 70.0, "xp": 3, "coins": 1, "radius": 8.0, "group_mult": 0.7,
 			"brain": "res://scripts/enemies/brains/charger_brain.gd"},
-	&"spitter": {"hp": 16.0, "damage": 1.0, "speed": 60.0, "xp": 3, "coins": 1, "radius": 7.0, "group_mult": 0.7,
+	&"spitter": {"hp": 34.0, "damage": 1.0, "speed": 60.0, "xp": 3, "coins": 1, "radius": 7.0, "group_mult": 0.7,
 			"brain": "res://scripts/enemies/brains/spitter_brain.gd"},
-	&"bruiser": {"hp": 80.0, "damage": 3.0, "speed": 55.0, "xp": 8, "coins": 3, "radius": 11.0, "group_mult": 0.3},
-	&"looter": {"hp": 40.0, "damage": 1.0, "speed": 85.0, "xp": 25, "coins": 10, "radius": 7.0, "group_mult": 0.0,
+	&"bruiser": {"hp": 170.0, "damage": 3.0, "speed": 55.0, "xp": 8, "coins": 3, "radius": 11.0, "group_mult": 0.3},
+	&"looter": {"hp": 90.0, "damage": 1.0, "speed": 85.0, "xp": 25, "coins": 10, "radius": 7.0, "group_mult": 0.0,
 			"brain": "res://scripts/enemies/brains/looter_brain.gd"},
 	# Враги Шага 4б (Brotato: healer, slasher egg, spawner, gobbler, tree).
-	&"healer": {"hp": 18.0, "damage": 1.0, "speed": 55.0, "xp": 4, "coins": 1, "radius": 7.0, "group_mult": 0.4,
+	&"healer": {"hp": 36.0, "damage": 1.0, "speed": 55.0, "xp": 4, "coins": 1, "radius": 7.0, "group_mult": 0.4,
 			"brain": "res://scripts/enemies/brains/healer_brain.gd"},
-	&"egg": {"hp": 12.0, "damage": 0.0, "speed": 0.0, "xp": 2, "coins": 0, "radius": 6.0, "group_mult": 0.3, "contact": false,
+	&"egg": {"hp": 24.0, "damage": 0.0, "speed": 0.0, "xp": 2, "coins": 0, "radius": 6.0, "group_mult": 0.3, "contact": false,
 			"brain": "res://scripts/enemies/brains/egg_brain.gd"},
-	&"mamka": {"hp": 70.0, "damage": 2.0, "speed": 45.0, "xp": 6, "coins": 2, "radius": 10.0, "group_mult": 0.25,
+	&"mamka": {"hp": 140.0, "damage": 2.0, "speed": 45.0, "xp": 6, "coins": 2, "radius": 10.0, "group_mult": 0.25,
 			"brain": "res://scripts/enemies/brains/mamka_brain.gd"},
-	&"glutton": {"hp": 30.0, "damage": 2.0, "speed": 70.0, "xp": 5, "coins": 2, "radius": 8.0, "group_mult": 0.4,
+	&"glutton": {"hp": 60.0, "damage": 2.0, "speed": 70.0, "xp": 5, "coins": 2, "radius": 8.0, "group_mult": 0.4,
 			"brain": "res://scripts/enemies/brains/glutton_brain.gd"},
 	&"trash_bin": {"hp": 40.0, "damage": 0.0, "speed": 0.0, "xp": 6, "coins": 0, "radius": 12.0, "group_mult": 0.0,
 			"contact": false, "neutral": true, "brain": "res://scripts/enemies/brains/bin_brain.gd"},
