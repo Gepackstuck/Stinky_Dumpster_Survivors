@@ -180,6 +180,16 @@ static func description(item_id: StringName) -> String:
 				lines.append("+1 БАБКА КИДАЕТ ТАПКИ, ИНОГДА ЛЕЧИТ")
 			&"turrets":
 				lines.append("+%d ТУРЕЛЬ НА ВОЛНУ" % v)
+			&"burn":
+				lines.append("%d%% ШАНС ПОДЖЕЧЬ ВРАГА" % v)
+			&"bash":
+				lines.append("%d%% ШАНС СИЛЬНО ОТБРОСИТЬ" % v)
+			&"crit_coin":
+				lines.append("%d%% +1 ГОВНО С КРИТА" % v)
+			&"block":
+				lines.append("ГАСИТ %d УДАР В НАЧАЛЕ ВОЛНЫ" % v)
+			&"still_regen":
+				lines.append("+%d ХП ЗА 2 СЕК, ПОКА СТОИШЬ" % v)
 			&"discount":
 				lines.append("-%d%% ЦЕН В ЛАРЬКЕ" % v)
 	return "\n".join(lines)

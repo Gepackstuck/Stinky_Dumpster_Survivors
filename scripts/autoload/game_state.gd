@@ -42,6 +42,12 @@ var explode_percent: float = 0.0
 var lifesteal_percent: float = 0.0
 var discount_percent: float = 0.0
 var pet_count: int = 0
+var burn_percent: float = 0.0       # зажигалка: шанс поджечь при попадании
+var bash_percent: float = 0.0       # лом: шанс сильно отбросить
+var crit_coin_percent: float = 0.0  # золотой зуб: шанс монеты с крита
+var block_count: int = 0            # каска: сколько ударов гасит за волну
+var still_regen: float = 0.0        # бинт: ХП за тик на месте
+var block_charges: int = 0          # осталось гашений в этой волне
 var turret_count: int = 0
 var ghost_drunk_count: int = 0
 var ghost_granny_count: int = 0
@@ -76,6 +82,7 @@ func reset_run() -> void:
 	perk_stacks.clear()
 	stat_totals.clear()
 	items.clear()
+	block_charges = 0
 	_coin_remainder = 0.0
 	weapons.clear()
 	shop_offers.clear()
@@ -198,6 +205,11 @@ func _recompute_items() -> void:
 	lifesteal_percent = minf(fx.get(&"lifesteal", 0.0), 60.0)
 	discount_percent = minf(fx.get(&"discount", 0.0), 60.0)
 	pet_count = roundi(fx.get(&"pets", 0.0))
+	burn_percent = minf(fx.get(&"burn", 0.0), 75.0)
+	bash_percent = minf(fx.get(&"bash", 0.0), 60.0)
+	crit_coin_percent = minf(fx.get(&"crit_coin", 0.0), 100.0)
+	block_count = roundi(fx.get(&"block", 0.0))
+	still_regen = fx.get(&"still_regen", 0.0)
 	turret_count = roundi(fx.get(&"turrets", 0.0))
 	ghost_drunk_count = roundi(fx.get(&"ghost_drunk", 0.0))
 	ghost_granny_count = roundi(fx.get(&"ghost_granny", 0.0))
@@ -208,6 +220,8 @@ func roll_damage(base: float) -> float:
 	var result: float = base * projectile_damage_mult * damage_mult
 	if randf() * 100.0 < crit_percent:
 		result *= Balance.CRIT_DAMAGE_MULT
+		if randf() * 100.0 < crit_coin_percent:
+			coins += 1
 	return result
 
 

@@ -135,6 +135,11 @@ const ITEM_THORNS_RADIUS: float = 34.0
 const ITEM_EXPLODE_RADIUS: float = 44.0
 const ITEM_EXPLODE_DAMAGE: float = 22.0             # * множитель урона
 const ITEM_LIFESTEAL_HP: float = 1.0
+const ITEM_BURN_DPS: float = 5.0                    # зажигалка: урон в секунду от поджога
+const ITEM_BURN_SEC: float = 3.0
+const ITEM_BASH_PUSH: float = 360.0                 # лом: сила отбрасывания
+const ITEM_STILL_REGEN_SEC: float = 2.0             # бинт: раз в столько секунд на месте лечит
+const ITEM_STILL_WAIT_SEC: float = 0.4              # сколько надо постоять, чтобы бинт заработал
 # tier: 1-4 (цвет рамки), price: цена в говне до роста по волнам, limit: макс. штук (0 — без лимита),
 # mods: статы (как у карточек уровня; можно с минусом), fx: coin_bonus/repel/thorns/explode/lifesteal/discount (на штуку)
 const ITEMS: Dictionary = {
@@ -163,7 +168,7 @@ const ITEMS: Dictionary = {
 	&"bottle_cap": {"tier": 1, "price": 12, "limit": 0, "mods": {&"armor": 1.0, &"dodge": -2.0}},
 	&"gum": {"tier": 1, "price": 13, "limit": 0, "mods": {&"pickup": 25.0, &"speed": -2.0}},
 	&"ushanka": {"tier": 1, "price": 15, "limit": 0, "mods": {&"max_hp": 6.0, &"speed": -3.0}},
-	&"lighter": {"tier": 1, "price": 14, "limit": 0, "mods": {&"damage": 6.0, &"max_hp": -3.0}},
+	&"lighter": {"tier": 1, "price": 14, "limit": 0, "mods": {&"damage": 6.0, &"max_hp": -3.0}, "fx": {&"burn": 15.0}},
 	&"plastic_bag": {"tier": 1, "price": 14, "limit": 0, "mods": {&"pickup": 30.0, &"armor": -1.0}},
 	&"rubber_boot": {"tier": 1, "price": 15, "limit": 0, "mods": {&"speed": 5.0, &"dodge": -3.0}},
 	&"vodka": {"tier": 2, "price": 26, "limit": 0, "mods": {&"damage": 9.0, &"dodge": -5.0}},
@@ -172,10 +177,10 @@ const ITEMS: Dictionary = {
 	&"scarf": {"tier": 2, "price": 26, "limit": 0, "mods": {&"armor": 2.0, &"attack_speed": -4.0}},
 	&"skateboard": {"tier": 2, "price": 28, "limit": 0, "mods": {&"speed": 10.0, &"armor": -1.0}},
 	&"dried_fish": {"tier": 2, "price": 24, "limit": 0, "mods": {&"attack_speed": 8.0, &"dodge": -3.0}},
-	&"helmet": {"tier": 3, "price": 40, "limit": 0, "mods": {&"armor": 3.0, &"speed": -5.0}},
-	&"bandage": {"tier": 3, "price": 38, "limit": 0, "mods": {&"regen": 4.0, &"damage": -5.0}},
-	&"crowbar": {"tier": 3, "price": 42, "limit": 0, "mods": {&"damage": 14.0, &"speed": -6.0}},
-	&"gold_tooth": {"tier": 3, "price": 40, "limit": 0, "mods": {&"crit": 10.0, &"max_hp": -5.0}},
+	&"helmet": {"tier": 3, "price": 40, "limit": 3, "mods": {&"armor": 3.0, &"speed": -5.0}, "fx": {&"block": 1.0}},
+	&"bandage": {"tier": 3, "price": 38, "limit": 0, "mods": {&"regen": 4.0, &"damage": -5.0}, "fx": {&"still_regen": 1.0}},
+	&"crowbar": {"tier": 3, "price": 42, "limit": 0, "mods": {&"damage": 14.0, &"speed": -6.0}, "fx": {&"bash": 12.0}},
+	&"gold_tooth": {"tier": 3, "price": 40, "limit": 0, "mods": {&"crit": 10.0, &"max_hp": -5.0}, "fx": {&"crit_coin": 30.0}},
 	&"battery": {"tier": 3, "price": 40, "limit": 0, "mods": {&"attack_speed": 15.0, &"armor": -2.0}},
 	&"crown": {"tier": 4, "price": 75, "limit": 0, "mods": {&"max_hp": 12.0, &"damage": 8.0, &"armor": 1.0, &"dodge": -5.0}},
 	&"junk_backpack": {"tier": 4, "price": 72, "limit": 0, "mods": {&"pickup": 60.0, &"max_hp": 10.0, &"speed": -6.0}},

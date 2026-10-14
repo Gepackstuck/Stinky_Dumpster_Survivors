@@ -250,8 +250,18 @@ func _on_hurt(damage: float) -> void:
 		_knockback = _target.global_position.direction_to(global_position) * Balance.ENEMY_KNOCKBACK_SPEED
 	if not _neutral:
 		HitFx.burst(get_tree(), global_position, Color(1.0, 0.0, 0.2), 5, 70.0)
+		_item_hit_effects()
 	HitFx.popup(get_tree(), global_position + Vector2(0.0, -10.0), str(int(damage)), Color.WHITE)
 	_health.take_damage(damage)
+
+
+## Эффекты предметов на попадание: поджог (зажигалка) и сильный отброс (лом).
+func _item_hit_effects() -> void:
+	if GameState.burn_percent > 0.0 and randf() * 100.0 < GameState.burn_percent:
+		ignite(Balance.ITEM_BURN_DPS, Balance.ITEM_BURN_SEC)
+	if GameState.bash_percent > 0.0 and randf() * 100.0 < GameState.bash_percent and is_instance_valid(_target):
+		_knockback = _target.global_position.direction_to(global_position) * Balance.ITEM_BASH_PUSH
+		HitFx.popup(get_tree(), global_position + Vector2(0.0, -18.0), "ХРЯСЬ!", Color(1.0, 0.5, 0.0), 12.0, 0.5)
 
 
 func _on_died() -> void:

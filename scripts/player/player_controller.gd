@@ -14,6 +14,8 @@ extends CharacterBody2D
 var _arena_max: Vector2 = Vector2.ZERO
 var _regen_timer: float = 0.0
 var _shake: float = 0.0
+var _still_time: float = 0.0
+var _still_timer: float = 0.0
 
 
 func _ready() -> void:
@@ -33,6 +35,7 @@ func _ready() -> void:
 	EventBus.perk_chosen.connect(_on_perk_chosen)
 	EventBus.weapons_changed.connect(_sync_weapons)
 	EventBus.enemy_died.connect(_on_enemy_died_item_fx)
+	EventBus.wave_started.connect(_on_wave_started_items)
 	_update_magnet_radius()
 	_health.setup(Balance.PLAYER_MAX_HP)
 
@@ -53,11 +56,34 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 	global_position = global_position.clamp(Vector2.ZERO, _arena_max)
 	_update_shake(delta)
+	_update_still_regen(delta, direction == Vector2.ZERO)
 	if GameState.regen_hp > 0.0:
 		_regen_timer += delta
 		if _regen_timer >= Balance.PERK_REGEN_INTERVAL_SEC:
 			_regen_timer -= Balance.PERK_REGEN_INTERVAL_SEC
 			_health.heal(GameState.regen_hp)
+
+
+func _on_wave_started_items(_wave: int) -> void:
+	GameState.block_charges = GameState.block_count
+
+
+## «Грязный бинт»: пока стоишь на месте, лечит чуть сильнее.
+func _update_still_regen(delta: float, standing: bool) -> void:
+	if GameState.still_regen <= 0.0 or not GameState.run_active:
+		return
+	if not standing:
+		_still_time = 0.0
+		_still_timer = 0.0
+		return
+	_still_time += delta
+	if _still_time < Balance.ITEM_STILL_WAIT_SEC:
+		return
+	_still_timer += delta
+	if _still_timer >= Balance.ITEM_STILL_REGEN_SEC:
+		_still_timer = 0.0
+		_health.heal(GameState.still_regen)
+		HitFx.popup(get_tree(), global_position + Vector2(0.0, -12.0), "+%d ХП" % int(GameState.still_regen), Color(0.2235, 1.0, 0.0784), 12.0, 0.5)
 
 
 func _update_shake(delta: float) -> void:
@@ -123,6 +149,11 @@ func _sync_weapons() -> void:
 func _on_hurt(raw_damage: float) -> void:
 	if randf() * 100.0 < GameState.dodge_percent:
 		HitFx.popup(get_tree(), global_position + Vector2(0.0, -12.0), "МИМО!", Color(0.0, 0.94, 1.0), 14.0, 0.7)
+		return
+	if GameState.block_charges > 0:
+		GameState.block_charges -= 1
+		HitFx.popup(get_tree(), global_position + Vector2(0.0, -12.0), "КАСКА!", Color(1.0, 1.0, 0.0), 14.0, 0.8)
+		HitFx.burst(get_tree(), global_position, Color(1.0, 1.0, 0.0), 8, 50.0, 2.0, 0.4, true)
 		return
 	if randf() * 100.0 < GameState.repel_percent:
 		_stink_repel()
