@@ -16,6 +16,10 @@ var _regen_timer: float = 0.0
 var _shake: float = 0.0
 var _still_time: float = 0.0
 var _still_timer: float = 0.0
+var _drunk_left: float = 0.0
+var _combo_stacks: int = 0
+var _combo_left: float = 0.0
+var _slow_tick: float = 0.0
 
 
 func _ready() -> void:
@@ -36,6 +40,7 @@ func _ready() -> void:
 	EventBus.weapons_changed.connect(_sync_weapons)
 	EventBus.enemy_died.connect(_on_enemy_died_item_fx)
 	EventBus.wave_started.connect(_on_wave_started_items)
+	EventBus.wave_ended.connect(_on_wave_ended_items)
 	_update_magnet_radius()
 	_health.setup(Balance.PLAYER_MAX_HP)
 
@@ -57,6 +62,8 @@ func _physics_process(delta: float) -> void:
 	global_position = global_position.clamp(Vector2.ZERO, _arena_max)
 	_update_shake(delta)
 	_update_still_regen(delta, direction == Vector2.ZERO)
+	_update_item_timers(delta)
+	_update_slow_field(delta, direction != Vector2.ZERO)
 	if GameState.regen_hp > 0.0:
 		_regen_timer += delta
 		if _regen_timer >= Balance.PERK_REGEN_INTERVAL_SEC:
@@ -66,6 +73,52 @@ func _physics_process(delta: float) -> void:
 
 func _on_wave_started_items(_wave: int) -> void:
 	GameState.block_charges = GameState.block_count
+	_drunk_left = 0.0
+	_combo_stacks = 0
+	_combo_left = 0.0
+
+
+## «Рюкзак с хламом»: после волны шанс найти бесплатный предмет.
+func _on_wave_ended_items(wave_number: int) -> void:
+	if GameState.stash_percent <= 0.0 or not GameState.run_active:
+		return
+	if randf() * 100.0 >= GameState.stash_percent:
+		return
+	var item_id: StringName = ItemLibrary.roll_free_item(wave_number + 2)
+	if item_id == &"":
+		return
+	GameState.add_item(item_id)
+	HitFx.popup(get_tree(), global_position + Vector2(0.0, -20.0), "В РЮКЗАКЕ НАШЁЛ: %s" % ItemLibrary.title(item_id), Color(0.968627, 1.0, 0.0), 14.0, 1.8)
+
+
+## Палёнка (пьянка) и батарейка (серия) дают временную скорость атаки.
+func _update_item_timers(delta: float) -> void:
+	if _drunk_left > 0.0:
+		_drunk_left -= delta
+	if _combo_left > 0.0:
+		_combo_left -= delta
+		if _combo_left <= 0.0:
+			_combo_stacks = 0
+	var bonus: float = Balance.ITEM_DRUNK_ATTACK_BONUS if _drunk_left > 0.0 else 0.0
+	bonus += float(_combo_stacks) * GameState.combo_percent / 100.0
+	GameState.temp_attack_bonus = bonus
+
+
+## «Доска с колёсами»: враги рядом с бегущим героем замедляются.
+func _update_slow_field(delta: float, moving: bool) -> void:
+	if GameState.slow_field_count <= 0 or not moving or not GameState.run_active:
+		return
+	_slow_tick -= delta
+	if _slow_tick > 0.0:
+		return
+	_slow_tick = Balance.ITEM_SLOW_TICK_SEC
+	var factor: float = 1.0 / (1.0 + 0.5 * float(GameState.slow_field_count))
+	var radius_sq: float = Balance.ITEM_SLOW_RADIUS * Balance.ITEM_SLOW_RADIUS
+	HitFx.burst(get_tree(), global_position + Vector2(0.0, 8.0), Color(0.6, 0.5, 0.35), 2, 24.0, 2.0, 0.4, true)
+	for node: Node in get_tree().get_nodes_in_group(&"enemies"):
+		var enemy: EnemyBase = node as EnemyBase
+		if enemy != null and global_position.distance_squared_to(enemy.global_position) <= radius_sq:
+			enemy.slow(factor, Balance.ITEM_SLOW_SEC)
 
 
 ## «Грязный бинт»: пока стоишь на месте, лечит чуть сильнее.
@@ -194,6 +247,12 @@ func _thorns_hit() -> void:
 func _on_enemy_died_item_fx(enemy_id: StringName, at: Vector2) -> void:
 	if Balance.ENEMIES.get(enemy_id, {}).get("neutral", false) or not GameState.run_active:
 		return
+	if GameState.combo_percent > 0.0:
+		_combo_stacks = mini(_combo_stacks + 1, Balance.ITEM_COMBO_MAX_STACKS)
+		_combo_left = Balance.ITEM_COMBO_SEC
+	if GameState.drunk_percent > 0.0 and _drunk_left <= 0.0 and randf() * 100.0 < GameState.drunk_percent:
+		_drunk_left = Balance.ITEM_DRUNK_SEC
+		HitFx.popup(get_tree(), global_position + Vector2(0.0, -14.0), "ПЬЯНКА!", Color(0.0, 0.94, 1.0), 14.0, 0.8)
 	if randf() * 100.0 < GameState.lifesteal_percent:
 		_health.heal(Balance.ITEM_LIFESTEAL_HP)
 		HitFx.popup(get_tree(), global_position + Vector2(0.0, -12.0), "+1 ХП", Color(1.0, 0.0, 0.2), 12.0, 0.6)

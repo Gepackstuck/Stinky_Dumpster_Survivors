@@ -49,6 +49,11 @@ var bash_percent: float = 0.0       # лом: шанс сильно отброс
 var crit_coin_percent: float = 0.0  # золотой зуб: шанс монеты с крита
 var block_count: int = 0            # каска: сколько ударов гасит за волну
 var still_regen: float = 0.0        # бинт: ХП за тик на месте
+var drunk_percent: float = 0.0     # палёнка: шанс пьянки с убийства
+var combo_percent: float = 0.0     # батарейка: % скорости атаки за звено серии
+var slow_field_count: int = 0      # доска: сколько досок (сила замедления)
+var stash_percent: float = 0.0     # рюкзак: шанс найти предмет после волны
+var temp_attack_bonus: float = 0.0 # временная прибавка к скорости атаки (пьянка, серия)
 var block_charges: int = 0          # осталось гашений в этой волне
 var turret_count: int = 0
 var ghost_drunk_count: int = 0
@@ -85,6 +90,7 @@ func reset_run() -> void:
 	stat_totals.clear()
 	items.clear()
 	block_charges = 0
+	temp_attack_bonus = 0.0
 	run_coins_earned = 0
 	_coin_remainder = 0.0
 	weapons.clear()
@@ -209,6 +215,11 @@ func _recompute_items() -> void:
 		_item_stats[stat_id] = _item_stats.get(stat_id, 0.0) + hero["mods"][stat_id]
 	for key: StringName in hero.get("fx", {}):
 		fx[key] = fx.get(key, 0.0) + hero["fx"][key]
+	var crown: float = minf(fx.get(&"crown", 0.0), 60.0)
+	if crown > 0.0:
+		for stat_id: StringName in _item_stats.keys():
+			if _item_stats[stat_id] > 0.0:
+				_item_stats[stat_id] *= 1.0 + crown / 100.0
 	coin_bonus = fx.get(&"coin_bonus", 0.0) / 100.0
 	repel_percent = minf(fx.get(&"repel", 0.0), Balance.ITEM_REPEL_MAX_PERCENT)
 	thorns_damage = fx.get(&"thorns", 0.0)
@@ -221,6 +232,10 @@ func _recompute_items() -> void:
 	crit_coin_percent = minf(fx.get(&"crit_coin", 0.0), 100.0)
 	block_count = roundi(fx.get(&"block", 0.0))
 	still_regen = fx.get(&"still_regen", 0.0)
+	drunk_percent = minf(fx.get(&"drunk", 0.0), 40.0)
+	combo_percent = fx.get(&"combo", 0.0)
+	slow_field_count = roundi(fx.get(&"slow_field", 0.0))
+	stash_percent = minf(fx.get(&"stash", 0.0), 80.0)
 	turret_count = roundi(fx.get(&"turrets", 0.0))
 	ghost_drunk_count = roundi(fx.get(&"ghost_drunk", 0.0))
 	ghost_granny_count = roundi(fx.get(&"ghost_granny", 0.0))
@@ -237,7 +252,7 @@ func roll_damage(base: float) -> float:
 
 
 func cooldown_for(base_sec: float) -> float:
-	return base_sec / attack_speed_mult
+	return base_sec / (attack_speed_mult + temp_attack_bonus)
 
 
 func _recompute_perk_stats() -> void:

@@ -142,6 +142,16 @@ static func pool(tier_value: int) -> Array[StringName]:
 	return result
 
 
+## Случайный бесплатный предмет (тир растёт с волной) или пустой id, если брать нечего.
+static func roll_free_item(wave_value: int) -> StringName:
+	var tier: int = ShopLibrary.roll_tier(wave_value)
+	for t: int in range(tier, 0, -1):
+		var candidates: Array[StringName] = pool(t)
+		if not candidates.is_empty():
+			return candidates[randi() % candidates.size()]
+	return &""
+
+
 static func _sign(value: float) -> String:
 	return "+" if value >= 0.0 else "-"
 
@@ -194,6 +204,16 @@ static func describe(data: Dictionary) -> String:
 				lines.append("ГАСИТ %d УДАР В НАЧАЛЕ ВОЛНЫ" % v)
 			&"still_regen":
 				lines.append("+%d ХП ЗА 2 СЕК, ПОКА СТОИШЬ" % v)
+			&"drunk":
+				lines.append("%d%% ШАНС ПЬЯНКИ ПОСЛЕ УБИЙСТВА: +30%% СКОР. АТАКИ 5 СЕК" % v)
+			&"combo":
+				lines.append("КАЖДОЕ УБИЙСТВО ПОДРЯД: +%d%% СКОР. АТАКИ" % v)
+			&"slow_field":
+				lines.append("ВРАГИ РЯДОМ ТОРМОЗЯТ, КОГДА БЕЖИШЬ")
+			&"stash":
+				lines.append("%d%% НАЙТИ ПРЕДМЕТ ПОСЛЕ ВОЛНЫ" % v)
+			&"crown":
+				lines.append("+%d%% КО ВСЕМ ПЛЮСАМ ПРЕДМЕТОВ" % v)
 			&"discount":
 				lines.append("-%d%% ЦЕН В ЛАРЬКЕ" % v)
 	return "\n".join(lines)

@@ -99,15 +99,9 @@ func _on_enemy_died(enemy_id: StringName, at: Vector2) -> void:
 func _elite_reward(at: Vector2) -> void:
 	for i: int in Balance.ELITE_REWARD_XP_DROPS:
 		EventBus.xp_drop_requested.emit(at + Vector2.from_angle(randf() * TAU) * randf_range(4.0, 20.0), Balance.ELITE_REWARD_XP_VALUE)
-	var tier: int = ShopLibrary.roll_tier(GameState.wave + 4)
-	var candidates: Array[StringName] = []
-	for t: int in range(tier, 0, -1):
-		candidates = ItemLibrary.pool(t)
-		if not candidates.is_empty():
-			break
-	if candidates.is_empty():
+	var item_id: StringName = ItemLibrary.roll_free_item(GameState.wave + 4)
+	if item_id == &"":
 		return
-	var item_id: StringName = candidates[randi() % candidates.size()]
 	GameState.add_item(item_id)
 	HitFx.popup(get_tree(), at + Vector2(0.0, -18.0), "ЭЛИТА ВЫРОНИЛА: %s" % ItemLibrary.title(item_id), Color(0.968627, 1.0, 0.0), 14.0, 1.8)
 
