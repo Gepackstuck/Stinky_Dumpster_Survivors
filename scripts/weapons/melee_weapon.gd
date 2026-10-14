@@ -35,7 +35,8 @@ func _physics_process(delta: float) -> void:
 		return
 	var target: Node2D = null
 	var best_sq: float = _reach * _reach * 2.25  # замахиваемся, если враг в 1.5 длины
-	for node: Node in get_tree().get_nodes_in_group(&"enemies"):
+	var candidates: Array[Node] = get_tree().get_nodes_in_group(&"enemies") + get_tree().get_nodes_in_group(&"neutrals")
+	for node: Node in candidates:
 		var enemy: Node2D = node as Node2D
 		var d: float = global_position.distance_squared_to(enemy.global_position)
 		if enemy != null and d < best_sq:

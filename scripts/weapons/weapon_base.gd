@@ -38,6 +38,7 @@ func _physics_process(delta: float) -> void:
 	_cooldown_left = GameState.cooldown_for(_cooldown_sec)
 
 
+## Ближайшая цель: враги в приоритете, бак считается «в 1.5 раза дальше» — но если он заметно ближе, бьём по нему.
 func _find_nearest_enemy() -> Node2D:
 	var nearest: Node2D = null
 	var best_sq: float = _range_sq
@@ -47,6 +48,12 @@ func _find_nearest_enemy() -> Node2D:
 		if dist_sq < best_sq:
 			best_sq = dist_sq
 			nearest = enemy
+	for node: Node in get_tree().get_nodes_in_group(&"neutrals"):
+		var bin: Node2D = node as Node2D
+		var dist_sq: float = global_position.distance_squared_to(bin.global_position) * 2.25
+		if dist_sq < best_sq:
+			best_sq = dist_sq
+			nearest = bin
 	return nearest
 
 
