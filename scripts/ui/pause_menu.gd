@@ -9,19 +9,33 @@ const PANEL_VARIANTS: int = 4
 @onready var _root: Control = $Root
 @onready var _panel: TextureRect = $Root/Panel
 @onready var _resume: Button = $Root/Resume
+@onready var _inventory_button: Button = $Root/Inventory
 @onready var _restart: Button = $Root/Restart
 @onready var _quit: Button = $Root/Quit
+
+var _inventory: Control = null
+var _inventory_text: Label = null
+var _inventory_items: GridContainer = null
+var _inventory_weapons: HBoxContainer = null
 
 
 func _ready() -> void:
 	_root.hide()
 	_resume.pressed.connect(_close)
 	_restart.pressed.connect(_on_restart)
+	_inventory_button.pressed.connect(_open_inventory)
+	_build_inventory()
 	_quit.pressed.connect(func() -> void: get_tree().quit())
 
 
 func _input(event: InputEvent) -> void:
 	if not _root.visible:
+		return
+	if _inventory.visible:
+		if event.is_action_pressed(&"ui_accept") or event.is_action_pressed(&"move_left") or event.is_action_pressed(&"move_right"):
+			get_viewport().set_input_as_handled()
+			_inventory.hide()
+			_inventory_button.grab_focus()
 		return
 	var step: int = 0
 	if event.is_action_pressed(&"move_up"):
@@ -31,7 +45,7 @@ func _input(event: InputEvent) -> void:
 	if step == 0:
 		return
 	get_viewport().set_input_as_handled()  # W/S и стрелки — между кнопками
-	var buttons: Array[Button] = [_resume, _restart, _quit]
+	var buttons: Array[Button] = [_resume, _inventory_button, _restart, _quit]
 	var current: int = 0
 	for i: int in buttons.size():
 		if buttons[i].has_focus():
@@ -44,7 +58,10 @@ func _unhandled_input(event: InputEvent) -> void:
 	if key == null or not key.pressed or key.echo or key.keycode != KEY_ESCAPE:
 		return
 	get_viewport().set_input_as_handled()
-	if _root.visible:
+	if _inventory.visible:
+		_inventory.hide()
+		_inventory_button.grab_focus()
+	elif _root.visible:
 		_close()
 	elif not get_tree().paused and GameState.run_active and GameState.wave > 0:
 		_open()
@@ -61,6 +78,7 @@ func _open() -> void:
 
 
 func _close() -> void:
+	_inventory.hide()
 	_root.hide()
 	get_tree().paused = false
 
@@ -68,3 +86,89 @@ func _close() -> void:
 func _on_restart() -> void:
 	get_tree().paused = false
 	get_tree().reload_current_scene()
+
+
+## Экран «хлам и статы»: статы забега слева, оружие под ними, предметы столбиком справа.
+func _build_inventory() -> void:
+	_inventory = Control.new()
+	_inventory.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_inventory.hide()
+	var back: ColorRect = ColorRect.new()
+	back.color = Color(0.03, 0.02, 0.04, 0.96)
+	back.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_inventory.add_child(back)
+	var title: Label = Label.new()
+	title.text = "ХЛАМ И СТАТЫ"
+	title.position = Vector2(0.0, 6.0)
+	title.size = Vector2(480.0, 14.0)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_color_override(&"font_color", Color(0.968627, 1.0, 0.0))
+	_inventory.add_child(title)
+	_inventory_text = Label.new()
+	_inventory_text.position = Vector2(12.0, 26.0)
+	_inventory_text.size = Vector2(150.0, 140.0)
+	_inventory_text.add_theme_color_override(&"font_color", Color(0.91, 0.91, 0.91))
+	_inventory.add_child(_inventory_text)
+	_inventory_weapons = HBoxContainer.new()
+	_inventory_weapons.position = Vector2(12.0, 226.0)
+	_inventory.add_child(_inventory_weapons)
+	_inventory_items = GridContainer.new()
+	_inventory_items.columns = 2
+	_inventory_items.position = Vector2(170.0, 26.0)
+	_inventory_items.add_theme_constant_override(&"h_separation", 6)
+	_inventory_items.add_theme_constant_override(&"v_separation", 1)
+	_inventory.add_child(_inventory_items)
+	var hint: Label = Label.new()
+	hint.text = "ESC / ПРОБЕЛ - НАЗАД"
+	hint.position = Vector2(0.0, 254.0)
+	hint.size = Vector2(480.0, 10.0)
+	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	hint.add_theme_color_override(&"font_color", Color(0.6, 0.6, 0.65))
+	_inventory.add_child(hint)
+	_root.add_child(_inventory)
+
+
+func _open_inventory() -> void:
+	var lines: Array[String] = []
+	lines.append("ХП: %d/%d" % [roundi(GameState.hp), roundi(GameState.max_hp)])
+	lines.append("УРОН: %+d%%" % roundi((GameState.damage_mult - 1.0) * 100.0))
+	lines.append("СКОР. АТАКИ: %+d%%" % roundi((GameState.attack_speed_mult - 1.0) * 100.0))
+	lines.append("КРИТ: %d%%" % roundi(GameState.crit_percent))
+	lines.append("БРОНЯ: %d" % roundi(GameState.armor))
+	lines.append("УВОРОТ: %d%%" % roundi(GameState.dodge_percent))
+	lines.append("СКОРОСТЬ: %+d%%" % roundi((GameState.move_speed_mult - 1.0) * 100.0))
+	lines.append("РЕГЕН: %.1f" % GameState.regen_hp)
+	lines.append("ПОДБОР: %+d%%" % roundi((GameState.pickup_radius_mult - 1.0) * 100.0))
+	lines.append("")
+	lines.append("УРОВЕНЬ: %d" % GameState.level)
+	lines.append("ВОЛНА: %d/%d" % [GameState.wave, Balance.WAVE_COUNT])
+	lines.append("УБИТО: %d" % GameState.kills)
+	lines.append("ГОВНА: %d" % GameState.coins)
+	_inventory_text.text = "\n".join(lines)
+	for child: Node in _inventory_items.get_children():
+		child.queue_free()
+	for item_id: StringName in GameState.items:
+		var row: HBoxContainer = HBoxContainer.new()
+		row.custom_minimum_size = Vector2(148.0, 14.0)
+		var icon: TextureRect = TextureRect.new()
+		icon.texture = ItemLibrary.icon(item_id)
+		icon.custom_minimum_size = Vector2(14.0, 14.0)
+		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		row.add_child(icon)
+		var label: Label = Label.new()
+		var count: int = GameState.items[item_id]
+		label.text = ItemLibrary.title(item_id) + (" (%d)" % count if count > 1 else "")
+		label.add_theme_color_override(&"font_color", StatLibrary.tier_color(ItemLibrary.tier(item_id)))
+		row.add_child(label)
+		_inventory_items.add_child(row)
+	for child: Node in _inventory_weapons.get_children():
+		child.queue_free()
+	for entry: Dictionary in GameState.weapons:
+		var weapon_icon: TextureRect = TextureRect.new()
+		weapon_icon.texture = PerkLibrary.icon(ShopLibrary.perk_id_of(entry["id"]))
+		weapon_icon.custom_minimum_size = Vector2(20.0, 20.0)
+		weapon_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		weapon_icon.modulate = Color.WHITE.lerp(StatLibrary.tier_color(entry["tier"]), 0.4)
+		_inventory_weapons.add_child(weapon_icon)
+	_inventory.show()

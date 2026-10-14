@@ -190,7 +190,7 @@ func _recompute_items() -> void:
 		for key: StringName in data.get("fx", {}):
 			fx[key] = fx.get(key, 0.0) + data["fx"][key] * count
 	coin_bonus = fx.get(&"coin_bonus", 0.0) / 100.0
-	repel_percent = minf(fx.get(&"repel", 0.0), 75.0)
+	repel_percent = minf(fx.get(&"repel", 0.0), Balance.ITEM_REPEL_MAX_PERCENT)
 	thorns_damage = fx.get(&"thorns", 0.0)
 	explode_percent = minf(fx.get(&"explode", 0.0), 75.0)
 	lifesteal_percent = minf(fx.get(&"lifesteal", 0.0), 60.0)

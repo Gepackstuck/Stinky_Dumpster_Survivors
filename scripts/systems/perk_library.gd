@@ -56,7 +56,7 @@ static func icon(perk_id: StringName) -> Texture2D:
 static func description(perk_id: StringName) -> String:
 	match perk_id:
 		SPEED:
-			return "+%d%% скорости. Пердишь — летишь." % roundi(Balance.PERK_SPEED_BONUS * 100.0)
+			return "+%d%% скорости. Пердишь - летишь." % roundi(Balance.PERK_SPEED_BONUS * 100.0)
 		REGEN:
 			return "+%d хп раз в %d сек. Кишки сами заживают." % [roundi(Balance.PERK_REGEN_HP), roundi(Balance.PERK_REGEN_INTERVAL_SEC)]
 		DOUBLE_SHOT:
@@ -80,7 +80,7 @@ static func description(perk_id: StringName) -> String:
 	return ""
 
 
-## Максимум стаков перка (0 — без ограничения).
+## Максимум стаков перка (0 - без ограничения).
 static func max_stacks(perk_id: StringName) -> int:
 	if perk_id == SPEED:
 		return Balance.PERK_SPEED_MAX_STACKS

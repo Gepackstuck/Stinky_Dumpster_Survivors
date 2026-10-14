@@ -1,13 +1,16 @@
 class_name PetGhost
 extends Node2D
-## Призрак-питомец. drunk — дух друга-алкаша: шатаясь, летит к врагу и бьёт. granny — дух бабки-повитухи:
-## держится возле игрока, раз в несколько секунд лечит его и лупит тапком врагов вплотную.
+## Призрак-питомец. drunk - дух друга-алкаша: шатается возле игрока и швыряет бутылки во врагов.
+## granny - дух бабки-повитухи: раз в пару секунд либо (30%) лечит игрока, либо кидает тапок во врага.
+
+const PROJECTILE_SCENE: PackedScene = preload("res://scenes/weapons/projectile.tscn")
+const BOTTLE: Texture2D = preload("res://assets/sprites/proj_bottle.png")
+const SLIPPER: Texture2D = preload("res://assets/sprites/proj_slipper_flat.png")
 
 var kind: StringName = &"drunk"
 var player: Node2D = null
 var _sprite: Sprite2D = null
-var _hit_left: float = 0.0
-var _heal_left: float = 0.0
+var _act_left: float = 0.0
 var _anim: float = 0.0
 var _home: Vector2 = Vector2.ZERO
 
@@ -20,7 +23,7 @@ func _ready() -> void:
 	_sprite.modulate = Color(1.0, 1.0, 1.0, Balance.GHOST_ALPHA)
 	add_child(_sprite)
 	_home = Vector2.from_angle(randf() * TAU) * Balance.PET_LEASH_DIST
-	_heal_left = Balance.GHOST_GRANNY_HEAL_SEC
+	_act_left = randf_range(0.3, 1.0)
 
 
 func _physics_process(delta: float) -> void:
@@ -29,56 +32,56 @@ func _physics_process(delta: float) -> void:
 	_anim += delta
 	_sprite.frame = int(_anim * 3.0) % 2
 	_sprite.position.y = sin(_anim * 3.0) * 2.0   # парит
-	_hit_left -= delta
+	_follow(delta)
+	_act_left -= delta
+	if _act_left <= 0.0:
+		_act_left = Balance.GHOST_DRUNK_THROW_SEC if kind == &"drunk" else Balance.GHOST_GRANNY_ACT_SEC
+		_act()
+
+
+func _follow(delta: float) -> void:
+	var goal: Vector2 = player.global_position + _home
+	var step: Vector2 = goal - global_position
+	if step.length_squared() < 4.0:
+		return
+	var dir: Vector2 = step.normalized()
+	var speed: float = Balance.GHOST_DRUNK_SPEED if kind == &"drunk" else Balance.PET_SPEED * 0.7
+	var velocity: Vector2 = dir * speed
 	if kind == &"drunk":
-		_drunk_step(delta)
-	else:
-		_granny_step(delta)
+		velocity += dir.orthogonal() * sin(_anim * 4.0) * Balance.GHOST_DRUNK_WOBBLE   # шатает из стороны в сторону
+	global_position += velocity * delta
+	_sprite.flip_h = step.x < 0.0
 
 
-func _drunk_step(delta: float) -> void:
-	var target: EnemyBase = _nearest_enemy(player.global_position, Balance.PET_AGGRO_RANGE)
-	var goal: Vector2 = player.global_position + _home
-	if target != null:
-		goal = target.global_position
-		if global_position.distance_squared_to(goal) <= 144.0 and _hit_left <= 0.0:
-			_hit_left = Balance.GHOST_DRUNK_HIT_SEC
-			target.hit_by_weapon(Balance.GHOST_DRUNK_DAMAGE * GameState.damage_mult, (goal - global_position).normalized() * 160.0)
-			HitFx.popup(get_tree(), global_position + Vector2(0.0, -14.0), "ИК!", Color(0.968627, 1.0, 0.0), 12.0, 0.5)
-	var step: Vector2 = goal - global_position
-	if step.length_squared() > 4.0:
-		var dir: Vector2 = step.normalized()
-		var wobble: Vector2 = dir.orthogonal() * sin(_anim * 4.0) * Balance.GHOST_DRUNK_WOBBLE   # шатает из стороны в сторону
-		global_position += (dir * Balance.GHOST_DRUNK_SPEED + wobble) * delta
-		_sprite.flip_h = step.x < 0.0
-
-
-func _granny_step(delta: float) -> void:
-	var goal: Vector2 = player.global_position + _home
-	var step: Vector2 = goal - global_position
-	if step.length_squared() > 4.0:
-		global_position += step.normalized() * minf(Balance.PET_SPEED * 0.7 * delta, step.length())
-		_sprite.flip_h = step.x < 0.0
-	_heal_left -= delta
-	if _heal_left <= 0.0:
-		_heal_left = Balance.GHOST_GRANNY_HEAL_SEC
+func _act() -> void:
+	if kind == &"granny" and randf() < Balance.GHOST_GRANNY_HEAL_CHANCE:
 		if player.has_method(&"heal"):
 			player.call(&"heal", Balance.GHOST_GRANNY_HEAL)
 			HitFx.popup(get_tree(), player.global_position + Vector2(0.0, -16.0), "+%d ХП: БАБКА ШЕПЧЕТ" % roundi(Balance.GHOST_GRANNY_HEAL), Color(1.0, 0.0627, 0.94), 12.0, 0.9)
-	var victim: EnemyBase = _nearest_enemy(global_position, Balance.GHOST_GRANNY_SLIPPER_RANGE)
-	if victim != null and _hit_left <= 0.0:
-		_hit_left = Balance.GHOST_GRANNY_SLIPPER_SEC
-		victim.hit_by_weapon(Balance.GHOST_GRANNY_SLIPPER_DAMAGE * GameState.damage_mult, (victim.global_position - global_position).normalized() * 140.0)
+		return
+	var target: Node2D = _nearest_enemy()
+	if target == null:
+		return
+	var damage: float = Balance.GHOST_DRUNK_DAMAGE if kind == &"drunk" else Balance.GHOST_GRANNY_SLIPPER_DAMAGE
+	var projectile: Projectile = PoolManager.acquire(PROJECTILE_SCENE) as Projectile
+	get_tree().current_scene.add_child(projectile)
+	projectile.launch(global_position, global_position.direction_to(target.global_position), damage * GameState.damage_mult, Balance.GHOST_THROW_SPEED, 1.4)
+	projectile.ricochets = 0
+	projectile.burn_sec = 0.0
+	projectile.slow_sec = 0.0
+	projectile.set_texture(BOTTLE if kind == &"drunk" else SLIPPER)
+	if kind == &"drunk":
+		HitFx.popup(get_tree(), global_position + Vector2(0.0, -14.0), "ИК!", Color(0.968627, 1.0, 0.0), 12.0, 0.5)
 
 
-func _nearest_enemy(from: Vector2, range_px: float) -> EnemyBase:
-	var best: EnemyBase = null
-	var best_sq: float = range_px * range_px
+func _nearest_enemy() -> Node2D:
+	var best: Node2D = null
+	var best_sq: float = Balance.GHOST_THROW_RANGE * Balance.GHOST_THROW_RANGE
 	for node: Node in get_tree().get_nodes_in_group(&"enemies"):
-		var enemy: EnemyBase = node as EnemyBase
+		var enemy: Node2D = node as Node2D
 		if enemy == null:
 			continue
-		var dist_sq: float = from.distance_squared_to(enemy.global_position)
+		var dist_sq: float = global_position.distance_squared_to(enemy.global_position)
 		if dist_sq < best_sq:
 			best_sq = dist_sq
 			best = enemy

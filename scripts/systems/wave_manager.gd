@@ -86,11 +86,30 @@ func _spawn_special_units() -> void:
 			EventBus.boss_spawned.emit(pool[i])
 
 
-func _on_enemy_died(enemy_id: StringName, _at: Vector2) -> void:
+func _on_enemy_died(enemy_id: StringName, at: Vector2) -> void:
+	if enemy_id == Balance.ELITE_ID and GameState.wave_kind == &"elite":
+		_elite_reward(at)
 	if GameState.wave_kind == &"boss" and Balance.FINAL_BOSS_POOL.has(enemy_id):
 		_bosses_alive -= 1
 		if _bosses_alive <= 0 and _bosses_spawned:
 			_win()
+
+
+## Награда за убитую элиту: куча говна и бесплатный предмет (тир растёт с волной).
+func _elite_reward(at: Vector2) -> void:
+	for i: int in Balance.ELITE_REWARD_XP_DROPS:
+		EventBus.xp_drop_requested.emit(at + Vector2.from_angle(randf() * TAU) * randf_range(4.0, 20.0), Balance.ELITE_REWARD_XP_VALUE)
+	var tier: int = ShopLibrary.roll_tier(GameState.wave + 4)
+	var candidates: Array[StringName] = []
+	for t: int in range(tier, 0, -1):
+		candidates = ItemLibrary.pool(t)
+		if not candidates.is_empty():
+			break
+	if candidates.is_empty():
+		return
+	var item_id: StringName = candidates[randi() % candidates.size()]
+	GameState.add_item(item_id)
+	HitFx.popup(get_tree(), at + Vector2(0.0, -18.0), "ЭЛИТА ВЫРОНИЛА: %s" % ItemLibrary.title(item_id), Color(0.968627, 1.0, 0.0), 14.0, 1.8)
 
 
 func _end_wave() -> void:

@@ -44,6 +44,11 @@ static func title(item_id: StringName) -> String:
 	return _TITLES[item_id]
 
 
+static func is_companion(item_id: StringName) -> bool:
+	var fx: Dictionary = Balance.ITEMS[item_id].get("fx", {})
+	return fx.has(&"pets") or fx.has(&"turrets") or fx.has(&"ghost_drunk") or fx.has(&"ghost_granny")
+
+
 static func tier(item_id: StringName) -> int:
 	return Balance.ITEMS[item_id]["tier"]
 
@@ -66,7 +71,9 @@ static func pool(tier_value: int) -> Array[StringName]:
 	var result: Array[StringName] = []
 	for id: StringName in Balance.ITEMS:
 		if Balance.ITEMS[id]["tier"] == tier_value and not at_limit(id):
-			result.append(id)
+			var weight: int = Balance.SHOP_COMPANION_WEIGHT if is_companion(id) else 1
+			for i: int in weight:
+				result.append(id)
 	return result
 
 
@@ -103,9 +110,9 @@ static func description(item_id: StringName) -> String:
 			&"pets":
 				lines.append("+%d КРЫСА КУСАЕТ ВРАГОВ" % v)
 			&"ghost_drunk":
-				lines.append("+1 ПЬЯНЫЙ ДУХ ЛУПИТ ВРАГОВ")
+				lines.append("+1 ПЬЯНЫЙ ДУХ КИДАЕТ БУТЫЛКИ")
 			&"ghost_granny":
-				lines.append("+1 БАБКА ЛЕЧИТ И БЬЁТ ТАПКОМ")
+				lines.append("+1 БАБКА КИДАЕТ ТАПКИ, ИНОГДА ЛЕЧИТ")
 			&"turrets":
 				lines.append("+%d ТУРЕЛЬ НА ВОЛНУ" % v)
 			&"discount":

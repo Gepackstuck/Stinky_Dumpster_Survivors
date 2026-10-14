@@ -31,11 +31,11 @@ const WAVE_DURATION_FIRST_SEC: float = 20.0
 const WAVE_DURATION_STEP_SEC: float = 4.0
 const WAVE_DURATION_MAX_SEC: float = 70.0
 const WAVE_DURATION_FINAL_SEC: float = 120.0      # последняя волна (боссы)
-const WAVE_ENEMIES_BASE: int = 10                    # врагов за 1-ю волну (в Brotato их на старте совсем немного)
-const WAVE_ENEMIES_PER_WAVE: int = 12                 # + столько врагов за каждую следующую волну (≈190 к последней)
-const MAX_ALIVE_ENEMIES: int = 100                    # потолок врагов на карте — как в Brotato
+const WAVE_ENEMIES_BASE: int = 18                    # врагов за 1-ю волну (в Brotato их на старте совсем немного)
+const WAVE_ENEMIES_PER_WAVE: int = 26                 # + столько врагов за каждую следующую волну (≈190 к последней)
+const MAX_ALIVE_ENEMIES: int = 160                    # потолок врагов на карте — как в Brotato
 const WAVE_MIN_GROUPS: int = 3                       # минимум групп за волну
-const WAVE_GROUP_SIZE_BASE: int = 2               # размер группы = BASE + (волна-1)/STEP (±1, +1)
+const WAVE_GROUP_SIZE_BASE: int = 3               # размер группы = BASE + (волна-1)/STEP (±1, +1)
 const WAVE_GROUP_SIZE_WAVES_PER_STEP: int = 3
 const WAVE_MAX_GAP_SEC: float = 4.0               # максимум секунд между группами врагов (минимум групп = длительность / это)
 const WAVE_FIRST_GROUP_SEC: float = 0.5
@@ -47,16 +47,19 @@ const SPAWN_GROUP_SPREAD: float = 28.0
 const SPECIAL_WAVE_WINDOWS: Array = [[7, 8], [10, 11], [13, 14]]  # в каждом окне — элита или орда (последнее всегда элита)
 const ELITE_CHANCE: float = 0.6
 const HORDE_GROUP_MULT: float = 2.0
+const ELITE_REWARD_XP_DROPS: int = 6                 # за убийство элиты: куча говна + бесплатный предмет
+const ELITE_REWARD_XP_VALUE: int = 14
 const ELITE_SPAWN_SEC: float = 2.0
 const FINAL_BOSS_SPAWN_SEC: float = 1.5
 const WAVE_END_BONUS_XP_BASE: int = 6          # «копание в помойке» в конце волны (аналог Harvesting в Brotato)
 const WAVE_END_BONUS_XP_PER_WAVE: int = 2
 const WAVE_END_COLLECT_SEC: float = 1.5           # время на авто-сбор материалов после волны
-const WAVE_HP_GROWTH: float = 0.30          # +30% HP за каждую волну после первой
+const WAVE_HP_GROWTH: float = 0.38          # +30% HP за каждую волну после первой
 const PLAYER_MAX_HIT_FRACTION: float = 0.34   # один удар не снимает больше трети максимума HP (нет ваншотов)
-const WAVE_DAMAGE_GROWTH: float = 0.10       # +10% урона врагов за волну
-const WAVE_SPEED_GROWTH: float = 0.03        # +3% скорости за волну
-const WAVE_SPEED_MAX_MULT: float = 1.4
+const WAVE_DAMAGE_GROWTH: float = 0.22       # +10% урона врагов за волну
+const WAVE_SPEED_GROWTH: float = 0.04        # +3% скорости за волну
+const WAVE_SPEED_MAX_MULT: float = 1.5
+const ENEMY_DAMAGE_MULT: float = 1.7             # общий множитель урона врагов по игроку
 const WAVE_ENEMY_UNLOCK: Dictionary = {     # с какой волны тип может выпасть (15 волн)
 	&"squid_gopnik": 1, &"chaser": 2, &"microbe": 3, &"charger": 3, &"npc_bot": 4, &"spitter": 4,
 	&"looter": 4, &"cockroach": 5, &"bruiser": 6, &"wifi_ghost": 7,
@@ -119,7 +122,9 @@ const CAMERA_ZOOM: float = 1.0  # только целое: дробный зум
 # --- Предметы (рюкзак Ларька): плюсы/минусы к статам + особые эффекты ---
 # «Обосранные портки Supreme»: шанс, что враг в контакте охуевает от вони и не подходит.
 const ITEM_STINKY_PANTS_REPEL_CHANCE: float = 15.0
+const SHOP_COMPANION_WEIGHT: int = 4               # питомцы и структуры выпадают в 4 раза чаще обычных предметов
 const SHOP_ITEM_CHANCE: float = 0.4                 # шанс, что слот витрины — предмет
+const ITEM_REPEL_MAX_PERCENT: float = 35.0
 const ITEM_REPEL_RADIUS: float = 46.0               # враги в этом радиусе отлетают от вони
 const ITEM_REPEL_PUSH: float = 320.0
 const ITEM_THORNS_RADIUS: float = 34.0
@@ -146,10 +151,10 @@ const ITEMS: Dictionary = {
 	&"barbed_wire": {"tier": 3, "price": 40, "limit": 0, "fx": {&"thorns": 6.0}, "mods": {&"armor": 1.0}},
 	&"diarrhea": {"tier": 4, "price": 70, "limit": 3, "fx": {&"explode": 20.0}},
 	&"bloody_rag": {"tier": 4, "price": 68, "limit": 4, "fx": {&"lifesteal": 8.0}},
-	&"dead_rat": {"tier": 2, "price": 32, "limit": 3, "fx": {&"pets": 1.0}},
-	&"bucket_turret": {"tier": 3, "price": 46, "limit": 3, "fx": {&"turrets": 1.0}},
-	&"ghost_drunk": {"tier": 3, "price": 42, "limit": 2, "fx": {&"ghost_drunk": 1.0}},
-	&"ghost_granny": {"tier": 3, "price": 46, "limit": 2, "fx": {&"ghost_granny": 1.0}},
+	&"dead_rat": {"tier": 1, "price": 24, "limit": 3, "fx": {&"pets": 1.0}},
+	&"bucket_turret": {"tier": 2, "price": 36, "limit": 3, "fx": {&"turrets": 1.0}},
+	&"ghost_drunk": {"tier": 2, "price": 34, "limit": 2, "fx": {&"ghost_drunk": 1.0}},
+	&"ghost_granny": {"tier": 2, "price": 36, "limit": 2, "fx": {&"ghost_granny": 1.0}},
 	&"golden_toilet": {"tier": 4, "price": 90, "limit": 1, "mods": {&"damage": 14.0, &"crit": 8.0, &"armor": 2.0, &"speed": -8.0}},
 }
 
@@ -279,15 +284,16 @@ const PET_BITE_SEC: float = 0.55
 const PET_SPEED: float = 120.0
 const PET_AGGRO_RANGE: float = 110.0              # от игрока: дальше крыса не бегает за врагом
 const GHOST_ALPHA: float = 0.32                    # призраки почти прозрачные, не отвлекают
-const GHOST_DRUNK_DAMAGE: float = 14.0           # призрак друга-алкаша: шатается и бьёт с пьяной силой
-const GHOST_DRUNK_HIT_SEC: float = 0.9
-const GHOST_DRUNK_SPEED: float = 85.0
-const GHOST_DRUNK_WOBBLE: float = 55.0             # px/с боковой «болтанки»
-const GHOST_GRANNY_HEAL: float = 2.0               # бабка-повитуха шепчет и лечит
-const GHOST_GRANNY_HEAL_SEC: float = 7.0
-const GHOST_GRANNY_SLIPPER_DAMAGE: float = 8.0     # и лупит тапком тех, кто подошёл
-const GHOST_GRANNY_SLIPPER_SEC: float = 1.2
-const GHOST_GRANNY_SLIPPER_RANGE: float = 34.0
+const GHOST_THROW_RANGE: float = 150.0
+const GHOST_THROW_SPEED: float = 190.0
+const GHOST_DRUNK_DAMAGE: float = 14.0           # призрак друга-алкаша швыряет бутылки
+const GHOST_DRUNK_THROW_SEC: float = 1.0
+const GHOST_DRUNK_SPEED: float = 60.0
+const GHOST_DRUNK_WOBBLE: float = 45.0             # px/с боковой «болтанки»
+const GHOST_GRANNY_ACT_SEC: float = 1.4            # бабка-повитуха: раз в столько секунд...
+const GHOST_GRANNY_HEAL_CHANCE: float = 0.3        # ...с таким шансом лечит, иначе кидает тапок
+const GHOST_GRANNY_HEAL: float = 1.0
+const GHOST_GRANNY_SLIPPER_DAMAGE: float = 9.0
 const PET_LEASH_DIST: float = 38.0                # где ходит рядом с игроком без цели
 
 # --- Перки (GDD) ---

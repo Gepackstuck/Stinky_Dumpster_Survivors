@@ -54,10 +54,27 @@ theme_override_colors/font_shadow_color = Color(1, 0.0627451, 0.941176, 1)
 [node name="Resume" type="Button" parent="Root"]
 layout_mode = 0
 offset_left = 120.0
-offset_top = 104.0
+offset_top = 94.0
 offset_right = 360.0
-offset_bottom = 130.0
+offset_bottom = 116.0
 text = "ПРОДОЛЖИТЬ"
+theme_override_colors/font_color = Color(0.968627, 1, 0, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_focus_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(1, 0.0627451, 0.941176, 1)
+theme_override_styles/normal = SubResource("SB_n")
+theme_override_styles/hover = SubResource("SB_h")
+theme_override_styles/pressed = SubResource("SB_h")
+theme_override_styles/focus = SubResource("SB_h")
+
+[node name="Inventory" type="Button" parent="Root"]
+layout_mode = 0
+offset_left = 120.0
+offset_top = 120.0
+offset_right = 360.0
+offset_bottom = 142.0
+text = "ХЛАМ И СТАТЫ"
 theme_override_colors/font_color = Color(0.968627, 1, 0, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
 theme_override_colors/font_focus_color = Color(1, 1, 1, 1)
@@ -71,9 +88,9 @@ theme_override_styles/focus = SubResource("SB_h")
 [node name="Restart" type="Button" parent="Root"]
 layout_mode = 0
 offset_left = 120.0
-offset_top = 134.0
+offset_top = 146.0
 offset_right = 360.0
-offset_bottom = 160.0
+offset_bottom = 168.0
 text = "НАЧАТЬ ЗАНОВО"
 theme_override_colors/font_color = Color(0.968627, 1, 0, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
@@ -88,9 +105,9 @@ theme_override_styles/focus = SubResource("SB_h")
 [node name="Quit" type="Button" parent="Root"]
 layout_mode = 0
 offset_left = 120.0
-offset_top = 164.0
+offset_top = 172.0
 offset_right = 360.0
-offset_bottom = 190.0
+offset_bottom = 194.0
 text = "ВАЛИТЬ ОТСЮДА"
 theme_override_colors/font_color = Color(0.968627, 1, 0, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 1, 1)

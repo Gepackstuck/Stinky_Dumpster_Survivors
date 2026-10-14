@@ -36,7 +36,7 @@ static func description(stat_id: StringName, tier: int) -> String:
 	var v: int = roundi(Balance.STAT_VALUES[stat_id][tier - 1])
 	match stat_id:
 		&"max_hp":
-			return "+%d макс. ХП. Больше мяса — дольше мучаешься." % v
+			return "+%d макс. ХП. Больше мяса - дольше мучаешься." % v
 		&"regen":
 			return "+%d к регену. Раны затягиваются сами, чёрт." % v
 		&"damage":
@@ -44,7 +44,7 @@ static func description(stat_id: StringName, tier: int) -> String:
 		&"attack_speed":
 			return "+%d%% скорости атаки. Руки чешутся." % v
 		&"speed":
-			return "+%d%% скорости бега. Пердишь — летишь." % v
+			return "+%d%% скорости бега. Пердишь - летишь." % v
 		&"armor":
 			return "+%d брони. Сало спасает." % v
 		&"dodge":

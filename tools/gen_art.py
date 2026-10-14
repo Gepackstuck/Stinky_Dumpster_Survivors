@@ -1920,6 +1920,8 @@ def build_step1():
     sheet([draw_proj_slipper(0), draw_proj_slipper(1)]).save(SPRITES + "proj_slipper.png")
     sheet([draw_turret(0), draw_turret(1)]).save(SPRITES + "structure_turret.png")
     sheet([draw_rat(0), draw_rat(1)]).save(SPRITES + "pet_rat.png")
+    draw_proj_bottle().save(SPRITES + "proj_bottle.png")
+    draw_proj_slipper(0).save(SPRITES + "proj_slipper_flat.png")
     sheet([draw_ghost_drunk(0), draw_ghost_drunk(1)]).save(SPRITES + "pet_ghost_drunk.png")
     sheet([draw_ghost_granny(0), draw_ghost_granny(1)]).save(SPRITES + "pet_ghost_granny.png")
     sheet([draw_proj_milk(0), draw_proj_milk(1)]).save(SPRITES + "proj_milk.png")
@@ -2915,6 +2917,18 @@ def _ghost_body(s_w, s_h, frame):
     for i, x in enumerate(range(s_w // 2 - 6, s_w // 2 + 6, 3)):
         rect(body, x, 14, x + 1, 15 + ((i + frame) % 2) * 2)
     return body
+
+
+def draw_proj_bottle():
+    """8x8: зелёная бутылка из-под пойла, летит боком."""
+    img = new_img(8, 8)
+    body = new_mask(8, 8); rect(body, 1, 3, 5, 5)
+    neck = new_mask(8, 8); rect(neck, 5, 4, 7, 4)
+    sil = union(body, neck)
+    paint(img, body, GREEN); paint(img, neck, GREEN)
+    out = finish(img, sil)
+    px(out, 2, 4, WHITE); px(out, 3, 4, WHITE); px(out, 0, 6, YELLOW)
+    return out
 
 
 def draw_ghost_drunk(frame):

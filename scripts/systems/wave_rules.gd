@@ -31,7 +31,7 @@ static func hp_mult(wave: int) -> float:
 
 
 static func damage_mult(wave: int) -> float:
-	return 1.0 + (maxi(wave, 1) - 1) * Balance.WAVE_DAMAGE_GROWTH
+	return (1.0 + (maxi(wave, 1) - 1) * Balance.WAVE_DAMAGE_GROWTH) * Balance.ENEMY_DAMAGE_MULT
 
 
 static func speed_mult(wave: int) -> float:
