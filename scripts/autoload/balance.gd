@@ -56,14 +56,14 @@ const WAVE_END_BONUS_XP_PER_WAVE: int = 2
 const WAVE_END_COLLECT_SEC: float = 1.5           # время на авто-сбор материалов после волны
 const WAVE_HP_GROWTH: float = 0.38          # +30% HP за каждую волну после первой
 const PLAYER_MAX_HIT_FRACTION: float = 0.34   # один удар не снимает больше трети максимума HP (нет ваншотов)
-const WAVE_DAMAGE_GROWTH: float = 0.22       # +10% урона врагов за волну
+const WAVE_DAMAGE_GROWTH: float = 0.18       # +10% урона врагов за волну
 const WAVE_SPEED_GROWTH: float = 0.04        # +3% скорости за волну
 const WAVE_SPEED_MAX_MULT: float = 1.5
 const GROUND_BODY_LAYER: int = 2                 # тела наземных врагов толкаются друг с другом и со стеной
 const GROUND_BODY_MASK: int = 34
 const FLYER_BODY_LAYER: int = 64                 # летающие: свой слой, сталкиваются только со стеной (бит 6)
 const FLYER_BODY_MASK: int = 32
-const ENEMY_DAMAGE_MULT: float = 1.7             # общий множитель урона врагов по игроку
+const ENEMY_DAMAGE_MULT: float = 1.4             # общий множитель урона врагов по игроку
 const WAVE_ENEMY_UNLOCK: Dictionary = {     # с какой волны тип может выпасть (15 волн)
 	&"squid_gopnik": 1, &"chaser": 2, &"microbe": 3, &"charger": 3, &"npc_bot": 4, &"spitter": 4,
 	&"looter": 4, &"cockroach": 5, &"bruiser": 6, &"wifi_ghost": 7,
@@ -196,15 +196,15 @@ const WEAPON_PRICE: Dictionary = {&"lighter": 22, &"sock": 24, &"slingshot": 22,
 const PERK_PRICE: Dictionary = {&"speed": 14, &"regen": 16, &"double_shot": 30, &"loot_goblin": 12}
 const SHOP_SLOTS: int = 4
 const SHOP_PRICE_TIER_MULT: Array[float] = [1.0, 2.0, 3.5, 6.0]
-const COIN_PER_XP: float = 0.35                     # сколько говна-денег даёт 1 XP (опыт и деньги больше не равны: копить придётся)
-const SHOP_PRICE_WAVE_GROWTH: float = 0.18          # цена *(1 + это * волна)
+const COIN_PER_XP: float = 0.5                     # сколько говна-денег даёт 1 XP (опыт и деньги больше не равны: копить придётся)
+const SHOP_PRICE_WAVE_GROWTH: float = 0.12          # цена *(1 + это * волна)
 const SHOP_WEAPON_CHANCE: float = 0.45              # шанс, что слот — оружие (предмет — SHOP_ITEM_CHANCE, иначе перк)
 const SHOP_TIER2_PER_WAVE: float = 0.05             # II-тир: (волна-1)*это, до 0.5
 const SHOP_TIER3_PER_WAVE: float = 0.03             # III-тир: (волна-3)*это, до 0.35
 const SHOP_TIER4_PER_WAVE: float = 0.015            # IV-тир: (волна-7)*это, до 0.2
 const RECYCLE_FRACTION: float = 0.5                 # возврат говна за переработку
 const REROLL_BASE_COST: int = 3
-const REROLL_WAVE_FACTOR: float = 0.9               # + волна * это
+const REROLL_WAVE_FACTOR: float = 0.7               # + волна * это
 const REROLL_STEP_COST: int = 2                     # + за каждый реролл в эту волну
 const ARMOR_K: float = 15.0                         # урон *= K/(K+броня)
 const DODGE_MAX_PERCENT: float = 60.0
@@ -232,7 +232,7 @@ const ENEMIES: Dictionary = {
 	&"cockroach": {"hp": 9.0, "damage": 2.0, "speed": 140.0, "xp": 1, "coins": 2},
 	&"wifi_ghost": {"hp": 50.0, "damage": 3.0, "speed": 70.0, "xp": 4, "coins": 2, "flying": true},
 	# Враги Шага 4 (поведение как в Brotato): group_mult — множитель размера группы.
-	&"chaser": {"hp": 10.0, "damage": 1.0, "speed": 88.0, "xp": 1, "coins": 1, "radius": 5.0, "group_mult": 1.8, "flying": true},
+	&"chaser": {"hp": 10.0, "damage": 1.0, "speed": 88.0, "xp": 1, "coins": 1, "radius": 5.0, "group_mult": 1.4, "flying": true},
 	&"charger": {"hp": 50.0, "damage": 2.0, "speed": 70.0, "xp": 3, "coins": 1, "radius": 8.0, "group_mult": 0.7,
 			"brain": "res://scripts/enemies/brains/charger_brain.gd"},
 	&"spitter": {"hp": 34.0, "damage": 1.0, "speed": 60.0, "xp": 3, "coins": 1, "radius": 7.0, "group_mult": 0.7,
