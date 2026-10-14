@@ -44,6 +44,14 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 		_select(_selected + 1)
 		return
+	if event.is_action_pressed(&"move_down") and _reroll_button.visible and not _reroll_button.disabled:
+		get_viewport().set_input_as_handled()
+		_reroll_button.grab_focus()  # S / вниз — на реролл
+		return
+	if event.is_action_pressed(&"move_up"):
+		get_viewport().set_input_as_handled()
+		_select(_selected)  # W / вверх — обратно к карточкам
+		return
 	if event is InputEventKey and event.pressed and not event.echo and (event as InputEventKey).physical_keycode == KEY_R:
 		get_viewport().set_input_as_handled()
 		_on_reroll_pressed()
@@ -156,7 +164,10 @@ func _on_reroll_pressed() -> void:
 		return
 	GameState.coins -= _reroll_cost()
 	GameState.reroll_count += 1
+	var keep_focus: bool = _reroll_button.has_focus()
 	_show_choices()
+	if keep_focus and not _reroll_button.disabled:
+		_reroll_button.grab_focus()  # можно крутить реролл подряд
 
 
 func _on_card_chosen(perk_id: StringName) -> void:
