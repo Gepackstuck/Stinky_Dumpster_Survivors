@@ -123,6 +123,14 @@ func _apply_size(radius: float) -> void:
 	(hit_shape.shape as RectangleShape2D).size = Vector2(12.0, 12.0) * k
 
 
+## Удар оружием игрока: урон и (опционально) своя скорость отбрасывания.
+func hit_by_weapon(damage: float, push: Vector2 = Vector2.ZERO) -> void:
+	if _dead:
+		return
+	if _hurtbox.receive_hit(damage) and push != Vector2.ZERO:
+		_knockback = push
+
+
 func _on_hurt(damage: float) -> void:
 	if _dead:
 		return

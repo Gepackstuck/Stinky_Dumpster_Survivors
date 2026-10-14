@@ -8,6 +8,9 @@ var _speed: float = 0.0
 var _damage: float = 0.0
 var _life_left: float = 0.0
 var _active: bool = false
+var ricochets: int = 0
+var ricochet_range: float = 0.0
+var _ignore: Node = null
 
 
 func _ready() -> void:
@@ -20,6 +23,7 @@ func launch(from: Vector2, direction: Vector2, damage: float, speed: float, life
 	_damage = damage
 	_speed = speed
 	_life_left = lifetime_sec
+	_ignore = null
 	_active = true
 
 
@@ -36,8 +40,33 @@ func _on_area_entered(area: Area2D) -> void:
 	if not _active:
 		return
 	if area is HurtboxComponent:
+		if area.get_parent() == _ignore:
+			return
 		(area as HurtboxComponent).receive_hit(_damage)
+		if ricochets > 0 and _try_ricochet(area.get_parent()):
+			return
 		_deactivate()
+
+
+## Отскок к ближайшему другому врагу в радиусе. false — цели нет, снаряд гаснет.
+func _try_ricochet(hit: Node) -> bool:
+	var best: Node2D = null
+	var best_sq: float = ricochet_range * ricochet_range
+	for node: Node in get_tree().get_nodes_in_group(&"enemies"):
+		var enemy: Node2D = node as Node2D
+		if enemy == null or enemy == hit:
+			continue
+		var d: float = global_position.distance_squared_to(enemy.global_position)
+		if d < best_sq:
+			best_sq = d
+			best = enemy
+	if best == null:
+		return false
+	ricochets -= 1
+	_ignore = hit
+	_direction = global_position.direction_to(best.global_position)
+	_life_left = maxf(_life_left, 0.5)
+	return true
 
 
 func _deactivate() -> void:

@@ -2097,6 +2097,49 @@ def draw_card_frames():
     return sheet
 
 
+def icon_sock():
+    """Вонючий носок: белый, с зелёными полосами и струйками вони."""
+    w = h = 16
+    leg = new_mask(w, h); rect(leg, 5, 1, 9, 9)
+    foot = new_mask(w, h); rect(foot, 5, 8, 13, 12)
+    sil = union(leg, foot)
+    img = new_img(w, h); paint(img, sil, WHITE)
+    for y in (3, 5, 7): 
+        for x in range(5, 10): px(img, x, y, GREEN)
+    out = finish(img, sil)
+    for x, y in ((11, 3), (12, 5), (11, 7), (13, 2)): px(out, x, y, GREEN)
+    px(out, 12, 10, BROWN); px(out, 8, 11, BROWN)
+    return out
+
+
+def icon_slingshot():
+    """Рогатка: кривая коричневая рогулька с розовой резинкой и жёлтым камнем."""
+    w = h = 16
+    f = new_mask(w, h)
+    line(f, [(8, 15), (8, 8)], 2); line(f, [(8, 8), (4, 2)], 2); line(f, [(8, 8), (12, 2)], 2)
+    img = new_img(w, h); paint(img, f, BROWN)
+    band = new_mask(w, h); line(band, [(4, 2), (8, 6), (12, 2)], 1)
+    sil = union(f, band)
+    paint(img, band, PINK)
+    out = finish(img, sil)
+    for (x, y) in ((7, 5), (8, 5), (7, 6), (8, 6)): px(out, x, y, YELLOW)
+    return out
+
+
+def icon_mop():
+    """Швабра: палка и грязные зелёные лохмы."""
+    w = h = 16
+    stick = new_mask(w, h); line(stick, [(2, 14), (10, 5)], 1)
+    head = new_mask(w, h); rect(head, 9, 1, 14, 5)
+    hair = new_mask(w, h)
+    for x in (9, 11, 13): line(hair, [(x, 5), (x - 1, 9)], 1)
+    sil = union(stick, head, hair)
+    img = new_img(w, h); paint(img, stick, BROWN); paint(img, head, WHITE); paint(img, hair, GREEN)
+    out = finish(img, sil)
+    px(out, 11, 3, RED); px(out, 13, 2, BROWN)
+    return out
+
+
 PANEL_W, PANEL_H = 360, 160
 
 
@@ -2125,6 +2168,7 @@ def build_step2():
     glyphs = build_font()
     for name, fn in (("perk_speed", icon_speed), ("perk_regen", icon_regen),
                      ("perk_double_shot", icon_double), ("perk_loot_goblin", icon_goblin),
+                     ("perk_w_sock", icon_sock), ("perk_w_slingshot", icon_slingshot), ("perk_w_mop", icon_mop),
                      ("hud_heart", lambda: draw_heart(14))):
         fn().save(UI + name + ".png")
     draw_card_frames().save(UI + "card_frames.png")

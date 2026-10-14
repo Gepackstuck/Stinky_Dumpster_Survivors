@@ -12,12 +12,16 @@ var _damage: float = 0.0
 var _cooldown_sec: float = 0.0
 var _cooldown_left: float = 0.0
 var _range_sq: float = 0.0
+var _ricochets: int = 0
+var _ricochet_range: float = 0.0
 
 
 func _ready() -> void:
 	var stats: Dictionary = Balance.WEAPONS[weapon_id]
 	_damage = stats["damage"]
 	_cooldown_sec = stats["cooldown"]
+	_ricochets = stats.get("ricochets", 0)
+	_ricochet_range = stats.get("ricochet_range", 0.0)
 	_range_sq = Balance.WEAPON_TARGET_RANGE * Balance.WEAPON_TARGET_RANGE
 	EventBus.player_died.connect(_on_player_died)
 
@@ -57,6 +61,8 @@ func _fire(target: Node2D) -> void:
 		var projectile: Projectile = PoolManager.acquire(PROJECTILE_SCENE) as Projectile
 		root.add_child(projectile)
 		projectile.launch(global_position, base_direction.rotated(angle), damage, Balance.PROJECTILE_SPEED, Balance.PROJECTILE_LIFETIME_SEC)
+		projectile.ricochets = _ricochets
+		projectile.ricochet_range = _ricochet_range
 
 
 func _on_player_died() -> void:

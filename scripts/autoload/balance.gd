@@ -31,9 +31,9 @@ const WAVE_DURATION_FIRST_SEC: float = 20.0
 const WAVE_DURATION_STEP_SEC: float = 5.0
 const WAVE_DURATION_MAX_SEC: float = 60.0
 const WAVE_DURATION_FINAL_SEC: float = 90.0       # 20-я волна (боссы)
-const WAVE_GROUPS_BASE: int = 3                   # групп врагов за волну = BASE + номер волны
-const WAVE_GROUP_SIZE_BASE: int = 2               # размер группы = BASE + волна/4 (±1)
-const WAVE_GROUP_SIZE_WAVES_PER_STEP: int = 4
+const WAVE_GROUPS_BASE: int = 6                   # групп врагов за волну = BASE + номер волны
+const WAVE_GROUP_SIZE_BASE: int = 4               # размер группы = BASE + волна/4 (±1)
+const WAVE_GROUP_SIZE_WAVES_PER_STEP: int = 2
 const WAVE_FIRST_GROUP_SEC: float = 0.5
 const WAVE_SPAWN_END_FRACTION: float = 0.85       # последняя группа не позже 85% времени волны
 const SPAWN_MARKER_SEC: float = 1.0               # красный крест за секунду до появления
@@ -46,7 +46,7 @@ const HORDE_GROUP_MULT: float = 2.0
 const ELITE_SPAWN_SEC: float = 2.0
 const FINAL_BOSS_SPAWN_SEC: float = 1.5
 const WAVE_END_COLLECT_SEC: float = 1.5           # время на авто-сбор материалов после волны
-const WAVE_HP_GROWTH: float = 0.15          # +15% HP за каждую волну после первой
+const WAVE_HP_GROWTH: float = 0.12          # +15% HP за каждую волну после первой
 const WAVE_ENEMY_UNLOCK: Dictionary = {     # с какой волны тип может выпасть
 	&"squid_gopnik": 1, &"microbe": 2, &"npc_bot": 3, &"cockroach": 4, &"wifi_ghost": 6,
 }
@@ -140,11 +140,11 @@ const BOSS_BLUE_WHALE_TEARS_COUNT: int = 5  # веер снарядов
 
 # --- Оружие: damage, cooldown (GDD) ---
 const WEAPONS: Dictionary = {
-	&"lighter": {"damage": 5.0, "cooldown": 0.4, "burn_dps": 2.0, "burn_duration": 3.0},
+	&"lighter": {"damage": 10.0, "cooldown": 0.3, "burn_dps": 2.0, "burn_duration": 3.0},
 	&"sock": {"damage": 12.0, "cooldown": 1.0, "radius": 60.0},
-	&"slingshot": {"damage": 8.0, "cooldown": 0.6, "ricochets": 2},
+	&"slingshot": {"damage": 8.0, "cooldown": 0.6, "ricochets": 2, "ricochet_range": 110.0},
 	&"laser_pointer": {"damage": 4.0, "cooldown": 0.15},
-	&"mop": {"damage": 10.0, "cooldown": 0.9, "knockback": 80.0},
+	&"mop": {"damage": 14.0, "cooldown": 0.8, "knockback": 240.0, "reach": 52.0, "arc_deg": 140.0},
 	&"slipper": {"damage": 25.0, "cooldown": 2.5, "aoe_radius": 40.0},
 	&"condensed_milk": {"damage": 3.0, "cooldown": 0.5, "slow_factor": 0.5, "slow_duration": 2.0},
 }

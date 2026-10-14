@@ -69,8 +69,29 @@ func _on_magnet_area_entered(area: Area2D) -> void:
 		(area as XpPickup).attract(self)
 
 
-func _on_perk_chosen(_perk_id: StringName) -> void:
+func _on_perk_chosen(perk_id: StringName) -> void:
 	_update_magnet_radius()
+	_add_weapon(perk_id)
+
+
+## Оружия-перки: каждое — отдельный узел-автоатака на игроке.
+func _add_weapon(perk_id: StringName) -> void:
+	var weapon: Node2D = null
+	match perk_id:
+		PerkLibrary.W_SOCK:
+			var aura: AuraWeapon = AuraWeapon.new()
+			aura.weapon_id = &"sock"
+			weapon = aura
+		PerkLibrary.W_SLINGSHOT:
+			var sling: WeaponBase = WeaponBase.new()
+			sling.weapon_id = &"slingshot"
+			weapon = sling
+		PerkLibrary.W_MOP:
+			var mop: MeleeWeapon = MeleeWeapon.new()
+			mop.weapon_id = &"mop"
+			weapon = mop
+	if weapon != null:
+		add_child(weapon)
 
 
 func _on_hurt(damage: float) -> void:
