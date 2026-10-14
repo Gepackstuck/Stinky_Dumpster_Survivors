@@ -8,13 +8,10 @@ const ICON_SCALE: float = 0.5
 const SLOT_SCALE: Dictionary[StringName, float] = {&"head": 1.0}
 ## Точки крепления; несколько предметов в одной точке занимают следующие смещения.
 const SLOT_OFFSETS: Dictionary[StringName, Array] = {
-	&"head": [Vector2(0, -12)],   # на голову влезает один предмет: самый новый
-	&"face": [Vector2(0, -3), Vector2(0, -1), Vector2(-3, -2), Vector2(3, -2)],
-	&"chest": [Vector2(0, 4), Vector2(0, 7), Vector2(-4, 5), Vector2(4, 5)],
-	&"hand_l": [Vector2(-9, 3), Vector2(-10, -1), Vector2(-9, 7)],
-	&"hand_r": [Vector2(9, 3), Vector2(10, -1), Vector2(9, 7)],
-	&"feet": [Vector2(0, 10), Vector2(-6, 10), Vector2(6, 10)],
-	&"back": [Vector2(-7, -3), Vector2(7, -3), Vector2(0, -6)],
+	&"head": [Vector2(0, -15)],   # на голове один предмет: самый новый
+	&"face": [Vector2(0, -3)],
+	&"chest": [Vector2(0, 5)],
+	&"back": [Vector2(-8, -2)],   # рисуется за телом (слой HeldBack)
 }
 
 var _sprite: Sprite2D
@@ -44,7 +41,7 @@ func _rebuild() -> void:
 	newest_first.reverse()
 	for item_id: StringName in newest_first:
 		var slot: StringName = ItemLibrary.slot(item_id)
-		if slot == &"" or GameState.items[item_id] <= 0:
+		if not SLOT_OFFSETS.has(slot) or GameState.items[item_id] <= 0:   # руки и ноги заняты оружием: там не рисуем
 			continue
 		var index: int = used.get(slot, 0)
 		var offsets: Array = SLOT_OFFSETS[slot]
@@ -55,7 +52,11 @@ func _rebuild() -> void:
 		icon.texture = ItemLibrary.icon(item_id)
 		icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		icon.scale = Vector2.ONE * SLOT_SCALE.get(slot, ICON_SCALE)
-		add_child(icon)
+		var back_layer: Node = get_parent().get_node_or_null("HeldBack")
+		if slot == &"back" and back_layer != null:
+			back_layer.add_child(icon)
+		else:
+			add_child(icon)
 		_icons.append(icon)
 		_slots.append(slot)
 		_bases.append(offsets[index])
@@ -80,9 +81,4 @@ func _layout() -> void:
 		var icon: Sprite2D = _icons[i]
 		icon.position = Vector2(_bases[i].x * mirror, _bases[i].y + bob)
 		icon.flip_h = _sprite.flip_h
-		if slot == &"face":
-			icon.visible = row != 1               # спиной лица не видно
-		elif slot == &"back":
-			icon.visible = row != 2               # лицом к камере спина не видна
-		else:
-			icon.visible = true
+		icon.visible = not (slot == &"face" and row == 1)   # спиной лица не видно
