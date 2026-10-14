@@ -28,6 +28,7 @@ var _start_mode: bool = false
 var _shop_mode: bool = false
 var _slot_buttons: Array[Button] = []
 var _toast_id: int = 0
+var _counter_base: String = ""
 
 
 func _ready() -> void:
@@ -163,10 +164,12 @@ func _refresh_shop() -> void:
 	_coins.text = "ГОВНА: %d" % GameState.coins
 	_coins.visible = not _start_mode
 	_toast_label.text = ""
+	_counter.remove_theme_color_override(&"font_color")
 	_refresh_slots()
 	if _start_mode:
 		_title.text = "ВЫБЕРИ СВОЮ ХУЙНЮ"
-		_counter.text = "ЭТИМ ТЫ БУДЕШЬ УБИВАТЬ"
+		_counter_base = "ЭТИМ ТЫ БУДЕШЬ УБИВАТЬ"
+		_counter.text = _counter_base
 		_hint.text = HINT_CARDS
 		_next_button.hide()
 		_reroll_button.hide()
@@ -183,15 +186,16 @@ func _refresh_shop() -> void:
 	var kind: StringName = GameState.special_waves.get(next_wave, &"normal")
 	var label: String = {&"elite": ": ЭЛИТА!", &"horde": ": ОРДА!", &"boss": ": БОССЫ!"}.get(kind, "")
 	if _shop_mode:
-		_counter.text = "ЛАРЁК: ТРАТЬ ГОВНО, ПОКА ЖИВОЙ"
+		_counter_base = "ЛАРЁК: ТРАТЬ ГОВНО, ПОКА ЖИВОЙ"
 		_hint.text = HINT_SHOP
 		_next_button.text = "В БОЙ: ВОЛНА %d%s" % [next_wave, label]
 		_next_button.disabled = false
 	else:
-		_counter.text = "УРОВЕНЬ %d: ВЫБИРАЙ СТАТ (ОСТАЛОСЬ %d)" % [_queue[0], _queue.size()]
+		_counter_base = "УРОВЕНЬ %d: ВЫБИРАЙ СТАТ (ОСТАЛОСЬ %d)" % [_queue[0], _queue.size()]
 		_hint.text = HINT_CARDS
 		_next_button.text = "ВОЛНА %d%s" % [next_wave, label]
 		_next_button.disabled = true
+	_counter.text = _counter_base
 
 
 func _refresh_slots() -> void:
@@ -337,11 +341,13 @@ func _on_player_died() -> void:
 func _toast(text: String) -> void:
 	_toast_id += 1
 	var my_id: int = _toast_id
-	_toast_label.text = text
+	_counter.text = text
+	_counter.add_theme_color_override(&"font_color", Color(1.0, 0.1, 0.2))
 	_coins.text = "ГОВНА: %d" % GameState.coins
-	await get_tree().create_timer(1.6, true).timeout
+	await get_tree().create_timer(1.8, true).timeout
 	if my_id == _toast_id:
-		_toast_label.text = ""
+		_counter.text = _counter_base
+		_counter.remove_theme_color_override(&"font_color")
 
 
 ## Подсветить карточку по позиции среди видимых (A/D). Пробел/E берёт её — это делает сама кнопка в фокусе.
