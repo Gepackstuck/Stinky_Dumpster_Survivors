@@ -11,10 +11,18 @@ var _active: bool = false
 var ricochets: int = 0
 var ricochet_range: float = 0.0
 var _ignore: Node = null
+var burn_dps: float = 0.0
+var burn_sec: float = 0.0
+var slow_factor: float = 1.0
+var slow_sec: float = 0.0
 
 
 func _ready() -> void:
 	area_entered.connect(_on_area_entered)
+
+
+func set_texture(texture: Texture2D) -> void:
+	$Sprite2D.texture = texture
 
 
 func launch(from: Vector2, direction: Vector2, damage: float, speed: float, lifetime_sec: float) -> void:
@@ -43,6 +51,11 @@ func _on_area_entered(area: Area2D) -> void:
 		if area.get_parent() == _ignore:
 			return
 		(area as HurtboxComponent).receive_hit(_damage)
+		var victim: Node = area.get_parent()
+		if burn_sec > 0.0 and victim.has_method(&"ignite"):
+			victim.call(&"ignite", burn_dps, burn_sec)
+		if slow_sec > 0.0 and victim.has_method(&"slow"):
+			victim.call(&"slow", slow_factor, slow_sec)
 		if ricochets > 0 and _try_ricochet(area.get_parent()):
 			return
 		_deactivate()

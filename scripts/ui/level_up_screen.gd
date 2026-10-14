@@ -33,6 +33,7 @@ var _toast_id: int = 0
 var _menu: PanelContainer = null        # контекстное меню слота оружия
 var _menu_buttons: Array[Button] = []   # [объединить, переработать, назад]
 var _menu_slot: int = -1
+const COUNTER_COLOR: Color = Color(1.0, 0.78, 0.98)  # подпись под заголовком (после remove override она становилась тёмной)
 const BACKDROP_SHOP: Color = Color(0.32, 0.28, 0.3)
 const BACKDROP_LEVEL: Color = Color(0.3, 0.1, 0.34)
 var _counter_base: String = ""
@@ -238,9 +239,9 @@ func _show_choices() -> void:
 	for i: int in _cards.size():
 		_cards[i].visible = false
 	if _start_mode:
-		for i: int in PerkLibrary.WEAPON_PERKS.size():
+		for i: int in PerkLibrary.START_WEAPONS.size():
 			_cards[i].visible = true
-			_cards[i].setup(PerkLibrary.WEAPON_PERKS[i], i + 1, frames[i])
+			_cards[i].setup(PerkLibrary.START_WEAPONS[i], i + 1, frames[i])
 	elif not _shop_mode:
 		_stat_offers = StatLibrary.pick_offers(Balance.LEVEL_UP_CHOICES, _queue[0])
 		for i: int in _stat_offers.size():
@@ -279,7 +280,7 @@ func _refresh_shop() -> void:
 	_coins.text = "ГОВНА: %d" % GameState.coins
 	_coins.visible = not _start_mode
 	_toast_label.text = ""
-	_counter.remove_theme_color_override(&"font_color")
+	_counter.add_theme_color_override(&"font_color", COUNTER_COLOR)
 	_refresh_slots()
 	if _start_mode:
 		_title.text = "ВЫБЕРИ СВОЮ ХУЙНЮ"
@@ -407,7 +408,7 @@ func _on_reroll_pressed() -> void:
 
 func _on_card_pressed(index: int) -> void:
 	if _start_mode:
-		GameState.apply_perk(PerkLibrary.WEAPON_PERKS[index])
+		GameState.apply_perk(PerkLibrary.START_WEAPONS[index])
 		_start_mode = false
 		_root.hide()
 		get_tree().paused = false
@@ -464,7 +465,7 @@ func _toast(text: String) -> void:
 	await get_tree().create_timer(1.8, true).timeout
 	if my_id == _toast_id:
 		_counter.text = _counter_base
-		_counter.remove_theme_color_override(&"font_color")
+		_counter.add_theme_color_override(&"font_color", COUNTER_COLOR)
 
 
 ## Подсветить карточку по позиции среди видимых (A/D). Пробел/E берёт её — это делает сама кнопка в фокусе.

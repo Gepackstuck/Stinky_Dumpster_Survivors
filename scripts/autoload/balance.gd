@@ -149,7 +149,7 @@ const STAT_GUARANTEED_TIER: Dictionary = {5: 2, 10: 3, 15: 3, 20: 3}  # гара
 const WEAPON_SLOTS: int = 6
 const WEAPON_TIER_DAMAGE: Array[float] = [1.0, 1.6, 2.4, 3.6]      # множитель урона по тирам I-IV
 const WEAPON_TIER_COOLDOWN: Array[float] = [1.0, 0.92, 0.85, 0.75]  # множитель паузы между атаками
-const WEAPON_PRICE: Dictionary = {&"lighter": 20, &"sock": 24, &"slingshot": 22, &"mop": 26}
+const WEAPON_PRICE: Dictionary = {&"lighter": 22, &"sock": 24, &"slingshot": 22, &"mop": 26, &"laser_pointer": 24, &"slipper": 30, &"condensed_milk": 22}
 const PERK_PRICE: Dictionary = {&"speed": 14, &"regen": 16, &"double_shot": 30, &"loot_goblin": 12}
 const SHOP_SLOTS: int = 4
 const SHOP_PRICE_TIER_MULT: Array[float] = [1.0, 2.0, 3.5, 6.0]
@@ -226,13 +226,14 @@ const BOSS_BLUE_WHALE_TEARS_COUNT: int = 5  # веер снарядов
 
 # --- Оружие: damage, cooldown (GDD) ---
 const WEAPONS: Dictionary = {
-	&"lighter": {"damage": 9.0, "cooldown": 0.35, "burn_dps": 2.0, "burn_duration": 3.0},
-	&"sock": {"damage": 12.0, "cooldown": 1.0, "radius": 60.0},
-	&"slingshot": {"damage": 8.0, "cooldown": 0.6, "ricochets": 2, "ricochet_range": 110.0},
-	&"laser_pointer": {"damage": 4.0, "cooldown": 0.15},
-	&"mop": {"damage": 14.0, "cooldown": 0.8, "knockback": 240.0, "reach": 52.0, "arc_deg": 140.0},
-	&"slipper": {"damage": 25.0, "cooldown": 2.5, "aoe_radius": 40.0},
-	&"condensed_milk": {"damage": 3.0, "cooldown": 0.5, "slow_factor": 0.5, "slow_duration": 2.0},
+	&"lighter": {"damage": 9.0, "cooldown": 0.35, "burn_dps": 2.0, "burn_duration": 3.0, "tag": "ПОДЖИГАЕТ"},
+	&"sock": {"damage": 12.0, "cooldown": 1.0, "radius": 60.0, "tag": "ВОНЬ ВОКРУГ"},
+	&"slingshot": {"damage": 8.0, "cooldown": 0.6, "ricochets": 2, "ricochet_range": 110.0, "tag": "ОТСКОКИ"},
+	&"laser_pointer": {"damage": 3.0, "cooldown": 0.2, "beam_half_width": 5.0, "tag": "ПРОБИВАЕТ"},
+	&"mop": {"damage": 14.0, "cooldown": 0.8, "knockback": 240.0, "reach": 52.0, "arc_deg": 140.0, "tag": "ОТБРОС"},
+	&"slipper": {"damage": 25.0, "cooldown": 2.5, "aoe_radius": 40.0, "flight_sec": 0.5, "tag": "ВЗРЫВ"},
+	&"condensed_milk": {"damage": 3.0, "cooldown": 0.5, "slow_factor": 0.5, "slow_duration": 2.0,
+			"projectile": "res://assets/sprites/proj_milk.png", "tag": "ЗАМЕДЛЯЕТ"},
 }
 
 # --- Перки (GDD) ---

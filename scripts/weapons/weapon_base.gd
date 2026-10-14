@@ -14,6 +14,11 @@ var _cooldown_left: float = 0.0
 var _range_sq: float = 0.0
 var _ricochets: int = 0
 var _ricochet_range: float = 0.0
+var _burn_dps: float = 0.0
+var _burn_sec: float = 0.0
+var _slow_factor: float = 1.0
+var _slow_sec: float = 0.0
+var _texture: Texture2D = preload("res://assets/sprites/projectile.png")
 
 
 var tier: int = 1  # тир I-IV, ставится до add_child
@@ -25,6 +30,12 @@ func _ready() -> void:
 	_cooldown_sec = stats["cooldown"] * Balance.WEAPON_TIER_COOLDOWN[tier - 1]
 	_ricochets = stats.get("ricochets", 0)
 	_ricochet_range = stats.get("ricochet_range", 0.0)
+	_burn_dps = stats.get("burn_dps", 0.0) * Balance.WEAPON_TIER_DAMAGE[tier - 1]
+	_burn_sec = stats.get("burn_duration", 0.0)
+	_slow_factor = stats.get("slow_factor", 1.0)
+	_slow_sec = stats.get("slow_duration", 0.0)
+	if stats.has("projectile"):
+		_texture = load(stats["projectile"]) as Texture2D
 	_range_sq = Balance.WEAPON_TARGET_RANGE * Balance.WEAPON_TARGET_RANGE
 	EventBus.player_died.connect(_on_player_died)
 
@@ -73,6 +84,11 @@ func _fire(target: Node2D) -> void:
 		projectile.launch(global_position, base_direction.rotated(angle), damage, Balance.PROJECTILE_SPEED, Balance.PROJECTILE_LIFETIME_SEC)
 		projectile.ricochets = _ricochets
 		projectile.ricochet_range = _ricochet_range
+		projectile.burn_dps = _burn_dps * GameState.damage_mult
+		projectile.burn_sec = _burn_sec
+		projectile.slow_factor = _slow_factor
+		projectile.slow_sec = _slow_sec
+		projectile.set_texture(_texture)
 
 
 func _on_player_died() -> void:

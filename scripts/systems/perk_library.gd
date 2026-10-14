@@ -10,8 +10,12 @@ const W_LIGHTER: StringName = &"w_lighter"
 const W_SOCK: StringName = &"w_sock"
 const W_SLINGSHOT: StringName = &"w_slingshot"
 const W_MOP: StringName = &"w_mop"
-const WEAPON_PERKS: Array[StringName] = [W_LIGHTER, W_SOCK, W_SLINGSHOT, W_MOP]
-const ALL: Array[StringName] = [SPEED, REGEN, DOUBLE_SHOT, LOOT_GOBLIN, W_LIGHTER, W_SOCK, W_SLINGSHOT, W_MOP]
+const W_LASER: StringName = &"w_laser_pointer"
+const W_SLIPPER: StringName = &"w_slipper"
+const W_MILK: StringName = &"w_condensed_milk"
+const START_WEAPONS: Array[StringName] = [W_LIGHTER, W_SOCK, W_SLINGSHOT, W_MOP]  # на выбор в начале забега
+const WEAPON_PERKS: Array[StringName] = [W_LIGHTER, W_SOCK, W_SLINGSHOT, W_MOP, W_LASER, W_SLIPPER, W_MILK]  # всё оружие (Ларёк)
+const ALL: Array[StringName] = [SPEED, REGEN, DOUBLE_SHOT, LOOT_GOBLIN, W_LIGHTER, W_SOCK, W_SLINGSHOT, W_MOP, W_LASER, W_SLIPPER, W_MILK]
 
 const _TITLES: Dictionary[StringName, String] = {
 	SPEED: "Скорость",
@@ -22,6 +26,9 @@ const _TITLES: Dictionary[StringName, String] = {
 	W_SOCK: "Вонючий носок",
 	W_SLINGSHOT: "Рогатка",
 	W_MOP: "Швабра",
+	W_LASER: "Лазерная указка",
+	W_SLIPPER: "Тапок",
+	W_MILK: "Сгущёнка",
 }
 const _ICONS: Dictionary[StringName, String] = {
 	SPEED: "res://assets/ui/perk_speed.png",
@@ -32,6 +39,9 @@ const _ICONS: Dictionary[StringName, String] = {
 	W_SOCK: "res://assets/ui/perk_w_sock.png",
 	W_SLINGSHOT: "res://assets/ui/perk_w_slingshot.png",
 	W_MOP: "res://assets/ui/perk_w_mop.png",
+	W_LASER: "res://assets/ui/perk_w_laser_pointer.png",
+	W_SLIPPER: "res://assets/ui/perk_w_slipper.png",
+	W_MILK: "res://assets/ui/perk_w_condensed_milk.png",
 }
 
 
@@ -54,7 +64,13 @@ static func description(perk_id: StringName) -> String:
 		LOOT_GOBLIN:
 			return "Подбор +%d%%, скорость -%d%%. Жадность тяжела." % [roundi((Balance.PERK_LOOT_GOBLIN_PICKUP_RADIUS_MULT - 1.0) * 100.0), roundi((1.0 - Balance.PERK_LOOT_GOBLIN_MOVE_SPEED_MULT) * 100.0)]
 		W_LIGHTER:
-			return "ОРУЖИЕ. Быстрые искры в ближайшего: %d урона, %.2f с. Классика." % [roundi(Balance.WEAPONS[&"lighter"]["damage"]), Balance.WEAPONS[&"lighter"]["cooldown"]]
+			return "ОРУЖИЕ. Быстрые искры, враг горит. %d урона, %.2f с. Классика." % [roundi(Balance.WEAPONS[&"lighter"]["damage"]), Balance.WEAPONS[&"lighter"]["cooldown"]]
+		W_LASER:
+			return "ОРУЖИЕ. Красный луч пробивает всех на линии. Бесит кота и врагов."
+		W_SLIPPER:
+			return "ОРУЖИЕ. Бросок тапка: %d урона по площади. Мать так же делала." % roundi(Balance.WEAPONS[&"slipper"]["damage"])
+		W_MILK:
+			return "ОРУЖИЕ. Липкая капля замедляет врага вдвое. Сладко и мерзко."
 		W_SOCK:
 			return "ОРУЖИЕ. Вонь вокруг тебя: %d урона всем в радиусе раз в %.1f с." % [roundi(Balance.WEAPONS[&"sock"]["damage"]), Balance.WEAPONS[&"sock"]["cooldown"]]
 		W_SLINGSHOT:

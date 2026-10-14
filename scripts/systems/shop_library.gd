@@ -84,7 +84,7 @@ static func description(offer: Dictionary) -> String:
 	if offer["kind"] == &"weapon":
 		var stats: Dictionary = Balance.WEAPONS[offer["id"]]
 		var tier: int = offer["tier"]
-		text += "ОРУЖИЕ\nУРОН: %d\nПАУЗА: %.2f С" % [roundi(stats["damage"] * Balance.WEAPON_TIER_DAMAGE[tier - 1]), stats["cooldown"] * Balance.WEAPON_TIER_COOLDOWN[tier - 1]]
+		text += "%s\nУРОН: %d\nПАУЗА: %.2f С" % [stats.get("tag", "ОРУЖИЕ"), roundi(stats["damage"] * Balance.WEAPON_TIER_DAMAGE[tier - 1]), stats["cooldown"] * Balance.WEAPON_TIER_COOLDOWN[tier - 1]]
 	else:
 		text += PerkLibrary.description(offer["id"])
 	if offer["locked"]:

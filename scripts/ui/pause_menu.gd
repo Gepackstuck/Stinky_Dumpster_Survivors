@@ -20,6 +20,25 @@ func _ready() -> void:
 	_quit.pressed.connect(func() -> void: get_tree().quit())
 
 
+func _input(event: InputEvent) -> void:
+	if not _root.visible:
+		return
+	var step: int = 0
+	if event.is_action_pressed(&"move_up"):
+		step = -1
+	elif event.is_action_pressed(&"move_down"):
+		step = 1
+	if step == 0:
+		return
+	get_viewport().set_input_as_handled()  # W/S и стрелки — между кнопками
+	var buttons: Array[Button] = [_resume, _restart, _quit]
+	var current: int = 0
+	for i: int in buttons.size():
+		if buttons[i].has_focus():
+			current = i
+	buttons[posmod(current + step, buttons.size())].grab_focus()
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	var key: InputEventKey = event as InputEventKey
 	if key == null or not key.pressed or key.echo or key.keycode != KEY_ESCAPE:

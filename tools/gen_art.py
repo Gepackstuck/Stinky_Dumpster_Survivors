@@ -1818,6 +1818,69 @@ def draw_trash_bin(frame, variant=0, seed=65):
     return finish(img, sil)
 
 
+# ---------------------------------------------------------------- оружие Шага 5
+def icon_laser():
+    """Лазерная указка: тонкая красная ручка с лампочкой и злой красной точкой."""
+    w = h = 16
+    pen = new_mask(w, h); line(pen, [(3, 13), (11, 5)], 3)
+    tip = new_mask(w, h); rect(tip, 11, 3, 12, 4)
+    sil = union(pen, tip)
+    img = new_img(w, h); paint(img, pen, RED); dither(img, pen, PINK, "checker"); paint(img, tip, WHITE)
+    out = finish(img, sil)
+    for x, y in ((13, 2), (14, 1), (15, 0), (14, 3), (12, 1)): px(out, x, y, RED)
+    px(out, 14, 2, WHITE); px(out, 5, 12, BLACK); px(out, 8, 9, BLACK)
+    return out
+
+
+def icon_slipper():
+    """Тапок: рваный коричневый шлёпанец, розовая перемычка, подошва в говне."""
+    rng = random.Random(81)
+    w = h = 16
+    sole = new_mask(w, h); blob(sole, 8, 10, 6, 3, rng, 0.5, 12)
+    strap = new_mask(w, h); line(strap, [(5, 9), (8, 5), (11, 9)], 2)
+    sil = union(sole, strap)
+    img = new_img(w, h); paint(img, sole, BROWN); dither(img, sole, BLACK, "dots"); paint(img, strap, PINK)
+    out = finish(img, sil)
+    for x, y in ((4, 12), (9, 12), (12, 11)): px(out, x, y, GREEN)
+    px(out, 8, 7, YELLOW); px(out, 6, 10, RED)
+    return out
+
+
+def icon_milk():
+    """Сгущёнка: синяя банка с белой каплей, липкие подтёки, мятая этикетка."""
+    w = h = 16
+    can = new_mask(w, h); rect(can, 4, 4, 11, 14)
+    lid = new_mask(w, h); rect(lid, 4, 3, 11, 4)
+    sil = union(can, lid)
+    img = new_img(w, h); paint(img, can, BLUE); dither(img, can, WHITE, "checker"); paint(img, lid, WHITE)
+    out = finish(img, sil)
+    for y in range(6, 12):
+        for x in range(6, 10): px(out, x, y, YELLOW)
+    px(out, 7, 8, RED); px(out, 8, 9, RED)
+    for x, y in ((12, 10), (12, 11), (13, 12), (3, 13), (3, 14)): px(out, x, y, WHITE)
+    return out
+
+
+def draw_proj_slipper(frame):
+    """12x8: летящий тапок (вращается): подошва с перемычкой, вонь за ним."""
+    img = new_img(12, 8)
+    sole = new_mask(12, 8); rect(sole, 1, 3 + frame, 10, 6 + frame)
+    strap = new_mask(12, 8); rect(strap, 4, 1 + frame, 7, 3 + frame)
+    sil = union(sole, strap)
+    paint(img, sole, BROWN); dither(img, sole, BLACK, "dots"); paint(img, strap, PINK)
+    px(img, 2, 5 + frame, GREEN); px(img, 9, 4 + frame, GREEN)
+    return finish(img, sil)
+
+
+def draw_proj_milk(frame):
+    """6x6: белая липкая капля сгущёнки, тянется нитью."""
+    img = new_img(6, 6)
+    blob_m = new_mask(6, 6); rect(blob_m, 1, 1, 4, 3 + frame)
+    sil = union(blob_m)
+    paint(img, blob_m, WHITE); px(img, 2, 2, YELLOW); px(img, 3, 3 + frame, YELLOW)
+    return finish(img, sil)
+
+
 def sheet(frames):
     """Лист кадров; вокруг каждого кадра 1 px прозрачного поля (для шейдерной обводки)."""
     w, h = frames[0].size
@@ -1850,6 +1913,8 @@ def build_step1():
                      ("glutton", draw_glutton)):
         sheet([fn(0), fn(1)]).save(SPRITES + "enemy_" + name + ".png")
     sheet([draw_proj_spit(0), draw_proj_spit(1)]).save(SPRITES + "proj_spit.png")
+    sheet([draw_proj_slipper(0), draw_proj_slipper(1)]).save(SPRITES + "proj_slipper.png")
+    sheet([draw_proj_milk(0), draw_proj_milk(1)]).save(SPRITES + "proj_milk.png")
     for v in range(len(_BIN_VARIANTS)):
         sheet([draw_trash_bin(0, v), draw_trash_bin(1, v)]).save(SPRITES + "enemy_trash_bin_%d.png" % v)
     for name, fn in (("microbe", draw_microbe), ("npc_bot", draw_npc_bot), ("cockroach", draw_cockroach),
@@ -2672,6 +2737,7 @@ def build_step2():
                      ("perk_double_shot", icon_double), ("perk_loot_goblin", icon_goblin),
                      ("stat_max_hp", stat_max_hp), ("stat_damage", stat_damage), ("stat_attack_speed", stat_attack_speed), ("stat_armor", stat_armor), ("stat_dodge", stat_dodge), ("stat_pickup", stat_pickup), ("stat_crit", stat_crit),
                      ("stat_speed", icon_speed), ("stat_regen", icon_regen),
+                     ("perk_w_laser_pointer", icon_laser), ("perk_w_slipper", icon_slipper), ("perk_w_condensed_milk", icon_milk),
                      ("perk_w_lighter", icon_lighter), ("perk_w_sock", icon_sock), ("perk_w_slingshot", icon_slingshot), ("perk_w_mop", icon_mop),
                      ("hud_heart", lambda: draw_heart(14))):
         fn().save(UI + name + ".png")

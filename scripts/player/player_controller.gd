@@ -89,7 +89,17 @@ func _sync_weapons() -> void:
 	for entry: Dictionary in GameState.weapons:
 		var weapon: Node2D = null
 		match entry["id"]:
-			&"lighter", &"slingshot":
+			&"laser_pointer":
+				var laser: LaserWeapon = LaserWeapon.new()
+				laser.weapon_id = &"laser_pointer"
+				laser.tier = entry["tier"]
+				weapon = laser
+			&"slipper":
+				var slipper: SlipperWeapon = SlipperWeapon.new()
+				slipper.weapon_id = &"slipper"
+				slipper.tier = entry["tier"]
+				weapon = slipper
+			&"lighter", &"slingshot", &"condensed_milk":
 				var shooter: WeaponBase = WeaponBase.new()
 				shooter.weapon_id = entry["id"]
 				shooter.tier = entry["tier"]

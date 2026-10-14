@@ -21,6 +21,11 @@ var _shapes_ready: bool = false
 var _knockback: Vector2 = Vector2.ZERO
 var _brain: BossBrain = null
 var _neutral: bool = false
+var _burn_dps: float = 0.0
+var _burn_left: float = 0.0
+var _burn_tick: float = 0.0
+var _slow_factor: float = 1.0
+var _slow_left: float = 0.0
 
 # Управление движением для «мозгов» боссов.
 var speed_mult: float = 1.0
@@ -55,6 +60,8 @@ func setup(target: Node2D, spawn_position: Vector2, id: StringName = &"squid_gop
 	_apply_size(stats.get("radius", BASE_RADIUS))
 	_speed = stats["speed"] * WaveRules.speed_mult(GameState.wave)
 	speed_mult = 1.0
+	_burn_left = 0.0
+	_slow_left = 0.0
 	extra_velocity = Vector2.ZERO
 	forced_sec = 0.0
 	_health.setup(stats["hp"] * hp_mult)
@@ -77,11 +84,14 @@ func _physics_process(delta: float) -> void:
 		return
 	if _brain != null:
 		_brain.physics_tick(delta)
+	_tick_status(delta)
+	if _dead:
+		return
 	if forced_sec > 0.0:
 		forced_sec -= delta
 		velocity = forced_velocity
 	else:
-		velocity = global_position.direction_to(_target.global_position) * _speed * speed_mult + extra_velocity
+		velocity = global_position.direction_to(_target.global_position) * _speed * speed_mult * (_slow_factor if _slow_left > 0.0 else 1.0) + extra_velocity
 	_knockback = _knockback.move_toward(Vector2.ZERO, Balance.KNOCKBACK_DECAY * delta)
 	velocity += _knockback
 	if velocity.x != 0.0:
@@ -123,6 +133,31 @@ func _bin_hit_fx(final: bool) -> void:
 		var tween: Tween = create_tween()
 		_sprite.position = Vector2(randf_range(-2.0, 2.0), 0.0)
 		tween.tween_property(_sprite, "position", Vector2.ZERO, 0.12)
+
+
+## Поджечь: урон в секунду на несколько секунд (повторный поджог обновляет таймер).
+func ignite(dps: float, sec: float) -> void:
+	_burn_dps = maxf(_burn_dps if _burn_left > 0.0 else 0.0, dps)
+	_burn_left = maxf(_burn_left, sec)
+
+
+## Замедлить: множитель скорости на несколько секунд.
+func slow(factor: float, sec: float) -> void:
+	_slow_factor = factor
+	_slow_left = maxf(_slow_left, sec)
+
+
+func _tick_status(delta: float) -> void:
+	if _slow_left > 0.0:
+		_slow_left -= delta
+	if _burn_left <= 0.0:
+		return
+	_burn_left -= delta
+	_burn_tick -= delta
+	if _burn_tick <= 0.0:
+		_burn_tick = 0.5
+		HitFx.burst(get_tree(), global_position + Vector2(0.0, -4.0), Color(1.0, 0.45, 0.0), 3, 30.0, 2.0, 0.4, true)
+		_health.take_damage(_burn_dps * 0.5)
 
 
 ## Лечение долей от максимума (знахарка, обжора).
