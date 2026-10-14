@@ -154,47 +154,42 @@ def finish(img, silhouette):
 
 # ---------------------------------------------------------------- игрок
 def draw_player_up(frame, seed=17):
-    """24x24, вид сзади: огромная обосранная жопа, щупальце извивается, ноги-коротышки топают."""
+    """24x24, вид сзади: те же габариты, что у вида спереди; внизу огромная обосранная жопа."""
     rng = random.Random(seed)
     w = h = 24
     bob = 1 if frame else 0
-    torso = new_mask(w, h); blob(torso, 12, 8 + bob, 7, 6, rng, 1.0, 16)
-    butt_l = new_mask(w, h); blob(butt_l, 8, 16 + bob, 6, 6, rng, 0.6, 14)
-    butt_r = new_mask(w, h); blob(butt_r, 16, 16 + bob, 6, 6, rng, 0.6, 14)
-    butt = union(butt_l, butt_r)
+    body = new_mask(w, h); blob(body, 12, 12 + bob, 9, 8, rng, 1.2, 18)
     legs = new_mask(w, h)
-    lx, rx = (7, 15) if not frame else (8, 14)
-    rect(legs, lx, 21, lx + 2, 23 - (1 if frame else 0)); rect(legs, rx, 21, rx + 2, 23 - (0 if frame else 1))
+    lx, rx = (8, 15) if not frame else (7, 16)
+    rect(legs, lx, 19 + bob, lx + 2, 22); rect(legs, rx, 19 + bob, rx + 2, 22 - (1 if frame else 0))
     arms = new_mask(w, h)
-    blob(arms, 3, 10 + (1 if frame else -1) + bob, 2, 3, rng, 0.4, 8)
-    blob(arms, 21, 10 + (-1 if frame else 1) + bob, 2, 3, rng, 0.4, 8)
+    blob(arms, 3, 13 + (1 if frame else -1) + bob, 2, 3, rng, 0.4, 8)
+    blob(arms, 21, 13 + (-1 if frame else 1) + bob, 2, 3, rng, 0.4, 8)
     tent = new_mask(w, h)
     sway = 1 if frame else -1
-    line(tent, [(12, 3 + bob), (12 + sway, 2 + bob), (12, 1), (12 - sway, 0)], 2)
-    sil = union(torso, butt, legs, arms, tent)
+    line(tent, [(12, 5 + bob), (12 + sway, 3 + bob), (12, 1), (12 - sway, 0)], 2)
+    sil = union(body, legs, arms, tent)
     img = new_img(w, h)
-    paint(img, union(torso, arms, tent), GREEN)
-    paint(img, butt, GREEN); dither(img, butt, YELLOW, "dots")
+    paint(img, union(body, arms, tent), GREEN)
     paint(img, legs, BROWN)
-    # щель между булок и огромное говняное пятно
-    crack = new_mask(w, h); line(crack, [(12, 11 + bob), (12, 21 + bob)], 1)
-    paint(img, crack, BLACK)
-    stain = new_mask(w, h); blob(stain, 12, 17 + bob, 5, 4, rng, 0.8, 12)
-    paint(img, stain, BROWN); dither(img, stain, BLACK, "checker")
-    for x, y in ((9, 19), (14, 20), (12, 21)): px(img, x, y + bob, BROWN)
-    for x, y in ((11, 14), (13, 15), (10, 17)): px(img, x, y + bob, YELLOW)
-    drip = new_mask(w, h); line(drip, [(12, 20 + bob), (12 + sway, 23)], 1); paint(img, drip, BROWN)
-    # затылок: грязь, торчащий клок, присоски
-    noise(img, torso, [BROWN, BROWN, BLACK], 6, rng)
-    px(img, 12, 2 + bob, WHITE)
-    for x in (9, 15): px(img, x, 5 + bob, PINK)
-    # мухи над жопой
-    px(img, 6 + frame * 2, 11 + bob, BLACK); px(img, 18 - frame * 2, 12, BLACK)
-    # тень
     yy, xx = np.mgrid[0:h, 0:w]
     sh = ((xx - 12) * 0.7 + (yy - 12 - bob)) > 6.0
     shade = Image.fromarray((sh * 255).astype("uint8"), "L")
-    dither(img, inter(shade, union(torso, arms, butt)), BLACK, "checker")
+    dither(img, inter(shade, union(body, arms)), BLACK, "checker")
+    # жопа: две огромные булки в нижней части тела (внутри габарита), щель и говняное пятно
+    cheeks = new_mask(w, h); blob(cheeks, 8, 16 + bob, 5, 5, rng, 0.5, 12); blob(cheeks, 16, 16 + bob, 5, 5, rng, 0.5, 12)
+    cheeks = inter(cheeks, body)
+    paint(img, cheeks, GREEN); dither(img, cheeks, YELLOW, "dots")
+    crack = new_mask(w, h); line(crack, [(12, 11 + bob), (12, 20 + bob)], 1); paint(img, crack, BLACK)
+    stain = new_mask(w, h); blob(stain, 12, 16 + bob, 4, 3, rng, 0.8, 12)
+    paint(img, stain, BROWN); dither(img, stain, BLACK, "checker")
+    for x, y in ((10, 19), (14, 19)): px(img, x, y + bob, BROWN)
+    drip = new_mask(w, h); line(drip, [(12, 19 + bob), (12 + sway, 22)], 1); paint(img, drip, BROWN)
+    # затылок и мухи
+    noise(img, inter(body, minus(body, cheeks)), [BROWN, BROWN, BLACK], 4, rng)
+    px(img, 12, 2 + bob, WHITE)
+    for x in (9, 15): px(img, x, 8 + bob, PINK)
+    px(img, 5 + frame * 2, 9 + bob, BLACK); px(img, 19 - frame * 2, 10, BLACK)
     return finish(img, sil)
 
 
@@ -223,8 +218,9 @@ def draw_player_down(frame, seed=19):
     dither(img, inter(shade, union(body, arms)), BLACK, "checker")
     noise(img, body, [BROWN, BROWN, YELLOW], 4, rng)
     # огромные пучеглазые глаза, смотрят прямо на игрока, один больше другого
-    eye(img, 8, 9 + bob, 4, 2, 0, 0, rng)
-    eye(img, 16, 10 + bob, 3, 2, 0, 0, rng)
+    # глаза чередуются: то левый огромный, то правый
+    eye(img, 8, 9 + bob, 2 if frame else 4, 1 if frame else 2, 0, 0, rng)
+    eye(img, 16, 10 + bob, 4 if frame else 2, 2 if frame else 1, 0, 0, rng)
     px(img, 7, 6 + bob, RED); px(img, 6, 11 + bob, RED); px(img, 17, 7 + bob, RED)
     # брови: одна задрана, другая нахмурена
     m = new_mask(w, h); line(m, [(4, 4 + bob), (10, 3 + bob)], 1); line(m, [(19, 6 + bob), (14, 7 + bob)], 1); paint(img, m, BLACK)
