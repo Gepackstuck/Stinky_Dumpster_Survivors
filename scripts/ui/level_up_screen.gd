@@ -17,8 +17,9 @@ extends CanvasLayer
 @onready var _slot_info: Label = $Root/SlotInfo
 @onready var _backdrop: TextureRect = $Root/Backdrop
 
-const HINT_CARDS: String = "A/D - ВЫБОР   ПРОБЕЛ/E - ВЗЯТЬ   1-4 - БЫСТРО   S - РЕРОЛЛ   W - НАЗАД"
-const HINT_SHOP: String = "A/D - ВЫБОР   ПРОБЕЛ/E - КУПИТЬ   F - ЗАМОРОЗИТЬ   S/W - ВНИЗ/ВВЕРХ"
+const HINT_CARDS: String = "A/D - ВЫБОР   ПРОБЕЛ/E - ВЗЯТЬ   1-4 - БЫСТРО   W - РЕРОЛЛ"
+const HINT_START: String = "A/D - ВЫБОР   ПРОБЕЛ/E - ВЗЯТЬ   1-4 - БЫСТРО"
+const HINT_SHOP: String = "A/D - ВЫБОР   ПРОБЕЛ/E - КУПИТЬ   F - ЗАМОРОЗИТЬ   W - РЕРОЛЛ   S - В БОЙ"
 
 var _queue: Array[int] = []            # уровни, за которые ещё не выбран стат
 var _stat_offers: Array[Dictionary] = []
@@ -111,13 +112,20 @@ func _input(event: InputEvent) -> void:
 	elif event.is_action_pressed(&"move_right"):
 		get_viewport().set_input_as_handled()
 		_move_sideways(1)
-	elif event.is_action_pressed(&"move_down") and _zone == 0 and not _start_mode:
+	elif event.is_action_pressed(&"move_down") and not _start_mode:
 		get_viewport().set_input_as_handled()
-		_focus_bottom(0)
-	elif event.is_action_pressed(&"move_up") and _zone == 1:
+		if _zone == 0:
+			_focus_bottom(0)
+		elif _zone == 2:
+			_zone = 0
+			_select(_selected)
+	elif event.is_action_pressed(&"move_up") and not _start_mode:
 		get_viewport().set_input_as_handled()
-		_zone = 0
-		_select(_selected)
+		if _zone == 1:
+			_zone = 0
+			_select(_selected)
+		elif _zone == 0:
+			_focus_top()
 	elif event is InputEventKey and event.pressed and not event.echo:
 		var code: Key = (event as InputEventKey).physical_keycode
 		if code == KEY_R and not _start_mode:
@@ -198,7 +206,7 @@ func _on_menu_pressed(index: int) -> void:
 func _move_sideways(step: int) -> void:
 	if _zone == 0:
 		_select(_selected + step)
-	else:
+	elif _zone == 1:
 		_focus_bottom(_bottom_index + step)
 
 
@@ -249,7 +257,7 @@ func _show_choices() -> void:
 	_root.show()
 	get_tree().paused = true
 	if _visible_cards().is_empty():
-		_focus_bottom(1)
+		_focus_bottom(0)
 	else:
 		_select(0)
 
@@ -279,7 +287,7 @@ func _refresh_shop() -> void:
 		_backdrop.modulate = BACKDROP_SHOP
 		_counter_base = "ЭТИМ ТЫ БУДЕШЬ УБИВАТЬ"
 		_counter.text = _counter_base
-		_hint.text = HINT_CARDS
+		_hint.text = HINT_START
 		_next_button.hide()
 		_reroll_button.hide()
 		_slots_box.hide()
@@ -335,14 +343,22 @@ func _refresh_slots() -> void:
 
 func _bottom_items() -> Array[Control]:
 	var items: Array[Control] = []
-	if _reroll_button.visible and not _reroll_button.disabled:
-		items.append(_reroll_button)
 	if _next_button.visible and not _next_button.disabled:
 		items.append(_next_button)
 	if _slots_box.visible:
 		for i: int in GameState.weapons.size():
 			items.append(_slot_buttons[i])
 	return items
+
+
+## Реролл вынесен наверх (W с карточек), чтобы не перепутать его с «В бой».
+func _focus_top() -> void:
+	if _reroll_button.visible and not _reroll_button.disabled:
+		_zone = 2
+		_reroll_button.grab_focus()
+		_slot_info.text = ""
+	elif _reroll_button.visible:
+		_on_reroll_pressed()  # не хватает говна: тряска и сообщение
 
 
 func _focus_bottom(index: int) -> void:
@@ -383,10 +399,10 @@ func _on_reroll_pressed() -> void:
 	GameState.reroll_count += 1
 	if _shop_mode:
 		GameState.shop_offers = ShopLibrary.fill_offers(GameState.shop_offers, GameState.wave + 1)
-	var keep_focus: bool = _zone == 1 and _reroll_button.has_focus()
+	var keep_focus: bool = _zone == 2
 	_show_choices()
 	if keep_focus and not _reroll_button.disabled:
-		_focus_bottom(0)  # можно крутить реролл подряд
+		_focus_top()  # можно крутить реролл подряд
 
 
 func _on_card_pressed(index: int) -> void:
