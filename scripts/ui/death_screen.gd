@@ -21,12 +21,73 @@ const PANEL_RECT: Rect2 = Rect2(60.0, 55.0, 360.0, 160.0)
 @onready var _stats: Label = $Root/Stats
 @onready var _retry: Button = $Root/RetryButton
 
+const KILLER_POS: Vector2 = Vector2(170.0, 150.0)
+const KILLER_MAX_SIZE: float = 30.0
+const KILLER_FRAME_SEC: float = 0.25
+const WIRE_TEXTURE: Texture2D = preload("res://assets/sprites/arena_wire.png")
+
+var _killer_sprite: Sprite2D = null
+var _killer_label: Label = null
+var _killer_id: StringName = &""
+var _killer_time: float = 0.0
+
 
 func _ready() -> void:
 	_root.hide()
 	_retry.pressed.connect(_on_retry)
+	_build_killer()
 	EventBus.player_died.connect(_on_player_died)
 	EventBus.run_won.connect(_on_run_won)
+
+
+func _build_killer() -> void:
+	_killer_sprite = Sprite2D.new()
+	_killer_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	_killer_sprite.position = KILLER_POS
+	_killer_sprite.hide()
+	_root.add_child(_killer_sprite)
+	_killer_label = Label.new()
+	_killer_label.position = Vector2(KILLER_POS.x + 28.0, KILLER_POS.y - 10.0)
+	_killer_label.size = Vector2(260.0, 20.0)
+	_killer_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_killer_label.add_theme_color_override(&"font_shadow_color", Color.BLACK)
+	_killer_label.hide()
+	_root.add_child(_killer_label)
+
+
+## Иконка и имя убийцы: спрайт крутит свои 2 кадра, цвет имени зависит от серьёзности (босс - пульсирует).
+func _show_killer(enemy_id: StringName) -> void:
+	_killer_id = enemy_id
+	_killer_time = 0.0
+	_killer_sprite.show()
+	_killer_label.show()
+	_killer_label.text = "УБИЛ ТЕБЯ:\n%s" % EnemyNames.title(enemy_id)
+	_killer_label.add_theme_color_override(&"font_color", EnemyNames.color(enemy_id))
+	if enemy_id == &"wire":
+		var cell: AtlasTexture = AtlasTexture.new()
+		cell.atlas = WIRE_TEXTURE
+		cell.region = Rect2(Vector2(5.0 * 48.0, 0.0), Vector2(48.0, 16.0))
+		_killer_sprite.texture = cell
+		_killer_sprite.hframes = 1
+	else:
+		_killer_sprite.texture = load("res://assets/sprites/enemy_%s.png" % enemy_id) as Texture2D
+		_killer_sprite.hframes = 2
+		_killer_sprite.frame = 0
+	var size: Vector2 = _killer_sprite.texture.get_size() / Vector2(float(_killer_sprite.hframes), 1.0)
+	var k: float = minf(2.0, KILLER_MAX_SIZE / maxf(size.x, size.y))
+	_killer_sprite.scale = Vector2.ONE * (floorf(k) if k >= 1.0 else k)
+
+
+func _process(delta: float) -> void:
+	if not _root.visible or _killer_id == &"" or not _killer_sprite.visible:
+		return
+	_killer_time += delta
+	if _killer_sprite.hframes > 1:
+		_killer_sprite.frame = int(_killer_time / KILLER_FRAME_SEC) % _killer_sprite.hframes
+	if EnemyNames.threat(_killer_id) >= 3:
+		_killer_label.modulate.a = 0.65 + 0.35 * sin(_killer_time * 6.0)   # боссов имя мигает
+	else:
+		_killer_label.modulate.a = 1.0
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -46,8 +107,11 @@ func _on_run_won() -> void:
 func _show_result(title: String, died: bool = false) -> void:
 	_title.text = title
 	_stats.text = "УБИТО: %d     УРОВЕНЬ: %d     ВОЛНА: %d" % [GameState.kills, GameState.level, GameState.wave]
-	if died:
-		_stats.text += "\nУБИЛ ТЕБЯ: %s" % EnemyNames.title(GameState.last_damage_source) if GameState.last_damage_source != &"" else ""
+	_killer_id = &""
+	_killer_sprite.hide()
+	_killer_label.hide()
+	if died and GameState.last_damage_source != &"":
+		_show_killer(GameState.last_damage_source)
 	_scatter_decor()
 	_root.show()
 	_retry.grab_focus()
