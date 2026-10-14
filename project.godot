@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="StinkyDumpsterSurvivors"
-run/main_scene="res://scenes/ui/graveyard.tscn"
+run/main_scene="res://scenes/ui/main_menu.tscn"
 config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://icon.svg"
 
@@ -23,6 +23,7 @@ Balance="*res://scripts/autoload/balance.gd"
 AudioManager="*res://scripts/autoload/audio_manager.gd"
 PoolManager="*res://scripts/autoload/pool_manager.gd"
 Profile="*res://scripts/autoload/profile.gd"
+SceneFlow="*res://scripts/autoload/scene_flow.gd"
 
 [display]
 

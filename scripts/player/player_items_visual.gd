@@ -3,12 +3,13 @@ extends Node2D
 ## Купленные шмотки видны на герое, как в Brotato: каждая крепится к своей точке (голова, лицо, грудь, руки, ноги, спина).
 ## Компаньонов (крыса, турель, духи) тут нет: их видно и так.
 
+const OUTLINE: GDScript = preload("res://scripts/systems/outline_fx.gd")
 const ICON_SCALE: float = 0.5
 ## Шапки крупнее остального: их должно быть видно (целый масштаб, без каши из пикселей).
 const SLOT_SCALE: Dictionary[StringName, float] = {&"head": 1.0}
 ## Точки крепления; несколько предметов в одной точке занимают следующие смещения.
 const SLOT_OFFSETS: Dictionary[StringName, Array] = {
-	&"head": [Vector2(0, -15)],   # на голове один предмет: самый новый
+	&"head": [Vector2(0, -11)],   # на голове один предмет: самый новый
 	&"face": [Vector2(0, -3)],
 	&"chest": [Vector2(0, 5)],
 	&"back": [Vector2(-8, -2)],   # рисуется за телом (слой HeldBack)
@@ -49,7 +50,7 @@ func _rebuild() -> void:
 			continue
 		used[slot] = index + 1
 		var icon: Sprite2D = Sprite2D.new()
-		icon.texture = ItemLibrary.icon(item_id)
+		icon.texture = OUTLINE.outlined(ItemLibrary.icon(item_id), int(Balance.ITEMS[item_id].get("tier", 1)))
 		icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		icon.scale = Vector2.ONE * SLOT_SCALE.get(slot, ICON_SCALE)
 		var back_layer: Node = get_parent().get_node_or_null("HeldBack")

@@ -72,3 +72,12 @@ static func progress_text(id: StringName) -> String:
 	if data["unlock"] == &"open" or data["unlock"] == &"wins":
 		return ""
 	return "(%d/%d)" % [mini(Profile.counter(data["unlock"]), data["need"]), data["need"]]
+
+
+## Лист спрайтов героя (4x3 кадра); нет своего - общий.
+static func sprite_sheet(id: StringName) -> Texture2D:
+	var path: String = "res://assets/sprites/player_%s.png" % id
+	if ResourceLoader.exists(path):
+		return load(path) as Texture2D
+	var image: Image = Image.load_from_file(ProjectSettings.globalize_path(path))
+	return ImageTexture.create_from_image(image) if image != null else null

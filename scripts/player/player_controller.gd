@@ -39,6 +39,9 @@ func _ready() -> void:
 	_health.died.connect(_on_died)
 	_magnet.area_entered.connect(_on_magnet_area_entered)
 	EventBus.perk_chosen.connect(_on_perk_chosen)
+	var look: Texture2D = CharacterLibrary.sprite_sheet(GameState.character)   # у каждого героя свой внешний вид
+	if look != null:
+		_sprite.texture = look
 	EventBus.weapons_changed.connect(_sync_weapons)
 	EventBus.enemy_died.connect(_on_enemy_died_item_fx)
 	EventBus.wave_started.connect(_on_wave_started_items)

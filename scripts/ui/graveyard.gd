@@ -3,8 +3,11 @@ extends Control
 ## Кладбище: экран выбора персонажа. Закрытый герой - закопанная могила с именем на плите,
 ## открытый сидит в раскопанной яме. A/D или мышь - выбор, пробел/клик - на помойку.
 
+const BOOK: GDScript = preload("res://scripts/ui/weapon_book.gd")
+const MENU_SCENE: String = "res://scenes/ui/main_menu.tscn"
 const GAME_SCENE: String = "res://scenes/levels/main.tscn"
 const SCREEN: Vector2 = Vector2(480.0, 270.0)
+const WALK_SEC: float = 0.8   # герой вылезает из ямы и идёт вниз к арене
 const GRAVE_TOP: float = 34.0
 const GRAVE_STEP: float = 72.0
 const GRAVE_W: float = 48.0
@@ -34,6 +37,10 @@ var _minus: Label
 var _weapon: Label
 var _status: Label
 var _hint: Label
+var _leaving: bool = false
+var _book: Control = null
+var _walker: Node2D = null
+var _walk_time: float = 0.0
 
 
 func _ready() -> void:
@@ -52,8 +59,41 @@ func _ready() -> void:
 	_arrow.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	_arrow.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_arrow)
+	_build_menu_button()
 	_refresh()
 	Profile.announce(_fresh)
+
+
+func _build_menu_button() -> void:
+	var menu: Button = Button.new()
+	menu.text = "МЕНЮ (ESC)"
+	menu.position = Vector2(6.0, 4.0)
+	menu.size = Vector2(80.0, 16.0)
+	menu.focus_mode = Control.FOCUS_NONE
+	menu.pressed.connect(_to_menu)
+	add_child(menu)
+	var book: Button = Button.new()
+	book.text = "ОРУЖИЕ (TAB)"
+	book.position = Vector2(SCREEN.x - 86.0, 4.0)
+	book.size = Vector2(80.0, 16.0)
+	book.focus_mode = Control.FOCUS_NONE
+	book.pressed.connect(_toggle_book)
+	add_child(book)
+
+
+func _toggle_book() -> void:
+	if _book != null:
+		_book.queue_free()
+		_book = null
+		return
+	_book = BOOK.new()
+	add_child(_book)
+
+
+func _to_menu() -> void:
+	if not _leaving:
+		_leaving = true
+		SceneFlow.go(MENU_SCENE, Vector2.UP)
 
 
 func _build_background() -> void:
@@ -115,12 +155,11 @@ func _build_grave(i: int) -> void:
 	root.add_child(sitter)
 	if unlocked:
 		var body: Sprite2D = Sprite2D.new()
-		body.texture = PLAYER_TEX
+		body.texture = CharacterLibrary.sprite_sheet(id) if CharacterLibrary.sprite_sheet(id) != null else PLAYER_TEX
 		body.hframes = 4
 		body.vframes = 3
 		body.frame = 8
 		body.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-		body.modulate = Balance.CHARACTERS[id]["tint"]
 		sitter.add_child(body)
 		var hat: Sprite2D = Sprite2D.new()
 		hat.texture = CharacterLibrary.hat_icon(id)
@@ -178,10 +217,26 @@ func _build_panel() -> void:
 	_minus = _label("", Vector2(244.0, 168.0), 200.0, RED)
 	_weapon = _label("", Vector2(36.0, 206.0), 408.0, YELLOW)
 	_status = _label("", Vector2(36.0, 218.0), 408.0, GREEN)
-	_hint = _label("A / D - ВЫБОР     ПРОБЕЛ - НА ПОМОЙКУ", Vector2(0.0, 246.0), SCREEN.x, GREY, HORIZONTAL_ALIGNMENT_CENTER)
+	_hint = _label("A / D - ВЫБОР     ПРОБЕЛ - НА ПОМОЙКУ     ESC - МЕНЮ", Vector2(0.0, 246.0), SCREEN.x, GREY, HORIZONTAL_ALIGNMENT_CENTER)
 
 
 func _input(event: InputEvent) -> void:
+	if _leaving:
+		return
+	var key: InputEventKey = event as InputEventKey
+	if key != null and key.pressed and not key.echo and key.keycode == KEY_TAB:
+		get_viewport().set_input_as_handled()
+		_toggle_book()
+		return
+	if key != null and key.pressed and not key.echo and key.keycode == KEY_ESCAPE:
+		get_viewport().set_input_as_handled()
+		if _book != null:
+			_toggle_book()
+		else:
+			_to_menu()
+		return
+	if _book != null:
+		return
 	if event.is_action_pressed(&"move_left") or event.is_action_pressed(&"ui_left"):
 		get_viewport().set_input_as_handled()
 		_select(posmod(_selected - 1, _ids.size()))
@@ -212,7 +267,12 @@ func _choose() -> void:
 	Profile.selected = id
 	Profile.save()
 	GameState.character = id
-	get_tree().change_scene_to_file(GAME_SCENE)
+	_leaving = true
+	_walker = _sitters[_selected]
+	_walk_time = 0.0
+	_arrow.hide()
+	await get_tree().create_timer(WALK_SEC).timeout
+	SceneFlow.go(GAME_SCENE, Vector2.DOWN)
 
 
 func _refresh() -> void:
@@ -246,6 +306,14 @@ func _place_arrow() -> void:
 
 func _process(delta: float) -> void:
 	_time += delta
+	if _walker != null:
+		_walk_time += delta
+		_walker.z_index = 20
+		_walker.position.y = 30.0 + _walk_time * 260.0
+		var body: Sprite2D = _walker.get_child(0) as Sprite2D
+		if body != null:
+			body.frame = 8 + int(_walk_time * 10.0) % 4
+		return
 	for i: int in _graves.size():
 		var chosen: bool = i == _selected
 		var pulse: float = 0.5 + 0.5 * sin(_time * 12.0)

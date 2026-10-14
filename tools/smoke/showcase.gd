@@ -12,6 +12,9 @@ func _ready() -> void:
 	_run.call_deferred()
 
 
+var tiers: Array[int] = []   # тиры оружия по порядку (пусто - все I)
+
+
 func _snap(label_text: String, items: Array[StringName], weapons: Array[StringName], row: int, kick: bool) -> Image:
 	GameState.reset_run()
 	GameState.items.clear()
@@ -19,7 +22,7 @@ func _snap(label_text: String, items: Array[StringName], weapons: Array[StringNa
 		GameState.add_item(id)
 	GameState.weapons.clear()
 	for id: StringName in weapons:
-		GameState.weapons.append({"id": id, "tier": 1})
+		GameState.weapons.append({"id": id, "tier": tiers[GameState.weapons.size()] if GameState.weapons.size() < tiers.size() else 1})
 	var vp: SubViewport = SubViewport.new()
 	vp.size = CELL
 	vp.render_target_update_mode = SubViewport.UPDATE_ALWAYS
@@ -104,5 +107,22 @@ func _run() -> void:
 	for row: int in [2, 0, 1]:
 		cells.append(await _snap("ОДЕТ", dressed, [&"lighter", &"mop", &"sock"], row, false))
 	_sheet(cells, 3, "res://tools/_preview/showcase_dressed.png")
+	# 4) герои кладбища: каждый со своим видом, лицом/спиной/боком
+	cells = []
+	for row: int in [2, 0, 1]:
+		for id: StringName in Balance.CHARACTER_ORDER:
+			GameState.character = id
+			var hero_items: Array[StringName] = [StringName(Balance.CHARACTERS[id]["hat"])]
+			cells.append(await _snap(String(id).left(8), hero_items, [Balance.CHARACTERS[id]["weapon"] if Balance.CHARACTERS[id]["weapon"] != &"" else &"lighter"], row, false))
+	GameState.character = &"hobo"
+	_sheet(cells, 6, "res://tools/_preview/showcase_heroes.png")
+	# 5) обводка по тирам: оружие I, II, III, IV, II, III
+	tiers = [1, 2, 3, 4, 2, 3]
+	cells = []
+	var tier_weapons: Array[StringName] = [&"lighter", &"mop", &"pipe_gun", &"crossbow", &"frying_pan", &"bottle"]
+	cells.append(await _snap("ТИРЫ", [&"pot"], tier_weapons, 2, false))
+	cells.append(await _snap("ТИРЫ", [&"crown"], tier_weapons, 0, true))
+	tiers = []
+	_sheet(cells, 2, "res://tools/_preview/showcase_tiers.png")
 	print("SHOWCASE DONE")
 	get_tree().quit()

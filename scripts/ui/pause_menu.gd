@@ -13,6 +13,10 @@ const PANEL_VARIANTS: int = 4
 @onready var _restart: Button = $Root/Restart
 @onready var _quit: Button = $Root/Quit
 
+var _menu_button: Button = null
+var _confirm: Control = null
+var _confirm_yes: Button = null
+var _confirm_no: Button = null
 var _inventory: Control = null
 var _inventory_text: Label = null
 var _inventory_items: GridContainer = null
@@ -26,10 +30,70 @@ func _ready() -> void:
 	_inventory_button.pressed.connect(_open_inventory)
 	_build_inventory()
 	_quit.pressed.connect(func() -> void: get_tree().quit())
+	_build_menu_button()
+	_build_confirm()
+
+
+## Пятая кнопка «В главное меню» (с подтверждением) - кнопки сдвигаются теснее.
+func _build_menu_button() -> void:
+	var ys: Array[float] = [88.0, 110.0, 132.0, 154.0, 176.0]
+	var order: Array[Button] = [_resume, _inventory_button, _restart, null, _quit]
+	_menu_button = Button.new()
+	_menu_button.text = "В ГЛАВНОЕ МЕНЮ"
+	_menu_button.size = _quit.size
+	_menu_button.theme_type_variation = _quit.theme_type_variation
+	for key: String in ["font_color", "font_hover_color", "font_focus_color"]:
+		if _quit.has_theme_color_override(key):
+			_menu_button.add_theme_color_override(key, _quit.get_theme_color(key))
+	_root.add_child(_menu_button)
+	order[3] = _menu_button
+	for i: int in order.size():
+		order[i].position = Vector2(order[i].position.x if i != 3 else _quit.position.x, ys[i])
+		order[i].size.y = 20.0
+	_menu_button.pressed.connect(func() -> void:
+		_confirm.show()
+		_confirm_no.grab_focus())
+
+
+func _build_confirm() -> void:
+	_confirm = Control.new()
+	_confirm.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_confirm.hide()
+	var back: ColorRect = ColorRect.new()
+	back.color = Color(0.03, 0.02, 0.04, 0.96)
+	back.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_confirm.add_child(back)
+	var text: Label = Label.new()
+	text.text = "ТОЧНО В МЕНЮ?\nВЕСЬ ПРОГРЕСС ЗАБЕГА\nПОХЕРИТСЯ."
+	text.position = Vector2(0.0, 80.0)
+	text.size = Vector2(480.0, 50.0)
+	text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	text.add_theme_color_override(&"font_color", Color(0.968627, 1.0, 0.0))
+	_confirm.add_child(text)
+	_confirm_yes = Button.new()
+	_confirm_yes.text = "ДА, ПОХЕРИТЬ"
+	_confirm_yes.position = Vector2(100.0, 150.0)
+	_confirm_yes.size = Vector2(130.0, 22.0)
+	_confirm.add_child(_confirm_yes)
+	_confirm_no = Button.new()
+	_confirm_no.text = "НЕТ, ЕЩЁ ПОЖИВУ"
+	_confirm_no.position = Vector2(250.0, 150.0)
+	_confirm_no.size = Vector2(130.0, 22.0)
+	_confirm.add_child(_confirm_no)
+	_root.add_child(_confirm)
+	_confirm_yes.pressed.connect(func() -> void: SceneFlow.go("res://scenes/ui/main_menu.tscn", Vector2.UP))
+	_confirm_no.pressed.connect(func() -> void:
+		_confirm.hide()
+		_menu_button.grab_focus())
 
 
 func _input(event: InputEvent) -> void:
 	if not _root.visible:
+		return
+	if _confirm.visible:
+		if event.is_action_pressed(&"move_left") or event.is_action_pressed(&"move_right") or event.is_action_pressed(&"ui_left") or event.is_action_pressed(&"ui_right"):
+			get_viewport().set_input_as_handled()
+			(_confirm_no if _confirm_yes.has_focus() else _confirm_yes).grab_focus()
 		return
 	if _inventory.visible:
 		if event.is_action_pressed(&"ui_accept") or event.is_action_pressed(&"move_left") or event.is_action_pressed(&"move_right"):
@@ -45,7 +109,7 @@ func _input(event: InputEvent) -> void:
 	if step == 0:
 		return
 	get_viewport().set_input_as_handled()  # W/S и стрелки — между кнопками
-	var buttons: Array[Button] = [_resume, _inventory_button, _restart, _quit]
+	var buttons: Array[Button] = [_resume, _inventory_button, _restart, _menu_button, _quit]
 	var current: int = 0
 	for i: int in buttons.size():
 		if buttons[i].has_focus():
@@ -58,7 +122,10 @@ func _unhandled_input(event: InputEvent) -> void:
 	if key == null or not key.pressed or key.echo or key.keycode != KEY_ESCAPE:
 		return
 	get_viewport().set_input_as_handled()
-	if _inventory.visible:
+	if _confirm.visible:
+		_confirm.hide()
+		_menu_button.grab_focus()
+	elif _inventory.visible:
 		_inventory.hide()
 		_inventory_button.grab_focus()
 	elif _root.visible:

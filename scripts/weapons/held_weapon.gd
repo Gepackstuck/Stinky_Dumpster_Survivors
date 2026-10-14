@@ -5,8 +5,9 @@ extends Node2D
 ## носок раздувается. Верхние оружия рисуются за телом, нижние перед ним, чтобы не закрывать героя.
 ## Висит ребёнком узла оружия (там же сигнал `fired`).
 
-const RING_X: float = 17.0
-const RING_Y: float = 12.0
+const OUTLINE: GDScript = preload("res://scripts/systems/outline_fx.gd")
+const RING_X: float = 22.0
+const RING_Y: float = 16.0
 const FIRST_ANGLE: float = 0.5      # первое оружие у правой руки, остальные по кругу
 const TRACK_SEC: float = 0.12       # как часто искать цель для поворота
 const KICK_DECAY: float = 5.0
@@ -33,7 +34,7 @@ func _ready() -> void:
 	_home = Vector2(cos(angle) * RING_X, sin(angle) * RING_Y)
 	_aim = _home.normalized()
 	_sprite = Sprite2D.new()
-	_sprite.texture = _load_texture("res://assets/sprites/held_%s.png" % _weapon_id)
+	_sprite.texture = OUTLINE.outlined(_load_texture("res://assets/sprites/held_%s.png" % _weapon_id), get_parent().tier)
 	_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	var back_layer: Node = get_parent().get_parent().get_node_or_null("HeldBack")
 	if back_layer != null and _home.y < -1.0:
