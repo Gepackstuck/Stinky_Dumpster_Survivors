@@ -153,6 +153,91 @@ def finish(img, silhouette):
 
 
 # ---------------------------------------------------------------- игрок
+def draw_player_up(frame, seed=17):
+    """24x24, вид сзади: огромная обосранная жопа, щупальце извивается, ноги-коротышки топают."""
+    rng = random.Random(seed)
+    w = h = 24
+    bob = 1 if frame else 0
+    torso = new_mask(w, h); blob(torso, 12, 8 + bob, 7, 6, rng, 1.0, 16)
+    butt_l = new_mask(w, h); blob(butt_l, 8, 16 + bob, 6, 6, rng, 0.6, 14)
+    butt_r = new_mask(w, h); blob(butt_r, 16, 16 + bob, 6, 6, rng, 0.6, 14)
+    butt = union(butt_l, butt_r)
+    legs = new_mask(w, h)
+    lx, rx = (7, 15) if not frame else (8, 14)
+    rect(legs, lx, 21, lx + 2, 23 - (1 if frame else 0)); rect(legs, rx, 21, rx + 2, 23 - (0 if frame else 1))
+    arms = new_mask(w, h)
+    blob(arms, 3, 10 + (1 if frame else -1) + bob, 2, 3, rng, 0.4, 8)
+    blob(arms, 21, 10 + (-1 if frame else 1) + bob, 2, 3, rng, 0.4, 8)
+    tent = new_mask(w, h)
+    sway = 1 if frame else -1
+    line(tent, [(12, 3 + bob), (12 + sway, 2 + bob), (12, 1), (12 - sway, 0)], 2)
+    sil = union(torso, butt, legs, arms, tent)
+    img = new_img(w, h)
+    paint(img, union(torso, arms, tent), GREEN)
+    paint(img, butt, GREEN); dither(img, butt, YELLOW, "dots")
+    paint(img, legs, BROWN)
+    # щель между булок и огромное говняное пятно
+    crack = new_mask(w, h); line(crack, [(12, 11 + bob), (12, 21 + bob)], 1)
+    paint(img, crack, BLACK)
+    stain = new_mask(w, h); blob(stain, 12, 17 + bob, 5, 4, rng, 0.8, 12)
+    paint(img, stain, BROWN); dither(img, stain, BLACK, "checker")
+    for x, y in ((9, 19), (14, 20), (12, 21)): px(img, x, y + bob, BROWN)
+    for x, y in ((11, 14), (13, 15), (10, 17)): px(img, x, y + bob, YELLOW)
+    drip = new_mask(w, h); line(drip, [(12, 20 + bob), (12 + sway, 23)], 1); paint(img, drip, BROWN)
+    # затылок: грязь, торчащий клок, присоски
+    noise(img, torso, [BROWN, BROWN, BLACK], 6, rng)
+    px(img, 12, 2 + bob, WHITE)
+    for x in (9, 15): px(img, x, 5 + bob, PINK)
+    # мухи над жопой
+    px(img, 6 + frame * 2, 11 + bob, BLACK); px(img, 18 - frame * 2, 12, BLACK)
+    # тень
+    yy, xx = np.mgrid[0:h, 0:w]
+    sh = ((xx - 12) * 0.7 + (yy - 12 - bob)) > 6.0
+    shade = Image.fromarray((sh * 255).astype("uint8"), "L")
+    dither(img, inter(shade, union(torso, arms, butt)), BLACK, "checker")
+    return finish(img, sil)
+
+
+def draw_player_down(frame, seed=19):
+    """24x24, вид спереди: идёт на нас и тупо пялится огромными разными глазами, язык наружу."""
+    rng = random.Random(seed)
+    w = h = 24
+    bob = 1 if frame else 0
+    body = new_mask(w, h); blob(body, 12, 12 + bob, 9, 8, rng, 1.2, 18)
+    legs = new_mask(w, h)
+    lx, rx = (8, 15) if not frame else (7, 16)
+    rect(legs, lx, 19 + bob, lx + 2, 22); rect(legs, rx, 19 + bob, rx + 2, 22 - (1 if frame else 0))
+    arms = new_mask(w, h)
+    blob(arms, 3, 13 + (1 if frame else -1) + bob, 2, 3, rng, 0.4, 8)
+    blob(arms, 21, 13 + (-1 if frame else 1) + bob, 2, 3, rng, 0.4, 8)
+    tent = new_mask(w, h)
+    sway = 1 if frame else -1
+    line(tent, [(12, 5 + bob), (12 - sway, 3 + bob), (12, 1), (12 + sway, 0)], 2)
+    sil = union(body, legs, arms, tent)
+    img = new_img(w, h)
+    paint(img, union(body, arms, tent), GREEN)
+    paint(img, legs, BROWN)
+    yy, xx = np.mgrid[0:h, 0:w]
+    sh = ((xx - 12) * 0.7 + (yy - 12 - bob)) > 6.0
+    shade = Image.fromarray((sh * 255).astype("uint8"), "L")
+    dither(img, inter(shade, union(body, arms)), BLACK, "checker")
+    noise(img, body, [BROWN, BROWN, YELLOW], 4, rng)
+    # огромные пучеглазые глаза, смотрят прямо на игрока, один больше другого
+    eye(img, 8, 9 + bob, 4, 2, 0, 0, rng)
+    eye(img, 16, 10 + bob, 3, 2, 0, 0, rng)
+    px(img, 7, 6 + bob, RED); px(img, 6, 11 + bob, RED); px(img, 17, 7 + bob, RED)
+    # брови: одна задрана, другая нахмурена
+    m = new_mask(w, h); line(m, [(4, 4 + bob), (10, 3 + bob)], 1); line(m, [(19, 6 + bob), (14, 7 + bob)], 1); paint(img, m, BLACK)
+    # кривая ухмылка с зубами и языком набок
+    m = new_mask(w, h); line(m, [(7, 15 + bob), (11, 17 + bob), (17, 15 + bob)], 2); paint(img, m, BLACK)
+    for x in (9, 12, 15): px(img, x, 15 + bob, WHITE)
+    tongue = new_mask(w, h); rect(tongue, 12, 17 + bob, 14, 19 + bob); paint(img, tongue, PINK)
+    px(img, 13, 19 + bob, RED)
+    px(img, 17, 17 + bob, CYAN)  # слюна
+    guts = new_mask(w, h); line(guts, [(7 + frame, 18 + bob), (6, 21)], 1); paint(img, guts, PINK)
+    return finish(img, sil)
+
+
 def draw_player(frame, seed=7):
     """24x24: зелёный мутант: щупальце на голове, зубы, слюна, кишки из брюха."""
     rng = random.Random(seed)  # одинаковая «кривизна» в обоих кадрах
@@ -1457,7 +1542,12 @@ def sheet(frames):
 
 
 def build_step1():
-    sheet([draw_player(0), draw_player(1)]).save(SPRITES + "player.png")
+    rows = [sheet([draw_player(0), draw_player(1)]), sheet([draw_player_up(0), draw_player_up(1)]),
+            sheet([draw_player_down(0), draw_player_down(1)])]
+    ps = new_img(rows[0].size[0], rows[0].size[1] * 3)
+    for i, r in enumerate(rows):
+        ps.paste(r, (0, i * rows[0].size[1]))
+    ps.save(SPRITES + "player.png")  # 2 кадра в ряду; ряды: бок, вверх (спиной), вниз (лицом)
     sheet([draw_squid(0), draw_squid(1)]).save(SPRITES + "enemy_squid_gopnik.png")
     sheet([draw_projectile(0), draw_projectile(1)]).save(SPRITES + "projectile.png")
     sheet([draw_xp(0), draw_xp(1)]).save(SPRITES + "xp_pixel.png")
@@ -2196,7 +2286,7 @@ def build_step2():
     bar_fill(68, 6, WHITE, (170, 170, 170), 5).save(UI + "hp_bar_fill.png")  # белая: цвет задаётся tint из кода
     bar_under(72, 10, GREEN).save(UI + "xp_bar_under.png")
     bar_fill(68, 6, WHITE, (170, 170, 170), 6).save(UI + "xp_bar_fill.png")
-    draw_frame(14, 14, GREEN, PINK, 404, chamfer=2, drips=0, eyes=False, clean=True).save(UI + "level_badge.png")
+    draw_frame(30, 14, GREEN, PINK, 404, chamfer=2, drips=0, eyes=False, clean=True).save(UI + "level_badge.png")
     draw_death_panels().save(UI + "death_panels.png")
     draw_dim().save(UI + "dim_checker.png")
     draw_border_sheet().save(SPRITES + "arena_border.png")

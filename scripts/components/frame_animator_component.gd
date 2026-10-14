@@ -8,6 +8,9 @@ const FRAME_TIME_SEC: float = 1.0 / 8.0
 
 ## false — стоим на кадре 0 (игрок в простое не дёргается).
 var active: bool = true
+## Ряд листа (направление): кадр = row * hframes + столбец. 0 для листов из одного ряда.
+var row: int = 0
+var _col: int = 0
 var _time: float = 0.0
 
 
@@ -17,9 +20,11 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	if not active:
-		sprite.frame = 0
+		_col = 0
+		sprite.frame = row * sprite.hframes
 		return
 	_time += delta
 	if _time >= FRAME_TIME_SEC:
 		_time = fmod(_time, FRAME_TIME_SEC)
-		sprite.frame = (sprite.frame + 1) % sprite.hframes
+		_col = (_col + 1) % sprite.hframes
+	sprite.frame = row * sprite.hframes + _col

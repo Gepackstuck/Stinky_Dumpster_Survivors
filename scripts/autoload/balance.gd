@@ -8,7 +8,7 @@ const ARENA_SIZE: float = 520.0        # квадрат ARENA_SIZE x ARENA_SIZE,
 # --- Игрок (Шаг 1; в GDD чисел нет — стартовые значения) ---
 const PLAYER_MOVE_SPEED: float = 100.0
 const PLAYER_MAX_HP: float = 15.0
-const PLAYER_HURT_COOLDOWN_SEC: float = 0.5  # неуязвимость после попадания
+const PLAYER_HURT_COOLDOWN_SEC: float = 0.7  # неуязвимость после попадания
 
 # --- Спавн врагов (Шаг 1: простой хардкод-спавнер) ---
 
@@ -50,6 +50,7 @@ const ELITE_SPAWN_SEC: float = 2.0
 const FINAL_BOSS_SPAWN_SEC: float = 1.5
 const WAVE_END_COLLECT_SEC: float = 1.5           # время на авто-сбор материалов после волны
 const WAVE_HP_GROWTH: float = 0.18          # +15% HP за каждую волну после первой
+const PLAYER_MAX_HIT_FRACTION: float = 0.34   # один удар не снимает больше трети максимума HP (нет ваншотов)
 const WAVE_DAMAGE_GROWTH: float = 0.10       # +10% урона врагов за волну
 const WAVE_SPEED_GROWTH: float = 0.03        # +3% скорости за волну
 const WAVE_SPEED_MAX_MULT: float = 1.4
@@ -122,16 +123,16 @@ const LEVEL_UP_CHOICES: int = 3
 
 # --- Враги: hp, damage, speed, xp, coins (GDD) ---
 const ENEMIES: Dictionary = {
-	&"squid_gopnik": {"hp": 20.0, "damage": 5.0, "speed": 60.0, "xp": 2, "coins": 1},
-	&"microbe": {"hp": 30.0, "damage": 3.0, "speed": 40.0, "xp": 3, "coins": 1},
-	&"npc_bot": {"hp": 15.0, "damage": 4.0, "speed": 50.0, "xp": 2, "coins": 1},
-	&"cockroach": {"hp": 5.0, "damage": 10.0, "speed": 140.0, "xp": 1, "coins": 2},
-	&"wifi_ghost": {"hp": 25.0, "damage": 6.0, "speed": 70.0, "xp": 4, "coins": 2},
+	&"squid_gopnik": {"hp": 20.0, "damage": 2.0, "speed": 60.0, "xp": 2, "coins": 1},
+	&"microbe": {"hp": 30.0, "damage": 2.0, "speed": 40.0, "xp": 3, "coins": 1},
+	&"npc_bot": {"hp": 15.0, "damage": 2.0, "speed": 50.0, "xp": 2, "coins": 1},
+	&"cockroach": {"hp": 5.0, "damage": 2.0, "speed": 140.0, "xp": 1, "coins": 2},
+	&"wifi_ghost": {"hp": 25.0, "damage": 3.0, "speed": 70.0, "xp": 4, "coins": 2},
 	# Босс-заглушка Шага 3 (особое поведение — позже); radius — размер тела в px.
-	&"boss_mega_hamster": {"hp": 600.0, "damage": 12.0, "speed": 35.0, "xp": 30, "coins": 20, "radius": 16.0},
-	&"boss_zakhar": {"hp": 900.0, "damage": 10.0, "speed": 45.0, "xp": 40, "coins": 25, "radius": 14.0,
+	&"boss_mega_hamster": {"hp": 600.0, "damage": 5.0, "speed": 35.0, "xp": 30, "coins": 20, "radius": 16.0},
+	&"boss_zakhar": {"hp": 900.0, "damage": 4.0, "speed": 45.0, "xp": 40, "coins": 25, "radius": 14.0,
 			"brain": "res://scripts/enemies/brains/boss_zakhar_brain.gd"},
-	&"boss_minion": {"hp": 700.0, "damage": 8.0, "speed": 70.0, "xp": 40, "coins": 25, "radius": 11.0,
+	&"boss_minion": {"hp": 700.0, "damage": 3.0, "speed": 70.0, "xp": 40, "coins": 25, "radius": 11.0,
 			"brain": "res://scripts/enemies/brains/boss_minion_brain.gd"},
 }
 

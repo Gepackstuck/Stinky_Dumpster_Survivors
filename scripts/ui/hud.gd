@@ -44,7 +44,7 @@ func _process(_delta: float) -> void:
 		_xp_label.text = "%d/%d" % [GameState.xp, GameState.xp_to_next]
 	if GameState.level != _last_level:
 		_last_level = GameState.level
-		_level_label.text = str(GameState.level)
+		_level_label.text = "УР.%d" % GameState.level
 	var second: int = ceili(GameState.wave_time_left)
 	if second != _last_second:
 		_last_second = second

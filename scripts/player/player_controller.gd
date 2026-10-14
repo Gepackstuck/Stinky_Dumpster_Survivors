@@ -41,6 +41,13 @@ func _physics_process(delta: float) -> void:
 	if direction.x != 0.0:
 		_sprite.flip_h = direction.x > 0.0
 	_animator.active = direction != Vector2.ZERO
+	if direction != Vector2.ZERO:
+		# ряды листа: 0 — бок, 1 — вверх (спиной), 2 — вниз (лицом)
+		if absf(direction.y) > absf(direction.x) + 0.01:
+			_animator.row = 1 if direction.y < 0.0 else 2
+			_sprite.flip_h = false
+		else:
+			_animator.row = 0
 	move_and_slide()
 	global_position = global_position.clamp(Vector2.ZERO, _arena_max)
 	_update_shake(delta)
@@ -98,7 +105,8 @@ func _add_weapon(perk_id: StringName) -> void:
 		add_child(weapon)
 
 
-func _on_hurt(damage: float) -> void:
+func _on_hurt(raw_damage: float) -> void:
+	var damage: float = maxf(minf(roundf(raw_damage), Balance.PLAYER_MAX_HP * Balance.PLAYER_MAX_HIT_FRACTION), 1.0)
 	EventBus.player_hit.emit(damage)
 	_flash.flash(Color(1.0, 0.0, 0.2))
 	_shake = Balance.PLAYER_HIT_SHAKE

@@ -25,6 +25,7 @@ script = ExtResource("1_ctrl")
 texture_filter = 1
 texture = ExtResource("6_tex")
 hframes = 2
+vframes = 3
 
 [node name="FrameAnimator" type="Node" parent="." node_paths=PackedStringArray("sprite")]
 script = ExtResource("5_anim")
