@@ -430,6 +430,199 @@ def draw_ground(seed=5, size=128):
     return img.convert("RGBA")
 
 
+# ---------------------------------------------------------------- граница арены
+SEG_W, SEG_H = 48, 32  # один сегмент границы (низ сегмента смотрит на арену)
+GREY = (90, 90, 96)
+DARKGREEN = (20, 120, 12)
+BRICK = (150, 40, 30)
+
+
+def _seg_base():
+    return new_img(SEG_W, SEG_H), new_mask(SEG_W, SEG_H)
+
+
+def _seg_finish(img, sil):
+    out = finish(img, sil)
+    return out
+
+
+def seg_dumpster(seed=1):
+    rng = random.Random(seed)
+    img, sil = _seg_base()
+    body = new_mask(SEG_W, SEG_H); rect(body, 4, 8, 43, 28)
+    lid = new_mask(SEG_W, SEG_H); poly(lid, [(2, 8), (45, 6), (46, 11), (3, 12)])
+    sil = union(body, lid)
+    paint(img, body, GREEN); dither(img, body, DARKGREEN, "checker")
+    paint(img, lid, BLACK); dither(img, lid, GREY, "stripes")
+    for x in (10, 18, 26, 34):  # ребра
+        line(sil, [(x, 13), (x, 27)], 1); px(img, x, 14, BLACK)
+        for y in range(13, 28): px(img, x, y, BLACK)
+    for y in range(18, 21):  # ржавая слизь
+        for x in range(4, 44):
+            if (x + y) % 3 == 0: px(img, x, y, BROWN)
+    for x in (12, 30):  # колёса
+        w = new_mask(SEG_W, SEG_H); blob(w, x, 28, 3, 3, rng, 0.5, 8)
+        sil = union(sil, w); paint(img, w, BLACK)
+    for _ in range(5):  # торчит мусор и руки
+        x = rng.randrange(6, 40); px(img, x, 5 - rng.randint(0, 2), rng.choice([PINK, YELLOW, WHITE]))
+    for x in (7, 22, 39):  # капли
+        for k in range(rng.randint(2, 5)): px(img, x, 12 + k, GREEN)
+    e = stamp_eyeball(seed); img.paste(e, (20, 14), e)
+    return _seg_finish(img, sil)
+
+
+def seg_car(seed=2):
+    rng = random.Random(seed)
+    img, sil = _seg_base()
+    body = new_mask(SEG_W, SEG_H); poly(body, [(2, 26), (2, 17), (9, 15), (15, 8), (32, 8), (39, 15), (46, 17), (46, 26)])
+    sil = body
+    paint(img, body, BLACK); dither(img, body, GREY, "dots")
+    win = new_mask(SEG_W, SEG_H); poly(win, [(16, 10), (24, 10), (24, 15), (12, 15)]); poly(win, [(26, 10), (31, 10), (36, 15), (26, 15)])
+    paint(img, win, CYAN); dither(img, win, BLACK, "dots_off")
+    for _ in range(14): px(img, rng.randint(3, 44), rng.randint(16, 25), rng.choice([BROWN, RED]))
+    for x in (11, 36):  # колёса без шин
+        w = new_mask(SEG_W, SEG_H); blob(w, x, 26, 4, 4, rng, 0.5, 8)
+        sil = union(sil, w); paint(img, w, BLACK); px(img, x, 26, GREY)
+    for fx in (14, 22, 30):  # огонь
+        for k in range(rng.randint(4, 7)):
+            px(img, fx + rng.randint(-1, 1), 8 - k, RED if k < 3 else YELLOW)
+    return _seg_finish(img, sil)
+
+
+def seg_corpses(seed=3):
+    rng = random.Random(seed)
+    img, sil = _seg_base()
+    heap = new_mask(SEG_W, SEG_H)
+    for cx, cy, rx, ry in ((12, 22, 10, 6), (28, 20, 11, 7), (38, 24, 7, 5), (22, 14, 9, 5)):
+        blob(heap, cx, cy, rx, ry, rng, 1.5, 12)
+    sil = heap
+    paint(img, heap, PINK); dither(img, heap, GREEN, "stripes3"); dither(img, heap, RED, "dots_off")
+    for _ in range(6):  # торчащие конечности
+        x = rng.randint(6, 40); line(sil, [(x, 14), (x + rng.randint(-3, 3), 6)], 2)
+    paint(img, sil, PINK); dither(img, sil, RED, "dots_off")
+    for _ in range(18): px(img, rng.randint(4, 44), rng.randint(10, 28), rng.choice([RED, BLACK, YELLOW]))
+    for (ex, ey) in ((10, 20), (26, 17), (36, 23)):
+        eye(img, ex, ey, 2, 2, 0, 0, rng)
+    return _seg_finish(img, sil)
+
+
+def seg_fence(seed=4):
+    rng = random.Random(seed)
+    img, sil = _seg_base()
+    sil = new_mask(SEG_W, SEG_H)
+    x = 1
+    while x < SEG_W - 4:
+        w, top = rng.randint(4, 6), rng.randint(4, 10)
+        plank = new_mask(SEG_W, SEG_H)
+        poly(plank, [(x, 30), (x, top + 3), (x + w // 2, top), (x + w, top + 3), (x + w, 30)])
+        sil = union(sil, plank)
+        paint(img, plank, (170, 120, 60)); dither(img, plank, BROWN, "stripes")
+        px(img, x + 1, rng.randint(14, 24), BLACK)  # гвоздь
+        x += w + 1
+    line(sil, [(0, 14), (47, 17)], 1); line(sil, [(0, 24), (47, 22)], 1)
+    for y in (14, 24):
+        for xx in range(0, SEG_W):
+            px(img, xx, y + (xx % 5 == 0), GREY)
+    for xx in range(2, SEG_W, 6): px(img, xx, 5, RED)  # колючка с кровью
+    return _seg_finish(img, sil)
+
+
+def seg_wall(seed=5):
+    rng = random.Random(seed)
+    img, sil = _seg_base()
+    wall = new_mask(SEG_W, SEG_H); rect(wall, 0, 4, 47, 30)
+    sil = wall
+    paint(img, wall, BRICK); dither(img, wall, BLACK, "dots")
+    for y in range(4, 30, 5):
+        for xx in range(0, SEG_W): px(img, xx, y, BLACK)
+        off = 0 if (y // 5) % 2 == 0 else 5
+        for xx in range(off, SEG_W, 10):
+            for k in range(5): px(img, xx, y + k, BLACK)
+    for _ in range(3):  # выбитые кирпичи
+        bx, by = rng.randrange(2, 40), rng.randrange(6, 24)
+        m = new_mask(SEG_W, SEG_H); rect(m, bx, by, bx + 6, by + 3); paint(img, m, BLACK)
+    for xx in range(8, 40, 7): px(img, xx, 5, GREEN)
+    for k, ch in enumerate([(6, 14), (7, 15), (8, 16), (9, 15), (10, 14)]): px(img, ch[0] + 14, ch[1] + 4, PINK)  # граффити-каракуля
+    for _ in range(10): px(img, rng.randint(1, 46), rng.randint(5, 29), RED)
+    return _seg_finish(img, sil)
+
+
+def seg_tires(seed=6):
+    rng = random.Random(seed)
+    img, sil = _seg_base()
+    sil = new_mask(SEG_W, SEG_H)
+    for cx, cy, r in ((9, 24, 7), (24, 25, 7), (38, 24, 7), (16, 15, 6), (31, 15, 6)):
+        t_ = new_mask(SEG_W, SEG_H); blob(t_, cx, cy, r, r, rng, 0.6, 12)
+        hole = new_mask(SEG_W, SEG_H); blob(hole, cx, cy, r // 2, r // 2, rng, 0.3, 8)
+        sil = union(sil, t_)
+        paint(img, t_, BLACK); dither(img, t_, GREY, "dots")
+        paint(img, hole, BROWN)
+    for _ in range(12): px(img, rng.randint(2, 45), rng.randint(8, 30), rng.choice([GREEN, YELLOW, WHITE]))
+    for x in (14, 30):  # мусорный пакет
+        b = new_mask(SEG_W, SEG_H); blob(b, x, 8, 5, 3, rng, 1, 8); sil = union(sil, b); paint(img, b, BLUE); dither(img, b, BLACK, "checker")
+    return _seg_finish(img, sil)
+
+
+def seg_barrels(seed=7):
+    rng = random.Random(seed)
+    img, sil = _seg_base()
+    sil = new_mask(SEG_W, SEG_H)
+    for cx in (9, 22, 36):
+        b = new_mask(SEG_W, SEG_H); rect(b, cx - 4, 10, cx + 4, 29); sil = union(sil, b)
+        paint(img, b, YELLOW); dither(img, b, GREEN, "checker")
+        for y in (14, 24):
+            for x in range(cx - 4, cx + 5): px(img, x, y, BLACK)
+        for k in range(3): px(img, cx - 1 + k, 18 + k, BLACK)  # знак «череп» каракулей
+        for k in range(rng.randint(3, 7)): px(img, cx + rng.randint(-4, 4), 29, GREEN)
+        for y in range(10, 10 + rng.randint(4, 8)): px(img, cx + 5, y, GREEN)
+    return _seg_finish(img, sil)
+
+
+def seg_bones(seed=8):
+    rng = random.Random(seed)
+    img, sil = _seg_base()
+    sil = new_mask(SEG_W, SEG_H)
+    for _ in range(12):
+        x, y = rng.randint(4, 40), rng.randint(10, 28)
+        a = rng.uniform(0, math.pi)
+        dx, dy = int(6 * math.cos(a)), int(4 * math.sin(a))
+        m = new_mask(SEG_W, SEG_H); line(m, [(x, y), (x + dx, y + dy)], 2)
+        sil = union(sil, m); paint(img, m, WHITE)
+    s = new_mask(SEG_W, SEG_H); blob(s, 24, 18, 6, 6, rng, 1, 10)  # череп
+    sil = union(sil, s); paint(img, s, WHITE)
+    eye(img, 22, 17, 1, 1, 0, 0, rng); eye(img, 27, 17, 1, 1, 0, 0, rng)
+    for _ in range(8): px(img, rng.randint(4, 44), rng.randint(10, 28), RED)
+    return _seg_finish(img, sil)
+
+
+def seg_sofa(seed=9):
+    rng = random.Random(seed)
+    img, sil = _seg_base()
+    body = new_mask(SEG_W, SEG_H); rect(body, 3, 12, 44, 28)
+    back = new_mask(SEG_W, SEG_H); rect(back, 5, 6, 42, 14)
+    sil = union(body, back)
+    paint(img, back, BLUE); dither(img, back, BLACK, "checker")
+    paint(img, body, PINK); dither(img, body, BROWN, "dots")
+    for x in (16, 30): 
+        for y in range(14, 28): px(img, x, y, BLACK)
+    for _ in range(14): px(img, rng.randint(4, 43), rng.randint(14, 27), rng.choice([BLACK, YELLOW, GREEN]))
+    for k in range(4): px(img, 40 - k, 8 + k, BROWN)  # торчит пружина
+    for x in (6, 40): px(img, x, 29, BLACK); px(img, x, 30, BLACK)
+    return _seg_finish(img, sil)
+
+
+BORDER_SEGMENTS = (seg_dumpster, seg_car, seg_corpses, seg_fence, seg_wall, seg_tires,
+                   seg_barrels, seg_bones, seg_sofa)
+
+
+def draw_border_sheet():
+    sheet = new_img(SEG_W * len(BORDER_SEGMENTS), SEG_H)
+    for i, fn in enumerate(BORDER_SEGMENTS):
+        sheet.paste(fn(i + 1), (i * SEG_W, 0))
+    return sheet
+
+
+
 def sheet(frames):
     w, h = frames[0].size
     out = new_img(w * len(frames), h)
@@ -918,6 +1111,7 @@ def build_step2():
     bar_fill(220, 6, GREEN, WHITE, 6).save(UI + "xp_bar_fill.png")
     draw_death_bg().save(UI + "death_bg.png")
     draw_dim().save(UI + "dim_checker.png")
+    draw_border_sheet().save(SPRITES + "arena_border.png")
     return glyphs
 
 

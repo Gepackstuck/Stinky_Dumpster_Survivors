@@ -16,10 +16,12 @@ var _regen_timer: float = 0.0
 func _ready() -> void:
 	_arena_max = Vector2(Balance.ARENA_SIZE, Balance.ARENA_SIZE)
 	# Камера не показывает пространство за ареной.
-	_camera.limit_left = 0
-	_camera.limit_top = 0
-	_camera.limit_right = int(Balance.ARENA_SIZE)
-	_camera.limit_bottom = int(Balance.ARENA_SIZE)
+	var border: int = int(Balance.ARENA_BORDER_THICKNESS)
+	_camera.zoom = Vector2.ONE * Balance.CAMERA_ZOOM
+	_camera.limit_left = -border
+	_camera.limit_top = -border
+	_camera.limit_right = int(Balance.ARENA_SIZE) + border
+	_camera.limit_bottom = int(Balance.ARENA_SIZE) + border
 	_hurtbox.invulnerability_sec = Balance.PLAYER_HURT_COOLDOWN_SEC
 	_hurtbox.hurt.connect(_on_hurt)
 	_health.health_changed.connect(_on_health_changed)

@@ -26,7 +26,7 @@
 
 - [x] **`player.tscn`** — `CharacterBody2D` + `Sprite2D` (24×24 зелёный).
 - [x] **`player_controller.gd`** — движение WASD со скоростью из `Balance`.
-- [x] **Camera2D** как дочерняя нода игрока, zoom 1 (×4 даёт stretch `viewport`).
+- [x] **Camera2D** как дочерняя нода игрока, zoom `Balance.CAMERA_ZOOM` = 0.7 (камера дальше; базовый масштаб даёт stretch `viewport`).
 - [x] **`enemy_base.tscn`** — `CharacterBody2D` + `Sprite2D` (16×16).
 - [x] **`enemy_base.gd`** — движение к игроку, урон при контакте.
 - [x] **`spawner.gd`** — спавн 20 врагов вокруг игрока (пока хардкод).

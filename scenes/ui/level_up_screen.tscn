@@ -55,3 +55,14 @@ layout_mode = 2
 
 [node name="Card3" parent="Root/Cards" instance=ExtResource("3_card")]
 layout_mode = 2
+
+[node name="Hint" type="Label" parent="Root"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 158.0
+offset_right = 320.0
+offset_bottom = 167.0
+text = "A/D - ВЫБОР   ПРОБЕЛ - ВЗЯТЬ   1/2/3 - БЫСТРО"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.909804, 0.909804, 0.909804, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)

@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://scripts/levels/main_level.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/levels/ground.gd" id="2_ground"]
 [ext_resource type="Texture2D" path="res://assets/sprites/ground_tile.png" id="2_tile"]
+[ext_resource type="Script" path="res://scripts/levels/arena_border.gd" id="9_border"]
 [ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="3_player"]
 [ext_resource type="Script" path="res://scripts/systems/spawner.gd" id="4_spawner"]
 [ext_resource type="Script" path="res://scripts/systems/pickup_spawner.gd" id="5_pickups"]
@@ -23,6 +24,9 @@ texture = ExtResource("2_tile")
 centered = false
 region_enabled = true
 script = ExtResource("2_ground")
+
+[node name="ArenaBorder" type="Node2D" parent="."]
+script = ExtResource("9_border")
 
 [node name="Pickups" type="Node2D" parent="."]
 

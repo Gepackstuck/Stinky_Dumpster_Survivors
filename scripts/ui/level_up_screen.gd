@@ -6,6 +6,7 @@ extends CanvasLayer
 @onready var _root: Control = $Root
 
 var _pending: int = 0
+var _selected: int = 0
 
 
 func _ready() -> void:
@@ -18,6 +19,14 @@ func _ready() -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not _root.visible:
+		return
+	if event.is_action_pressed(&"move_left"):
+		get_viewport().set_input_as_handled()
+		_select(_selected - 1)
+		return
+	if event.is_action_pressed(&"move_right"):
+		get_viewport().set_input_as_handled()
+		_select(_selected + 1)
 		return
 	for i: int in _cards.size():
 		if event.is_action_pressed(StringName("pick_card_%d" % (i + 1))) and _cards[i].visible:
@@ -45,6 +54,7 @@ func _show_choices() -> void:
 			_cards[i].set_meta(&"perk_id", choices[i])
 	_root.show()
 	get_tree().paused = true
+	_select(0)
 
 
 func _on_card_chosen(perk_id: StringName) -> void:
@@ -60,3 +70,15 @@ func _on_card_chosen(perk_id: StringName) -> void:
 func _on_player_died() -> void:
 	_pending = 0
 	_root.hide()
+
+
+## Подсветить карточку (A/D или стрелки). Enter/Пробел берёт выбранную — это делает сама кнопка в фокусе.
+func _select(index: int) -> void:
+	var visible_count: int = 0
+	for card: PerkCard in _cards:
+		if card.visible:
+			visible_count += 1
+	if visible_count == 0:
+		return
+	_selected = posmod(index, visible_count)
+	_cards[_selected].grab_focus()
