@@ -4,9 +4,11 @@ extends Node2D
 ## Компаньонов (крыса, турель, духи) тут нет: их видно и так.
 
 const ICON_SCALE: float = 0.5
+## Шапки крупнее остального: их должно быть видно (целый масштаб, без каши из пикселей).
+const SLOT_SCALE: Dictionary[StringName, float] = {&"head": 1.0}
 ## Точки крепления; несколько предметов в одной точке занимают следующие смещения.
 const SLOT_OFFSETS: Dictionary[StringName, Array] = {
-	&"head": [Vector2(0, -11), Vector2(-5, -13), Vector2(5, -13), Vector2(0, -15)],
+	&"head": [Vector2(0, -12), Vector2(0, -19), Vector2(-7, -15), Vector2(7, -15)],
 	&"face": [Vector2(0, -3), Vector2(0, -1), Vector2(-3, -2), Vector2(3, -2)],
 	&"chest": [Vector2(0, 4), Vector2(0, 7), Vector2(-4, 5), Vector2(4, 5)],
 	&"hand_l": [Vector2(-9, 3), Vector2(-10, -1), Vector2(-9, 7)],
@@ -50,7 +52,7 @@ func _rebuild() -> void:
 		var icon: Sprite2D = Sprite2D.new()
 		icon.texture = ItemLibrary.icon(item_id)
 		icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-		icon.scale = Vector2.ONE * ICON_SCALE
+		icon.scale = Vector2.ONE * SLOT_SCALE.get(slot, ICON_SCALE)
 		add_child(icon)
 		_icons.append(icon)
 		_slots.append(slot)
