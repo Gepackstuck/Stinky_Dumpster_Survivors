@@ -9,6 +9,7 @@ signal chosen(perk_id: StringName)
 @onready var _hotkey: Label = $Hotkey
 @onready var _title: Label = $Title
 @onready var _description: Label = $Description
+@onready var _price: Label = $Price
 
 const FRAMES: Texture2D = preload("res://assets/ui/card_frames.png")
 const FRAME_SIZE: Vector2 = Vector2(112.0, 150.0)
@@ -29,6 +30,7 @@ func setup(perk_id: StringName, hotkey_index: int, frame_variant: int) -> void:
 	texture_normal = _frame_texture(frame_variant, 0)
 	texture_focused = _frame_texture(frame_variant, 1)
 	_perk_id = perk_id
+	_price.hide()
 	_icon.texture = PerkLibrary.icon(perk_id)
 	_hotkey.text = str(hotkey_index)
 	_title.text = PerkLibrary.title(perk_id)
@@ -49,6 +51,10 @@ func setup_offer(offer: Dictionary, hotkey_index: int, frame_variant: int) -> vo
 	_title.text = ShopLibrary.title(offer) + "\nТИР " + StatLibrary.TIER_NAMES[offer["tier"] - 1]
 	_title.add_theme_color_override(&"font_color", StatLibrary.tier_color(offer["tier"]))
 	_description.text = ShopLibrary.description(offer)
+	var affordable: bool = GameState.coins >= offer["price"]
+	_price.text = "%d ГОВНА" % offer["price"]
+	_price.add_theme_color_override(&"font_color", Color(0.968627, 1, 0, 1) if affordable else Color(1.0, 0.1, 0.2))
+	_price.show()
 
 
 ## Карточка стата: иконка, название цветом тира, «ТИР I..IV» и описание.
@@ -56,6 +62,7 @@ func setup_stat(stat_id: StringName, tier: int, hotkey_index: int, frame_variant
 	texture_normal = _frame_texture(frame_variant, 0)
 	texture_focused = _frame_texture(frame_variant, 1)
 	_perk_id = stat_id
+	_price.hide()
 	_icon.texture = StatLibrary.icon(stat_id)
 	_hotkey.text = str(hotkey_index)
 	_title.text = StatLibrary.title(stat_id) + "\nТИР " + StatLibrary.TIER_NAMES[tier - 1]

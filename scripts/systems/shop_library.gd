@@ -80,9 +80,7 @@ static func icon(offer: Dictionary) -> Texture2D:
 
 
 static func description(offer: Dictionary) -> String:
-	var text: String = "ЦЕНА: %d\n" % offer["price"]
-	if GameState.coins < offer["price"] and not offer["sold"]:
-		text = "ЦЕНА: %d\nНЕ ХВАТАЕТ ГОВНА!\n" % offer["price"]
+	var text: String = ""
 	if offer["kind"] == &"weapon":
 		var stats: Dictionary = Balance.WEAPONS[offer["id"]]
 		var tier: int = offer["tier"]
