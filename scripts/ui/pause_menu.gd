@@ -18,6 +18,9 @@ var _menu_button: Button = null
 var _confirm: Control = null
 var _confirm_yes: Button = null
 var _confirm_no: Button = null
+var _confirm_text: Label = null
+var _confirm_action: Callable = Callable()
+var _confirm_return: Button = null
 var _inventory: Control = null
 var _inventory_text: Label = null
 var _inventory_items: GridContainer = null
@@ -30,14 +33,14 @@ func _ready() -> void:
 	_restart.pressed.connect(_on_restart)
 	_inventory_button.pressed.connect(_open_inventory)
 	_build_inventory()
-	_quit.pressed.connect(func() -> void: get_tree().quit())
+	_quit.pressed.connect(func() -> void: _ask("ТОЧНО ВЫЙТИ ИЗ ИГРЫ?\nВСЁ ЗАКРОЕТСЯ, ПРОГРЕСС ЗАБЕГА\nПОХЕРИТСЯ.", "ДА, ВАЛЮ ИЗ ИГРЫ", func() -> void: get_tree().quit()))
 	_build_menu_button()
 	_build_confirm()
 
 
 ## Пятая кнопка «В главное меню» (с подтверждением) - кнопки сдвигаются теснее.
 func _build_menu_button() -> void:
-	var ys: Array[float] = [88.0, 110.0, 132.0, 154.0, 176.0]
+	var ys: Array[float] = [92.0, 111.0, 130.0, 149.0, 190.0]   # перед «валить» большой отступ: кнопка опасная
 	var order: Array[Button] = [_resume, _inventory_button, _restart, null, _quit]
 	_menu_button = Button.new()
 	_menu_button.text = "В ГЛАВНОЕ МЕНЮ"
@@ -49,10 +52,23 @@ func _build_menu_button() -> void:
 	order[3] = _menu_button
 	for i: int in order.size():
 		order[i].position = Vector2(order[i].position.x if i != 3 else _quit.position.x, ys[i])
-		order[i].size.y = 20.0
-	_menu_button.pressed.connect(func() -> void:
-		_confirm.show()
-		_confirm_no.grab_focus())
+		order[i].size.y = 18.0
+	_menu_button.pressed.connect(func() -> void: _ask("ТОЧНО В МЕНЮ?\nВЕСЬ ПРОГРЕСС ЗАБЕГА\nПОХЕРИТСЯ.", "ДА, ПОХЕРИТЬ", func() -> void: SceneFlow.go("res://scenes/ui/main_menu.tscn", Vector2.UP)))
+	_quit.text = "! ВЫЙТИ ИЗ ИГРЫ !"
+	_quit.add_theme_color_override(&"font_color", Color(1.0, 0.1, 0.2))
+	_quit.add_theme_color_override(&"font_hover_color", Color(1.0, 0.1, 0.2))
+	_quit.add_theme_color_override(&"font_focus_color", Color(1.0, 1.0, 1.0))
+	UI_BUTTONS.skin_danger(_quit)
+
+
+## Спросить подтверждение: текст, подпись «да» и действие.
+func _ask(question: String, yes_text: String, action: Callable) -> void:
+	_confirm_text.text = question
+	_confirm_yes.text = yes_text
+	_confirm_action = action
+	_confirm_return = _menu_button if _menu_button.has_focus() else _quit
+	_confirm.show()
+	_confirm_no.grab_focus()
 
 
 func _build_confirm() -> void:
@@ -64,7 +80,7 @@ func _build_confirm() -> void:
 	back.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_confirm.add_child(back)
 	var text: Label = Label.new()
-	text.text = "ТОЧНО В МЕНЮ?\nВЕСЬ ПРОГРЕСС ЗАБЕГА\nПОХЕРИТСЯ."
+	_confirm_text = text
 	text.position = Vector2(0.0, 80.0)
 	text.size = Vector2(480.0, 50.0)
 	text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -83,10 +99,10 @@ func _build_confirm() -> void:
 	UI_BUTTONS.skin(_confirm_no, 0)
 	_confirm.add_child(_confirm_no)
 	_root.add_child(_confirm)
-	_confirm_yes.pressed.connect(func() -> void: SceneFlow.go("res://scenes/ui/main_menu.tscn", Vector2.UP))
+	_confirm_yes.pressed.connect(func() -> void: _confirm_action.call())
 	_confirm_no.pressed.connect(func() -> void:
 		_confirm.hide()
-		_menu_button.grab_focus())
+		_confirm_return.grab_focus())
 
 
 func _input(event: InputEvent) -> void:
@@ -126,7 +142,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	get_viewport().set_input_as_handled()
 	if _confirm.visible:
 		_confirm.hide()
-		_menu_button.grab_focus()
+		_confirm_return.grab_focus()
 	elif _inventory.visible:
 		_inventory.hide()
 		_inventory_button.grab_focus()

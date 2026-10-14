@@ -22,6 +22,14 @@ static func skin(button: Button, variant: int) -> void:
 	button.add_theme_color_override(&"font_shadow_color", Color(1.0, 0.0627451, 0.941176))
 
 
+## Опасная кнопка: красная рамка, красный текст (выход из игры).
+static func skin_danger(button: Button) -> void:
+	skin(button, 4)
+	button.add_theme_color_override(&"font_color", Color(1.0, 0.25, 0.3))
+	button.add_theme_color_override(&"font_hover_color", Color(1.0, 0.25, 0.3))
+	button.add_theme_color_override(&"font_shadow_color", Color(0.4, 0.0, 0.05))
+
+
 static func _tex(name: String) -> Texture2D:
 	if _cache.has(name):
 		return _cache[name]

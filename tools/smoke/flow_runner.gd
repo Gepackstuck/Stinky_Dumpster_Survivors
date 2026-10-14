@@ -31,6 +31,13 @@ func _run() -> void:
 	print("FLOW arena: ", get_tree().current_scene.name)
 	get_tree().paused = false
 	await get_tree().create_timer(1.2).timeout
+	var pause: Node = get_tree().current_scene.find_child("PauseMenu", true, false)
+	if pause != null:
+		pause.call("_open")
+		await get_tree().create_timer(0.2).timeout
+		_shot("pause")
+		await get_tree().create_timer(0.2).timeout
+		pause.call("_close")
 	EventBus.run_won.emit()
 	get_tree().paused = false
 	await get_tree().create_timer(0.5).timeout
