@@ -10,10 +10,11 @@ static func duration_sec(wave: int) -> float:
 	return minf(Balance.WAVE_DURATION_FIRST_SEC + (wave - 1) * Balance.WAVE_DURATION_STEP_SEC, Balance.WAVE_DURATION_MAX_SEC)
 
 
+## Сколько групп за волну: общее число врагов (BASE + PER_WAVE × (волна−1)) делим на средний размер группы.
 static func group_count(wave: int, kind: StringName) -> int:
-	var t: float = float(wave - 1) / float(maxi(Balance.WAVE_COUNT - 1, 1))
-	var interval: float = lerpf(Balance.WAVE_GROUP_INTERVAL_START_SEC, Balance.WAVE_GROUP_INTERVAL_END_SEC, t)
-	var count: int = maxi(roundi(duration_sec(wave) * Balance.WAVE_SPAWN_END_FRACTION / interval), Balance.WAVE_GROUPS_BASE)
+	var total: int = Balance.WAVE_ENEMIES_BASE + Balance.WAVE_ENEMIES_PER_WAVE * (maxi(wave, 1) - 1)
+	var avg_size: float = float(Balance.WAVE_GROUP_SIZE_BASE + floori(float(wave - 1) / float(Balance.WAVE_GROUP_SIZE_WAVES_PER_STEP)) + 1)
+	var count: int = maxi(roundi(float(total) / avg_size), Balance.WAVE_MIN_GROUPS)
 	if kind == &"horde":
 		count = int(count * Balance.HORDE_GROUP_MULT)
 	return count

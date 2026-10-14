@@ -31,12 +31,12 @@ const WAVE_DURATION_FIRST_SEC: float = 20.0
 const WAVE_DURATION_STEP_SEC: float = 10.0
 const WAVE_DURATION_MAX_SEC: float = 150.0
 const WAVE_DURATION_FINAL_SEC: float = 180.0      # последняя волна (боссы)
-const WAVE_GROUP_INTERVAL_START_SEC: float = 2.6      # интервал между группами на 1-й волне
-const WAVE_GROUP_INTERVAL_END_SEC: float = 1.6        # на последней
-const MAX_ALIVE_ENEMIES: int = 160                    # потолок врагов на карте (производительность)
-const WAVE_GROUPS_BASE: int = 9                   # групп врагов за волну = BASE + номер волны
-const WAVE_GROUP_SIZE_BASE: int = 5               # размер группы = BASE + волна/4 (±1)
-const WAVE_GROUP_SIZE_WAVES_PER_STEP: int = 2
+const WAVE_ENEMIES_BASE: int = 10                    # врагов за 1-ю волну (в Brotato их на старте совсем немного)
+const WAVE_ENEMIES_PER_WAVE: int = 12                 # + столько врагов за каждую следующую волну (≈190 к последней)
+const MAX_ALIVE_ENEMIES: int = 100                    # потолок врагов на карте — как в Brotato
+const WAVE_MIN_GROUPS: int = 3                       # минимум групп за волну
+const WAVE_GROUP_SIZE_BASE: int = 2               # размер группы = BASE + (волна-1)/STEP (±1, +1)
+const WAVE_GROUP_SIZE_WAVES_PER_STEP: int = 3
 const WAVE_FIRST_GROUP_SEC: float = 0.5
 const WAVE_SPAWN_END_FRACTION: float = 0.85       # последняя группа не позже 85% времени волны
 const SPAWN_MARKER_SEC: float = 1.0               # красный крест за секунду до появления
@@ -119,7 +119,7 @@ const ITEM_STINKY_PANTS_REPEL_CHANCE: float = 0.15
 const MAX_ENEMIES_ON_SCREEN: int = 500  # CONVENTIONS.md
 
 # --- XP / уровни ---
-const XP_LEVEL_FACTOR: float = 1.5      # XP до следующего уровня = FACTOR * (уровень + 3)^2 (как в Brotato, масштаб под наши дропы)
+const XP_LEVEL_FACTOR: float = 1.0      # XP до следующего уровня = FACTOR * (уровень + 3)^2 (как в Brotato, масштаб под наши дропы)
 const LEVEL_UP_CHOICES: int = 3
 
 # --- Враги: hp, damage, speed, xp, coins (GDD) ---
