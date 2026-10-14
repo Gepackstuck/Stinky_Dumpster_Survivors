@@ -120,7 +120,7 @@ func _show_result(title: String, died: bool = false) -> void:
 
 func _on_retry() -> void:
 	get_tree().paused = false
-	get_tree().reload_current_scene()
+	get_tree().change_scene_to_file("res://scenes/ui/graveyard.tscn")
 
 
 ## Каждая смерть — новый фон: случайная рамка и случайные декорации с границы арены, кроме зоны панели.

@@ -355,3 +355,16 @@ const SHOP_PRICES: Dictionary = {
 	&"unlock_weapon": 150,
 	&"reroll": 80,
 }
+
+
+# --- Персонажи кладбища (Шаг 8). mods/fx - как у предметов; weapon - стартовое оружие (пусто - выбор в начале).
+# unlock: open | kills | coins | deaths | wins (накопительные счётчики профиля).
+const CHARACTER_ORDER: Array[StringName] = [&"hobo", &"squid", &"clerk", &"janitor", &"uncle_vitya", &"blogger"]
+const CHARACTERS: Dictionary = {
+	&"hobo": {"weapon": &"", "mods": {&"max_hp": 4.0, &"pickup": 15.0}, "unlock": &"open", "need": 0, "tint": Color(1.0, 1.0, 1.0), "hat": &"ushanka"},
+	&"squid": {"weapon": &"mop", "mods": {&"damage": 15.0, &"speed": 8.0, &"max_hp": -3.0}, "unlock": &"open", "need": 0, "tint": Color(0.65, 0.85, 1.0), "hat": &"cigarette"},
+	&"clerk": {"weapon": &"slingshot", "mods": {&"crit": 12.0, &"attack_speed": 10.0, &"max_hp": -4.0, &"armor": -1.0}, "unlock": &"open", "need": 0, "tint": Color(0.85, 0.85, 1.0), "hat": &"dirty_glasses"},
+	&"janitor": {"weapon": &"sock", "mods": {&"armor": 3.0, &"max_hp": 6.0, &"speed": -8.0, &"pickup": 20.0}, "unlock": &"kills", "need": 300, "tint": Color(1.0, 0.85, 0.6), "hat": &"helmet"},
+	&"uncle_vitya": {"weapon": &"lighter", "mods": {&"dodge": 12.0, &"damage": -8.0}, "fx": {&"burn": 20.0}, "unlock": &"deaths", "need": 1, "tint": Color(1.0, 0.7, 0.7), "hat": &"vodka"},
+	&"blogger": {"weapon": &"laser_pointer", "mods": {&"damage": -12.0, &"crit": 8.0}, "fx": {&"coin_bonus": 40.0}, "unlock": &"coins", "need": 600, "tint": Color(0.8, 1.0, 0.8), "hat": &"gold_tooth"},
+}

@@ -148,7 +148,11 @@ static func _sign(value: float) -> String:
 
 ## Текст карточки: плюсы и минусы построчно, эффекты словами.
 static func description(item_id: StringName) -> String:
-	var data: Dictionary = Balance.ITEMS[item_id]
+	return describe(Balance.ITEMS[item_id])
+
+
+## Строки плюсов/минусов и эффектов из записи с mods/fx (предмет или персонаж).
+static func describe(data: Dictionary) -> String:
 	var lines: Array[String] = []
 	var mods: Dictionary = data.get("mods", {})
 	for stat_id: StringName in mods:

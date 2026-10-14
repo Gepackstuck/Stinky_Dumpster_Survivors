@@ -13,6 +13,10 @@ func _ready() -> void:
 	size = Vector2(Balance.ARENA_SIZE, Balance.ARENA_SIZE)
 	_player.position = size / 2.0
 	add_child(CompanionManager.new())
+	if not GameState.weapons.is_empty():
+		# у персонажа своё стартовое оружие: выдаём его и запускаем 1-ю волну без выбора
+		EventBus.weapons_changed.emit()
+		EventBus.perk_chosen.emit(StringName("w_" + String(GameState.weapons[0]["id"])))
 
 
 func _unhandled_input(event: InputEvent) -> void:

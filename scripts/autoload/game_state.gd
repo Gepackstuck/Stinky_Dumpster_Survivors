@@ -34,6 +34,8 @@ var crit_percent: float = 0.0
 var bonus_max_hp: float = 0.0
 var reroll_count: int = 0
 var weapons: Array[Dictionary] = []    # оружие игрока: {id, tier}, до WEAPON_SLOTS штук
+var character: StringName = &"hobo"   # выбранный на кладбище персонаж (живёт между забегами)
+var run_coins_earned: int = 0
 var items: Dictionary[StringName, int] = {}   # рюкзак: id предмета -> штук
 var coin_bonus: float = 0.0        # +доля к говну с дропа
 var repel_percent: float = 0.0
@@ -83,10 +85,14 @@ func reset_run() -> void:
 	stat_totals.clear()
 	items.clear()
 	block_charges = 0
+	run_coins_earned = 0
 	_coin_remainder = 0.0
 	weapons.clear()
 	shop_offers.clear()
 	reroll_count = 0
+	var start_weapon: StringName = Balance.CHARACTERS[character]["weapon"]
+	if start_weapon != &"":
+		weapons.append({"id": start_weapon, "tier": 1})
 	_recompute_perk_stats()
 	EventBus.run_started.emit()
 
@@ -198,6 +204,11 @@ func _recompute_items() -> void:
 			_item_stats[stat_id] = _item_stats.get(stat_id, 0.0) + data["mods"][stat_id] * count
 		for key: StringName in data.get("fx", {}):
 			fx[key] = fx.get(key, 0.0) + data["fx"][key] * count
+	var hero: Dictionary = Balance.CHARACTERS[character]
+	for stat_id: StringName in hero.get("mods", {}):
+		_item_stats[stat_id] = _item_stats.get(stat_id, 0.0) + hero["mods"][stat_id]
+	for key: StringName in hero.get("fx", {}):
+		fx[key] = fx.get(key, 0.0) + hero["fx"][key]
 	coin_bonus = fx.get(&"coin_bonus", 0.0) / 100.0
 	repel_percent = minf(fx.get(&"repel", 0.0), Balance.ITEM_REPEL_MAX_PERCENT)
 	thorns_damage = fx.get(&"thorns", 0.0)
@@ -265,6 +276,7 @@ func _on_xp_collected(amount: int) -> void:
 	_coin_remainder += float(amount) * Balance.COIN_PER_XP * (1.0 + coin_bonus)  # деньги — доля от опыта, копить придётся
 	var whole: int = floori(_coin_remainder)
 	coins += whole
+	run_coins_earned += whole
 	_coin_remainder -= float(whole)
 	while xp >= xp_to_next:
 		xp -= xp_to_next

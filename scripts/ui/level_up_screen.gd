@@ -269,6 +269,8 @@ func _on_wave_ended(_wave: int) -> void:
 
 ## В начале забега: выбор стартового оружия из 4.
 func _show_start_choice() -> void:
+	if not GameState.weapons.is_empty():
+		return  # у персонажа оружие уже выдано
 	_start_mode = true
 	_show_choices()
 
