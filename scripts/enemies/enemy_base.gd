@@ -58,6 +58,9 @@ func setup(target: Node2D, spawn_position: Vector2, id: StringName = &"squid_gop
 	else:
 		_sprite.texture = _texture_for(enemy_id)
 	_apply_size(stats.get("radius", BASE_RADIUS))
+	# летающие проходят сквозь наземных (и наоборот): тело на своём слое, сталкивается только со стеной
+	collision_layer = Balance.FLYER_BODY_LAYER if stats.get("flying", false) else Balance.GROUND_BODY_LAYER
+	collision_mask = Balance.FLYER_BODY_MASK if stats.get("flying", false) else Balance.GROUND_BODY_MASK
 	_speed = stats["speed"] * WaveRules.speed_mult(GameState.wave)
 	speed_mult = 1.0
 	_burn_left = 0.0
