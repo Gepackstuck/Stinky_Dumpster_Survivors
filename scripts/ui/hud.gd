@@ -1,6 +1,6 @@
 class_name Hud
 extends CanvasLayer
-## HUD: HP и XP полоски с цифрами и «грязным» цветом, значок уровня, таймер, волна, «говно» (деньги).
+## HUD: HP и XP полоски с цифрами и «грязным» цветом, значок уровня, таймер, волна.
 ## Обновляется только при изменении значений.
 
 const URINE: Color = Color(0.85, 0.78, 0.1)      # мало опыта — цвет мочи
@@ -15,14 +15,12 @@ const HP_FULL: Color = Color(1.0, 0.0, 0.2)      # много HP — красн�
 @onready var _level_label: Label = $Root/LevelBadge/LevelLabel
 @onready var _timer_label: Label = $Root/TimerLabel
 @onready var _wave_label: Label = $Root/WaveLabel
-@onready var _materials_label: Label = $Root/MaterialsLabel
 
 var _last_hp: float = -1.0
 var _last_max_hp: float = -1.0
 var _last_level: int = -1
 var _last_xp: int = -1
 var _last_xp_max: int = -1
-var _last_coins: int = -1
 var _last_second: int = -1
 var _last_wave: int = -1
 
@@ -45,9 +43,6 @@ func _process(_delta: float) -> void:
 	if GameState.level != _last_level:
 		_last_level = GameState.level
 		_level_label.text = str(GameState.level)
-	if GameState.coins != _last_coins:
-		_last_coins = GameState.coins
-		_materials_label.text = "ГОВНО %d" % GameState.coins
 	var second: int = ceili(GameState.wave_time_left)
 	if second != _last_second:
 		_last_second = second
