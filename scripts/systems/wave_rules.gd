@@ -26,6 +26,14 @@ static func hp_mult(wave: int) -> float:
 	return 1.0 + (maxi(wave, 1) - 1) * Balance.WAVE_HP_GROWTH
 
 
+static func damage_mult(wave: int) -> float:
+	return 1.0 + (maxi(wave, 1) - 1) * Balance.WAVE_DAMAGE_GROWTH
+
+
+static func speed_mult(wave: int) -> float:
+	return minf(1.0 + (maxi(wave, 1) - 1) * Balance.WAVE_SPEED_GROWTH, Balance.WAVE_SPEED_MAX_MULT)
+
+
 ## Времена появления групп (сек от начала волны), отсортированы.
 static func spawn_times(wave: int, kind: StringName) -> Array[float]:
 	var count: int = group_count(wave, kind)

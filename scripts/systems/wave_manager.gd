@@ -22,7 +22,8 @@ func _ready() -> void:
 	EventBus.next_wave_requested.connect(_on_next_wave_requested)
 	EventBus.enemy_died.connect(_on_enemy_died)
 	EventBus.player_died.connect(func() -> void: _fighting = false)
-	_start_wave.call_deferred(1)
+	# Первая волна стартует после выбора стартового оружия (первый perk_chosen).
+	EventBus.perk_chosen.connect(func(_id: StringName) -> void: _start_wave(1), CONNECT_ONE_SHOT)
 
 
 ## Вид волны (normal/elite/horde/boss) — нужен экрану между волнами для превью следующей.
@@ -93,7 +94,7 @@ func _end_wave() -> void:
 		var pickup: XpPickup = node as XpPickup
 		if pickup != null:
 			pickup.attract(player)
-	await get_tree().create_timer(Balance.WAVE_END_COLLECT_SEC).timeout
+	await get_tree().create_timer(Balance.WAVE_END_COLLECT_SEC, false).timeout
 	if GameState.run_active:
 		if player.has_method(&"heal_full"):
 			player.call(&"heal_full")

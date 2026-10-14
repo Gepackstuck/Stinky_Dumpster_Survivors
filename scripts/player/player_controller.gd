@@ -78,6 +78,10 @@ func _on_perk_chosen(perk_id: StringName) -> void:
 func _add_weapon(perk_id: StringName) -> void:
 	var weapon: Node2D = null
 	match perk_id:
+		PerkLibrary.W_LIGHTER:
+			var lighter: WeaponBase = WeaponBase.new()
+			lighter.weapon_id = &"lighter"
+			weapon = lighter
 		PerkLibrary.W_SOCK:
 			var aura: AuraWeapon = AuraWeapon.new()
 			aura.weapon_id = &"sock"

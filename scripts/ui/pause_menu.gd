@@ -27,7 +27,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	get_viewport().set_input_as_handled()
 	if _root.visible:
 		_close()
-	elif not get_tree().paused and GameState.run_active:
+	elif not get_tree().paused and GameState.run_active and GameState.wave > 0:
 		_open()
 
 

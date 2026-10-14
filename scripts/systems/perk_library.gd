@@ -6,17 +6,19 @@ const SPEED: StringName = &"speed"
 const REGEN: StringName = &"regen"
 const DOUBLE_SHOT: StringName = &"double_shot"
 const LOOT_GOBLIN: StringName = &"loot_goblin"
+const W_LIGHTER: StringName = &"w_lighter"
 const W_SOCK: StringName = &"w_sock"
 const W_SLINGSHOT: StringName = &"w_slingshot"
 const W_MOP: StringName = &"w_mop"
-const WEAPON_PERKS: Array[StringName] = [W_SOCK, W_SLINGSHOT, W_MOP]
-const ALL: Array[StringName] = [SPEED, REGEN, DOUBLE_SHOT, LOOT_GOBLIN, W_SOCK, W_SLINGSHOT, W_MOP]
+const WEAPON_PERKS: Array[StringName] = [W_LIGHTER, W_SOCK, W_SLINGSHOT, W_MOP]
+const ALL: Array[StringName] = [SPEED, REGEN, DOUBLE_SHOT, LOOT_GOBLIN, W_LIGHTER, W_SOCK, W_SLINGSHOT, W_MOP]
 
 const _TITLES: Dictionary[StringName, String] = {
 	SPEED: "Скорость",
 	REGEN: "Регенерация",
 	DOUBLE_SHOT: "Двойной выстрел",
 	LOOT_GOBLIN: "Лут-Гоблин",
+	W_LIGHTER: "Зажигалка",
 	W_SOCK: "Вонючий носок",
 	W_SLINGSHOT: "Рогатка",
 	W_MOP: "Швабра",
@@ -26,6 +28,7 @@ const _ICONS: Dictionary[StringName, String] = {
 	REGEN: "res://assets/ui/perk_regen.png",
 	DOUBLE_SHOT: "res://assets/ui/perk_double_shot.png",
 	LOOT_GOBLIN: "res://assets/ui/perk_loot_goblin.png",
+	W_LIGHTER: "res://assets/ui/perk_w_lighter.png",
 	W_SOCK: "res://assets/ui/perk_w_sock.png",
 	W_SLINGSHOT: "res://assets/ui/perk_w_slingshot.png",
 	W_MOP: "res://assets/ui/perk_w_mop.png",
@@ -50,6 +53,8 @@ static func description(perk_id: StringName) -> String:
 			return "+%d снаряд, -%d%% урона с каждого." % [Balance.PERK_DOUBLE_SHOT_EXTRA_PROJECTILES, roundi((1.0 - Balance.PERK_DOUBLE_SHOT_DAMAGE_MULT) * 100.0)]
 		LOOT_GOBLIN:
 			return "Подбор +%d%%, скорость -%d%%. Жадность тяжела." % [roundi((Balance.PERK_LOOT_GOBLIN_PICKUP_RADIUS_MULT - 1.0) * 100.0), roundi((1.0 - Balance.PERK_LOOT_GOBLIN_MOVE_SPEED_MULT) * 100.0)]
+		W_LIGHTER:
+			return "ОРУЖИЕ. Быстрые искры в ближайшего: %d урона, %.2f с. Классика." % [roundi(Balance.WEAPONS[&"lighter"]["damage"]), Balance.WEAPONS[&"lighter"]["cooldown"]]
 		W_SOCK:
 			return "ОРУЖИЕ. Вонь вокруг тебя: %d урона всем в радиусе раз в %.1f с." % [roundi(Balance.WEAPONS[&"sock"]["damage"]), Balance.WEAPONS[&"sock"]["cooldown"]]
 		W_SLINGSHOT:

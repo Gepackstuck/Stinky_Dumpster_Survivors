@@ -39,12 +39,12 @@ func setup(target: Node2D, spawn_position: Vector2, id: StringName = &"squid_gop
 	var stats: Dictionary = Balance.ENEMIES[enemy_id]
 	_sprite.texture = _texture_for(enemy_id)
 	_apply_size(stats.get("radius", BASE_RADIUS))
-	_speed = stats["speed"]
+	_speed = stats["speed"] * WaveRules.speed_mult(GameState.wave)
 	speed_mult = 1.0
 	extra_velocity = Vector2.ZERO
 	forced_sec = 0.0
 	_health.setup(stats["hp"] * hp_mult)
-	_hitbox.damage = stats["damage"]
+	_hitbox.damage = stats["damage"] * WaveRules.damage_mult(GameState.wave)
 	_target = target
 	if _brain != null:
 		_brain.queue_free()

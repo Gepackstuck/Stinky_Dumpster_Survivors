@@ -11,6 +11,7 @@ extends CanvasLayer
 
 var _pending: int = 0
 var _selected: int = 0
+var _start_mode: bool = false
 
 
 func _ready() -> void:
@@ -23,6 +24,7 @@ func _ready() -> void:
 	EventBus.wave_ended.connect(_on_wave_ended)
 	EventBus.run_won.connect(func() -> void: _root.hide())
 	EventBus.player_died.connect(_on_player_died)
+	_show_start_choice.call_deferred()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -52,8 +54,19 @@ func _on_wave_ended(_wave: int) -> void:
 	_show_choices()
 
 
+## В начале забега: выбор стартового оружия из 4.
+func _show_start_choice() -> void:
+	_start_mode = true
+	_pending = 1
+	_show_choices()
+
+
 func _show_choices() -> void:
-	var choices: Array[StringName] = PerkLibrary.pick_choices(Balance.LEVEL_UP_CHOICES)
+	var choices: Array[StringName] = []
+	if _start_mode:
+		choices.assign(PerkLibrary.WEAPON_PERKS)
+	else:
+		choices = PerkLibrary.pick_choices(Balance.LEVEL_UP_CHOICES)
 	if _pending <= 0:
 		choices.clear()
 	var frames: Array[int] = []
@@ -76,6 +89,13 @@ func _show_choices() -> void:
 
 ## Счётчик «осталось купить», текст кнопки следующей волны и блокировка кнопки до конца выбора.
 func _refresh_shop() -> void:
+	if _start_mode:
+		_title.text = "ВЫБЕРИ СВОЮ ХУЙНЮ"
+		_counter.text = "ЭТИМ ТЫ БУДЕШЬ УБИВАТЬ"
+		_empty.hide()
+		_next_button.hide()
+		return
+	_next_button.show()
 	_title.text = "ЛАРЁК"
 	_counter.text = "ОСТАЛОСЬ ВЗЯТЬ: %d" % _pending
 	_empty.visible = _pending <= 0
@@ -95,6 +115,12 @@ func _on_next_pressed() -> void:
 func _on_card_chosen(perk_id: StringName) -> void:
 	GameState.apply_perk(perk_id)
 	_pending -= 1
+	if _start_mode:
+		_start_mode = false
+		_pending = 0
+		_root.hide()
+		get_tree().paused = false
+		return
 	_show_choices()
 
 

@@ -2112,6 +2112,19 @@ def icon_sock():
     return out
 
 
+def icon_lighter():
+    """Зажигалка: жёлтая, кривая, с злым красно-жёлтым огоньком."""
+    w = h = 16
+    body = new_mask(w, h); rect(body, 4, 7, 10, 14)
+    cap = new_mask(w, h); rect(cap, 4, 5, 10, 7)
+    flame = new_mask(w, h); poly(flame, [(5, 5), (7, 0), (9, 5)])
+    sil = union(body, cap, flame)
+    img = new_img(w, h); paint(img, body, YELLOW); paint(img, cap, WHITE); paint(img, flame, RED)
+    out = finish(img, sil)
+    px(out, 7, 3, YELLOW); px(out, 7, 4, YELLOW); px(out, 6, 10, BLACK); px(out, 8, 12, BLACK); px(out, 12, 2, YELLOW); px(out, 11, 4, RED)
+    return out
+
+
 def icon_slingshot():
     """Рогатка: кривая коричневая рогулька с розовой резинкой и жёлтым камнем."""
     w = h = 16
@@ -2168,7 +2181,7 @@ def build_step2():
     glyphs = build_font()
     for name, fn in (("perk_speed", icon_speed), ("perk_regen", icon_regen),
                      ("perk_double_shot", icon_double), ("perk_loot_goblin", icon_goblin),
-                     ("perk_w_sock", icon_sock), ("perk_w_slingshot", icon_slingshot), ("perk_w_mop", icon_mop),
+                     ("perk_w_lighter", icon_lighter), ("perk_w_sock", icon_sock), ("perk_w_slingshot", icon_slingshot), ("perk_w_mop", icon_mop),
                      ("hud_heart", lambda: draw_heart(14))):
         fn().save(UI + name + ".png")
     draw_card_frames().save(UI + "card_frames.png")
