@@ -17,9 +17,17 @@ const ARROW_BASE_Y: float = 156.0
 const FRAME_VARIANTS: int = 8  # столько рамок в листе card_frames.png
 
 var _perk_id: StringName = &""
+var _lock: TextureRect  # значок замка справа сверху: предмет заморожен
 
 
 func _ready() -> void:
+	_lock = TextureRect.new()
+	_lock.texture = preload("res://assets/ui/lock_icon.png")
+	_lock.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	_lock.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_lock.position = Vector2(FRAME_SIZE.x - 20.0, 8.0)
+	_lock.hide()
+	add_child(_lock)
 	pressed.connect(func() -> void: chosen.emit(_perk_id))
 	focus_entered.connect(_refresh_highlight)
 	focus_exited.connect(_refresh_highlight)
@@ -31,6 +39,7 @@ func setup(perk_id: StringName, hotkey_index: int, frame_variant: int) -> void:
 	texture_focused = _frame_texture(frame_variant, 1)
 	_perk_id = perk_id
 	_price.hide()
+	_lock.hide()
 	_icon.texture = PerkLibrary.icon(perk_id)
 	_hotkey.text = str(hotkey_index)
 	_title.text = PerkLibrary.title(perk_id)
@@ -55,6 +64,7 @@ func setup_offer(offer: Dictionary, hotkey_index: int, frame_variant: int) -> vo
 	_price.text = "%d ГОВНА" % offer["price"]
 	_price.add_theme_color_override(&"font_color", Color(0.968627, 1, 0, 1) if affordable else Color(1.0, 0.1, 0.2))
 	_price.show()
+	_lock.visible = offer.get("locked", false)
 
 
 ## Карточка стата: иконка, название цветом тира, «ТИР I..IV» и описание.
@@ -63,6 +73,7 @@ func setup_stat(stat_id: StringName, tier: int, hotkey_index: int, frame_variant
 	texture_focused = _frame_texture(frame_variant, 1)
 	_perk_id = stat_id
 	_price.hide()
+	_lock.hide()
 	_icon.texture = StatLibrary.icon(stat_id)
 	_hotkey.text = str(hotkey_index)
 	_title.text = StatLibrary.title(stat_id) + "\nТИР " + StatLibrary.TIER_NAMES[tier - 1]
