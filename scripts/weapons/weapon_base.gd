@@ -6,6 +6,8 @@ extends Node2D
 const PROJECTILE_SCENE: PackedScene = preload("res://scenes/weapons/projectile.tscn")
 const RETARGET_INTERVAL_SEC: float = 0.1  # как часто искать цель, пока врагов в радиусе нет
 
+signal fired(direction: Vector2)  # выстрел: для показа оружия в руках
+
 @export var weapon_id: StringName = &"lighter"
 
 var _damage: float = 0.0
@@ -49,6 +51,7 @@ func _physics_process(delta: float) -> void:
 		_cooldown_left = RETARGET_INTERVAL_SEC
 		return
 	_fire(target)
+	fired.emit(global_position.direction_to(target.global_position))
 	_cooldown_left = GameState.cooldown_for(_cooldown_sec)
 
 

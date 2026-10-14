@@ -2,6 +2,8 @@ class_name MeleeWeapon
 extends Node2D
 ## Швабра: взмах дугой в сторону ближайшего врага, бьёт всех в секторе и отбрасывает.
 
+signal fired(direction: Vector2)
+
 @export var weapon_id: StringName = &"mop"
 
 var _damage: float = 0.0
@@ -50,6 +52,7 @@ func _physics_process(delta: float) -> void:
 	_cooldown_left = GameState.cooldown_for(_cooldown_sec)
 	_swing_dir = global_position.direction_to(target.global_position).angle()
 	_swing = 0.0
+	fired.emit(Vector2.from_angle(_swing_dir))
 	for node: Node in get_tree().get_nodes_in_group(&"enemies") + get_tree().get_nodes_in_group(&"neutrals"):
 		var enemy: EnemyBase = node as EnemyBase
 		if enemy == null:

@@ -2,6 +2,8 @@ class_name AuraWeapon
 extends Node2D
 ## Вонючий носок: периодическая волна вони вокруг игрока бьёт всех врагов в радиусе.
 
+signal fired(direction: Vector2)
+
 @export var weapon_id: StringName = &"sock"
 
 var _damage: float = 0.0
@@ -32,6 +34,7 @@ func _physics_process(delta: float) -> void:
 	if _cooldown_left > 0.0:
 		return
 	_cooldown_left = GameState.cooldown_for(_cooldown_sec)
+	fired.emit(Vector2.ZERO)
 	var r_sq: float = _radius * _radius
 	var hit_any: bool = false
 	for node: Node in get_tree().get_nodes_in_group(&"enemies") + get_tree().get_nodes_in_group(&"neutrals"):

@@ -2,6 +2,8 @@ class_name PlayerController
 extends CharacterBody2D
 ## Игрок: движение WASD/стрелками, здоровье, магнит для XP, перки, смерть.
 
+const HELD_WEAPON: GDScript = preload("res://scripts/weapons/held_weapon.gd")
+
 @onready var _sprite: Sprite2D = $Sprite2D
 @onready var _animator: FrameAnimatorComponent = $FrameAnimator
 @onready var _flash: HitFlashComponent = $HitFlash
@@ -166,6 +168,7 @@ func _on_perk_chosen(_perk_id: StringName) -> void:
 func _sync_weapons() -> void:
 	for node: Node in get_tree().get_nodes_in_group(&"weapon_nodes"):
 		node.queue_free()
+	var slot: int = 0
 	for entry: Dictionary in GameState.weapons:
 		var weapon: Node2D = null
 		match entry["id"]:
@@ -197,6 +200,11 @@ func _sync_weapons() -> void:
 		if weapon != null:
 			weapon.add_to_group(&"weapon_nodes")
 			add_child(weapon)
+			var held: Node2D = HELD_WEAPON.new()   # оружие видно в руках героя
+			held.set(&"slot_index", slot)
+			held.set(&"slot_count", GameState.weapons.size())
+			weapon.add_child(held)
+			slot += 1
 
 
 func _on_hurt(raw_damage: float) -> void:

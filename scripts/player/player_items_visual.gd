@@ -8,7 +8,7 @@ const ICON_SCALE: float = 0.5
 const SLOT_SCALE: Dictionary[StringName, float] = {&"head": 1.0}
 ## Точки крепления; несколько предметов в одной точке занимают следующие смещения.
 const SLOT_OFFSETS: Dictionary[StringName, Array] = {
-	&"head": [Vector2(0, -12), Vector2(0, -19), Vector2(-7, -15), Vector2(7, -15)],
+	&"head": [Vector2(0, -12)],   # на голову влезает один предмет: самый новый
 	&"face": [Vector2(0, -3), Vector2(0, -1), Vector2(-3, -2), Vector2(3, -2)],
 	&"chest": [Vector2(0, 4), Vector2(0, 7), Vector2(-4, 5), Vector2(4, 5)],
 	&"hand_l": [Vector2(-9, 3), Vector2(-10, -1), Vector2(-9, 7)],
@@ -40,7 +40,9 @@ func _rebuild() -> void:
 	_slots.clear()
 	_bases.clear()
 	var used: Dictionary[StringName, int] = {}
-	for item_id: StringName in GameState.items:
+	var newest_first: Array = GameState.items.keys()
+	newest_first.reverse()
+	for item_id: StringName in newest_first:
 		var slot: StringName = ItemLibrary.slot(item_id)
 		if slot == &"" or GameState.items[item_id] <= 0:
 			continue
