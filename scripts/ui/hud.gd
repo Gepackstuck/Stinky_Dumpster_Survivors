@@ -3,10 +3,11 @@ extends CanvasLayer
 ## HUD: HP и XP полоски с цифрами и «грязным» цветом, значок уровня, таймер, волна.
 ## Обновляется только при изменении значений.
 
-const URINE: Color = Color(0.85, 0.78, 0.1)      # мало опыта — цвет мочи
+const URINE: Color = Color(0.9, 0.82, 0.12)      # мало HP — цвет мочи
+const HP_FULL: Color = Color(1.0, 0.0, 0.2)      # много HP — красный
+const POOP: Color = Color(0.58, 0.34, 0.12)      # мало опыта — цвет дерьма
 const XP_FULL: Color = Color(0.2235, 1.0, 0.0784)  # много опыта — кислотно-зелёный
-const POOP: Color = Color(0.58, 0.34, 0.12)      # мало HP — цвет дерьма (светлее, чтобы читался на тёмной рамке)
-const HP_CURVE: float = 2.4                      # >1: дерьмовый цвет держится дольше, красный только у почти полного HP
+const XP_CURVE: float = 2.2                      # >1: дерьмовый цвет XP держится дольше
 const HP_FULL: Color = Color(1.0, 0.0, 0.2)      # много HP — красный
 
 @onready var _hp_bar: TextureProgressBar = $Root/HpBar
@@ -32,14 +33,14 @@ func _process(_delta: float) -> void:
 		_last_max_hp = GameState.max_hp
 		_hp_bar.max_value = maxf(GameState.max_hp, 1.0)
 		_hp_bar.value = GameState.hp
-		_hp_bar.tint_progress = POOP.lerp(HP_FULL, pow(clampf(GameState.hp / maxf(GameState.max_hp, 1.0), 0.0, 1.0), HP_CURVE))
+		_hp_bar.tint_progress = URINE.lerp(HP_FULL, clampf(GameState.hp / maxf(GameState.max_hp, 1.0), 0.0, 1.0))
 		_hp_label.text = "%d/%d" % [ceili(GameState.hp), int(GameState.max_hp)]
 	if GameState.xp != _last_xp or GameState.xp_to_next != _last_xp_max:
 		_last_xp = GameState.xp
 		_last_xp_max = GameState.xp_to_next
 		_xp_bar.max_value = maxf(GameState.xp_to_next, 1)
 		_xp_bar.value = GameState.xp
-		_xp_bar.tint_progress = URINE.lerp(XP_FULL, clampf(float(GameState.xp) / maxf(GameState.xp_to_next, 1), 0.0, 1.0))
+		_xp_bar.tint_progress = POOP.lerp(XP_FULL, pow(clampf(float(GameState.xp) / maxf(GameState.xp_to_next, 1), 0.0, 1.0), XP_CURVE))
 		_xp_label.text = "%d/%d" % [GameState.xp, GameState.xp_to_next]
 	if GameState.level != _last_level:
 		_last_level = GameState.level
