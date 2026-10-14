@@ -11,8 +11,9 @@ var _selected: int = 0
 
 func _ready() -> void:
 	_root.hide()
-	for card: PerkCard in _cards:
-		card.chosen.connect(_on_card_chosen)
+	for i: int in _cards.size():
+		_cards[i].chosen.connect(_on_card_chosen)
+		_cards[i].mouse_entered.connect(_select.bind(i))  # наведение мыши = выбор карточки для A/D
 	EventBus.player_leveled_up.connect(_on_leveled_up)
 	EventBus.player_died.connect(_on_player_died)
 
@@ -46,11 +47,15 @@ func _show_choices() -> void:
 	if choices.is_empty():
 		_pending = 0
 		return
+	var frames: Array[int] = []
+	for v: int in PerkCard.FRAME_VARIANTS:
+		frames.append(v)
+	frames.shuffle()  # у каждой карточки своя случайная рамка
 	for i: int in _cards.size():
 		var has_choice: bool = i < choices.size()
 		_cards[i].visible = has_choice
 		if has_choice:
-			_cards[i].setup(choices[i], i + 1)
+			_cards[i].setup(choices[i], i + 1, frames[i])
 			_cards[i].set_meta(&"perk_id", choices[i])
 	_root.show()
 	get_tree().paused = true

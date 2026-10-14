@@ -1372,14 +1372,14 @@ def wobbly_mask(w, h, inset, chamfer, rng, step=7, jit=1.0):
     return m
 
 
-def draw_frame(w, h, ring, ring2, seed, chamfer=5, drips=4, eyes=True, clean=False):
+def draw_frame(w, h, ring, ring2, seed, chamfer=5, drips=4, eyes=True, clean=False, corner="eyes", ring_w=2, deco_n=0):
     """Кривая рамка: чёрный контур, кишечная полоса (ring/ring2), чёрная начинка с грязью."""
     rng = random.Random(seed)
     img = new_img(w, h)
     c = chamfer
     m0 = wobbly_mask(w, h, 0, c, rng)
     m1 = wobbly_mask(w, h, 1, max(c - 1, 1), rng)
-    m2 = wobbly_mask(w, h, 3, max(c - 2, 1), rng)
+    m2 = wobbly_mask(w, h, 1 + ring_w, max(c - 2, 1), rng)
     paint(img, m0, BLACK)
     paint(img, m1, ring)
     dither(img, m1, ring2, "stripes")
@@ -1391,10 +1391,25 @@ def draw_frame(w, h, ring, ring2, seed, chamfer=5, drips=4, eyes=True, clean=Fal
         x = rng.randrange(8, w - 8)
         for k in range(rng.randint(2, 5)):
             px(img, x, 3 + k, GREEN)
-    if eyes:
+    if deco_n:  # украшения вдоль рамки в случайных местах
+        maker2 = {"eyes": stamp_eyeball, "bones": stamp_bone, "poop": stamp_poop, "guts": lambda s: stamp_guts(s, 8)}[corner]
+        for _ in range(deco_n):
+            s = maker2(rng.randint(0, 99))
+            side = rng.randrange(4)
+            if side == 0: pos = (rng.randint(10, w - 18), -2)
+            elif side == 1: pos = (rng.randint(10, w - 18), h - s.height + 2)
+            elif side == 2: pos = (-2, rng.randint(10, h - 18))
+            else: pos = (w - s.width + 2, rng.randint(10, h - 18))
+            img.paste(s, pos, s)
+    if eyes and corner == "eyes":
         for (ex, ey) in ((-2, -2), (w - 7, -2)):
             e = stamp_eyeball(rng.randint(0, 99))
             img.paste(e, (ex, ey), e)
+    elif eyes:
+        maker = {"bones": stamp_bone, "poop": stamp_poop, "guts": lambda s: stamp_guts(s, 8)}[corner]
+        for (ex, ey) in ((-2, -3), (w - 8, -3), (-2, h - 8), (w - 8, h - 8)):
+            s = maker(rng.randint(0, 99))
+            img.paste(s, (ex, ey), s)
     return img
 
 
@@ -1654,14 +1669,33 @@ def draw_dim():
     return img
 
 
+CARD_W, CARD_H = 112, 150
+# (кольцо, кольцо2, seed, скос, капли, украшение углов) — вариантов много: каждая карточка берёт случайный
+CARD_VARIANTS = (
+    (PINK, RED, 101, 7, 7, "eyes", 3, 5), (GREEN, YELLOW, 202, 5, 4, "bones", 2, 7), (CYAN, BLUE, 303, 9, 9, "poop", 4, 4),
+    (RED, BLACK, 404, 6, 3, "eyes", 5, 6), (YELLOW, PINK, 505, 8, 8, "poop", 2, 8), (BLUE, CYAN, 606, 4, 6, "guts", 3, 5),
+    (PINK, GREEN, 707, 7, 5, "bones", 4, 9), (WHITE, RED, 808, 10, 10, "guts", 3, 6),
+)
+
+
+def draw_card_frames():
+    """Лист рамок карточек: верхний ряд — обычные, нижний — выбранные (жёлтое кольцо). Ячейка 112x150."""
+    sheet = new_img(CARD_W * len(CARD_VARIANTS), CARD_H * 2)
+    for i, (ring, ring2, seed, chamfer, drips, corner, rw, dn) in enumerate(CARD_VARIANTS):
+        a = draw_frame(CARD_W, CARD_H, ring, ring2, seed, chamfer=chamfer, drips=drips, clean=True, corner=corner, ring_w=rw, deco_n=dn)
+        b = draw_frame(CARD_W, CARD_H, YELLOW, ring, seed, chamfer=chamfer, drips=drips + 2, clean=True, corner=corner, ring_w=rw, deco_n=dn)
+        sheet.paste(a, (i * CARD_W, 0))
+        sheet.paste(b, (i * CARD_W, CARD_H))
+    return sheet
+
+
 def build_step2():
     glyphs = build_font()
     for name, fn in (("perk_speed", icon_speed), ("perk_regen", icon_regen),
                      ("perk_double_shot", icon_double), ("perk_loot_goblin", icon_goblin),
                      ("hud_heart", lambda: draw_heart(14))):
         fn().save(UI + name + ".png")
-    draw_frame(84, 112, PINK, RED, 101, chamfer=6, drips=5, clean=True).save(UI + "card.png")
-    draw_frame(84, 112, YELLOW, GREEN, 101, chamfer=6, drips=7, clean=True).save(UI + "card_hover.png")
+    draw_card_frames().save(UI + "card_frames.png")
     draw_frame(96, 22, RED, PINK, 202, chamfer=4, drips=3, eyes=False).save(UI + "button.png")
     draw_frame(96, 22, YELLOW, GREEN, 202, chamfer=4, drips=5, eyes=False).save(UI + "button_hover.png")
     bar_under(72, 10, PINK).save(UI + "hp_bar_under.png")

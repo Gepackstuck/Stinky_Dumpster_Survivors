@@ -1,5 +1,5 @@
 extends Node2D
-## Граница арены: ряд проволоки (в каждом забеге случайные виды), за ним редкие декорации.
+## Граница арены: ряд проволоки (в каждом забеге один случайный вид), за ним редкие декорации.
 ## Электрическая и горящая проволока бьют игрока. Расстановка новая при каждом старте/рестарте.
 
 const DECOR_TEXTURE: Texture2D = preload("res://assets/sprites/arena_border.png")
@@ -13,10 +13,9 @@ const ANIM_FRAME_SEC: float = 0.125
 const STATIC_WIRE_KINDS: int = 6
 const ELECTRIC_CELL: int = 6
 const FIRE_CELL: int = 8
-const RUN_MIN: int = 2
-const RUN_MAX: int = 6
 
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
+var _wire_cell: int = 0  # один вид проволоки на весь забег
 var _animated: Array[Dictionary] = []
 var _anim_time: float = 0.0
 var _anim_step: int = 0
@@ -24,6 +23,7 @@ var _anim_step: int = 0
 
 func _ready() -> void:
 	_rng.randomize()
+	_wire_cell = _random_wire_cell()
 	var arena: float = Balance.ARENA_SIZE
 	var thickness: float = Balance.ARENA_BORDER_THICKNESS
 	_add_backdrop(arena, thickness)
@@ -53,14 +53,8 @@ func _build_side(origin: Vector2, angle: float, from_along: float, to_along: flo
 	side.rotation = angle
 	add_child(side)
 	var along: float = from_along
-	var run_left: int = 0
-	var cell: int = 0
 	while along < to_along:
-		if run_left <= 0:
-			cell = _random_wire_cell()
-			run_left = _rng.randi_range(RUN_MIN, RUN_MAX)
-		run_left -= 1
-		_add_wire(side, along + WIRE_SIZE.x * 0.5, cell)
+		_add_wire(side, along + WIRE_SIZE.x * 0.5, _wire_cell)
 		if _rng.randf() < Balance.BORDER_DECOR_CHANCE:
 			_add_decor(side, along + WIRE_SIZE.x * 0.5 + _rng.randf_range(-12.0, 12.0))
 		along += WIRE_SIZE.x
