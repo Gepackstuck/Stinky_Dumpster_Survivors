@@ -15,6 +15,7 @@ extends CanvasLayer
 @onready var _hint: Label = $Root/Hint
 @onready var _slots_box: HBoxContainer = $Root/Slots
 @onready var _slot_info: Label = $Root/SlotInfo
+@onready var _backdrop: TextureRect = $Root/Backdrop
 
 const HINT_CARDS: String = "A/D - ВЫБОР   ПРОБЕЛ/E - ВЗЯТЬ   1-4 - БЫСТРО   S - РЕРОЛЛ   W - НАЗАД"
 const HINT_SHOP: String = "A/D - ВЫБОР   ПРОБЕЛ/E - КУПИТЬ   F - ЗАМОРОЗИТЬ   S/W - ВНИЗ/ВВЕРХ"
@@ -28,6 +29,11 @@ var _start_mode: bool = false
 var _shop_mode: bool = false
 var _slot_buttons: Array[Button] = []
 var _toast_id: int = 0
+var _menu: PanelContainer = null        # контекстное меню слота оружия
+var _menu_buttons: Array[Button] = []   # [объединить, переработать, назад]
+var _menu_slot: int = -1
+const BACKDROP_SHOP: Color = Color(0.32, 0.28, 0.3)
+const BACKDROP_LEVEL: Color = Color(0.3, 0.1, 0.34)
 var _counter_base: String = ""
 
 
@@ -37,6 +43,7 @@ func _ready() -> void:
 		_cards[i].pressed.connect(_on_card_pressed.bind(i))
 		_cards[i].mouse_entered.connect(_select_card.bind(i))  # мышь — запасной вариант
 	_build_slot_buttons()
+	_build_slot_menu()
 	_next_button.pressed.connect(_on_next_pressed)
 	_reroll_button.pressed.connect(_on_reroll_pressed)
 	EventBus.player_leveled_up.connect(_on_leveled_up)
@@ -44,6 +51,41 @@ func _ready() -> void:
 	EventBus.run_won.connect(func() -> void: _root.hide())
 	EventBus.player_died.connect(_on_player_died)
 	_show_start_choice.call_deferred()
+
+
+func _build_slot_menu() -> void:
+	_menu = PanelContainer.new()
+	var panel_box: StyleBoxFlat = StyleBoxFlat.new()
+	panel_box.bg_color = Color(0.03, 0.02, 0.04)
+	panel_box.border_color = Color(1.0, 0.0627, 0.94)
+	panel_box.set_border_width_all(2)
+	panel_box.set_content_margin_all(4.0)
+	_menu.add_theme_stylebox_override(&"panel", panel_box)
+	_menu.z_index = 20
+	_menu.hide()
+	var column: VBoxContainer = VBoxContainer.new()
+	column.add_theme_constant_override(&"separation", 2)
+	_menu.add_child(column)
+	for index: int in 3:
+		var button: Button = Button.new()
+		button.custom_minimum_size = Vector2(130.0, 14.0)
+		button.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		button.add_theme_color_override(&"font_color", Color(0.968627, 1.0, 0.0))
+		button.add_theme_color_override(&"font_hover_color", Color(0.968627, 1.0, 0.0))
+		button.add_theme_color_override(&"font_focus_color", Color(0.968627, 1.0, 0.0))
+		button.add_theme_color_override(&"font_pressed_color", Color(0.968627, 1.0, 0.0))
+		button.add_theme_color_override(&"font_disabled_color", Color(0.28, 0.28, 0.3))  # недоступно — тёмная надпись
+		for state: StringName in [&"normal", &"hover", &"pressed", &"disabled", &"focus"]:
+			var box: StyleBoxFlat = StyleBoxFlat.new()
+			box.bg_color = Color(0.13, 0.1, 0.0) if state == &"focus" else Color(0.03, 0.02, 0.04)
+			box.border_color = Color(0.968627, 1.0, 0.0) if state == &"focus" else Color(0.03, 0.02, 0.04)
+			box.set_border_width_all(1)
+			box.set_content_margin_all(2.0)
+			button.add_theme_stylebox_override(state, box)
+		button.pressed.connect(_on_menu_pressed.bind(index))
+		column.add_child(button)
+		_menu_buttons.append(button)
+	_root.add_child(_menu)
 
 
 func _build_slot_buttons() -> void:
@@ -59,6 +101,9 @@ func _build_slot_buttons() -> void:
 
 func _input(event: InputEvent) -> void:
 	if not _root.visible:
+		return
+	if _menu.visible:
+		_menu_input(event)
 		return
 	if event.is_action_pressed(&"move_left"):
 		get_viewport().set_input_as_handled()
@@ -86,6 +131,68 @@ func _input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 			_on_card_pressed(i)
 			return
+
+
+## Меню слота: W/S между доступными пунктами, Esc или «Назад» — закрыть. Остальное не пускаем.
+func _menu_input(event: InputEvent) -> void:
+	if event.is_action_pressed(&"ui_cancel"):
+		get_viewport().set_input_as_handled()
+		_close_menu()
+	elif event.is_action_pressed(&"move_up") or event.is_action_pressed(&"move_down"):
+		get_viewport().set_input_as_handled()
+		var enabled: Array[Button] = []
+		for button: Button in _menu_buttons:
+			if not button.disabled:
+				enabled.append(button)
+		var current: int = 0
+		for i: int in enabled.size():
+			if enabled[i].has_focus():
+				current = i
+		var step: int = -1 if event.is_action_pressed(&"move_up") else 1
+		enabled[posmod(current + step, enabled.size())].grab_focus()
+	elif event.is_action_pressed(&"move_left") or event.is_action_pressed(&"move_right") or event is InputEventKey and event.pressed and not event.echo:
+		if not event.is_action_pressed(&"ui_accept") and not event.is_action_pressed(&"ui_cancel"):
+			get_viewport().set_input_as_handled()
+
+
+func _open_menu(slot: int) -> void:
+	_menu_slot = slot
+	var entry: Dictionary = GameState.weapons[slot]
+	var can_merge: bool = GameState.find_merge_partner(slot) >= 0
+	var can_recycle: bool = GameState.weapons.size() > 1
+	_menu_buttons[0].text = "ОБЪЕДИНИТЬ: ТИР %s" % StatLibrary.TIER_NAMES[mini(entry["tier"], 3)] if can_merge else "ОБЪЕДИНИТЬ"
+	_menu_buttons[0].disabled = not can_merge
+	_menu_buttons[1].text = "ПЕРЕРАБОТАТЬ: +%d" % GameState.weapon_recycle_value(slot)
+	_menu_buttons[1].disabled = not can_recycle
+	_menu_buttons[2].text = "НАЗАД"
+	_menu.show()
+	var slot_rect: Rect2 = _slot_buttons[slot].get_global_rect()
+	_menu.reset_size()
+	_menu.position = Vector2(clampf(slot_rect.position.x - 100.0, 6.0, 480.0 - _menu.size.x - 6.0), slot_rect.position.y - _menu.size.y - 4.0)
+	for button: Button in _menu_buttons:
+		if not button.disabled:
+			button.grab_focus()
+			break
+
+
+func _close_menu() -> void:
+	_menu.hide()
+	_menu_slot = -1
+	_refresh_shop()
+	_focus_bottom(_bottom_index)
+
+
+func _on_menu_pressed(index: int) -> void:
+	var slot: int = _menu_slot
+	if index == 0 and slot >= 0:
+		GameState.merge_weapons(slot)
+		_toast("ОБЪЕДИНИЛ. ПОЛУЧИЛОСЬ ЗЛЕЕ.")
+	elif index == 1 and slot >= 0:
+		_toast("ПЕРЕРАБОТАЛ: +%d ГОВНА." % GameState.recycle_weapon(slot))
+	_menu.hide()
+	_menu_slot = -1
+	_refresh_shop()
+	_focus_bottom(_bottom_index)
 
 
 func _move_sideways(step: int) -> void:
@@ -168,6 +275,8 @@ func _refresh_shop() -> void:
 	_refresh_slots()
 	if _start_mode:
 		_title.text = "ВЫБЕРИ СВОЮ ХУЙНЮ"
+		_title.add_theme_color_override(&"font_color", Color(0.968627, 1.0, 0.0))
+		_backdrop.modulate = BACKDROP_SHOP
 		_counter_base = "ЭТИМ ТЫ БУДЕШЬ УБИВАТЬ"
 		_counter.text = _counter_base
 		_hint.text = HINT_CARDS
@@ -176,8 +285,7 @@ func _refresh_shop() -> void:
 		_slots_box.hide()
 		_slot_info.text = ""
 		return
-	_title.text = "ВОЛНА %d ПРОЙДЕНА!" % GameState.wave
-	_next_button.show()
+	_next_button.visible = _shop_mode
 	_reroll_button.show()
 	_reroll_button.text = "РЕРОЛЛ %d" % _reroll_cost()
 	_reroll_button.disabled = GameState.coins < _reroll_cost()
@@ -186,12 +294,18 @@ func _refresh_shop() -> void:
 	var kind: StringName = GameState.special_waves.get(next_wave, &"normal")
 	var label: String = {&"elite": ": ЭЛИТА!", &"horde": ": ОРДА!", &"boss": ": БОССЫ!"}.get(kind, "")
 	if _shop_mode:
-		_counter_base = "ЛАРЁК: ТРАТЬ ГОВНО, ПОКА ЖИВОЙ"
+		_title.text = "ЛАРЁК"
+		_title.add_theme_color_override(&"font_color", Color(0.968627, 1.0, 0.0))
+		_backdrop.modulate = BACKDROP_SHOP
+		_counter_base = "ВОЛНА %d ПРОЙДЕНА. ТРАТЬ ГОВНО, ПОКА ЖИВОЙ" % GameState.wave
 		_hint.text = HINT_SHOP
 		_next_button.text = "В БОЙ: ВОЛНА %d%s" % [next_wave, label]
 		_next_button.disabled = false
 	else:
-		_counter_base = "УРОВЕНЬ %d: ВЫБИРАЙ СТАТ (ОСТАЛОСЬ %d)" % [_queue[0], _queue.size()]
+		_title.text = "УРОВЕНЬ %d!" % _queue[0]
+		_title.add_theme_color_override(&"font_color", Color(1.0, 0.0627, 0.94))
+		_backdrop.modulate = BACKDROP_LEVEL
+		_counter_base = "ВЫБЕРИ УЛУЧШЕНИЕ. ВСЕГО ВЫБОРОВ: %d" % _queue.size()
 		_hint.text = HINT_CARDS
 		_next_button.text = "ВОЛНА %d%s" % [next_wave, label]
 		_next_button.disabled = true
@@ -247,13 +361,7 @@ func _update_slot_info(i: int) -> void:
 		_slot_info.text = ""
 		return
 	var entry: Dictionary = GameState.weapons[i]
-	var weapon_name: String = PerkLibrary.title(ShopLibrary.perk_id_of(entry["id"]))
-	var action: String
-	if GameState.find_merge_partner(i) >= 0:
-		action = "E: СКРЕСТИТЬ ДО ТИРА %s" % StatLibrary.TIER_NAMES[entry["tier"]]
-	else:
-		action = "E: ПЕРЕРАБОТАТЬ (+%d)" % GameState.weapon_recycle_value(i)
-	_slot_info.text = "%s ТИР %s. %s" % [weapon_name, StatLibrary.TIER_NAMES[entry["tier"] - 1], action]
+	_slot_info.text = "%s ТИР %s. E: МЕНЮ" % [PerkLibrary.title(ShopLibrary.perk_id_of(entry["id"])), StatLibrary.TIER_NAMES[entry["tier"] - 1]]
 
 
 func _on_next_pressed() -> void:
@@ -264,7 +372,12 @@ func _on_next_pressed() -> void:
 
 
 func _on_reroll_pressed() -> void:
-	if _start_mode or _reroll_button.disabled or not _reroll_button.visible:
+	if _start_mode or not _reroll_button.visible:
+		return
+	if _reroll_button.disabled:
+		_toast("НА РЕРОЛЛ НЕ ХВАТАЕТ ГОВНА, БОМЖ.")
+		_shake_node(_reroll_button, 4.0)
+		_flash_coins()
 		return
 	GameState.coins -= _reroll_cost()
 	GameState.reroll_count += 1
@@ -288,6 +401,9 @@ func _on_card_pressed(index: int) -> void:
 		var reason: String = ShopLibrary.why_not(offer)
 		if reason != "":
 			_toast(reason)
+			_shake_node(_cards[index], 5.0)
+			if GameState.coins < offer["price"]:
+				_flash_coins()
 			return
 		ShopLibrary.buy(offer)
 		var kept: int = _selected
@@ -313,23 +429,8 @@ func _toggle_lock() -> void:
 
 
 func _on_slot_pressed(i: int) -> void:
-	if i >= GameState.weapons.size():
-		return
-	if GameState.find_merge_partner(i) >= 0:
-		GameState.merge_weapons(i)
-		_toast("СКРЕСТИЛ. ПОЛУЧИЛОСЬ ЗЛЕЕ.")
-	else:
-		var value: int = GameState.recycle_weapon(i)
-		if value == 0:
-			_toast("ПОСЛЕДНЕЕ ОРУЖИЕ НЕ ТРОГАЙ, ПОКОЙНИК.")
-		else:
-			_toast("ПЕРЕРАБОТАЛ: +%d ГОВНА." % value)
-	_refresh_shop()
-	_focus_bottom(_bottom_index)
-	if _zone == 1 and _bottom_items().size() > 0:
-		var item: Control = _bottom_items()[_bottom_index]
-		if item in _slot_buttons:
-			_update_slot_info(_slot_buttons.find(item))
+	if i < GameState.weapons.size():
+		_open_menu(i)
 
 
 func _on_player_died() -> void:
@@ -363,3 +464,26 @@ func _select_card(card_index: int) -> void:
 	var position: int = _visible_cards().find(card_index)
 	if position >= 0 and _zone == 0:
 		_select(position)
+
+
+## Тряска ноды по горизонтали (отказ покупки). Исходную позицию помним, чтобы повторные тряски не уводили её.
+func _shake_node(node: Control, amplitude: float = 4.0) -> void:
+	if not node.has_meta(&"shake_x"):
+		node.set_meta(&"shake_x", node.position.x)
+	var origin: float = node.get_meta(&"shake_x")
+	var tween: Tween = create_tween()
+	for i: int in 8:
+		tween.tween_property(node, "position:x", origin + (amplitude if i % 2 == 0 else -amplitude), 0.045)
+	tween.tween_property(node, "position:x", origin, 0.045)
+	tween.tween_callback(node.remove_meta.bind(&"shake_x"))
+
+
+## Говно мигает красным и трясётся секунду: «тебе не хватает».
+func _flash_coins() -> void:
+	_shake_node(_coins, 3.0)
+	var tween: Tween = create_tween()
+	for i: int in 4:
+		tween.tween_callback(_coins.add_theme_color_override.bind(&"font_color", Color(1.0, 0.1, 0.2)))
+		tween.tween_interval(0.13)
+		tween.tween_callback(_coins.add_theme_color_override.bind(&"font_color", Color(0.85, 0.55, 0.2)))
+		tween.tween_interval(0.12)
