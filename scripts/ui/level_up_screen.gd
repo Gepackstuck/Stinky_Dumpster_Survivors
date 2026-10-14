@@ -446,10 +446,9 @@ func _on_reroll_pressed() -> void:
 	GameState.reroll_count += 1
 	if _shop_mode:
 		GameState.shop_offers = ShopLibrary.fill_offers(GameState.shop_offers, GameState.wave + 1)
-	var keep_focus: bool = _zone == 2
 	_show_choices()
-	if keep_focus and not _reroll_button.disabled:
-		_focus_top()  # можно крутить реролл подряд
+	_zone = 0  # после реролла возвращаемся на карточки, чтобы не промахнуться и не крутить повторно
+	_select(0)
 
 
 func _on_card_pressed(index: int) -> void:
