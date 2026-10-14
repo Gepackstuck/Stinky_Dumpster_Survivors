@@ -1,5 +1,5 @@
 extends BossBrain
-## Кабан-бомж: бежит как все, потом замирает, краснеет и рвётся рывком по прямой (как Charger в Brotato).
+## Тележка-убийца: бежит как все, потом замирает, краснеет и рвётся рывком по прямой (как Charger в Brotato).
 
 const WINDUP_SEC: float = 0.45
 const DASH_SEC: float = 0.55

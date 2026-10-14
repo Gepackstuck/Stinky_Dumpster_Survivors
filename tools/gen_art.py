@@ -154,42 +154,53 @@ def finish(img, silhouette):
 
 # ---------------------------------------------------------------- враги Шага 4
 def draw_chaser(frame, seed=31):
-    """12x12: гнида — бледная вошь с красными пятнами и двумя разными глазами, дёргает лапками."""
+    """14x14: навозная муха — синее брюшко, огромные красные глаза разного размера, крылья машут."""
     rng = random.Random(seed)
-    w = h = 12
-    body = new_mask(w, h); blob(body, 6, 6, 4, 3, rng, 0.5, 10)
+    w = h = 14
+    belly = new_mask(w, h); blob(belly, 7, 9, 3, 4, rng, 0.4, 10)
+    head = new_mask(w, h); blob(head, 7, 4, 3, 2, rng, 0.3, 8)
+    up = 2 if frame else 0
+    wing_l = new_mask(w, h); blob(wing_l, 3, 7 - up, 3, 3 - frame, rng, 0.3, 8)
+    wing_r = new_mask(w, h); blob(wing_r, 11, 7 - up, 3, 3 - frame, rng, 0.3, 8)
     legs = new_mask(w, h)
-    for i, x in enumerate((2, 4, 6, 8)):
-        o = 1 if (i + frame) % 2 else -1
-        line(legs, [(x, 8), (x + o, 11)], 1); line(legs, [(x, 4), (x - o, 1)], 1)
-    sil = union(body, legs)
+    for x in (5, 7, 9): line(legs, [(x, 12), (x + (1 if (x + frame) % 2 else -1), 13)], 1)
+    sil = union(belly, head, wing_l, wing_r, legs)
     img = new_img(w, h)
-    paint(img, sil, BLACK); paint(img, body, WHITE); dither(img, body, GREEN, "dots")
-    for x, y in ((4, 6), (7, 5), (6, 8)): px(img, x, y, RED)
-    eye(img, 8, 5, 1, 1, 0, 0, rng); px(img, 4, 5, RED); px(img, 4, 4, YELLOW)
+    paint(img, sil, BLACK)
+    paint(img, union(wing_l, wing_r), WHITE); dither(img, union(wing_l, wing_r), CYAN, "checker")
+    paint(img, belly, BLUE); dither(img, belly, CYAN, "dots"); paint(img, head, BLUE)
+    el = new_mask(w, h); blob(el, 5, 4, 2, 2, rng, 0.2, 8); paint(img, el, RED)
+    er = new_mask(w, h); blob(er, 9, 4, 1, 1, rng, 0.2, 8); paint(img, er, RED)
+    px(img, 4, 3, WHITE); px(img, 9, 3, YELLOW); px(img, 7, 6, YELLOW)
+    for y in (8, 10): px(img, 6, y, BLACK); px(img, 8, y, BLACK)
     return finish(img, sil)
 
 
 def draw_charger(frame, seed=32):
-    """20x20: кабан-бомж — розовая тушка в синем шарфе, клыки, красные глаза, бодает вправо."""
+    """22x18: ожившая тележка из супермаркета — красная, злые разные глаза, мусор торчит, мчит вправо."""
     rng = random.Random(seed)
-    w = h = 20
-    body = new_mask(w, h); blob(body, 9, 11, 8, 6, rng, 0.8, 14)
-    head = new_mask(w, h); blob(head, 16, 11, 4, 4, rng, 0.6, 10)
-    snout = new_mask(w, h); rect(snout, 18, 11, 19, 13)
-    ear = new_mask(w, h); poly(ear, [(14, 8), (16, 4), (17, 8)])
-    legs = new_mask(w, h)
-    o = 1 if frame else 0
-    rect(legs, 4 + o, 16, 5 + o, 19); rect(legs, 12 - o, 16, 13 - o, 19)
-    sil = union(body, head, snout, ear, legs)
+    w, h = 22, 18
+    basket = new_mask(w, h); poly(basket, [(3, 4), (20, 4), (17, 12), (5, 12)])
+    handle = new_mask(w, h); line(handle, [(3, 4), (1, 1), (5, 1)], 1)
+    junk = new_mask(w, h); blob(junk, 8, 3, 3, 2, rng, 0.8, 8); blob(junk, 14, 3, 3, 3, rng, 0.8, 8)
+    wheels = new_mask(w, h); blob(wheels, 7, 15, 2, 2, rng, 0.2, 8); blob(wheels, 16, 15, 2, 2, rng, 0.2, 8)
+    bumper = new_mask(w, h); rect(bumper, 19, 6, 21, 11)
+    sil = union(basket, handle, junk, wheels, bumper)
     img = new_img(w, h)
-    paint(img, sil, PINK); dither(img, body, BROWN, "dots"); paint(img, legs, BROWN)
-    scarf = new_mask(w, h); rect(scarf, 12, 9, 14, 15); paint(img, scarf, BLUE); dither(img, scarf, CYAN, "stripes")
-    tusk = new_mask(w, h); poly(tusk, [(16, 14), (17, 17), (18, 14)]); paint(img, tusk, YELLOW)
-    eye(img, 16, 9, 2, 1, 1, 0, rng); px(img, 16, 8, RED); px(img, 15, 8, RED)
-    px(img, 19, 12, BLACK); px(img, 19, 13, BLACK)
-    for x, y in ((3, 9), (6, 12), (9, 8), (8, 14)): px(img, x, y, rng.choice([BLACK, GREEN, YELLOW]))
-    for x in (1, 2): px(img, x, 8 + frame, GREEN)
+    paint(img, sil, BLACK)
+    paint(img, basket, RED)
+    for x in range(5, 19, 3):  # проволочная сетка
+        line_m = new_mask(w, h); line(line_m, [(x, 4), (x - 1, 12)], 1); paint(img, inter(line_m, basket), BLACK)
+    dither(img, basket, WHITE, "dots_off")
+    paint(img, junk, GREEN); dither(img, junk, PINK, "checker")
+    paint(img, handle, WHITE); paint(img, bumper, YELLOW); dither(img, bumper, BLACK, "stripes")
+    for cx in (7, 16):
+        paint(img, inter(wheels, wheels), BLACK)
+    for cx in (7, 16): px(img, cx, 15, WHITE); px(img, cx + (1 if frame else 0), 15 + (0 if frame else 1), YELLOW)
+    eye(img, 8, 8, 3, 2, 1, 0, rng); eye(img, 14, 8, 2, 1, 1, 0, rng)
+    m = new_mask(w, h); line(m, [(5, 4), (11, 6)], 1); line(m, [(17, 5), (12, 6)], 1); paint(img, m, BLACK)
+    for x, y in ((6, 11), (11, 11), (15, 11)): px(img, x, y, YELLOW)
+    for k in range(2): px(img, 0 - k, 10, GREEN)  # пыль за хвостом
     return finish(img, sil)
 
 
@@ -219,13 +230,14 @@ def draw_bruiser(frame, seed=34):
     bob = 1 if frame else 0
     belly = new_mask(w, h); blob(belly, 12, 14 + bob, 10, 8, rng, 1.0, 18)
     head = new_mask(w, h); blob(head, 12, 5 + bob, 4, 3, rng, 0.5, 10)
-    arms = new_mask(w, h); blob(arms, 2, 14 + bob, 2, 4, rng, 0.5, 8); blob(arms, 22, 14 + bob, 2, 4, rng, 0.5, 8)
+    arms = new_mask(w, h); blob(arms, 3, 15 + bob, 2, 3, rng, 0.4, 8); blob(arms, 21, 15 + bob, 2, 3, rng, 0.4, 8)
     legs = new_mask(w, h)
     rect(legs, 6 + frame, 20, 9 + frame, 23); rect(legs, 15 - frame, 20, 18 - frame, 23)
     sil = union(belly, head, arms, legs)
     img = new_img(w, h)
     paint(img, sil, BLUE); dither(img, belly, BLACK, "checker"); paint(img, legs, BROWN)
-    paint(img, head, PINK); paint(img, arms, PINK)
+    paint(img, head, PINK); paint(img, arms, BLUE); dither(img, arms, WHITE, "dots")
+    for hx in (2, 3, 21, 22): px(img, hx, 18 + bob, PINK)  # кулачки
     nav = new_mask(w, h); blob(nav, 12, 15 + bob, 3, 3, rng, 0.4, 8); paint(img, nav, PINK); dither(img, nav, BROWN, "dots")
     px(img, 12, 15 + bob, BLACK)
     for x, y in ((9, 13), (15, 13), (10, 18), (14, 18), (12, 12)): px(img, x, y + bob, BLACK)
