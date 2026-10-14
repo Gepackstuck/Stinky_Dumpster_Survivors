@@ -10,6 +10,8 @@ signal player_hit(damage: float)
 signal player_died
 @warning_ignore("unused_signal")
 signal player_leveled_up(new_level: int)
+@warning_ignore("unused_signal")
+signal perk_chosen(perk_id: StringName)
 
 # --- Враги ---
 @warning_ignore("unused_signal")

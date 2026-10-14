@@ -1,9 +1,14 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/levels/main_level.gd" id="1_main"]
-[ext_resource type="Script" path="res://scripts/levels/floor_marks.gd" id="2_floor"]
+[ext_resource type="Script" path="res://scripts/levels/ground.gd" id="2_ground"]
+[ext_resource type="Texture2D" path="res://assets/sprites/ground_tile.png" id="2_tile"]
 [ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="3_player"]
 [ext_resource type="Script" path="res://scripts/systems/spawner.gd" id="4_spawner"]
+[ext_resource type="Script" path="res://scripts/systems/pickup_spawner.gd" id="5_pickups"]
+[ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="6_hud"]
+[ext_resource type="PackedScene" path="res://scenes/ui/level_up_screen.tscn" id="7_lu"]
+[ext_resource type="PackedScene" path="res://scenes/ui/death_screen.tscn" id="8_ds"]
 
 [node name="Main" type="ColorRect"]
 offset_right = 320.0
@@ -11,8 +16,15 @@ offset_bottom = 180.0
 color = Color(0.909804, 0.909804, 0.909804, 1)
 script = ExtResource("1_main")
 
-[node name="FloorMarks" type="Node2D" parent="."]
-script = ExtResource("2_floor")
+[node name="Ground" type="Sprite2D" parent="."]
+texture_filter = 1
+texture_repeat = 2
+texture = ExtResource("2_tile")
+centered = false
+region_enabled = true
+script = ExtResource("2_ground")
+
+[node name="Pickups" type="Node2D" parent="."]
 
 [node name="Enemies" type="Node2D" parent="."]
 
@@ -24,3 +36,13 @@ player = NodePath("../Player")
 enemies_root = NodePath("../Enemies")
 
 [node name="RespawnTimer" type="Timer" parent="Spawner"]
+
+[node name="PickupSpawner" type="Node" parent="." node_paths=PackedStringArray("pickups_root")]
+script = ExtResource("5_pickups")
+pickups_root = NodePath("../Pickups")
+
+[node name="Hud" parent="." instance=ExtResource("6_hud")]
+
+[node name="LevelUpScreen" parent="." instance=ExtResource("7_lu")]
+
+[node name="DeathScreen" parent="." instance=ExtResource("8_ds")]

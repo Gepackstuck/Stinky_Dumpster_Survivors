@@ -47,10 +47,16 @@ func _find_nearest_enemy() -> Node2D:
 
 
 func _fire(target: Node2D) -> void:
-	var direction: Vector2 = global_position.direction_to(target.global_position)
-	var projectile: Projectile = PoolManager.acquire(PROJECTILE_SCENE) as Projectile
-	get_tree().current_scene.add_child(projectile)
-	projectile.launch(global_position, direction, _damage, Balance.PROJECTILE_SPEED, Balance.PROJECTILE_LIFETIME_SEC)
+	var base_direction: Vector2 = global_position.direction_to(target.global_position)
+	var count: int = 1 + GameState.extra_projectiles
+	var damage: float = _damage * GameState.projectile_damage_mult
+	var spread: float = deg_to_rad(Balance.PERK_DOUBLE_SHOT_SPREAD_DEG)
+	var root: Node = get_tree().current_scene
+	for i: int in count:
+		var angle: float = (i - (count - 1) * 0.5) * spread
+		var projectile: Projectile = PoolManager.acquire(PROJECTILE_SCENE) as Projectile
+		root.add_child(projectile)
+		projectile.launch(global_position, base_direction.rotated(angle), damage, Balance.PROJECTILE_SPEED, Balance.PROJECTILE_LIFETIME_SEC)
 
 
 func _on_player_died() -> void:

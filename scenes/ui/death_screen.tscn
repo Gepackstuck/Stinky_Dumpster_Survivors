@@ -1,0 +1,66 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/death_screen.gd" id="1_ds"]
+[ext_resource type="Texture2D" path="res://assets/ui/death_bg.png" id="2_bg"]
+[ext_resource type="Texture2D" path="res://assets/ui/button.png" id="3_btn"]
+[ext_resource type="Texture2D" path="res://assets/ui/button_hover.png" id="4_btnh"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_n"]
+texture = ExtResource("3_btn")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_h"]
+texture = ExtResource("4_btnh")
+
+[node name="DeathScreen" type="CanvasLayer"]
+process_mode = 3
+layer = 20
+script = ExtResource("1_ds")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Bg" type="TextureRect" parent="Root"]
+layout_mode = 0
+offset_right = 320.0
+offset_bottom = 180.0
+texture = ExtResource("2_bg")
+mouse_filter = 2
+
+[node name="Title" type="Label" parent="Root"]
+layout_mode = 0
+offset_left = 4.0
+offset_top = 20.0
+offset_right = 156.0
+offset_bottom = 70.0
+scale = Vector2(2, 2)
+text = "Ты умер"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="Stats" type="Label" parent="Root"]
+layout_mode = 0
+offset_left = 60.0
+offset_top = 100.0
+offset_right = 260.0
+offset_bottom = 124.0
+horizontal_alignment = 1
+
+[node name="RetryButton" type="Button" parent="Root"]
+layout_mode = 0
+offset_left = 112.0
+offset_top = 136.0
+offset_right = 208.0
+offset_bottom = 158.0
+text = "ЕЩЁ РАЗ"
+theme_override_colors/font_color = Color(0.0392157, 0.0392157, 0.0392157, 1)
+theme_override_colors/font_hover_color = Color(0.0392157, 0.0392157, 0.0392157, 1)
+theme_override_colors/font_focus_color = Color(0.0392157, 0.0392157, 0.0392157, 1)
+theme_override_colors/font_pressed_color = Color(0.0392157, 0.0392157, 0.0392157, 1)
+theme_override_styles/normal = SubResource("StyleBoxTexture_n")
+theme_override_styles/hover = SubResource("StyleBoxTexture_h")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_h")
+theme_override_styles/focus = SubResource("StyleBoxTexture_h")

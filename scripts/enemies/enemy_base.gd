@@ -16,7 +16,6 @@ var _dead: bool = false
 
 
 func _ready() -> void:
-	_sprite.texture = PlaceholderSprites.enemy()
 	_hurtbox.hurt.connect(_health.take_damage)
 	_health.died.connect(_on_died)
 
@@ -36,6 +35,8 @@ func _physics_process(_delta: float) -> void:
 	if _dead or not is_instance_valid(_target):
 		return
 	velocity = global_position.direction_to(_target.global_position) * _speed
+	if velocity.x != 0.0:
+		_sprite.flip_h = velocity.x < 0.0
 	move_and_slide()
 
 

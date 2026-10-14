@@ -1,0 +1,57 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/level_up_screen.gd" id="1_lu"]
+[ext_resource type="Texture2D" path="res://assets/ui/dim_checker.png" id="2_dim"]
+[ext_resource type="PackedScene" path="res://scenes/ui/perk_card.tscn" id="3_card"]
+
+[node name="LevelUpScreen" type="CanvasLayer"]
+process_mode = 3
+layer = 10
+script = ExtResource("1_lu")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Dim" type="TextureRect" parent="Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource("2_dim")
+stretch_mode = 1
+mouse_filter = 2
+
+[node name="Title" type="Label" parent="Root"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 6.0
+offset_right = 160.0
+offset_bottom = 20.0
+scale = Vector2(2, 2)
+text = "НОВЫЙ УРОВЕНЬ!"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.968627, 1, 0, 1)
+theme_override_colors/font_shadow_color = Color(0.0392157, 0.0392157, 0.0392157, 1)
+
+[node name="Cards" type="HBoxContainer" parent="Root"]
+layout_mode = 0
+offset_left = 29.0
+offset_top = 40.0
+offset_right = 291.0
+offset_bottom = 152.0
+theme_override_constants/separation = 5
+alignment = 1
+
+[node name="Card1" parent="Root/Cards" instance=ExtResource("3_card")]
+layout_mode = 2
+
+[node name="Card2" parent="Root/Cards" instance=ExtResource("3_card")]
+layout_mode = 2
+
+[node name="Card3" parent="Root/Cards" instance=ExtResource("3_card")]
+layout_mode = 2

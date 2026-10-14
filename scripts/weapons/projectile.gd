@@ -3,8 +3,6 @@ extends Area2D
 ## Снаряд игрока. Летит по прямой, бьёт первого врага и возвращается в пул.
 ## Создаётся через PoolManager; после add_child() нужно вызвать launch().
 
-@onready var _sprite: Sprite2D = $Sprite2D
-
 var _direction: Vector2 = Vector2.ZERO
 var _speed: float = 0.0
 var _damage: float = 0.0
@@ -13,7 +11,6 @@ var _active: bool = false
 
 
 func _ready() -> void:
-	_sprite.texture = PlaceholderSprites.projectile()
 	area_entered.connect(_on_area_entered)
 
 

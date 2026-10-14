@@ -28,5 +28,12 @@ func take_damage(amount: float) -> void:
 		died.emit()
 
 
+func heal(amount: float) -> void:
+	if _is_dead or amount <= 0.0:
+		return
+	current_health = minf(current_health + amount, max_health)
+	health_changed.emit(current_health, max_health)
+
+
 func is_dead() -> bool:
 	return _is_dead

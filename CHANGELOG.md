@@ -7,6 +7,13 @@
 
 ### Added
 
+- MP2 Живой прототип (Шаг 2): XP-пиксели с врагов (`xp_pickup`, `PickupSpawner`), магнит игрока,
+  уровни (порог 5, далее ×1.5), экран выбора перка (3 карточки, пауза, клавиши 1/2/3),
+  4 перка (Скорость, Регенерация, Двойной выстрел, Лут-Гоблин; `PerkLibrary`), HUD (HP/XP/уровень/убийства),
+  экран смерти со случайными фразами (`FlavorText`) и рестартом «Ещё раз».
+- Рисованный арт в стиле «Кислотный Кринж»: игрок, враг, снаряд, XP, пол, UI, шрифт, тема; генератор `tools/gen_art.py`.
+- `FrameAnimatorComponent` (покадровая анимация 8 fps), перк-статы в `GameState`, `HealthComponent.heal()`.
+- Идея предмета «Обосранные портки Supreme» записана в бэклог, число шанса в `Balance`.
 - MP1 Core Loop (Шаг 1): игрок (`player.tscn`, `player_controller.gd`) с движением WASD/стрелки
   и `Camera2D` (zoom 1, лимиты по арене 2000x2000).
 - Враг `enemy_base.tscn` / `enemy_base.gd`: идёт к игроку, бьёт при контакте.
@@ -14,7 +21,6 @@
 - Автоатака `weapon_base.gd` + `projectile.tscn`: стреляет по ближайшему врагу (статы `lighter`).
 - Компоненты `HealthComponent`, `HurtboxComponent`, `HitboxComponent`.
 - `PoolManager` реализован (пулы врагов и снарядов), `GameState.reset_run()`.
-- `PlaceholderSprites` — программные заглушки спрайтов (игрок, враг, снаряд).
 - Балансные числа Шага 1 в `Balance` (арена, игрок, спавн, снаряд).
 - Имена слоёв физики 2D в `project.godot`.
 - MP0 Bootstrap (Шаг 0): `project.godot` под Godot 4.7.2 / Forward+ (Metal на macOS),

@@ -4,6 +4,8 @@
 [ext_resource type="Script" path="res://scripts/components/health_component.gd" id="2_health"]
 [ext_resource type="Script" path="res://scripts/components/hurtbox_component.gd" id="3_hurtbox"]
 [ext_resource type="Script" path="res://scripts/weapons/weapon_base.gd" id="4_weapon"]
+[ext_resource type="Script" path="res://scripts/components/frame_animator_component.gd" id="5_anim"]
+[ext_resource type="Texture2D" path="res://assets/sprites/player.png" id="6_tex"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
 size = Vector2(14, 14)
@@ -11,12 +13,21 @@ size = Vector2(14, 14)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hurtbox"]
 size = Vector2(16, 16)
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_magnet"]
+radius = 36.0
+
 [node name="Player" type="CharacterBody2D" groups=["player"]]
 collision_mask = 32
 script = ExtResource("1_ctrl")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture_filter = 1
+texture = ExtResource("6_tex")
+hframes = 2
+
+[node name="FrameAnimator" type="Node" parent="." node_paths=PackedStringArray("sprite")]
+script = ExtResource("5_anim")
+sprite = NodePath("../Sprite2D")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_body")
@@ -32,6 +43,14 @@ script = ExtResource("3_hurtbox")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
 shape = SubResource("RectangleShape2D_hurtbox")
+
+[node name="Magnet" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 16
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Magnet"]
+shape = SubResource("CircleShape2D_magnet")
 
 [node name="Weapon" type="Node2D" parent="."]
 script = ExtResource("4_weapon")
