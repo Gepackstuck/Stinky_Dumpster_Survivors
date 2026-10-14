@@ -11,6 +11,10 @@ extends CanvasLayer
 @onready var _reroll_button: Button = $Root/RerollButton
 @onready var _coins: Label = $Root/Coins
 @onready var _stats: Label = $Root/Stats
+@onready var _hint: Label = $Root/Hint
+
+const HINT_CARDS: String = "A/D - ВЫБОР   ПРОБЕЛ - ВЗЯТЬ   1-4 - БЫСТРО   S - РЕРОЛЛ   W - НАЗАД"
+const HINT_READY: String = "ПРОБЕЛ - В БОЙ"
 
 const PERK_MARK: int = 0  # в очереди: 0 = бесплатный перк/оружие Ларька, >0 = уровень (карточка статов)
 
@@ -135,7 +139,7 @@ func _refresh_shop() -> void:
 		return
 	_coins.show()
 	_next_button.show()
-	_title.text = "ЛАРЁК"
+	_title.text = "ВОЛНА %d ПРОЙДЕНА!" % GameState.wave
 	var is_perk: bool = not _queue.is_empty() and _queue[0] == PERK_MARK
 	if _queue.is_empty():
 		_counter.text = ""
@@ -144,6 +148,8 @@ func _refresh_shop() -> void:
 	else:
 		_counter.text = "ОСТАЛОСЬ ВЗЯТЬ: %d   УРОВЕНЬ %d: ВЫБИРАЙ СТАТ" % [_queue.size(), _queue[0]]
 	_empty.visible = _queue.is_empty()
+	_empty.text = "ВЫЖИЛ, ПОДОНОК. ХП ВОССТАНОВЛЕНО.\nГОТОВЬСЯ, СЕЙЧАС БУДЕТ ХУЖЕ."
+	_hint.text = HINT_READY if _queue.is_empty() else HINT_CARDS
 	_stats.visible = _queue.is_empty()
 	_stats.text = _stats_text()
 	_reroll_button.visible = not _queue.is_empty()
@@ -152,7 +158,7 @@ func _refresh_shop() -> void:
 	var next_wave: int = GameState.wave + 1
 	var kind: StringName = GameState.special_waves.get(next_wave, &"normal")
 	var label: String = {&"elite": ": ЭЛИТА!", &"horde": ": ОРДА!", &"boss": ": БОССЫ!"}.get(kind, "")
-	_next_button.text = "ВОЛНА %d%s" % [next_wave, label]
+	_next_button.text = ("В БОЙ: ВОЛНА %d%s" if _queue.is_empty() else "ВОЛНА %d%s") % [next_wave, label]
 	_next_button.disabled = not _queue.is_empty()
 
 
@@ -226,3 +232,12 @@ func _select(index: int) -> void:
 		return
 	_selected = posmod(index, visible_count)
 	_cards[_selected].grab_focus()
+
+
+## Когда всё выбрано, кнопка «В бой» пульсирует — понятно, что дальше.
+func _process(_delta: float) -> void:
+	if _root.visible and _queue.is_empty() and not _start_mode:
+		var pulse: float = 0.5 + 0.5 * sin(Time.get_ticks_msec() * 0.008)
+		_next_button.modulate = Color(1.0, 1.0, 1.0).lerp(Color(1.0, 1.0, 0.4), pulse * 0.7)
+	else:
+		_next_button.modulate = Color.WHITE
