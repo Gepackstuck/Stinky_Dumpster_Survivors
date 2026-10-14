@@ -66,7 +66,11 @@ static func new_offer(wave: int) -> Dictionary:
 			offer["price"] = price(&"item", offer["id"], item_tier, wave)
 			return offer
 	if roll < Balance.SHOP_WEAPON_CHANCE or perk_pool.is_empty():
-		var weapon_perk: StringName = PerkLibrary.WEAPON_PERKS[randi() % PerkLibrary.WEAPON_PERKS.size()]
+		var open_weapons: Array[StringName] = []
+		for candidate: StringName in PerkLibrary.WEAPON_PERKS:
+			if Profile.is_weapon_unlocked(StringName(String(candidate).trim_prefix("w_"))):
+				open_weapons.append(candidate)
+		var weapon_perk: StringName = open_weapons[randi() % open_weapons.size()]
 		offer["kind"] = &"weapon"
 		offer["id"] = StringName(String(weapon_perk).trim_prefix("w_"))
 		offer["tier"] = roll_tier(wave)

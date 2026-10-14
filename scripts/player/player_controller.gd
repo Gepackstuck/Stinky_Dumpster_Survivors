@@ -182,19 +182,19 @@ func _sync_weapons() -> void:
 				slipper.weapon_id = &"slipper"
 				slipper.tier = entry["tier"]
 				weapon = slipper
-			&"lighter", &"slingshot", &"condensed_milk":
+			&"lighter", &"slingshot", &"condensed_milk", &"pipe_gun", &"crossbow", &"spray_can", &"bottle", &"mosin":
 				var shooter: WeaponBase = WeaponBase.new()
 				shooter.weapon_id = entry["id"]
 				shooter.tier = entry["tier"]
 				weapon = shooter
-			&"sock":
+			&"sock", &"rotten_cheese":
 				var aura: AuraWeapon = AuraWeapon.new()
-				aura.weapon_id = &"sock"
+				aura.weapon_id = entry["id"]
 				aura.tier = entry["tier"]
 				weapon = aura
-			&"mop":
+			&"mop", &"frying_pan", &"rolling_pin":
 				var mop: MeleeWeapon = MeleeWeapon.new()
-				mop.weapon_id = &"mop"
+				mop.weapon_id = entry["id"]
 				mop.tier = entry["tier"]
 				weapon = mop
 		if weapon != null:

@@ -221,10 +221,22 @@ const STAT_TIER3_CHANCE_PER_LEVEL: float = 0.025   # III-тир = (ур-5)*эт�
 const STAT_TIER4_CHANCE_PER_LEVEL: float = 0.01    # IV-тир = (ур-15)*это, до 0.1
 const STAT_GUARANTEED_TIER: Dictionary = {5: 2, 10: 3, 15: 3, 20: 3}  # гарантированный минимум тира по уровню; с 25-го каждый 5-й — IV
 # --- Оружие и Ларёк (Brotato) ---
+# Открытие оружия (как в Brotato): без записи - доступно сразу. kind - счётчик профиля, need - порог, text - подсказка.
+const WEAPON_UNLOCK: Dictionary = {
+	&"frying_pan": {"kind": &"deaths", "need": 1},
+	&"bottle": {"kind": &"deaths", "need": 2},
+	&"rolling_pin": {"kind": &"coins", "need": 300},
+	&"pipe_gun": {"kind": &"kills", "need": 400},
+	&"spray_can": {"kind": &"kills", "need": 1000},
+	&"rotten_cheese": {"kind": &"wins", "need": 1},
+	&"crossbow": {"kind": &"coins", "need": 1500},
+	&"mosin": {"kind": &"wins", "need": 2},
+}
 const WEAPON_SLOTS: int = 6
 const WEAPON_TIER_DAMAGE: Array[float] = [1.0, 1.5, 2.0, 2.7]      # множитель урона по тирам I-IV
 const WEAPON_TIER_COOLDOWN: Array[float] = [1.0, 0.92, 0.85, 0.75]  # множитель паузы между атаками
-const WEAPON_PRICE: Dictionary = {&"lighter": 22, &"sock": 24, &"slingshot": 22, &"mop": 26, &"laser_pointer": 24, &"slipper": 30, &"condensed_milk": 22}
+const WEAPON_PRICE: Dictionary = {&"lighter": 22, &"sock": 24, &"slingshot": 22, &"mop": 26, &"laser_pointer": 24, &"slipper": 30, &"condensed_milk": 22,
+		&"pipe_gun": 26, &"crossbow": 30, &"frying_pan": 24, &"rolling_pin": 20, &"rotten_cheese": 26, &"spray_can": 24, &"bottle": 22, &"mosin": 34}
 const PERK_PRICE: Dictionary = {&"speed": 14, &"regen": 16, &"double_shot": 30, &"loot_goblin": 12}
 const SHOP_SLOTS: int = 4
 const SHOP_PRICE_TIER_MULT: Array[float] = [1.0, 2.0, 3.5, 6.0]
@@ -311,6 +323,15 @@ const WEAPONS: Dictionary = {
 	&"condensed_milk": {"damage": 3.0, "cooldown": 0.5, "slow_factor": 0.5, "slow_duration": 2.0,
 			"projectile": "res://assets/sprites/proj_milk.png", "tag": "ЗАМЕДЛЯЕТ"},
 	&"turret": {"damage": 7.0, "cooldown": 0.9, "tag": "ТУРЕЛЬ"},   # структура: стоит на месте, стреляет сама
+	# --- Пачка 2: pellets/spread_deg/jitter_deg/proj_speed/proj_life/pierce - у стрелков; reach/arc_deg/knockback - у ближних; radius - у аур
+	&"pipe_gun": {"damage": 4.0, "cooldown": 1.1, "pellets": 5, "spread_deg": 9.0, "proj_life": 0.45, "tag": "ДРОБЬ"},
+	&"crossbow": {"damage": 14.0, "cooldown": 1.2, "pierce": 3, "proj_speed": 300.0, "tag": "ПРОБИВАЕТ"},
+	&"frying_pan": {"damage": 24.0, "cooldown": 0.95, "knockback": 420.0, "reach": 38.0, "arc_deg": 100.0, "tag": "ОТБРОС"},
+	&"rolling_pin": {"damage": 7.0, "cooldown": 0.3, "knockback": 90.0, "reach": 40.0, "arc_deg": 90.0, "tag": "БЫСТРАЯ"},
+	&"rotten_cheese": {"damage": 4.0, "cooldown": 0.5, "radius": 85.0, "tag": "ВОНЬ ВОКРУГ"},
+	&"spray_can": {"damage": 2.0, "cooldown": 0.1, "jitter_deg": 12.0, "proj_life": 0.32, "burn_dps": 1.5, "burn_duration": 2.0, "tag": "ПОДЖИГАЕТ"},
+	&"bottle": {"damage": 10.0, "cooldown": 1.0, "ricochets": 4, "ricochet_range": 140.0, "projectile": "res://assets/sprites/proj_bottle.png", "tag": "ОТСКОКИ"},
+	&"mosin": {"damage": 42.0, "cooldown": 2.1, "pierce": 2, "proj_speed": 520.0, "proj_life": 1.2, "tag": "СНАЙПЕР"},
 }
 
 # --- Структуры и питомцы (появляются в начале волны, пропадают в конце) ---

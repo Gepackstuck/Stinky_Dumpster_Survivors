@@ -69,13 +69,66 @@ def milk():
     return _held([(can, BLUE), (nozzle, GREY)], [(3, 4, WHITE), (4, 4, WHITE), (3, 6, WHITE), (4, 6, WHITE), (6, 5, CYAN), (5, 7, CYAN)])
 
 
-HELD = {"lighter": lighter, "sock": sock, "slingshot": slingshot, "mop": mop, "laser_pointer": laser, "slipper": slipper, "condensed_milk": milk}
+def pipe_gun():
+    tube = _m(); rect(tube, 3, 4, 10, 6)
+    stock = _m(); rect(stock, 0, 5, 3, 8)
+    tape = _m(); rect(tape, 5, 4, 6, 6)
+    return _held([(tube, GREY), (stock, BROWN), (tape, YELLOW)], [(11, 5, BLACK), (4, 7, BROWN), (8, 5, WHITE)])
+
+
+def crossbow():
+    stock = _m(); rect(stock, 0, 5, 9, 7)
+    bow = _m(); line(bow, [(7, 0), (9, 5), (9, 7), (7, 11)], 1)
+    string = _m(); line(string, [(7, 0), (5, 6), (7, 11)], 0)
+    return _held([(stock, BROWN), (bow, GREY), (string, WHITE)], [(10, 6, RED), (11, 6, WHITE), (2, 6, BLACK)])
+
+
+def frying_pan():
+    pan = _m(); blob(pan, 8, 6, 3, 4, random.Random(21), 0.2, 10)
+    handle = _m(); rect(handle, 0, 5, 5, 7)
+    return _held([(pan, BLACK), (handle, BROWN)], [(8, 4, GREY), (9, 5, GREY), (7, 7, YELLOW), (8, 6, WHITE)])
+
+
+def rolling_pin():
+    body = _m(); rect(body, 2, 4, 9, 8)
+    h1 = _m(); rect(h1, 0, 5, 2, 7)
+    h2 = _m(); rect(h2, 9, 5, 11, 7)
+    return _held([(body, YELLOW), (h1, BROWN), (h2, BROWN)], [(4, 5, WHITE), (6, 7, BROWN), (8, 5, BROWN)])
+
+
+def cheese():
+    wedge = _m(); poly(wedge, [(1, 8), (10, 4), (10, 9), (1, 9)])
+    return _held([(wedge, YELLOW)], [(4, 7, BROWN), (7, 6, BROWN), (6, 8, BROWN), (9, 2, GREEN), (7, 1, GREEN), (11, 3, GREEN), (2, 5, GREEN)])
+
+
+def spray_can():
+    can = _m(); rect(can, 1, 3, 8, 8)
+    nozzle = _m(); rect(nozzle, 8, 5, 10, 6)
+    cap = _m(); rect(cap, 7, 3, 8, 8)
+    return _held([(can, RED), (nozzle, GREY), (cap, GREY)], [(3, 4, WHITE), (3, 6, WHITE), (5, 5, YELLOW), (11, 5, YELLOW), (11, 6, RED)])
+
+
+def bottle():
+    body = _m(); rect(body, 1, 4, 7, 8)
+    neck = _m(); rect(neck, 7, 5, 11, 7)
+    return _held([(body, GREEN), (neck, GREEN)], [(3, 5, WHITE), (4, 5, WHITE), (11, 6, BROWN), (5, 7, WHITE), (2, 6, YELLOW)])
+
+
+def mosin():
+    barrel = _m(); rect(barrel, 4, 5, 11, 6)
+    stock = _m(); poly(stock, [(0, 4), (5, 5), (5, 8), (0, 8)])
+    return _held([(barrel, GREY), (stock, BROWN)], [(11, 5, BLACK), (7, 4, GREY), (2, 6, YELLOW), (8, 6, BLACK)])
+
+
+HELD = {"lighter": lighter, "sock": sock, "slingshot": slingshot, "mop": mop, "laser_pointer": laser, "slipper": slipper, "condensed_milk": milk,
+        "pipe_gun": pipe_gun, "crossbow": crossbow, "frying_pan": frying_pan, "rolling_pin": rolling_pin,
+        "rotten_cheese": cheese, "spray_can": spray_can, "bottle": bottle, "mosin": mosin}
 
 if __name__ == "__main__":
-    sheet = Image.new("RGBA", (len(HELD) * 16, 16), (60, 40, 20, 255))
+    sheet = Image.new("RGBA", (8 * 16, ((len(HELD) + 7) // 8) * 16), (60, 40, 20, 255))
     for i, (name, fn) in enumerate(HELD.items()):
         img = fn()
         img.save("assets/sprites/held_%s.png" % name)
-        sheet.alpha_composite(img, (i * 16 + 2, 2))
+        sheet.alpha_composite(img, ((i % 8) * 16 + 2, (i // 8) * 16 + 2))
     sheet.resize((sheet.width * 8, sheet.height * 8), Image.NEAREST).save("tools/_preview/held.png")
     print("ok")

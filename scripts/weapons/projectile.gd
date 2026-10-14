@@ -15,6 +15,7 @@ var burn_dps: float = 0.0
 var burn_sec: float = 0.0
 var slow_factor: float = 1.0
 var slow_sec: float = 0.0
+var pierce: int = 0   # сколько врагов пробивает насквозь
 
 
 func _ready() -> void:
@@ -56,6 +57,9 @@ func _on_area_entered(area: Area2D) -> void:
 			victim.call(&"ignite", burn_dps, burn_sec)
 		if slow_sec > 0.0 and victim.has_method(&"slow"):
 			victim.call(&"slow", slow_factor, slow_sec)
+		if pierce > 0:
+			pierce -= 1
+			return
 		if ricochets > 0 and _try_ricochet(area.get_parent()):
 			return
 		_deactivate()

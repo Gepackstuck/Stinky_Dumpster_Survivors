@@ -13,9 +13,17 @@ const W_MOP: StringName = &"w_mop"
 const W_LASER: StringName = &"w_laser_pointer"
 const W_SLIPPER: StringName = &"w_slipper"
 const W_MILK: StringName = &"w_condensed_milk"
+const W_PIPE_GUN: StringName = &"w_pipe_gun"
+const W_CROSSBOW: StringName = &"w_crossbow"
+const W_FRYING_PAN: StringName = &"w_frying_pan"
+const W_ROLLING_PIN: StringName = &"w_rolling_pin"
+const W_ROTTEN_CHEESE: StringName = &"w_rotten_cheese"
+const W_SPRAY_CAN: StringName = &"w_spray_can"
+const W_BOTTLE: StringName = &"w_bottle"
+const W_MOSIN: StringName = &"w_mosin"
 const START_WEAPONS: Array[StringName] = [W_LIGHTER, W_SOCK, W_SLINGSHOT, W_MOP]  # на выбор в начале забега
-const WEAPON_PERKS: Array[StringName] = [W_LIGHTER, W_SOCK, W_SLINGSHOT, W_MOP, W_LASER, W_SLIPPER, W_MILK]  # всё оружие (Ларёк)
-const ALL: Array[StringName] = [SPEED, REGEN, DOUBLE_SHOT, LOOT_GOBLIN, W_LIGHTER, W_SOCK, W_SLINGSHOT, W_MOP, W_LASER, W_SLIPPER, W_MILK]
+const WEAPON_PERKS: Array[StringName] = [W_LIGHTER, W_SOCK, W_SLINGSHOT, W_MOP, W_LASER, W_SLIPPER, W_MILK, W_PIPE_GUN, W_CROSSBOW, W_FRYING_PAN, W_ROLLING_PIN, W_ROTTEN_CHEESE, W_SPRAY_CAN, W_BOTTLE, W_MOSIN]  # всё оружие (Ларёк)
+const ALL: Array[StringName] = [SPEED, REGEN, DOUBLE_SHOT, LOOT_GOBLIN, W_LIGHTER, W_SOCK, W_SLINGSHOT, W_MOP, W_LASER, W_SLIPPER, W_MILK, W_PIPE_GUN, W_CROSSBOW, W_FRYING_PAN, W_ROLLING_PIN, W_ROTTEN_CHEESE, W_SPRAY_CAN, W_BOTTLE, W_MOSIN]
 
 const _TITLES: Dictionary[StringName, String] = {
 	SPEED: "Скорость",
@@ -29,6 +37,14 @@ const _TITLES: Dictionary[StringName, String] = {
 	W_LASER: "Лазерная указка",
 	W_SLIPPER: "Тапок",
 	W_MILK: "Сгущёнка",
+	W_PIPE_GUN: "Самопал",
+	W_CROSSBOW: "Арбалет",
+	W_FRYING_PAN: "Сковородка",
+	W_ROLLING_PIN: "Скалка",
+	W_ROTTEN_CHEESE: "Тухлый сыр",
+	W_SPRAY_CAN: "Баллончик",
+	W_BOTTLE: "Бутылка",
+	W_MOSIN: "Мосинка",
 }
 const _ICONS: Dictionary[StringName, String] = {
 	SPEED: "res://assets/ui/perk_speed.png",
@@ -42,6 +58,14 @@ const _ICONS: Dictionary[StringName, String] = {
 	W_LASER: "res://assets/ui/perk_w_laser_pointer.png",
 	W_SLIPPER: "res://assets/ui/perk_w_slipper.png",
 	W_MILK: "res://assets/ui/perk_w_condensed_milk.png",
+	W_PIPE_GUN: "res://assets/ui/perk_w_pipe_gun.png",
+	W_CROSSBOW: "res://assets/ui/perk_w_crossbow.png",
+	W_FRYING_PAN: "res://assets/ui/perk_w_frying_pan.png",
+	W_ROLLING_PIN: "res://assets/ui/perk_w_rolling_pin.png",
+	W_ROTTEN_CHEESE: "res://assets/ui/perk_w_rotten_cheese.png",
+	W_SPRAY_CAN: "res://assets/ui/perk_w_spray_can.png",
+	W_BOTTLE: "res://assets/ui/perk_w_bottle.png",
+	W_MOSIN: "res://assets/ui/perk_w_mosin.png",
 }
 
 
@@ -77,6 +101,9 @@ static func description(perk_id: StringName) -> String:
 			return "ОРУЖИЕ. Камень с %d отскоками от врага к врагу." % int(Balance.WEAPONS[&"slingshot"]["ricochets"])
 		W_MOP:
 			return "ОРУЖИЕ. Взмах дугой: %d урона и отброс. Бей и отпихивай." % roundi(Balance.WEAPONS[&"mop"]["damage"])
+	if perk_id in WEAPON_PERKS:
+		var stats: Dictionary = Balance.WEAPONS[StringName(String(perk_id).trim_prefix("w_"))]
+		return "ОРУЖИЕ. %s. %d урона, %.2f с." % [String(stats.get("tag", "")).capitalize(), roundi(stats["damage"]), stats["cooldown"]]
 	return ""
 
 

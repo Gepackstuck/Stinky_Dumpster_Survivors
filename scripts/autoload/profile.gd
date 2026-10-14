@@ -51,6 +51,14 @@ func is_unlocked(character_id: StringName) -> bool:
 	return data["unlock"] == &"open" or counter(data["unlock"]) >= data["need"]
 
 
+## Оружие в ларьке доступно? Записи нет в WEAPON_UNLOCK - открыто сразу.
+func is_weapon_unlocked(weapon_id: StringName) -> bool:
+	if not Balance.WEAPON_UNLOCK.has(weapon_id):
+		return true
+	var rule: Dictionary = Balance.WEAPON_UNLOCK[weapon_id]
+	return counter(rule["kind"]) >= rule["need"]
+
+
 ## Открыты, но кладбище ещё не показывало «НОВЕНЬКИЙ».
 func fresh_unlocks() -> Array[StringName]:
 	var result: Array[StringName] = []

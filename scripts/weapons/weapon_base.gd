@@ -20,6 +20,12 @@ var _burn_dps: float = 0.0
 var _burn_sec: float = 0.0
 var _slow_factor: float = 1.0
 var _slow_sec: float = 0.0
+var _pellets: int = 1
+var _spread_deg: float = 0.0
+var _jitter_deg: float = 0.0
+var _proj_speed: float = 0.0
+var _proj_life: float = 0.0
+var _pierce: int = 0
 var _texture: Texture2D = preload("res://assets/sprites/projectile.png")
 
 
@@ -36,6 +42,12 @@ func _ready() -> void:
 	_burn_sec = stats.get("burn_duration", 0.0)
 	_slow_factor = stats.get("slow_factor", 1.0)
 	_slow_sec = stats.get("slow_duration", 0.0)
+	_pellets = stats.get("pellets", 1)
+	_spread_deg = stats.get("spread_deg", 0.0)
+	_jitter_deg = stats.get("jitter_deg", 0.0)
+	_proj_speed = stats.get("proj_speed", Balance.PROJECTILE_SPEED)
+	_proj_life = stats.get("proj_life", Balance.PROJECTILE_LIFETIME_SEC)
+	_pierce = stats.get("pierce", 0)
 	if stats.has("projectile"):
 		_texture = load(stats["projectile"]) as Texture2D
 	_range_sq = Balance.WEAPON_TARGET_RANGE * Balance.WEAPON_TARGET_RANGE
@@ -76,15 +88,18 @@ func _find_nearest_enemy() -> Node2D:
 
 func _fire(target: Node2D) -> void:
 	var base_direction: Vector2 = global_position.direction_to(target.global_position)
-	var count: int = 1 + GameState.extra_projectiles
+	var count: int = _pellets + GameState.extra_projectiles
 	var damage: float = GameState.roll_damage(_damage)
 	var spread: float = deg_to_rad(Balance.PERK_DOUBLE_SHOT_SPREAD_DEG)
 	var root: Node = get_tree().current_scene
 	for i: int in count:
-		var angle: float = (i - (count - 1) * 0.5) * spread
+		var angle: float = (i - (count - 1) * 0.5) * (spread if _pellets == 1 else deg_to_rad(_spread_deg))
+		if _jitter_deg > 0.0:
+			angle += deg_to_rad(randf_range(-_jitter_deg, _jitter_deg))
 		var projectile: Projectile = PoolManager.acquire(PROJECTILE_SCENE) as Projectile
 		root.add_child(projectile)
-		projectile.launch(global_position, base_direction.rotated(angle), damage, Balance.PROJECTILE_SPEED, Balance.PROJECTILE_LIFETIME_SEC)
+		projectile.launch(global_position, base_direction.rotated(angle), damage, _proj_speed, _proj_life)
+		projectile.pierce = _pierce
 		projectile.ricochets = _ricochets
 		projectile.ricochet_range = _ricochet_range
 		projectile.burn_dps = _burn_dps * GameState.damage_mult

@@ -2,6 +2,7 @@ extends Node
 ## Дымовой тест: каждый персонаж + все предметы, игра на ускорении. Запуск: сцена tools/smoke/smoke_test.tscn.
 ## Ошибки смотреть в консоли Godot. В конце печатает SMOKE DONE.
 
+# Слотов 6: лишние оружия просто не добавятся.
 const MAIN: PackedScene = preload("res://scenes/levels/main.tscn")
 
 
@@ -12,6 +13,7 @@ func _ready() -> void:
 
 
 func _run() -> void:
+	var offset: int = 0
 	for id: StringName in Balance.CHARACTER_ORDER:
 		print("SMOKE character ", id)
 		GameState.character = id
@@ -21,6 +23,11 @@ func _run() -> void:
 		if GameState.weapons.is_empty():
 			GameState.apply_perk(&"w_mop")
 		get_tree().paused = false
+		var pool: Array = Balance.WEAPONS.keys().filter(func(w: StringName) -> bool: return w != &"turret")
+		GameState.weapons.clear()
+		for k: int in Balance.WEAPON_SLOTS:
+			GameState.add_weapon(pool[(offset + k) % pool.size()], 1 + randi() % 4)   # каждому герою своя шестёрка оружий
+		offset += Balance.WEAPON_SLOTS
 		for item_id: StringName in Balance.ITEMS:
 			GameState.add_item(item_id)
 		await get_tree().create_timer(6.0).timeout

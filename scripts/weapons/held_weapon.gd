@@ -85,11 +85,11 @@ func _place() -> void:
 	_sprite.rotation = angle
 	_sprite.flip_v = absf(angle) > PI * 0.5 + 0.01    # чтобы смотря влево, не быть вверх ногами
 	match _weapon_id:
-		&"mop":
+		&"mop", &"frying_pan", &"rolling_pin":
 			var side: float = -1.0 if _sprite.flip_v else 1.0
 			_sprite.rotation = angle + side * (-0.5 + SWING_RAD * sin(_kick * PI))   # взмах
 			offset = _aim * 3.0 * _kick
-		&"sock":
+		&"sock", &"rotten_cheese":
 			_sprite.scale = Vector2.ONE * (1.0 + 0.4 * _kick)                          # раздувается при вони
 			offset = Vector2(roundf(sin(_kick * 40.0)), 0.0)
 		_:
