@@ -144,8 +144,8 @@ static func pool(tier_value: int) -> Array[StringName]:
 
 ## Случайный бесплатный предмет (тир растёт с волной) или пустой id, если брать нечего.
 static func roll_free_item(wave_value: int) -> StringName:
-	var tier: int = ShopLibrary.roll_tier(wave_value)
-	for t: int in range(tier, 0, -1):
+	var rolled: int = ShopLibrary.roll_tier(wave_value)
+	for t: int in range(rolled, 0, -1):
 		var candidates: Array[StringName] = pool(t)
 		if not candidates.is_empty():
 			return candidates[randi() % candidates.size()]
