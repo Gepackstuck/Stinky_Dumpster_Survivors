@@ -8,7 +8,6 @@ const HP_FULL: Color = Color(1.0, 0.0, 0.2)      # много HP — красн�
 const POOP: Color = Color(0.58, 0.34, 0.12)      # мало опыта — цвет дерьма
 const XP_FULL: Color = Color(0.2235, 1.0, 0.0784)  # много опыта — кислотно-зелёный
 const XP_CURVE: float = 2.2                      # >1: дерьмовый цвет XP держится дольше
-const HP_FULL: Color = Color(1.0, 0.0, 0.2)      # много HP — красный
 
 @onready var _hp_bar: TextureProgressBar = $Root/HpBar
 @onready var _hp_label: Label = $Root/HpLabel
