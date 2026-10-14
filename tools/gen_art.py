@@ -1918,7 +1918,7 @@ def build_step1():
         sheet([fn(0), fn(1)]).save(SPRITES + "enemy_" + name + ".png")
     sheet([draw_proj_spit(0), draw_proj_spit(1)]).save(SPRITES + "proj_spit.png")
     sheet([draw_proj_slipper(0), draw_proj_slipper(1)]).save(SPRITES + "proj_slipper.png")
-    sheet([draw_turret(0), draw_turret(1)]).save(SPRITES + "structure_turret.png")
+    draw_turret_sheet().save(SPRITES + "structure_turret.png")
     sheet([draw_rat(0), draw_rat(1)]).save(SPRITES + "pet_rat.png")
     draw_proj_bottle().save(SPRITES + "proj_bottle.png")
     draw_proj_slipper(0).save(SPRITES + "proj_slipper_flat.png")
@@ -2966,6 +2966,71 @@ def draw_ghost_granny(frame):
     return out
 
 
+def _thick_segment(mask, p0, p1, half_w):
+    """Толстый отрезок как многоугольник (для ствола)."""
+    dx, dy = p1[0] - p0[0], p1[1] - p0[1]
+    ln = math.hypot(dx, dy) or 1.0
+    nx, ny = -dy / ln * half_w, dx / ln * half_w
+    poly(mask, [(p0[0] + nx, p0[1] + ny), (p1[0] + nx, p1[1] + ny), (p1[0] - nx, p1[1] - ny), (p0[0] - nx, p0[1] - ny)])
+
+
+def draw_turret_dir(d, charged, s=32):
+    """28x28: ведро-пулемётчик, ствол смотрит в одно из 8 направлений (0=E по часовой: SE,S,SW,W,NW,N,NE).
+    Ствол торчит наружу из ведра; charged - перед выстрелом набухает (шире, раскалённое красное жерло)."""
+    ang = math.radians(d * 45.0)
+    vx, vy = math.cos(ang), math.sin(ang)
+    o = 4  # поле под ствол
+    cx, cy = 12.0 + o, 13.0 + o
+    img = new_img(s, s)
+    legs = new_mask(s, s); line(legs, [(9 + o, 19 + o), (8 + o, 22 + o)], 1); line(legs, [(15 + o, 19 + o), (16 + o, 22 + o)], 1)
+    bucket = new_mask(s, s); poly(bucket, [(5 + o, 8 + o), (18 + o, 8 + o), (16 + o, 20 + o), (7 + o, 20 + o)])
+    rim = new_mask(s, s); rect(rim, 4 + o, 7 + o, 19 + o, 8 + o)
+    handle = new_mask(s, s); line(handle, [(5 + o, 7 + o), (6 + o, 4 + o), (17 + o, 4 + o), (18 + o, 7 + o)], 1)
+    half = 3.0 if charged else 1.8
+    r0, r1 = 5.0, 12.0
+    p0 = (cx + vx * r0, cy + vy * r0)
+    p1 = (cx + vx * r1, cy + vy * r1)
+    barrel = new_mask(s, s); _thick_segment(barrel, p0, p1, half)
+    mh = 3 if charged else 2   # половина стороны жерла
+    mx, my = int(round(p1[0])), int(round(p1[1]))
+    mouth = new_mask(s, s); rect(mouth, mx - mh, my - mh, mx + mh, my + mh)
+    sil = union(legs, bucket, rim, handle, barrel, mouth)
+    paint(img, legs, GREY)
+    paint(img, bucket, BROWN); dither(img, bucket, YELLOW, "dots_off")
+    paint(img, rim, GREY); paint(img, handle, GREY)
+    paint(img, barrel, GREY); dither(img, barrel, WHITE, "dots")
+    paint(img, mouth, WHITE)
+    out = finish(img, sil)
+    core = RED if charged else BLACK
+    ch = 1 if charged else 0
+    for x in range(mx - ch, mx + ch + 1):
+        for y in range(my - ch, my + ch + 1): px(out, x, y, core)
+    if charged:
+        px(out, mx + int(round(vx * 4)), my + int(round(vy * 4)), YELLOW)
+        px(out, mx + int(round(vx * 5)), my + int(round(vy * 5)), RED)
+    # рожа на ведре: зрачки смотрят туда же, куда ствол
+    ex, ey = int(round(vx)), int(round(vy))
+    for x in range(7 + o, 11 + o):
+        for y in range(10 + o, 14 + o): px(out, x, y, WHITE)
+    px(out, 8 + o + ex, 11 + o + ey, BLACK); px(out, 9 + o + ex, 11 + o + ey, BLACK)
+    px(out, 13 + o, 11 + o, RED); px(out, 14 + o, 11 + o, WHITE); px(out, 14 + o + ex, 11 + o + ey, BLACK)
+    px(out, 11 + o, 9 + o, BLACK); px(out, 12 + o, 9 + o, BLACK)
+    for x in range(8 + o, 16 + o): px(out, x, 17 + o, BLACK)
+    for x in (9, 11, 13): px(out, x + o, 16 + o, WHITE)
+    px(out, 8 + o, 14 + o, GREEN); px(out, 14 + o, 15 + o, GREEN)
+    return out
+
+
+def draw_turret_sheet():
+    """Лист 8 направлений x 2 строки (обычный / набухший ствол), у каждой ячейки 1px прозрачного поля."""
+    cell = 34
+    out = new_img(cell * 8, cell * 2)
+    for row in range(2):
+        for d in range(8):
+            out.paste(draw_turret_dir(d, row == 1), (d * cell + 1, row * cell + 1))
+    return out
+
+
 def draw_rat(frame):
     """14x8: дохлая на вид, но шустрая крыса: серое тельце, розовый хвост, красный глаз."""
     img = new_img(14, 8)
@@ -3001,7 +3066,7 @@ def item_ghost_granny():
 
 
 def item_bucket_turret():
-    return draw_turret(0)
+    return draw_turret_dir(1, False)
 
 
 ITEM_ICONS = [

@@ -277,6 +277,8 @@ const WEAPONS: Dictionary = {
 }
 
 # --- Структуры и питомцы (появляются в начале волны, пропадают в конце) ---
+const TURRET_WINDUP_SEC: float = 0.35            # ствол набухает перед выстрелом
+const TURRET_MUZZLE_DIST: float = 12.0           # откуда вылетает снаряд (от центра ведра)
 const STRUCTURE_SPAWN_MIN_DIST: float = 28.0      # от игрока
 const STRUCTURE_SPAWN_MAX_DIST: float = 90.0
 const PET_DAMAGE: float = 6.0
