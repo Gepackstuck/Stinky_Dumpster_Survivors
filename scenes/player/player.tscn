@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://scripts/components/hit_flash_component.gd" id="9_flash"]
 [ext_resource type="Script" path="res://scripts/components/frame_animator_component.gd" id="5_anim"]
 [ext_resource type="Texture2D" path="res://assets/sprites/player.png" id="6_tex"]
+[ext_resource type="Script" path="res://scripts/player/player_items_visual.gd" id="10_items"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
 size = Vector2(14, 14)
@@ -26,6 +27,9 @@ texture_filter = 1
 texture = ExtResource("6_tex")
 hframes = 4
 vframes = 3
+
+[node name="ItemsVisual" type="Node2D" parent="."]
+script = ExtResource("10_items")
 
 [node name="FrameAnimator" type="Node" parent="." node_paths=PackedStringArray("sprite")]
 script = ExtResource("5_anim")
