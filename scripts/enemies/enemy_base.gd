@@ -48,7 +48,10 @@ func setup(target: Node2D, spawn_position: Vector2, id: StringName = &"squid_gop
 		add_to_group(&"enemies")
 	_sprite.scale = Vector2.ONE
 	_hitbox.set_deferred(&"monitoring", stats.get("contact", true))
-	_sprite.texture = _texture_for(enemy_id)
+	if enemy_id == &"trash_bin":
+		_sprite.texture = _texture_for(StringName("trash_bin_%d" % randi_range(0, Balance.BIN_VARIANTS - 1)))  # разная начинка
+	else:
+		_sprite.texture = _texture_for(enemy_id)
 	_apply_size(stats.get("radius", BASE_RADIUS))
 	_speed = stats["speed"] * WaveRules.speed_mult(GameState.wave)
 	speed_mult = 1.0

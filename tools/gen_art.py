@@ -1745,35 +1745,74 @@ def draw_glutton(frame, seed=64):
     return finish(img, sil)
 
 
-def draw_trash_bin(frame, seed=65):
-    """24x24: мусорный бак — помятый зелёный, ржавые подтёки, ребристый, крышка приоткрыта, из бака торчит дрянь, два разных глаза, мухи."""
-    rng = random.Random(seed)
+_BIN_VARIANTS = (
+    # тело, крышка, 2-й цвет тела, мусор
+    (GREEN, BLUE, (20, 120, 12), "bags"),
+    (BLUE, YELLOW, (20, 40, 150), "fish"),
+    (BROWN, GREEN, (90, 50, 20), "hand"),
+    (PINK, CYAN, (170, 40, 120), "pizza"),
+)
+
+
+def _bin_junk(img, kind, lift, rng):
+    """Дрянь, торчащая из бака (верх спрайта)."""
+    y = 4 - lift
+    if kind == "bags":
+        for cx, col in ((7, BLUE), (15, WHITE)):
+            m = new_mask(24, 24); blob(m, cx, y, 3, 2, rng, 0.5, 8); paint(img, m, col); dither(img, m, BLACK, "dots")
+        for x, yy in ((10, y - 2), (12, y - 3), (18, y - 1)): px(img, x, yy, PINK)  # тряпки
+        for k in range(3): px(img, 11 + k, y + 1 - k % 2, WHITE)  # кость
+    elif kind == "fish":
+        for k in range(8): px(img, 6 + k, y - 1 + (k % 2), WHITE)  # рыбий скелет
+        for x in range(7, 14, 2): px(img, x, y - 2, WHITE); px(img, x, y, WHITE)
+        px(img, 14, y - 1, RED); px(img, 15, y - 1, RED)  # голова
+        b = new_mask(24, 24); rect(b, 17, y - 3, 19, y + 1); paint(img, b, GREEN)  # бутылка
+        px(img, 18, y - 4, YELLOW)
+    elif kind == "hand":
+        h = new_mask(24, 24); rect(h, 9, y - 3, 13, y + 1); paint(img, h, PINK)
+        for x in (9, 11, 13): px(img, x, y - 4, PINK)
+        px(img, 12, y, BROWN); px(img, 10, y - 1, RED)  # отрубленная рука с грязью
+        t = new_mask(24, 24); blob(t, 17, y, 3, 2, rng, 0.4, 8); paint(img, t, BLACK); px(img, 17, y, GREY)  # покрышка
+    else:
+        pz = new_mask(24, 24); poly(pz, [(6, y + 1), (14, y - 3), (16, y + 1)]); paint(img, pz, YELLOW)
+        for x, yy in ((10, y - 1), (12, y)): px(img, x, yy, RED)
+        px(img, 14, y - 1, GREEN)  # плесень на пицце
+        d = new_mask(24, 24); blob(d, 18, y, 2, 2, rng, 0.4, 8); paint(img, d, WHITE); px(img, 18, y, BROWN)  # подгузник
+
+
+def draw_trash_bin(frame, variant=0, seed=65):
+    """24x24: мусорный бак (4 вида с разной начинкой): ребристый, ржавый, крышка приоткрыта, два разных глаза, мухи."""
+    body_c, lid_c, dark_c, junk_kind = _BIN_VARIANTS[variant]
+    rng = random.Random(seed + variant * 7)
     w = h = 24
     lift = frame
     tub = new_mask(w, h); poly(tub, [(4, 8), (20, 8), (18, 21), (6, 21)])
     rim = new_mask(w, h); rect(rim, 3, 7, 21, 9)
     lid = new_mask(w, h); poly(lid, [(2, 5 - lift), (22, 3 - lift * 2), (22, 6 - lift * 2), (2, 7 - lift)])
-    junk = new_mask(w, h); blob(junk, 8, 6 - lift, 3, 2, rng, 0.5, 8); blob(junk, 15, 6 - lift, 3, 2, rng, 0.5, 8)
+    junk = new_mask(w, h); rect(junk, 5, 0, 19, 6 - lift)
     wheels = new_mask(w, h); rect(wheels, 5, 22, 7, 23); rect(wheels, 17, 22, 19, 23)
-    sil = union(tub, rim, lid, junk, wheels)
+    sil = union(tub, rim, lid, wheels)
     img = new_img(w, h)
-    paint(img, junk, BLUE); dither(img, junk, WHITE, "checker")
-    paint(img, tub, GREEN); dither(img, tub, (20, 120, 12), "checker")
-    paint(img, rim, GREY); paint(img, lid, BLUE); dither(img, lid, BLACK, "dots")
+    _bin_junk(img, junk_kind, lift, rng)
+    sil = union(sil, minus(img.split()[3], new_mask(w, h)))
+    paint(img, tub, body_c); dither(img, tub, dark_c, "checker")
+    paint(img, rim, GREY); paint(img, lid, lid_c); dither(img, lid, BLACK, "dots")
     paint(img, wheels, BLACK)
     for x in (7, 11, 15):  # рёбра
-        for y in range(10, 21): px(img, x + (y - 10) // 8 * (-1 if x < 11 else 1 if x > 11 else 0), y, (20, 120, 12))
+        for y in range(10, 21): px(img, x + (y - 10) // 8 * (-1 if x < 11 else 1 if x > 11 else 0), y, dark_c)
     for y in (13, 18):
-        for x in range(5, 20): 
-            if (x + y) % 3: px(img, x, y, (20, 120, 12))
+        for x in range(5, 20):
+            if (x + y) % 3: px(img, x, y, dark_c)
     for x, y, n in ((6, 9, 6), (17, 9, 4), (12, 9, 8)):  # ржавые подтёки
         for k in range(n): px(img, x, y + k, BROWN)
     for _ in range(7): px(img, rng.randint(6, 18), rng.randint(10, 20), BROWN)
     for x, y in ((10, 11), (13, 19)): px(img, x, y, RED); px(img, x + 1, y, PINK)
-    for k in range(4): px(img, 4 + k, 19 + k // 4, YELLOW)  # потёки мочи
-    px(img, 10, 4 - lift, WHITE); px(img, 11, 3 - lift, WHITE); px(img, 17, 5 - lift, PINK); px(img, 6, 5 - lift, YELLOW)  # торчит дрянь
-    eye(img, 8, 14, 1, 1, 0, 0, rng); eye(img, 15, 14, 2, 1, 0, 1, rng)
-    m = new_mask(w, h); rect(m, 8, 18 + frame, 15, 18 + frame); paint(img, m, BLACK)  # кривой рот
+    for k in range(4): px(img, 4 + k, 19, YELLOW)  # потёки мочи
+    st = new_mask(w, h); rect(st, 16, 16, 18, 18); paint(img, st, WHITE); px(img, 17, 17, RED)  # наклейка
+    px(img, 6, 16, GREEN); px(img, 7, 16, GREEN)  # жвачка
+    px(img, 5, 14, BLACK); px(img, 6, 15, BLACK)  # вмятина
+    eye(img, 8, 14, 1, 1, 0, 0, rng); eye(img, 15, 13, 2, 1, 0, 1, rng)
+    m = new_mask(w, h); rect(m, 8, 18 + frame, 14, 18 + frame); paint(img, m, BLACK)  # кривой рот
     for x, y in ((1 + frame * 2, 1), (21 - frame * 2, 1), (12 + frame, 0), (3, 3 + frame)):
         px(img, x, y, BLACK); px(img, x + 1, y, BLACK)  # мухи
     return finish(img, sil)
@@ -1808,9 +1847,11 @@ def build_step1():
     for name, fn in (("chaser", draw_chaser), ("charger", draw_charger), ("spitter", draw_spitter),
                      ("bruiser", draw_bruiser), ("looter", draw_looter),
                      ("healer", draw_healer), ("egg", draw_egg), ("mamka", draw_mamka),
-                     ("glutton", draw_glutton), ("trash_bin", draw_trash_bin)):
+                     ("glutton", draw_glutton)):
         sheet([fn(0), fn(1)]).save(SPRITES + "enemy_" + name + ".png")
     sheet([draw_proj_spit(0), draw_proj_spit(1)]).save(SPRITES + "proj_spit.png")
+    for v in range(len(_BIN_VARIANTS)):
+        sheet([draw_trash_bin(0, v), draw_trash_bin(1, v)]).save(SPRITES + "enemy_trash_bin_%d.png" % v)
     for name, fn in (("microbe", draw_microbe), ("npc_bot", draw_npc_bot), ("cockroach", draw_cockroach),
                      ("wifi_ghost", draw_wifi_ghost), ("boss_mega_hamster", draw_boss_hamster),
                      ("boss_zakhar", draw_boss_zakhar), ("boss_minion", draw_boss_minion)):

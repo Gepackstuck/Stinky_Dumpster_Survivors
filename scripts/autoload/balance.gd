@@ -154,6 +154,7 @@ const CRIT_DAMAGE_MULT: float = 2.0
 const REGEN_HP_PER_POINT: float = 0.6               # хп за интервал на 1 очко регена
 const BIN_COUNT_BASE: int = 2                       # мусорных баков на волну
 const BIN_COUNT_WAVES_PER_EXTRA: int = 4            # +1 бак за столько волн
+const BIN_VARIANTS: int = 4                         # видов бака с разной начинкой
 const BIN_HEAL_CHANCE: float = 0.4
 const BIN_HEAL_HP: float = 3.0
 const HEALER_RADIUS: float = 60.0
