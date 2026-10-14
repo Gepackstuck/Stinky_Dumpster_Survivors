@@ -20,3 +20,6 @@ export_credentials.cfg
 .idea/
 *.tmp
 *.translation
+
+# Превью арта (генерируется tools/gen_art.py preview)
+tools/_preview/

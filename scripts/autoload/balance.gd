@@ -21,6 +21,18 @@ const WEAPON_TARGET_RANGE: float = 180.0
 const PROJECTILE_SPEED: float = 220.0
 const PROJECTILE_LIFETIME_SEC: float = 1.2
 
+# --- Подбор XP и перки (Шаг 2) ---
+const PICKUP_RADIUS_BASE: float = 36.0       # радиус притягивания XP
+const XP_PICKUP_START_SPEED: float = 60.0
+const XP_PICKUP_ACCELERATION: float = 500.0
+const XP_COLLECT_DISTANCE: float = 5.0
+const XP_DROP_SCATTER: float = 4.0           # разброс места падения XP
+const PERK_DOUBLE_SHOT_SPREAD_DEG: float = 10.0
+
+# --- Предметы ---
+# «Обосранные портки Supreme»: шанс, что враг в контакте охуевает от вони и не подходит (реализация — шаг с предметами).
+const ITEM_STINKY_PANTS_REPEL_CHANCE: float = 0.15
+
 # --- Забег ---
 const RUN_DURATION_SEC: float = 900.0   # 15 минут до победы (GDD)
 const WAVE_INTERVAL_SEC: float = 30.0
