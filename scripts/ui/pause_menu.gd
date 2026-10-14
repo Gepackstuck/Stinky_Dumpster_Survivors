@@ -59,6 +59,7 @@ func _build_menu_button() -> void:
 	_quit.add_theme_color_override(&"font_hover_color", Color(1.0, 0.1, 0.2))
 	_quit.add_theme_color_override(&"font_focus_color", Color(1.0, 1.0, 1.0))
 	UI_BUTTONS.skin_danger(_quit)
+	UI_BUTTONS.add_focus_arrows([_resume, _inventory_button, _restart, _menu_button, _quit])
 
 
 ## Спросить подтверждение: текст, подпись «да» и действие.
@@ -99,6 +100,7 @@ func _build_confirm() -> void:
 	UI_BUTTONS.skin(_confirm_no, 0)
 	_confirm.add_child(_confirm_no)
 	_root.add_child(_confirm)
+	UI_BUTTONS.add_focus_arrows([_confirm_yes, _confirm_no])
 	_confirm_yes.pressed.connect(func() -> void: _confirm_action.call())
 	_confirm_no.pressed.connect(func() -> void:
 		_confirm.hide()

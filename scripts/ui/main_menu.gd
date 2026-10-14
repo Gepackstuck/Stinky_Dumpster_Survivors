@@ -50,6 +50,7 @@ func _ready() -> void:
 	UI_BUTTONS.skin(_quit, 4)
 	_start.pressed.connect(func() -> void: SceneFlow.go(GRAVEYARD_SCENE, Vector2.DOWN))
 	_quit.pressed.connect(func() -> void: get_tree().quit())
+	UI_BUTTONS.add_focus_arrows([_start, _quit])
 	_start.grab_focus()
 	_title("A/D, W/S - ВЫБОР     ПРОБЕЛ - ОК", 246.0, GREY, Color.BLACK)
 
