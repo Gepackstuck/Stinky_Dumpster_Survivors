@@ -1,3 +1,22 @@
 # Godot 4+ specific ignores
 .godot/
 /android/
+
+# Godot-mono
+.mono/
+data_*/
+mono_crash.*.json
+
+# Export credentials (могут содержать секреты)
+export_credentials.cfg
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Редакторы / временное
+.vscode/
+.idea/
+*.tmp
+*.translation
