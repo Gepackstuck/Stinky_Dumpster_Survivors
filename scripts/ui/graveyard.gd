@@ -9,18 +9,15 @@ const MENU_SCENE: String = "res://scenes/ui/main_menu.tscn"
 const GAME_SCENE: String = "res://scenes/levels/main.tscn"
 const SCREEN: Vector2 = Vector2(480.0, 270.0)
 const WALK_SEC: float = 0.8   # герой вылезает из ямы и идёт вниз к арене
-const VISIBLE: int = 6   # столько могил видно, остальные прокручиваются
-const GRAVE_TOP: float = 34.0
+const GRID_TOP: float = 28.0   # сетка героев как в Brotato: все перед глазами
+const GRID_MAX_W: float = 440.0
+const GRID_MAX_H: float = 116.0
 const GATE_POS: Vector2 = Vector2(240.0, 252.0)   # ворота на арену: внизу по центру (арена под кладбищем в бесконечной петле)
 var _gate_tex: Texture2D = CharacterLibrary.load_texture("res://assets/sprites/gate.png")
 const ARRIVE_SEC: float = 1.0
-const GRAVE_STEP: float = 72.0
-const GRAVE_W: float = 48.0
 const GROUND: Texture2D = preload("res://assets/sprites/ground_tile.png")
 const GRAVE_CLOSED: Texture2D = preload("res://assets/ui/grave_closed.png")
-const GRAVE_OPEN: Texture2D = preload("res://assets/ui/grave_open.png")
 const PLAYER_TEX: Texture2D = preload("res://assets/sprites/player.png")
-const ARROW: Texture2D = preload("res://assets/ui/select_arrow.png")
 const YELLOW: Color = Color(0.968627, 1.0, 0.0)
 const PINK: Color = Color(1.0, 0.0627451, 0.941176)
 const GREEN: Color = Color(0.2235, 1.0, 0.0784)
@@ -34,7 +31,10 @@ var _sitters: Array[Node2D] = []
 var _selected: int = 0
 var _fresh: Array[StringName] = []
 var _time: float = 0.0
-var _arrow: TextureRect
+var _cell: float = 34.0
+var _cols: int = 10
+var _frames: Array[Panel] = []
+var _preview: Sprite2D
 var _title: Label
 var _tagline: Label
 var _plus: Label
@@ -60,14 +60,10 @@ func _ready() -> void:
 		_selected = 0
 	_build_background()
 	_build_header()
+	_layout_grid()
 	for i: int in _ids.size():
 		_build_grave(i)
 	_build_panel()
-	_arrow = TextureRect.new()
-	_arrow.texture = ARROW
-	_arrow.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	_arrow.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(_arrow)
 	_build_menu_button()
 	_refresh()
 	Profile.announce(_fresh)
@@ -84,7 +80,6 @@ func _start_arrival() -> void:
 	_walk_from = Vector2(240.0, -24.0)   # приходит сверху экрана
 	_say("ОХ, ЧЁРТ")
 	_walk_time = 0.0
-	_arrow.hide()
 
 
 func _build_menu_button() -> void:
@@ -174,23 +169,44 @@ func _build_header() -> void:
 	head.add_theme_color_override(&"font_shadow_color", PINK)
 
 
+func _layout_grid() -> void:
+	var n: int = _ids.size()
+	_cell = 40.0
+	while _cell > 22.0:
+		_cols = mini(n, int(GRID_MAX_W / _cell))
+		if ceili(float(n) / float(_cols)) * _cell <= GRID_MAX_H:
+			break
+		_cell -= 2.0
+	_cols = mini(n, int(GRID_MAX_W / _cell))
+
+
+func _cell_pos(i: int) -> Vector2:
+	var rows_in_last: int = _ids.size() - (_ids.size() / _cols) * _cols
+	var row: int = i / _cols
+	var in_row: int = _cols
+	if row == _ids.size() / _cols and rows_in_last > 0:
+		in_row = rows_in_last
+	var col: int = i % _cols
+	var left: float = (SCREEN.x - _cell * in_row) * 0.5
+	return Vector2(left + _cell * col, GRID_TOP + _cell * row)
+
+
 func _build_grave(i: int) -> void:
 	var id: StringName = _ids[i]
 	var unlocked: bool = Profile.is_unlocked(id)
-	var x: float = (SCREEN.x - GRAVE_STEP * mini(_ids.size(), VISIBLE)) * 0.5 + GRAVE_STEP * (i + 0.5) - GRAVE_W * 0.5
 	var root: Control = Control.new()
-	root.position = Vector2(x, GRAVE_TOP)
-	root.size = Vector2(GRAVE_W, 70.0)
+	root.position = _cell_pos(i)
+	root.size = Vector2(_cell, _cell)
 	add_child(root)
 	_graves.append(root)
-	var pic: TextureRect = TextureRect.new()
-	pic.texture = GRAVE_OPEN if unlocked else GRAVE_CLOSED
-	pic.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	pic.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	pic.position = Vector2(0.0, 52.0 - pic.texture.get_height() + 4.0)
-	root.add_child(pic)
+	var frame: Panel = Panel.new()
+	frame.size = Vector2(_cell - 2.0, _cell - 2.0)
+	frame.position = Vector2(1.0, 1.0)
+	frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(frame)
+	_frames.append(frame)
 	var sitter: Node2D = Node2D.new()
-	sitter.position = Vector2(GRAVE_W * 0.5, 30.0)
+	sitter.position = Vector2(_cell * 0.5, _cell * 0.5 + 3.0)
 	root.add_child(sitter)
 	if unlocked:
 		var body: Sprite2D = Sprite2D.new()
@@ -206,42 +222,44 @@ func _build_grave(i: int) -> void:
 		hat.scale = Vector2.ONE * 0.5
 		hat.position = Vector2(0.0, -10.0)
 		sitter.add_child(hat)
+	else:
+		var mark: Sprite2D = Sprite2D.new()
+		mark.texture = GRAVE_CLOSED
+		mark.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		mark.scale = Vector2.ONE * minf(1.0, (_cell - 8.0) / maxf(float(GRAVE_CLOSED.get_height()), 1.0))
+		sitter.add_child(mark)
 	_sitters.append(sitter)
-	var caption: Label = Label.new()
-	caption.text = CharacterLibrary.short_title(id)
-	caption.position = Vector2(-12.0, 58.0)
-	caption.size = Vector2(GRAVE_W + 24.0, 10.0)
-	caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	caption.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	caption.add_theme_color_override(&"font_color", WHITE if unlocked else GREY)
-	caption.add_theme_color_override(&"font_shadow_color", Color(0.0, 0.0, 0.0))
-	caption.add_theme_constant_override(&"shadow_offset_x", 1)
-	caption.add_theme_constant_override(&"shadow_offset_y", 1)
-	root.add_child(caption)
 	if id in _fresh:
 		var tag: Label = Label.new()
-		tag.text = "НОВЕНЬКИЙ!"
-		tag.position = Vector2(-12.0, -8.0)
-		tag.size = Vector2(GRAVE_W + 24.0, 10.0)
-		tag.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		tag.text = "!"
+		tag.position = Vector2(_cell - 9.0, -1.0)
 		tag.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		tag.add_theme_color_override(&"font_color", GREEN)
 		tag.add_theme_color_override(&"font_shadow_color", Color(0.0, 0.0, 0.0))
+		tag.add_theme_constant_override(&"shadow_offset_x", 1)
+		tag.add_theme_constant_override(&"shadow_offset_y", 1)
 		root.add_child(tag)
 	var click: Button = Button.new()
 	click.flat = true
 	click.focus_mode = Control.FOCUS_NONE
-	click.position = Vector2(-10.0, 0.0)
-	click.size = Vector2(GRAVE_W + 20.0, 70.0)
+	click.size = Vector2(_cell, _cell)
 	click.pressed.connect(_on_grave_pressed.bind(i))
 	click.mouse_entered.connect(_select.bind(i))
 	root.add_child(click)
 
 
+func _frame_style(chosen: bool, unlocked: bool) -> StyleBoxFlat:
+	var st: StyleBoxFlat = StyleBoxFlat.new()
+	st.bg_color = Color(0.1, 0.1, 0.12) if unlocked else Color(0.04, 0.04, 0.05)
+	st.border_color = YELLOW if chosen else (Color(0.3, 0.45, 0.3) if unlocked else Color(0.2, 0.2, 0.22))
+	st.set_border_width_all(2 if chosen else 1)
+	return st
+
+
 func _build_panel() -> void:
 	var panel: Panel = Panel.new()
-	panel.position = Vector2(24.0, 122.0)
-	panel.size = Vector2(432.0, 112.0)
+	panel.position = Vector2(24.0, 150.0)
+	panel.size = Vector2(432.0, 90.0)
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var style: StyleBoxFlat = StyleBoxFlat.new()
 	style.bg_color = Color(0.02, 0.02, 0.03)
@@ -249,14 +267,22 @@ func _build_panel() -> void:
 	style.set_border_width_all(2)
 	panel.add_theme_stylebox_override(&"panel", style)
 	add_child(panel)
-	_title = _label("", Vector2(36.0, 130.0), 408.0, YELLOW)
+	_preview = Sprite2D.new()
+	_preview.position = Vector2(58.0, 198.0)
+	_preview.scale = Vector2.ONE * 2.0
+	_preview.hframes = 4
+	_preview.vframes = 3
+	_preview.frame = 8
+	_preview.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	add_child(_preview)
+	_title = _label("", Vector2(96.0, 156.0), 350.0, YELLOW)
 	_title.add_theme_color_override(&"font_shadow_color", PINK)
-	_tagline = _label("", Vector2(36.0, 144.0), 408.0, WHITE)
-	_plus = _label("", Vector2(36.0, 168.0), 200.0, GREEN)
-	_minus = _label("", Vector2(244.0, 168.0), 200.0, RED)
-	_weapon = _label("", Vector2(36.0, 206.0), 408.0, YELLOW)
-	_status = _label("", Vector2(36.0, 218.0), 408.0, GREEN)
-	_hint = _label("A/D - ВЫБОР  ПРОБЕЛ - НА ПОМОЙКУ\nESC - МЕНЮ  TAB - ОРУЖИЕ", Vector2(8.0, 240.0), 200.0, GREY)
+	_tagline = _label("", Vector2(96.0, 168.0), 350.0, WHITE)
+	_plus = _label("", Vector2(96.0, 184.0), 170.0, GREEN)
+	_minus = _label("", Vector2(272.0, 184.0), 170.0, RED)
+	_weapon = _label("", Vector2(96.0, 212.0), 350.0, YELLOW)
+	_status = _label("", Vector2(96.0, 224.0), 350.0, GREEN)
+	_hint = _label("WASD - ВЫБОР\nПРОБЕЛ - ПОГНАЛИ", Vector2(8.0, 243.0), 200.0, GREY)
 
 
 func _input(event: InputEvent) -> void:
@@ -282,6 +308,12 @@ func _input(event: InputEvent) -> void:
 	elif event.is_action_pressed(&"move_right") or event.is_action_pressed(&"ui_right"):
 		get_viewport().set_input_as_handled()
 		_select(posmod(_selected + 1, _ids.size()))
+	elif event.is_action_pressed(&"move_up") or event.is_action_pressed(&"ui_up"):
+		get_viewport().set_input_as_handled()
+		_select(posmod(_selected - _cols, _ids.size()))
+	elif event.is_action_pressed(&"move_down") or event.is_action_pressed(&"ui_down"):
+		get_viewport().set_input_as_handled()
+		_select(posmod(_selected + _cols, _ids.size()))
 	elif event.is_action_pressed(&"ui_accept"):
 		get_viewport().set_input_as_handled()
 		_choose()
@@ -310,7 +342,6 @@ func _choose() -> void:
 	_walker = _sitters[_selected]
 	_walk_from = _walker.global_position
 	_walk_time = 0.0
-	_arrow.hide()
 	await get_tree().create_timer(WALK_SEC).timeout
 	SceneFlow.go(GAME_SCENE, Vector2.DOWN)
 
@@ -336,22 +367,11 @@ func _refresh() -> void:
 	else:
 		_status.text = "ЗАКОПАН: %s %s" % [CharacterLibrary.unlock_text(id), CharacterLibrary.progress_text(id)]
 		_status.add_theme_color_override(&"font_color", RED)
-	_place_arrow()
-
-
-## Окно из VISIBLE могил едет за выбором.
-func _apply_scroll() -> void:
-	var scroll: int = clampi(_selected - int(VISIBLE * 0.5), 0, maxi(_ids.size() - VISIBLE, 0))
-	var left: float = (SCREEN.x - GRAVE_STEP * mini(_ids.size(), VISIBLE)) * 0.5 - GRAVE_W * 0.5
-	for i: int in _graves.size():
-		_graves[i].position.x = left + GRAVE_STEP * (i - scroll + 0.5)
-		_graves[i].visible = i >= scroll and i < scroll + VISIBLE
-
-
-func _place_arrow() -> void:
-	_apply_scroll()
-	var root: Control = _graves[_selected]
-	_arrow.position = Vector2(root.position.x + GRAVE_W * 0.5 - ARROW.get_width() * 0.5, root.position.y + 70.0)
+	var sheet: Texture2D = CharacterLibrary.sprite_sheet(id)
+	_preview.texture = (sheet if sheet != null else PLAYER_TEX) if unlocked else null
+	_preview.visible = unlocked
+	for i: int in _frames.size():
+		_frames[i].add_theme_stylebox_override(&"panel", _frame_style(i == _selected, Profile.is_unlocked(_ids[i])))
 
 
 func _process(delta: float) -> void:
@@ -366,7 +386,7 @@ func _process(delta: float) -> void:
 		_walker.z_index = 20
 		var span: float = ARRIVE_SEC if _arriving else WALK_SEC
 		var t: float = clampf(_walk_time / span, 0.0, 1.0)
-		var rest: Vector2 = _graves[_selected].position + Vector2(GRAVE_W * 0.5, 30.0)
+		var rest: Vector2 = _graves[_selected].position + Vector2(_cell * 0.5, _cell * 0.5 + 3.0)
 		var gate_point: Vector2 = GATE_POS + Vector2(0.0, 10.0)
 		var from: Vector2 = _walk_from
 		var to: Vector2 = rest if _arriving else gate_point
@@ -383,11 +403,9 @@ func _process(delta: float) -> void:
 			_walker.scale = Vector2.ONE
 			_walker.z_index = 0
 			_walker = null
-			_arrow.show()
 		return
 	for i: int in _graves.size():
 		var chosen: bool = i == _selected
 		var pulse: float = 0.5 + 0.5 * sin(_time * 12.0)
-		_graves[i].modulate = Color(1.0, 1.0, 1.0).lerp(Color(1.0, 1.0, 0.45), pulse * 0.5) if chosen else Color(0.55, 0.55, 0.6)
-		_sitters[i].position.y = 30.0 + (roundf(sin(_time * 6.0 + float(i))) if chosen else 0.0)
-	_arrow.position.y = _graves[_selected].position.y + 70.0 + roundf(2.0 * sin(_time * 10.0))
+		_graves[i].modulate = Color(1.0, 1.0, 1.0).lerp(Color(1.0, 1.0, 0.6), pulse * 0.4) if chosen else Color(0.7, 0.7, 0.75)
+		_sitters[i].position.y = _cell * 0.5 + 3.0 + (roundf(sin(_time * 6.0)) if chosen else 0.0)
