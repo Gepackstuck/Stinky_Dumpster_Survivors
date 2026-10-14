@@ -83,6 +83,11 @@ func _on_hurt(damage: float) -> void:
 	_health.take_damage(damage)
 
 
+## Полное лечение между волнами (как в Brotato).
+func heal_full() -> void:
+	_health.heal(_health.max_health)
+
+
 func _on_health_changed(current: float, maximum: float) -> void:
 	GameState.hp = current
 	GameState.max_hp = maximum

@@ -1956,6 +1956,127 @@ def draw_select_arrow():
     return img
 
 
+# ---------------------------------------------------------------- указатели врагов за экраном
+PTR_W, PTR_H = 32, 22
+
+
+def _ptr_finish(img, sil):
+    """Чёрная обводка + кислотное свечение (дизеринг жёлтым) вокруг указателя, смотрит вправо."""
+    glow = minus(dilate4(dilate4(sil)), sil)
+    out = new_img(*img.size)
+    dither(out, glow, YELLOW, "checker")
+    paint(out, minus(dilate4(sil), sil), BLACK)
+    out.alpha_composite(img)
+    return out
+
+
+def _pm():
+    return new_img(PTR_W, PTR_H), new_mask(PTR_W, PTR_H)
+
+
+def ptr_hand():
+    img, sil = _pm()
+    palm = new_mask(PTR_W, PTR_H); rect(palm, 8, 7, 18, 15)
+    index = new_mask(PTR_W, PTR_H); rect(index, 18, 9, 29, 11)
+    fingers = new_mask(PTR_W, PTR_H); rect(fingers, 17, 12, 21, 13); rect(fingers, 17, 14, 21, 15); rect(fingers, 17, 7, 21, 8)
+    thumb = new_mask(PTR_W, PTR_H); rect(thumb, 10, 3, 14, 7)
+    stump = new_mask(PTR_W, PTR_H); rect(stump, 4, 8, 8, 14)
+    sil = union(palm, index, fingers, thumb, stump)
+    paint(img, sil, PINK); dither(img, sil, WHITE, "dots")
+    paint(img, stump, RED); dither(img, stump, BLACK, "checker")
+    for y in (9, 11, 13): px(img, 5, y, WHITE)  # торчит кость
+    for x, y in ((26, 9), (27, 9), (22, 11), (12, 10), (14, 12)): px(img, x, y, RED)
+    px(img, 29, 10, BLACK); px(img, 28, 9, YELLOW)  # ноготь
+    for k in range(3): px(img, 6, 15 + k, RED)
+    return _ptr_finish(img, sil)
+
+
+def ptr_phallus():
+    img, sil = _pm()
+    shaft = new_mask(PTR_W, PTR_H); rect(shaft, 8, 8, 24, 14)
+    head = new_mask(PTR_W, PTR_H); blob(head, 26, 11, 4, 4, random.Random(1), 0.4, 10)
+    balls = new_mask(PTR_W, PTR_H); blob(balls, 6, 7, 3, 3, random.Random(2), 0.4, 8); blob(balls, 6, 15, 3, 3, random.Random(3), 0.4, 8)
+    sil = union(shaft, head, balls)
+    paint(img, sil, PINK); dither(img, sil, RED, "dots")
+    paint(img, head, RED); dither(img, head, PINK, "checker")
+    for x, y in ((12, 10), (16, 12), (20, 9), (14, 13), (22, 12)): px(img, x, y, BLACK)
+    px(img, 28, 10, WHITE); px(img, 28, 11, WHITE); px(img, 30, 11, GREEN)
+    return _ptr_finish(img, sil)
+
+
+def ptr_finger():
+    img, sil = _pm()
+    fist = new_mask(PTR_W, PTR_H); rect(fist, 5, 8, 15, 18)
+    mid = new_mask(PTR_W, PTR_H); rect(mid, 15, 10, 29, 13)
+    knuck = new_mask(PTR_W, PTR_H); rect(knuck, 15, 14, 19, 15); rect(knuck, 15, 16, 19, 17); rect(knuck, 15, 8, 19, 9)
+    sil = union(fist, mid, knuck)
+    paint(img, sil, WHITE); dither(img, sil, PINK, "dots")
+    for y in (11, 13, 15): px(img, 8, y, BLACK); px(img, 12, y, BLACK)
+    px(img, 29, 11, YELLOW); px(img, 28, 11, YELLOW); px(img, 20, 11, BLACK)
+    for x, y in ((9, 9), (10, 17), (24, 12)): px(img, x, y, RED)
+    return _ptr_finish(img, sil)
+
+
+def ptr_guts():
+    img, sil = _pm()
+    pts = [(3, 15), (8, 8), (13, 15), (18, 8), (23, 12)]
+    gut = new_mask(PTR_W, PTR_H); line(gut, pts, 4)
+    arrow = new_mask(PTR_W, PTR_H); poly(arrow, [(22, 5), (30, 11), (22, 18)])
+    sil = union(gut, arrow)
+    paint(img, gut, PINK); dither(img, gut, RED, "stripes")
+    paint(img, arrow, GREEN); dither(img, arrow, YELLOW, "checker")
+    for x, y in ((8, 8), (13, 15), (18, 8)): px(img, x, y, WHITE)
+    px(img, 27, 11, BLACK)
+    return _ptr_finish(img, sil)
+
+
+def ptr_tentacle():
+    img, sil = _pm()
+    t = new_mask(PTR_W, PTR_H)
+    line(t, [(2, 18), (8, 16), (14, 10), (20, 8), (27, 11)], 4)
+    line(t, [(27, 11), (30, 14), (28, 17)], 3)
+    sil = t
+    paint(img, t, PINK); dither(img, t, BLUE, "dots")
+    for x, y in ((8, 14), (13, 11), (18, 9), (23, 9)): px(img, x, y, WHITE); px(img, x + 1, y + 3, WHITE)
+    px(img, 28, 16, RED)
+    return _ptr_finish(img, sil)
+
+
+def ptr_bone():
+    img, sil = _pm()
+    shaft = new_mask(PTR_W, PTR_H); rect(shaft, 6, 9, 22, 12)
+    ends_l = new_mask(PTR_W, PTR_H); blob(ends_l, 5, 8, 3, 3, random.Random(1), 0.3, 8); blob(ends_l, 5, 13, 3, 3, random.Random(2), 0.3, 8)
+    tip = new_mask(PTR_W, PTR_H); poly(tip, [(22, 5), (30, 10), (22, 16)])
+    sil = union(shaft, ends_l, tip)
+    paint(img, sil, WHITE); dither(img, sil, (190, 190, 150), "dots")
+    for x, y in ((9, 10), (14, 11), (18, 10)): px(img, x, y, RED)
+    px(img, 4, 11, RED); px(img, 5, 12, RED); px(img, 26, 10, BLACK)
+    return _ptr_finish(img, sil)
+
+
+def ptr_eye():
+    img, sil = _pm()
+    stalk = new_mask(PTR_W, PTR_H); line(stalk, [(2, 17), (8, 13), (14, 12), (18, 11)], 3)
+    ball = new_mask(PTR_W, PTR_H); blob(ball, 24, 11, 7, 7, random.Random(3), 0.5, 12)
+    sil = union(stalk, ball)
+    paint(img, stalk, PINK); dither(img, stalk, RED, "stripes")
+    paint(img, ball, WHITE)
+    for x, y in ((19, 7), (20, 14), (24, 5), (22, 16), (18, 11)): px(img, x, y, RED)
+    pup = new_mask(PTR_W, PTR_H); blob(pup, 27, 11, 3, 3, random.Random(4), 0.2, 8); paint(img, pup, BLACK)
+    px(img, 28, 10, WHITE)
+    return _ptr_finish(img, sil)
+
+
+POINTERS = (ptr_hand, ptr_phallus, ptr_finger, ptr_guts, ptr_tentacle, ptr_bone, ptr_eye)
+
+
+def draw_pointer_sheet():
+    sheet = new_img(PTR_W * len(POINTERS), PTR_H)
+    for i, fn in enumerate(POINTERS):
+        sheet.paste(fn(), (i * PTR_W, 0))
+    return sheet
+
+
 CARD_W, CARD_H = 112, 150
 # (кольцо, кольцо2, seed, скос, капли, украшение углов) — вариантов много: каждая карточка берёт случайный
 CARD_VARIANTS = (
@@ -2007,6 +2128,9 @@ def build_step2():
                      ("hud_heart", lambda: draw_heart(14))):
         fn().save(UI + name + ".png")
     draw_card_frames().save(UI + "card_frames.png")
+    draw_pointer_sheet().save(UI + "enemy_pointers.png")
+    draw_frame(200, 28, GREEN, PINK, 303, chamfer=5, drips=6, eyes=False, clean=True).save(UI + "button_wide.png")
+    draw_frame(200, 28, YELLOW, GREEN, 303, chamfer=5, drips=8, eyes=False, clean=True).save(UI + "button_wide_hover.png")
     draw_banners().save(UI + "banners.png")
     draw_select_arrow().save(UI + "select_arrow.png")
     draw_frame(96, 22, RED, PINK, 202, chamfer=4, drips=3, eyes=False).save(UI + "button.png")

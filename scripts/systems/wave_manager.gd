@@ -95,6 +95,8 @@ func _end_wave() -> void:
 			pickup.attract(player)
 	await get_tree().create_timer(Balance.WAVE_END_COLLECT_SEC).timeout
 	if GameState.run_active:
+		if player.has_method(&"heal_full"):
+			player.call(&"heal_full")
 		EventBus.wave_ended.emit(GameState.wave)
 
 

@@ -3,11 +3,11 @@ extends Node
 ## Autoload: Balance. Числа не хардкодить в сценах — брать отсюда.
 
 # --- Арена (Шаг 1) ---
-const ARENA_SIZE: float = 900.0        # квадрат ARENA_SIZE x ARENA_SIZE, старт в центре
+const ARENA_SIZE: float = 520.0        # квадрат ARENA_SIZE x ARENA_SIZE, старт в центре
 
 # --- Игрок (Шаг 1; в GDD чисел нет — стартовые значения) ---
 const PLAYER_MOVE_SPEED: float = 100.0
-const PLAYER_MAX_HP: float = 100.0
+const PLAYER_MAX_HP: float = 40.0
 const PLAYER_HURT_COOLDOWN_SEC: float = 0.5  # неуязвимость после попадания
 
 # --- Спавн врагов (Шаг 1: простой хардкод-спавнер) ---

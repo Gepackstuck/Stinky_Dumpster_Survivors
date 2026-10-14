@@ -10,7 +10,6 @@
 [ext_resource type="Script" path="res://scripts/systems/wave_manager.gd" id="10_wm"]
 [ext_resource type="PackedScene" path="res://scenes/ui/wave_banner.tscn" id="11_wb"]
 [ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="6_hud"]
-[ext_resource type="PackedScene" path="res://scenes/ui/intermission_screen.tscn" id="12_im"]
 [ext_resource type="PackedScene" path="res://scenes/ui/level_up_screen.tscn" id="7_lu"]
 [ext_resource type="PackedScene" path="res://scenes/ui/death_screen.tscn" id="8_ds"]
 
@@ -56,7 +55,5 @@ player = NodePath("../Player")
 [node name="Hud" parent="." instance=ExtResource("6_hud")]
 
 [node name="LevelUpScreen" parent="." instance=ExtResource("7_lu")]
-
-[node name="IntermissionScreen" parent="." instance=ExtResource("12_im")]
 
 [node name="DeathScreen" parent="." instance=ExtResource("8_ds")]

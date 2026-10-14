@@ -7,6 +7,8 @@
 [ext_resource type="Texture2D" path="res://assets/ui/xp_bar_under.png" id="5_xpu"]
 [ext_resource type="Texture2D" path="res://assets/ui/xp_bar_fill.png" id="6_xpf"]
 
+[ext_resource type="Script" path="res://scripts/ui/enemy_pointer.gd" id="7_ptr"]
+
 [node name="Hud" type="CanvasLayer"]
 layer = 5
 script = ExtResource("1_hud")
@@ -36,6 +38,19 @@ value = 100.0
 texture_under = ExtResource("3_hpu")
 texture_progress = ExtResource("4_hpf")
 texture_progress_offset = Vector2(2, 2)
+
+[node name="HpLabel" type="Label" parent="Root"]
+layout_mode = 0
+offset_left = 95.0
+offset_top = 6.0
+offset_right = 150.0
+offset_bottom = 15.0
+text = "40/40"
+theme_override_colors/font_color = Color(1, 0.0627451, 0.2, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+
+[node name="EnemyPointer" type="Sprite2D" parent="Root"]
+script = ExtResource("7_ptr")
 
 [node name="XpBar" type="TextureProgressBar" parent="Root"]
 layout_mode = 0

@@ -7,6 +7,7 @@ extends CanvasLayer
 @onready var _level_label: Label = $Root/LevelLabel
 @onready var _timer_label: Label = $Root/TimerLabel
 @onready var _wave_label: Label = $Root/WaveLabel
+@onready var _hp_label: Label = $Root/HpLabel
 @onready var _kills_label: Label = $Root/KillsLabel
 
 var _last_hp: float = -1.0
@@ -22,6 +23,7 @@ func _process(_delta: float) -> void:
 		_last_hp = GameState.hp
 		_hp_bar.max_value = maxf(GameState.max_hp, 1.0)
 		_hp_bar.value = GameState.hp
+		_hp_label.text = "%d/%d" % [ceili(GameState.hp), int(GameState.max_hp)]
 	if GameState.xp != _last_xp or GameState.xp_to_next != int(_xp_bar.max_value):
 		_last_xp = GameState.xp
 		_xp_bar.max_value = maxf(GameState.xp_to_next, 1)

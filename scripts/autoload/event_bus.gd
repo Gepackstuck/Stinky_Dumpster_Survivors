@@ -31,7 +31,6 @@ signal boss_spawned(boss_id: StringName)
 @warning_ignore("unused_signal")
 signal wave_ended(wave_number: int)        # время волны вышло, враги убраны, материалы собраны
 @warning_ignore("unused_signal")
-signal levelups_done                       # очередь выбора перков после волны разобрана
 @warning_ignore("unused_signal")
 signal next_wave_requested                 # игрок нажал «Дальше» на экране между волнами
 @warning_ignore("unused_signal")
