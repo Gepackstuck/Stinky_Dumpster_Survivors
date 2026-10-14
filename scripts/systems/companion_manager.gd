@@ -37,6 +37,17 @@ func _respawn() -> void:
 		rat.global_position = _spawn_point(player.global_position)
 
 
+	for kind: StringName in [&"drunk", &"granny"]:
+		var count: int = GameState.ghost_drunk_count if kind == &"drunk" else GameState.ghost_granny_count
+		for i: int in count:
+			var ghost: PetGhost = PetGhost.new()
+			ghost.kind = kind
+			ghost.player = player
+			ghost.add_to_group(GROUP)
+			root.add_child(ghost)
+			ghost.global_position = _spawn_point(player.global_position)
+
+
 func _spawn_point(center: Vector2) -> Vector2:
 	var offset: Vector2 = Vector2.from_angle(randf() * TAU) * randf_range(Balance.STRUCTURE_SPAWN_MIN_DIST, Balance.STRUCTURE_SPAWN_MAX_DIST)
 	return (center + offset).clamp(Vector2(8.0, 8.0), Vector2(Balance.ARENA_SIZE - 8.0, Balance.ARENA_SIZE - 8.0))

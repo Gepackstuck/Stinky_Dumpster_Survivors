@@ -148,6 +148,8 @@ const ITEMS: Dictionary = {
 	&"bloody_rag": {"tier": 4, "price": 68, "limit": 4, "fx": {&"lifesteal": 8.0}},
 	&"dead_rat": {"tier": 2, "price": 32, "limit": 3, "fx": {&"pets": 1.0}},
 	&"bucket_turret": {"tier": 3, "price": 46, "limit": 3, "fx": {&"turrets": 1.0}},
+	&"ghost_drunk": {"tier": 3, "price": 42, "limit": 2, "fx": {&"ghost_drunk": 1.0}},
+	&"ghost_granny": {"tier": 3, "price": 46, "limit": 2, "fx": {&"ghost_granny": 1.0}},
 	&"golden_toilet": {"tier": 4, "price": 90, "limit": 1, "mods": {&"damage": 14.0, &"crit": 8.0, &"armor": 2.0, &"speed": -8.0}},
 }
 
@@ -276,6 +278,15 @@ const PET_DAMAGE: float = 6.0
 const PET_BITE_SEC: float = 0.55
 const PET_SPEED: float = 120.0
 const PET_AGGRO_RANGE: float = 110.0              # от игрока: дальше крыса не бегает за врагом
+const GHOST_DRUNK_DAMAGE: float = 14.0           # призрак друга-алкаша: шатается и бьёт с пьяной силой
+const GHOST_DRUNK_HIT_SEC: float = 0.9
+const GHOST_DRUNK_SPEED: float = 85.0
+const GHOST_DRUNK_WOBBLE: float = 55.0             # px/с боковой «болтанки»
+const GHOST_GRANNY_HEAL: float = 2.0               # бабка-повитуха шепчет и лечит
+const GHOST_GRANNY_HEAL_SEC: float = 7.0
+const GHOST_GRANNY_SLIPPER_DAMAGE: float = 8.0     # и лупит тапком тех, кто подошёл
+const GHOST_GRANNY_SLIPPER_SEC: float = 1.2
+const GHOST_GRANNY_SLIPPER_RANGE: float = 34.0
 const PET_LEASH_DIST: float = 38.0                # где ходит рядом с игроком без цели
 
 # --- Перки (GDD) ---

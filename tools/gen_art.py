@@ -1920,6 +1920,8 @@ def build_step1():
     sheet([draw_proj_slipper(0), draw_proj_slipper(1)]).save(SPRITES + "proj_slipper.png")
     sheet([draw_turret(0), draw_turret(1)]).save(SPRITES + "structure_turret.png")
     sheet([draw_rat(0), draw_rat(1)]).save(SPRITES + "pet_rat.png")
+    sheet([draw_ghost_drunk(0), draw_ghost_drunk(1)]).save(SPRITES + "pet_ghost_drunk.png")
+    sheet([draw_ghost_granny(0), draw_ghost_granny(1)]).save(SPRITES + "pet_ghost_granny.png")
     sheet([draw_proj_milk(0), draw_proj_milk(1)]).save(SPRITES + "proj_milk.png")
     for v in range(len(_BIN_VARIANTS)):
         sheet([draw_trash_bin(0, v), draw_trash_bin(1, v)]).save(SPRITES + "enemy_trash_bin_%d.png" % v)
@@ -2874,18 +2876,79 @@ def item_golden_toilet():
 
 
 
-def draw_turret(frame):
-    """16x16: турель из ведра — ржавое ведро, ствол из трубы, мигающий кривой глаз."""
-    img = new_img(16, 16)
-    bucket = new_mask(16, 16); poly(bucket, [(3, 6), (12, 6), (11, 14), (4, 14)])
-    rim = new_mask(16, 16); rect(rim, 2, 5, 13, 6)
-    barrel = new_mask(16, 16); rect(barrel, 7, 1, 9, 5)
-    sil = union(bucket, rim, barrel)
-    paint(img, bucket, BROWN); dither(img, bucket, YELLOW, "dots_off"); paint(img, rim, GREY); paint(img, barrel, GREY)
+def draw_turret(frame, s=20):
+    """20x20: ведро-пулемётчик с рожей: кривые глаза, оскал с зубами, труба-ствол изо рта, ножки-палки."""
+    img = new_img(s, s)
+    bucket = new_mask(s, s); poly(bucket, [(3, 5), (16, 5), (14, 15), (5, 15)])
+    rim = new_mask(s, s); rect(rim, 2, 4, 17, 5)
+    handle = new_mask(s, s); line(handle, [(3, 4), (4, 1), (15, 1), (16, 4)], 1)
+    barrel = new_mask(s, s); rect(barrel, 14, 8, 19, 10)
+    muzzle = new_mask(s, s); rect(muzzle, 18, 7, 19, 11)
+    legs = new_mask(s, s); line(legs, [(7, 15), (6 - frame, 18)], 1); line(legs, [(12, 15), (13 + frame, 18)], 1)
+    sil = union(bucket, rim, handle, barrel, muzzle, legs)
+    paint(img, legs, GREY)
+    paint(img, bucket, BROWN); dither(img, bucket, YELLOW, "dots_off")
+    paint(img, rim, GREY); paint(img, handle, GREY); paint(img, barrel, GREY); paint(img, muzzle, WHITE)
     out = finish(img, sil)
-    px(out, 6, 9, WHITE); px(out, 7, 9, WHITE); px(out, 6, 10, WHITE); px(out, 7, 10, BLACK if frame else RED)
-    px(out, 10, 10, RED if frame else YELLOW); px(out, 8, 0, YELLOW if frame else RED)
-    px(out, 5, 13, GREEN); px(out, 10, 12, GREEN)
+    # рожа: левый глаз огромный, правый мелкий и косой
+    for x in range(6, 10):
+        for y in range(7, 11): px(out, x, y, WHITE)
+    px(out, 8 + frame, 9, BLACK); px(out, 7 + frame, 9, BLACK)
+    for x in (11, 12): px(out, x, 8, WHITE)
+    px(out, 12, 8, RED)
+    px(out, 10, 6, BLACK); px(out, 11, 6, BLACK)  # бровь-козырёк
+    # рот: кривая ухмылка с зубами
+    for x in range(6, 14): px(out, x, 13, BLACK)
+    for x in (7, 9, 11): px(out, x, 12, WHITE)
+    px(out, 13, 12, BLACK); px(out, 5, 12, BLACK)
+    # дым из ствола и искра
+    px(out, 19, 6 - frame, GREY); px(out, 18, 4 - frame, GREY)
+    px(out, 19, 9, YELLOW if frame else RED)
+    px(out, 7, 14, GREEN); px(out, 12, 14, GREEN)
+    return out
+
+
+def _ghost_body(s_w, s_h, frame):
+    """Простыня-призрак: круглая голова, рваный подол (2 кадра колышется)."""
+    body = new_mask(s_w, s_h); blob(body, s_w // 2, 6, 6, 5, random.Random(61), 0.3, 12)
+    rect(body, s_w // 2 - 6, 6, s_w // 2 + 5, 13)
+    for i, x in enumerate(range(s_w // 2 - 6, s_w // 2 + 6, 3)):
+        rect(body, x, 14, x + 1, 15 + ((i + frame) % 2) * 2)
+    return body
+
+
+def draw_ghost_drunk(frame):
+    """16x20: призрак друга-алкаша: синюшная морда, красный нос, щетина, бутылка в руке."""
+    s_w, s_h = 16, 20
+    img = new_img(s_w, s_h)
+    body = _ghost_body(s_w, s_h, frame)
+    bottle = new_mask(s_w, s_h); rect(bottle, 12, 9 - frame, 13, 13 - frame); rect(bottle, 12, 7 - frame, 13, 8 - frame)
+    sil = union(body, bottle)
+    paint(img, body, WHITE); dither(img, body, CYAN, "checker"); paint(img, bottle, GREEN)
+    out = finish(img, sil)
+    px(out, 5, 5, BLACK); px(out, 6, 5, BLACK); px(out, 9, 4, BLACK); px(out, 10, 5, BLACK)   # косые глаза
+    px(out, 7, 7, RED); px(out, 8, 7, RED); px(out, 7, 8, RED)                               # красный нос
+    for x in (5, 6, 9, 10): px(out, x, 10, BLACK)                                            # щетина
+    px(out, 8, 10, PINK); px(out, 13, 6 - frame, WHITE); px(out, 12, 12 - frame, YELLOW)
+    return out
+
+
+def draw_ghost_granny(frame):
+    """16x20: призрак бабки-повитухи: платок, очки, пучок, тапок в руке."""
+    s_w, s_h = 16, 20
+    img = new_img(s_w, s_h)
+    body = _ghost_body(s_w, s_h, frame)
+    shawl = new_mask(s_w, s_h); rect(shawl, 2, 1, 13, 3); rect(shawl, 2, 4, 4, 8); rect(shawl, 11, 4, 13, 8)
+    bun = new_mask(s_w, s_h); rect(bun, 6, 0, 9, 1)
+    slip = new_mask(s_w, s_h); rect(slip, 12, 10 - frame, 15, 12 - frame)
+    sil = union(body, shawl, bun, slip)
+    paint(img, body, WHITE); dither(img, body, CYAN, "checker"); paint(img, shawl, PINK); paint(img, bun, GREY); paint(img, slip, BROWN)
+    out = finish(img, sil)
+    for x in (5, 6, 9, 10): px(out, x, 5, BLACK)     # очки
+    px(out, 7, 5, BLACK); px(out, 8, 5, BLACK)
+    px(out, 6, 6, YELLOW); px(out, 10, 6, YELLOW)    # блики линз
+    px(out, 7, 9, BLACK); px(out, 8, 9, BLACK); px(out, 9, 9, BLACK)  # поджатые губы
+    px(out, 13, 11 - frame, PINK)
     return out
 
 
@@ -2915,6 +2978,14 @@ def _rat_icon():
     return _item([(body, GREY), (head, WHITE), (tail, PINK), (ear, PINK)], [(12, 8, RED), (14, 9, BLACK), (4, 10, BROWN), (8, 11, BROWN)])
 
 
+def item_ghost_drunk():
+    return draw_ghost_drunk(0)
+
+
+def item_ghost_granny():
+    return draw_ghost_granny(0)
+
+
 def item_bucket_turret():
     return draw_turret(0)
 
@@ -2924,7 +2995,7 @@ ITEM_ICONS = [
     ("energy_can", item_energy_can), ("poop_wallet", item_poop_wallet), ("old_milk", item_old_milk),
     ("nail_knuckles", item_nail_knuckles), ("dirty_glasses", item_dirty_glasses), ("junk_magnet", item_junk_magnet),
     ("stinky_pants", item_stinky_pants), ("foil_hat", item_foil_hat), ("shawarma", item_shawarma), ("coupon", item_coupon),
-    ("barbed_wire", item_barbed_wire), ("diarrhea", item_diarrhea), ("bloody_rag", item_bloody_rag), ("golden_toilet", item_golden_toilet), ("dead_rat", item_dead_rat), ("bucket_turret", item_bucket_turret),
+    ("barbed_wire", item_barbed_wire), ("diarrhea", item_diarrhea), ("bloody_rag", item_bloody_rag), ("golden_toilet", item_golden_toilet), ("dead_rat", item_dead_rat), ("bucket_turret", item_bucket_turret), ("ghost_drunk", item_ghost_drunk), ("ghost_granny", item_ghost_granny),
 ]
 
 

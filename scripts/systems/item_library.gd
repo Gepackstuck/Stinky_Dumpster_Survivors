@@ -22,6 +22,8 @@ const _TITLES: Dictionary[StringName, String] = {
 	&"bloody_rag": "КРОВАВАЯ ТРЯПКА",
 	&"dead_rat": "КРЫСА-ПРИЯТЕЛЬ",
 	&"bucket_turret": "ТУРЕЛЬ ИЗ ВЕДРА",
+	&"ghost_drunk": "ДУХ ДРУГА-АЛКАША",
+	&"ghost_granny": "ДУХ БАБКИ-ПОВИТУХИ",
 	&"golden_toilet": "ЗОЛОТОЙ УНИТАЗ",
 }
 const _STAT_LABELS: Dictionary[StringName, String] = {
@@ -100,6 +102,10 @@ static func description(item_id: StringName) -> String:
 				lines.append("%d%% ХП ПРИ УБИЙСТВЕ" % v)
 			&"pets":
 				lines.append("+%d КРЫСА КУСАЕТ ВРАГОВ" % v)
+			&"ghost_drunk":
+				lines.append("+1 ПЬЯНЫЙ ДУХ ЛУПИТ ВРАГОВ")
+			&"ghost_granny":
+				lines.append("+1 БАБКА ЛЕЧИТ И БЬЁТ ТАПКОМ")
 			&"turrets":
 				lines.append("+%d ТУРЕЛЬ НА ВОЛНУ" % v)
 			&"discount":
