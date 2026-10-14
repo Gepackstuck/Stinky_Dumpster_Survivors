@@ -28,10 +28,10 @@ mouse_filter = 2
 
 [node name="Title" type="Label" parent="Root"]
 layout_mode = 0
-offset_left = 0.0
-offset_top = 6.0
-offset_right = 160.0
-offset_bottom = 20.0
+offset_left = 80.0
+offset_top = 30.0
+offset_right = 240.0
+offset_bottom = 44.0
 scale = Vector2(2, 2)
 text = "НОВЫЙ УРОВЕНЬ!"
 horizontal_alignment = 1
@@ -40,10 +40,10 @@ theme_override_colors/font_shadow_color = Color(0.0392157, 0.0392157, 0.0392157,
 
 [node name="Cards" type="HBoxContainer" parent="Root"]
 layout_mode = 0
-offset_left = 29.0
-offset_top = 40.0
-offset_right = 291.0
-offset_bottom = 152.0
+offset_left = 109.0
+offset_top = 78.0
+offset_right = 371.0
+offset_bottom = 190.0
 theme_override_constants/separation = 5
 alignment = 1
 
@@ -59,9 +59,9 @@ layout_mode = 2
 [node name="Hint" type="Label" parent="Root"]
 layout_mode = 0
 offset_left = 0.0
-offset_top = 158.0
-offset_right = 320.0
-offset_bottom = 167.0
+offset_top = 218.0
+offset_right = 480.0
+offset_bottom = 227.0
 text = "A/D - ВЫБОР   ПРОБЕЛ - ВЗЯТЬ   1/2/3 - БЫСТРО"
 horizontal_alignment = 1
 theme_override_colors/font_color = Color(0.909804, 0.909804, 0.909804, 1)

@@ -391,8 +391,8 @@ def stamp_puddle(seed, color, glow):
 
 
 def draw_ground(seed=5, size=128):
-    """Бесшовная тайловая помойка. Спокойная: грязь + редкий приглушённый декор,
-    чтобы не мешать читать врагов и снаряды."""
+    """Бесшовная тайловая земля: только грязь двух тонов. Пятна крови/слизи/кишки/кости
+    рассыпает скрипт ground.gd случайно в каждом забеге (см. draw_decals)."""
     rng = random.Random(seed)
     img = Image.new("RGBA", (size, size), BROWN + (255,))
 
@@ -403,31 +403,271 @@ def draw_ground(seed=5, size=128):
                 fn(m, dx, dy)
         return m
 
-    deco = Image.new("RGBA", (size, size), (0, 0, 0, 0))
-
-    def put(spr, x, y):
-        for dx in (-size, 0, size):
-            for dy in (-size, 0, size):
-                deco.paste(spr, (x + dx, y + dy), spr)
-
-    DARK = (74, 42, 20)  # тёмно-коричневый для грязи: тише чёрного
-    for _ in range(22):
-        cx, cy = rng.randrange(size), rng.randrange(size)
-        r, r2 = rng.randint(4, 9), rng.randint(2, 5)
-        m = region(lambda m, dx, dy: blob(m, cx + dx, cy + dy, r, r2, rng, 1.2, 12))
-        dither(img, m, DARK, "dots")
-    # редкий декор (по одному), потом приглушаем
-    put(stamp_puddle(1, RED, WHITE), 14, 22)
-    put(stamp_puddle(3, GREEN, WHITE), 78, 86)
-    put(stamp_guts(10, 16), 84, 20)
-    put(stamp_poop(20), 40, 70)
-    put(stamp_bone(30), 100, 110)
-    put(stamp_eyeball(40), 22, 108)
-    # приглушение: декор лежит поверх грязи на 45% непрозрачности
-    a = deco.getchannel("A").point(lambda v: int(v * 0.45))
-    deco.putalpha(a)
-    img.alpha_composite(deco)
+    DARK = (74, 42, 20)
+    LIGHT = (128, 78, 40)
+    for col, n in ((DARK, 20), (LIGHT, 14)):
+        for _ in range(n):
+            cx, cy = rng.randrange(size), rng.randrange(size)
+            r, r2 = rng.randint(5, 12), rng.randint(3, 6)
+            m = region(lambda m, dx, dy: blob(m, cx + dx, cy + dy, r, r2, rng, 1.2, 12))
+            dither(img, m, col, rng.choice(["dots", "dots_off", "checker"]))
+    for _ in range(40):
+        img.putpixel((rng.randrange(size), rng.randrange(size)), rng.choice([DARK, LIGHT]) + (255,))
     return img.convert("RGBA")
+
+
+
+# ---------------------------------------------------------------- проволока и декали
+WIRE_W, WIRE_H = 48, 16
+
+
+def _wire_base(kind, frame=0, seed=1):
+    """Сегмент проволоки 48x16: два столба по краям и три провода между ними (низ смотрит на арену)."""
+    rng = random.Random(seed)
+    img = new_img(WIRE_W, WIRE_H)
+    sil = new_mask(WIRE_W, WIRE_H)
+    post_col = (120, 120, 126) if kind != "electric" else (60, 60, 70)
+    for x in (0, 46):
+        m = new_mask(WIRE_W, WIRE_H); rect(m, x, 1, x + 1, 15); sil = union(sil, m); paint(img, m, post_col)
+        px(img, x, 1, YELLOW if kind == "electric" else BROWN)
+    ys = (4, 8, 12)
+    col = {"barbed": GREY, "poop": GREY, "electric": CYAN, "razor": (200, 200, 215), "guts": PINK, "rags": GREY, "slime": GREEN, "fire": (90, 90, 96)}[kind]
+    for i, y in enumerate(ys):
+        pts = [(2, y)]
+        for x in range(6, 47, 6):
+            pts.append((x, y + (1 if (x // 6 + i) % 2 == 0 else -1)))
+        m = new_mask(WIRE_W, WIRE_H); line(m, pts, 1); sil = union(sil, m); paint(img, m, col)
+    if kind == "barbed":
+        for y in ys:
+            for x in range(8, 44, 8):
+                for (dx, dy) in ((0, 0), (-1, -1), (1, -1), (-1, 1), (1, 1)): px(img, x + dx, y + dy, BLACK if (dx or dy) else RED)
+    elif kind == "poop":
+        for y in ys:
+            for x in range(4, 44, 5):
+                if rng.random() < 0.7:
+                    s = new_mask(WIRE_W, WIRE_H); blob(s, x + rng.randint(-1, 1), y, 2, 2, rng, 0.6, 8)
+                    sil = union(sil, s); paint(img, s, BROWN); px(img, x, y - 1, BLACK)
+        for x in (10, 22, 34, 41):
+            for k in range(rng.randint(2, 5)): px(img, x, 5 + k, BROWN)
+        for _ in range(5): px(img, rng.randint(3, 44), rng.randint(0, 14), BLACK)
+        for x in (14, 30): px(img, x, 0, GREEN)
+    elif kind == "razor":  # егоза: витки лезвий с кровью
+        for x in range(4, 44, 4):
+            m = new_mask(WIRE_W, WIRE_H); blob(m, x, 8, 3, 6, rng, 0.3, 10); sil = union(sil, m)
+            px(img, x - 3, 8, WHITE); px(img, x + 3, 8, WHITE); px(img, x, 2, WHITE); px(img, x, 14, WHITE)
+            if rng.random() < 0.4: px(img, x + 3, 8, RED); px(img, x, 14, RED)
+        for _ in range(6): px(img, rng.randint(3, 44), rng.randint(2, 13), RED)
+    elif kind == "guts":  # гирлянда из кишок и глаз
+        for x in range(3, 45, 9):
+            m = new_mask(WIRE_W, WIRE_H); line(m, [(x, 4), (x + 3, 11), (x + 6, 4)], 2); sil = union(sil, m); paint(img, m, PINK); dither(img, m, RED, "dots")
+            e = stamp_eyeball(seed + x); img.paste(e, (x + 1, 8), e)
+        for x in (6, 24, 40): px(img, x, 14, RED); px(img, x, 15, RED)
+        for _ in range(4): px(img, rng.randint(3, 44), rng.randint(1, 5), BLACK)
+    elif kind == "rags":  # тряпки и трусы на проволоке
+        for x in range(5, 44, 10):
+            c = rng.choice([WHITE, BLUE, PINK, YELLOW])
+            m = new_mask(WIRE_W, WIRE_H); poly(m, [(x, 4), (x + 7, 4), (x + 6, 12), (x + 4, 10), (x + 3, 14), (x + 1, 12)]); sil = union(sil, m); paint(img, m, c); dither(img, m, BROWN, "dots_off")
+            if c == WHITE: px(img, x + 3, 9, BROWN); px(img, x + 4, 10, BROWN)
+        flies(img, rng, 4, 2, 45, 0, 14)
+    elif kind == "slime":  # едкая слизь: капает, светится
+        for x in range(5, 44, 6):
+            m = new_mask(WIRE_W, WIRE_H); blob(m, x, 8, 3, 4, rng, 0.6, 8); sil = union(sil, m); paint(img, m, GREEN); dither(img, m, YELLOW, "dots")
+            for k in range(rng.randint(2, 6)): px(img, x, 12 + k % 4, GREEN)
+        for _ in range(4): px(img, rng.randint(3, 44), rng.randint(1, 13), WHITE)
+    elif kind == "fire":  # горящая проволока: 2 кадра пламени
+        frng = random.Random(500 + frame)
+        for x in range(4, 44, 4):
+            h = frng.randint(3, 8)
+            for k in range(h):
+                px(img, x + frng.randint(-1, 1), 10 - k, RED if k < h // 2 else (YELLOW if k < h - 1 else WHITE))
+        for x in range(4, 44, 6): px(img, x, 12, BLACK)
+    else:  # electric: два кадра с разными молниями
+        frng = random.Random(100 + frame)
+        for y in ys:
+            for x in range(4, 44, 7):
+                if frng.random() < 0.55:
+                    px(img, x, y - 1, YELLOW); px(img, x + 1, y - 2, WHITE); px(img, x + 1, y + 1, YELLOW)
+        x = frng.randint(10, 36)
+        pts = [(x, 0)]
+        for k in range(1, 6): pts.append((x + frng.randint(-3, 3), k * 3))
+        m = new_mask(WIRE_W, WIRE_H); line(m, pts, 1); sil = union(sil, m); paint(img, m, YELLOW)
+        px(img, 23, 6, RED); px(img, 24, 6, RED)  # знак «молния»-пятно
+    out = new_img(WIRE_W, WIRE_H)
+    paint(out, minus(dilate4(sil), sil), BORDER_OUTLINE)
+    out.alpha_composite(img)
+    return out
+
+
+def draw_wire_sheet():
+    # порядок = WireKind в arena_border.gd; у анимированных (ток, огонь) два кадра подряд
+    cells = [_wire_base("barbed", 0, 1), _wire_base("poop", 0, 2), _wire_base("razor", 0, 4),
+             _wire_base("guts", 0, 5), _wire_base("rags", 0, 6), _wire_base("slime", 0, 7),
+             _wire_base("electric", 0, 3), _wire_base("electric", 1, 3),
+             _wire_base("fire", 0, 8), _wire_base("fire", 1, 8)]
+    sheet = new_img(WIRE_W * len(cells), WIRE_H)
+    for i, c in enumerate(cells): sheet.paste(c, (i * WIRE_W, 0))
+    return sheet
+
+
+def _dc(w=24, h=24): return new_img(w, h), new_mask(w, h)
+
+
+def decal_vomit(seed):
+    rng = random.Random(seed); img, _ = _dc()
+    m = new_mask(24, 24)
+    for _ in range(4): blob(m, rng.randint(7, 17), rng.randint(8, 16), rng.randint(3, 6), rng.randint(2, 4), rng, 1, 10)
+    paint(img, m, YELLOW); dither(img, m, GREEN, "dots")
+    for _ in range(8): px(img, rng.randint(4, 20), rng.randint(5, 19), rng.choice([RED, WHITE, BROWN]))
+    return img
+
+
+def decal_splat(seed):
+    rng = random.Random(seed); img, _ = _dc()
+    m = new_mask(24, 24); blob(m, 12, 12, 4, 4, rng, 1, 10)
+    for _ in range(9):
+        a = rng.uniform(0, 6.28); r = rng.randint(5, 10)
+        line(m, [(12, 12), (12 + int(r * math.cos(a)), 12 + int(r * math.sin(a)))], 1)
+    paint(img, m, RED); dither(img, m, BLACK, "dots_off")
+    for _ in range(10): px(img, rng.randint(1, 22), rng.randint(1, 22), RED)
+    return img
+
+
+def decal_footprints(seed):
+    rng = random.Random(seed); img, _ = _dc()
+    for k in range(4):
+        x, y = 4 + k * 5, 6 + (k % 2) * 8
+        m = new_mask(24, 24); blob(m, x, y, 2, 3, rng, 0.5, 8)
+        paint(img, m, BLACK if k % 2 else BROWN)
+        for dx in (-2, 0, 2): px(img, x + dx, y - 4, BLACK)
+    return img
+
+
+def decal_butts(seed):
+    rng = random.Random(seed); img, _ = _dc()
+    for _ in range(5):
+        x, y = rng.randint(3, 19), rng.randint(3, 19)
+        for k in range(3): px(img, x + k, y, WHITE)
+        px(img, x + 3, y, YELLOW if rng.random() < 0.5 else RED)
+    for _ in range(4): px(img, rng.randint(2, 21), rng.randint(2, 21), GREY)
+    return img
+
+
+def decal_can(seed):
+    rng = random.Random(seed); img, _ = _dc()
+    m = new_mask(24, 24); rect(m, 9, 8, 15, 16); paint(img, m, rng.choice([CYAN, YELLOW, PINK])); dither(img, m, WHITE, "stripes3")
+    o = new_mask(24, 24); rect(o, 9, 7, 15, 7); rect(o, 9, 17, 15, 17); paint(img, o, GREY)
+    px(img, 12, 12, BLACK); px(img, 13, 13, BLACK)
+    for k in range(4): px(img, 16 + k, 14 + k % 2, BROWN)
+    return img
+
+
+def decal_teeth(seed):
+    rng = random.Random(seed); img, _ = _dc()
+    for _ in range(7):
+        x, y = rng.randint(3, 19), rng.randint(3, 19)
+        m = new_mask(24, 24); rect(m, x, y, x + 1, y + 2); paint(img, m, WHITE); px(img, x, y + 2, RED if rng.random() < 0.5 else WHITE)
+    return img
+
+
+def decal_glass(seed):
+    rng = random.Random(seed); img, _ = _dc()
+    for _ in range(9):
+        x, y = rng.randint(3, 20), rng.randint(3, 20)
+        px(img, x, y, CYAN); px(img, x + 1, y + 1, WHITE); px(img, x + 1, y, BLUE)
+    return img
+
+
+def decal_rat(seed):
+    rng = random.Random(seed); img, _ = _dc()
+    m = new_mask(24, 24); blob(m, 12, 12, 6, 3, rng, 0.6, 10); paint(img, m, GREY); dither(img, m, BLACK, "dots")
+    l = new_mask(24, 24); line(l, [(18, 12), (23, 9)], 1); paint(img, l, PINK)
+    px(img, 8, 11, RED); px(img, 7, 11, WHITE)
+    for x in range(10, 16): px(img, x, 15, RED)
+    return img
+
+
+def decal_slime_trail(seed):
+    rng = random.Random(seed); img, _ = _dc()
+    pts = [(1, 12)]
+    for x in range(5, 24, 4): pts.append((x, 12 + rng.randint(-4, 4)))
+    m = new_mask(24, 24); line(m, pts, 2); paint(img, m, GREEN); dither(img, m, YELLOW, "dots")
+    s = new_mask(24, 24); blob(s, 22, pts[-1][1], 2, 2, rng, 0.5, 8); paint(img, s, GREEN)
+    return img
+
+
+def decal_scorch(seed):
+    rng = random.Random(seed); img, _ = _dc()
+    m = new_mask(24, 24); blob(m, 12, 12, 8, 6, rng, 1.5, 12)
+    paint(img, m, BLACK); dither(img, m, GREY, "dots_off")
+    for _ in range(6): px(img, rng.randint(5, 18), rng.randint(6, 17), RED)
+    return img
+
+
+def decal_skull(seed):
+    rng = random.Random(seed); img, _ = _dc()
+    m = new_mask(24, 24); blob(m, 12, 11, 5, 5, rng, 0.5, 10); rect(m, 9, 14, 15, 17); paint(img, m, WHITE)
+    for x in (10, 14): px(img, x, 10, BLACK); px(img, x, 11, BLACK)
+    px(img, 12, 13, BLACK)
+    for x in (10, 12, 14): px(img, x, 16, BLACK)
+    return img
+
+
+def decal_hair(seed):
+    rng = random.Random(seed); img, _ = _dc()
+    for _ in range(4):
+        pts = [(rng.randint(4, 18), rng.randint(4, 18))]
+        for _ in range(3): pts.append((pts[-1][0] + rng.randint(-3, 3), pts[-1][1] + rng.randint(-3, 3)))
+        m = new_mask(24, 24); line(m, pts, 1); paint(img, m, rng.choice([BLUE, BLACK, PINK]))
+    return img
+
+
+def decal_pills(seed):
+    rng = random.Random(seed); img, _ = _dc()
+    for _ in range(6):
+        x, y = rng.randint(3, 19), rng.randint(3, 19)
+        px(img, x, y, rng.choice([PINK, YELLOW, CYAN, GREEN, RED])); px(img, x + 1, y, WHITE)
+    return img
+
+
+def decal_crack_goo(seed):
+    rng = random.Random(seed); img, _ = _dc()
+    pts = [(2, 4)]
+    for _ in range(5): pts.append((pts[-1][0] + rng.randint(2, 5), pts[-1][1] + rng.randint(1, 4)))
+    m = new_mask(24, 24); line(m, pts, 1); paint(img, m, BLACK)
+    for (x, y) in pts[1:]: px(img, x, y + 1, GREEN)
+    return img
+
+
+def decal_tongue(seed):
+    rng = random.Random(seed); img, _ = _dc()
+    m = new_mask(24, 24); blob(m, 12, 12, 8, 3, rng, 0.8, 10); paint(img, m, PINK); dither(img, m, RED, "dots")
+    l = new_mask(24, 24); line(l, [(5, 12), (19, 12)], 1); paint(img, l, RED)
+    return img
+
+
+_DECAL_FNS = (decal_vomit, decal_splat, decal_footprints, decal_butts, decal_can, decal_teeth, decal_glass,
+              decal_rat, decal_slime_trail, decal_scorch, decal_skull, decal_hair, decal_pills, decal_crack_goo, decal_tongue)
+
+
+DECAL_CELL = 24
+
+
+def draw_decals():
+    """Лист декалей пола 24x24: лужи, кишки, говно, кости, глаза, потроха. Скрипт рассыпает их случайно."""
+    items = []
+    for i, (c, g) in enumerate(((RED, WHITE), (RED, PINK), (GREEN, WHITE), (GREEN, YELLOW), (PINK, WHITE), (BLUE, CYAN))):
+        items.append(stamp_puddle(100 + i, c, g))
+    for i in range(5): items.append(stamp_guts(110 + i, 14 + i * 2))
+    for i in range(4): items.append(stamp_poop(120 + i))
+    for i in range(4): items.append(stamp_bone(130 + i))
+    for i in range(4): items.append(stamp_eyeball(140 + i))
+    for fn in _DECAL_FNS:
+        items.append(fn(200 + len(items)))
+        items.append(fn(300 + len(items)))
+    sheet = new_img(DECAL_CELL * len(items), DECAL_CELL)
+    for i, spr in enumerate(items):
+        sheet.paste(spr, (i * DECAL_CELL + (DECAL_CELL - spr.width) // 2, (DECAL_CELL - spr.height) // 2), spr)
+    return sheet
 
 
 # ---------------------------------------------------------------- граница арены
@@ -441,9 +681,324 @@ def _seg_base():
     return new_img(SEG_W, SEG_H), new_mask(SEG_W, SEG_H)
 
 
+BORDER_OUTLINE = (44, 24, 12)  # тёмная земля вместо чёрной обводки
+
+
 def _seg_finish(img, sil):
-    out = finish(img, sil)
+    out = new_img(*img.size)
+    paint(out, minus(dilate4(sil), sil), BORDER_OUTLINE)
+    out.alpha_composite(img)
     return out
+
+
+def R(img, sil, x0, y0, x1, y1, col, dcol=None, kind="checker"):
+    m = new_mask(SEG_W, SEG_H); rect(m, x0, y0, x1, y1)
+    paint(img, m, col)
+    if dcol: dither(img, m, dcol, kind)
+    return union(sil, m)
+
+
+def B(img, sil, cx, cy, rx, ry, rng, col, dcol=None, kind="dots", jit=1.0):
+    m = new_mask(SEG_W, SEG_H); blob(m, cx, cy, rx, ry, rng, jit, 12)
+    paint(img, m, col)
+    if dcol: dither(img, m, dcol, kind)
+    return union(sil, m)
+
+
+def P(img, sil, pts, col, dcol=None, kind="checker"):
+    m = new_mask(SEG_W, SEG_H); poly(m, pts)
+    paint(img, m, col)
+    if dcol: dither(img, m, dcol, kind)
+    return union(sil, m)
+
+
+def L(img, sil, pts, col, w=1):
+    m = new_mask(SEG_W, SEG_H); line(m, pts, w)
+    paint(img, m, col)
+    return union(sil, m)
+
+
+def flies(img, rng, n=6, x0=2, x1=45, y0=2, y1=20):
+    for _ in range(n): px(img, rng.randint(x0, x1), rng.randint(y0, y1), BLACK)
+
+
+def drips(img, rng, xs, y0, col=GREEN):
+    for x in xs:
+        for k in range(rng.randint(2, 6)): px(img, x, y0 + k, col)
+
+
+def item_toilet(seed):
+    rng = random.Random(seed); img, sil = _seg_base()
+    sil = R(img, sil, 28, 6, 40, 16, WHITE, GREY, "dots")
+    sil = B(img, sil, 20, 22, 11, 6, rng, WHITE, GREY)
+    sil = B(img, sil, 19, 19, 7, 3, rng, GREEN, YELLOW)
+    sil = R(img, sil, 14, 27, 26, 30, WHITE)
+    eye(img, 19, 19, 2, 2, 0, 0, rng); drips(img, rng, [30, 36], 16, BROWN); flies(img, rng, 4)
+    return _seg_finish(img, sil)
+
+
+def item_cart(seed):
+    rng = random.Random(seed); img, sil = _seg_base()
+    sil = L(img, sil, [(6, 8), (12, 24), (38, 24), (42, 10)], GREY, 2)
+    for x in range(10, 40, 4): sil = L(img, sil, [(x, 12), (x + 1, 24)], GREY)
+    sil = L(img, sil, [(6, 8), (2, 6)], GREY, 2)
+    sil = B(img, sil, 22, 14, 11, 4, rng, PINK, RED, "checker")
+    sil = B(img, sil, 14, 28, 3, 3, rng, BLACK); sil = B(img, sil, 36, 28, 3, 3, rng, BLACK)
+    eye(img, 26, 13, 2, 2, 0, 0, rng); flies(img, rng, 5)
+    return _seg_finish(img, sil)
+
+
+def item_tv(seed):
+    rng = random.Random(seed); img, sil = _seg_base()
+    sil = R(img, sil, 6, 8, 41, 29, GREY, BLACK, "dots")
+    sil = R(img, sil, 9, 11, 32, 26, CYAN, WHITE, "stripes3")
+    sil = L(img, sil, [(18, 8), (12, 1)], GREY); sil = L(img, sil, [(28, 8), (36, 1)], GREY)
+    eye(img, 20, 18, 4, 2, 1, 0, rng)
+    for y in range(11, 26, 2): px(img, 30, y, RED)
+    for x in (35, 38): px(img, x, 14, GREEN); px(img, x, 18, YELLOW)
+    return _seg_finish(img, sil)
+
+
+def item_washer(seed):
+    rng = random.Random(seed); img, sil = _seg_base()
+    sil = R(img, sil, 9, 4, 38, 30, WHITE, GREY, "dots")
+    sil = B(img, sil, 23, 18, 8, 8, rng, CYAN, BLUE, "checker", 0.4)
+    sil = B(img, sil, 23, 18, 5, 5, rng, BLACK, GREEN, "dots_off", 0.4)
+    for x in (12, 16): px(img, x, 8, RED)
+    drips(img, rng, [12, 20, 33], 26, BROWN)
+    return _seg_finish(img, sil)
+
+
+def item_fridge(seed):
+    rng = random.Random(seed); img, sil = _seg_base()
+    sil = R(img, sil, 8, 2, 28, 30, WHITE, GREY, "dots")
+    sil = P(img, sil, [(28, 2), (40, 5), (40, 28), (28, 30)], GREY, BLACK, "dots")
+    sil = R(img, sil, 30, 8, 37, 24, GREEN, YELLOW, "checker")
+    for y in (12, 20): sil = L(img, sil, [(8, y), (28, y)], GREY)
+    drips(img, rng, [31, 34, 36], 24); eye(img, 33, 16, 2, 2, 0, 1, rng); flies(img, rng, 6, 8, 40, 0, 12)
+    return _seg_finish(img, sil)
+
+
+def item_mattress(seed):
+    rng = random.Random(seed); img, sil = _seg_base()
+    sil = R(img, sil, 3, 14, 44, 27, YELLOW, BROWN, "stripes3")
+    for x in range(6, 42, 6): px(img, x, 16, BLACK); px(img, x, 25, BLACK)
+    sil = B(img, sil, 20, 20, 8, 4, rng, RED, BROWN)
+    for k in range(5): sil = L(img, sil, [(38 + k, 14), (38 + (k % 2) * 3, 8)], GREY)
+    flies(img, rng, 5, 2, 45, 4, 14)
+    return _seg_finish(img, sil)
+
+
+def item_bags(seed):
+    rng = random.Random(seed); img, sil = _seg_base()
+    for cx, cy, r in ((10, 22, 7), (23, 21, 8), (36, 23, 7), (17, 12, 6), (30, 11, 6)):
+        sil = B(img, sil, cx, cy, r, r - 1, rng, BLACK, GREY, "dots_off")
+        sil = L(img, sil, [(cx, cy - r), (cx - 1, cy - r - 2)], BLACK, 2)
+    drips(img, rng, [8, 24, 33], 26); flies(img, rng, 8, 2, 45, 0, 10)
+    for _ in range(6): px(img, rng.randint(6, 40), rng.randint(8, 28), rng.choice([GREEN, YELLOW, PINK]))
+    return _seg_finish(img, sil)
+
+
+def item_boxes(seed):
+    rng = random.Random(seed); img, sil = _seg_base()
+    sil = R(img, sil, 3, 16, 22, 30, (170, 120, 60), BROWN, "stripes")
+    sil = R(img, sil, 24, 12, 44, 30, (170, 120, 60), BROWN, "checker")
+    sil = R(img, sil, 9, 4, 24, 16, (170, 120, 60), BROWN, "dots")
+    for (x0, x1, y) in ((3, 22, 22), (24, 44, 20), (9, 24, 9)): sil = L(img, sil, [(x0, y), (x1, y)], YELLOW)
+    px(img, 14, 24, BLACK); px(img, 15, 24, BLACK); px(img, 34, 22, RED); px(img, 35, 23, RED)
+    drips(img, rng, [12, 30], 28, BROWN)
+    return _seg_finish(img, sil)
+
+
+def item_bathtub(seed):
+    rng = random.Random(seed); img, sil = _seg_base()
+    sil = R(img, sil, 3, 12, 44, 26, WHITE, GREY, "dots")
+    sil = R(img, sil, 5, 11, 42, 16, GREEN, YELLOW, "checker")
+    for x in (7, 38): sil = R(img, sil, x, 26, x + 2, 30, GREY)
+    sil = L(img, sil, [(40, 12), (40, 4), (46, 4)], GREY, 2)
+    for _ in range(5): px(img, rng.randint(6, 40), rng.randint(8, 12), WHITE)
+    eye(img, 20, 13, 2, 2, 0, 0, rng); eye(img, 28, 14, 2, 2, 1, 0, rng)
+    drips(img, rng, [12, 24], 26, RED)
+    return _seg_finish(img, sil)
+
+
+def item_graves(seed):
+    rng = random.Random(seed); img, sil = _seg_base()
+    sil = B(img, sil, 24, 28, 22, 4, rng, BROWN, BLACK)
+    sil = R(img, sil, 5, 12, 14, 28, GREY, BLACK, "dots"); sil = B(img, sil, 9, 12, 5, 4, rng, GREY, BLACK)
+    sil = R(img, sil, 30, 10, 40, 28, GREY, BLACK, "dots_off"); sil = B(img, sil, 35, 10, 5, 4, rng, GREY)
+    sil = R(img, sil, 21, 4, 24, 26, BROWN); sil = R(img, sil, 17, 9, 28, 12, BROWN)
+    for x in (8, 10): px(img, x, 17, BLACK); px(img, x, 19, BLACK)
+    drips(img, rng, [7, 33], 18, RED); px(img, 22, 7, RED)
+    return _seg_finish(img, sil)
+
+
+def item_hand(seed):
+    rng = random.Random(seed); img, sil = _seg_base()
+    sil = B(img, sil, 24, 28, 20, 5, rng, BROWN, BLACK)
+    sil = R(img, sil, 21, 12, 27, 28, PINK, RED, "stripes3")
+    sil = R(img, sil, 19, 6, 29, 13, PINK, RED, "dots")
+    for x in (19, 22, 25, 28): sil = L(img, sil, [(x, 6), (x - 1 + (x % 3), 1)], PINK)
+    sil = L(img, sil, [(30, 9), (35, 5)], PINK, 2)
+    px(img, 24, 20, GREEN); px(img, 23, 22, BLACK); flies(img, rng, 5, 10, 38, 0, 8)
+    return _seg_finish(img, sil)
+
+
+def item_pipes(seed):
+    rng = random.Random(seed); img, sil = _seg_base()
+    for y in (7, 15, 23):
+        sil = R(img, sil, 2, y, 45, y + 5, GREY, BLACK, "stripes")
+        for x in (10, 24, 38): sil = R(img, sil, x, y - 1, x + 2, y + 6, BLACK)
+    drips(img, rng, [14, 30, 41], 12); drips(img, rng, [20], 20, BROWN); drips(img, rng, [8, 34], 28, RED)
+    return _seg_finish(img, sil)
+
+
+def item_cones(seed):
+    rng = random.Random(seed); img, sil = _seg_base()
+    for cx in (11, 27):
+        sil = P(img, sil, [(cx, 6), (cx - 6, 27), (cx + 6, 27)], RED, WHITE, "stripes3")
+        sil = R(img, sil, cx - 8, 27, cx + 8, 30, BLACK)
+    sil = B(img, sil, 38, 24, 7, 6, rng, BLACK, GREY); sil = B(img, sil, 38, 24, 3, 3, rng, BROWN)
+    px(img, 11, 12, YELLOW); drips(img, rng, [26, 30], 14, GREEN); flies(img, rng, 4)
+    return _seg_finish(img, sil)
+
+
+def item_bottles(seed):
+    rng = random.Random(seed); img, sil = _seg_base()
+    for i, x in enumerate(range(5, 42, 7)):
+        col = (BLUE, GREEN, YELLOW)[i % 3]
+        sil = R(img, sil, x, 14 + i % 2 * 4, x + 4, 28, col, WHITE, "dots_off")
+        sil = R(img, sil, x + 1, 8 + i % 2 * 4, x + 3, 14 + i % 2 * 4, col)
+    for _ in range(14): px(img, rng.randint(2, 45), rng.randint(26, 30), CYAN)
+    drips(img, rng, [9, 30], 24, YELLOW)
+    return _seg_finish(img, sil)
+
+
+def item_gutpile(seed):
+    rng = random.Random(seed); img, sil = _seg_base()
+    for cx, cy, rx, ry in ((14, 22, 11, 7), (30, 20, 12, 8), (22, 12, 9, 5)):
+        sil = B(img, sil, cx, cy, rx, ry, rng, PINK, RED, "stripes")
+    for _ in range(6):
+        x = rng.randint(6, 38); y = rng.randint(10, 26)
+        sil = L(img, sil, [(x, y), (x + rng.randint(-6, 6), y + rng.randint(-3, 3)), (x + rng.randint(-8, 8), y + rng.randint(-4, 5))], RED, 2)
+    eye(img, 16, 19, 2, 2, 0, 0, rng); eye(img, 33, 17, 2, 2, 1, 0, rng); flies(img, rng, 8)
+    return _seg_finish(img, sil)
+
+
+def item_stove(seed):
+    rng = random.Random(seed); img, sil = _seg_base()
+    sil = R(img, sil, 6, 12, 41, 30, GREY, BLACK, "dots")
+    sil = R(img, sil, 8, 16, 39, 28, BLACK, GREY, "dots_off")
+    for x in (13, 23, 33): sil = B(img, sil, x, 12, 4, 2, rng, BLACK, GREY); 
+    for x in (13, 33):
+        for k in range(5): px(img, x + rng.randint(-1, 1), 10 - k, RED if k < 2 else YELLOW)
+    eye(img, 23, 22, 3, 2, 0, 0, rng); drips(img, rng, [10, 37], 28, BROWN)
+    return _seg_finish(img, sil)
+
+
+def item_crates(seed):
+    rng = random.Random(seed); img, sil = _seg_base()
+    for x0, y0, x1, y1 in ((3, 18, 20, 30), (22, 18, 40, 30), (12, 6, 30, 18)):
+        sil = R(img, sil, x0, y0, x1, y1, (170, 120, 60), BROWN, "stripes")
+        sil = L(img, sil, [(x0, y0), (x1, y1)], BLACK); sil = L(img, sil, [(x0, y1), (x1, y0)], BLACK)
+    px(img, 8, 22, RED); px(img, 31, 24, GREEN); px(img, 20, 10, PINK)
+    drips(img, rng, [14, 34], 28, GREEN); flies(img, rng, 4)
+    return _seg_finish(img, sil)
+
+
+def item_mannequin(seed):
+    rng = random.Random(seed); img, sil = _seg_base()
+    sil = B(img, sil, 14, 10, 5, 5, rng, PINK, WHITE, "dots")
+    sil = R(img, sil, 8, 15, 20, 30, PINK, WHITE, "stripes3")
+    sil = L(img, sil, [(28, 8), (40, 26)], PINK, 3); sil = L(img, sil, [(34, 24), (46, 20)], PINK, 3)
+    sil = B(img, sil, 40, 10, 3, 3, rng, PINK, WHITE)
+    eye(img, 12, 9, 1, 1, 0, 0, rng); eye(img, 17, 9, 2, 2, 0, 0, rng)
+    drips(img, rng, [10, 16], 22, RED)
+    return _seg_finish(img, sil)
+
+
+def item_vending(seed):
+    rng = random.Random(seed); img, sil = _seg_base()
+    sil = R(img, sil, 12, 1, 36, 30, RED, BLACK, "dots")
+    sil = R(img, sil, 14, 4, 28, 22, CYAN, BLUE, "stripes3")
+    for y in (8, 14, 20):
+        for x in (16, 21, 26): px(img, x, y, rng.choice([YELLOW, GREEN, PINK, WHITE]))
+    sil = R(img, sil, 30, 6, 34, 18, BLACK); sil = R(img, sil, 14, 25, 34, 28, BLACK)
+    drips(img, rng, [18, 25], 22, GREEN); eye(img, 32, 22, 1, 1, 0, 0, rng)
+    return _seg_finish(img, sil)
+
+
+def item_bike(seed):
+    rng = random.Random(seed); img, sil = _seg_base()
+    for cx in (11, 36):
+        sil = B(img, sil, cx, 22, 8, 8, rng, GREY, None, "dots", 0.3)
+        sil = B(img, sil, cx, 22, 6, 6, rng, BLACK, None, "dots", 0.3)
+        for a in range(0, 360, 60):
+            sil = L(img, sil, [(cx, 22), (cx + int(6 * math.cos(math.radians(a))), 22 + int(6 * math.sin(math.radians(a))))], GREY)
+    sil = L(img, sil, [(11, 22), (20, 10), (36, 22), (28, 10), (20, 10)], RED, 2)
+    sil = L(img, sil, [(26, 8), (31, 8)], BLACK, 2)
+    px(img, 20, 8, YELLOW); drips(img, rng, [30], 24, BROWN)
+    return _seg_finish(img, sil)
+
+
+def item_bigeye(seed):
+    rng = random.Random(seed); img, sil = _seg_base()
+    sil = L(img, sil, [(24, 30), (24, 12)], GREY, 3)
+    sil = B(img, sil, 24, 10, 11, 9, rng, WHITE, None, "dots", 0.6)
+    eye(img, 24, 10, 6, 4, 2, 1, rng)
+    for (x, y) in ((16, 8), (30, 13), (20, 15), (28, 5)): px(img, x, y, RED)
+    sil = L(img, sil, [(14, 6), (8, 2)], RED); sil = L(img, sil, [(34, 8), (40, 4)], RED)
+    drips(img, rng, [24], 20, RED)
+    return _seg_finish(img, sil)
+
+
+def item_bigpoop(seed):
+    rng = random.Random(seed); img, sil = _seg_base()
+    sil = B(img, sil, 24, 25, 17, 5, rng, BROWN, BLACK, "dots")
+    sil = B(img, sil, 24, 19, 12, 5, rng, BROWN, BLACK, "checker")
+    sil = B(img, sil, 24, 14, 8, 4, rng, BROWN, BLACK, "dots_off")
+    sil = P(img, sil, [(20, 11), (24, 3), (28, 11)], BROWN, BLACK, "dots")
+    eye(img, 21, 18, 2, 2, 0, 0, rng); eye(img, 28, 18, 2, 2, 0, 0, rng)
+    for x in (10, 38, 44): sil = L(img, sil, [(x, 14), (x + 2, 10), (x, 6), (x + 2, 2)], GREEN)
+    flies(img, rng, 9)
+    return _seg_finish(img, sil)
+
+
+def item_sewer(seed):
+    rng = random.Random(seed); img, sil = _seg_base()
+    sil = R(img, sil, 8, 3, 40, 14, GREY, BLACK, "stripes")
+    sil = B(img, sil, 24, 14, 9, 3, rng, BLACK)
+    sil = R(img, sil, 16, 14, 32, 29, GREEN, YELLOW, "stripes3")
+    sil = B(img, sil, 24, 28, 18, 3, rng, GREEN, WHITE, "dots")
+    for x in (10, 38): sil = R(img, sil, x - 2, 1, x + 2, 16, BLACK)
+    flies(img, rng, 6, 4, 44, 0, 10); eye(img, 24, 20, 2, 2, 0, 0, rng)
+    return _seg_finish(img, sil)
+
+
+def item_coffin(seed):
+    rng = random.Random(seed); img, sil = _seg_base()
+    sil = P(img, sil, [(6, 16), (12, 4), (36, 4), (42, 16), (36, 29), (12, 29)], BROWN, BLACK, "dots")
+    sil = P(img, sil, [(10, 17), (14, 8), (34, 8), (38, 17), (34, 26), (14, 26)], BLACK, BROWN, "dots_off")
+    sil = R(img, sil, 38, 3, 46, 8, BROWN, BLACK, "stripes")
+    sil = L(img, sil, [(18, 17), (28, 17)], WHITE, 2); sil = L(img, sil, [(23, 12), (23, 24)], WHITE, 2)
+    for x in (20, 26): px(img, x, 12, PINK)
+    drips(img, rng, [14, 30], 26, RED); flies(img, rng, 4)
+    return _seg_finish(img, sil)
+
+
+def item_tentacles(seed):
+    rng = random.Random(seed); img, sil = _seg_base()
+    sil = B(img, sil, 24, 27, 16, 4, rng, BLACK, GREY, "dots_off")
+    for x in (12, 20, 28, 36):
+        pts = [(x, 28)]
+        yy = 28
+        for _ in range(4):
+            yy -= rng.randint(5, 7); pts.append((x + rng.randint(-5, 5), yy))
+        sil = L(img, sil, pts, PINK, 3)
+        for (a, b) in pts[1:]: px(img, a, b, WHITE); px(img, a, b + 2, WHITE)
+    eye(img, 24, 24, 2, 2, 0, 0, rng); drips(img, rng, [30], 22, GREEN)
+    return _seg_finish(img, sil)
+
 
 
 def seg_dumpster(seed=1):
@@ -611,8 +1166,12 @@ def seg_sofa(seed=9):
     return _seg_finish(img, sil)
 
 
+_ITEMS = (item_toilet, item_cart, item_tv, item_washer, item_fridge, item_mattress, item_bags,
+          item_boxes, item_bathtub, item_graves, item_hand, item_pipes, item_cones, item_bottles,
+          item_gutpile, item_stove, item_crates, item_mannequin, item_vending, item_bike,
+          item_bigeye, item_bigpoop, item_sewer, item_coffin, item_tentacles)
 BORDER_SEGMENTS = (seg_dumpster, seg_car, seg_corpses, seg_fence, seg_wall, seg_tires,
-                   seg_barrels, seg_bones, seg_sofa)
+                   seg_barrels, seg_bones, seg_sofa) + _ITEMS
 
 
 def draw_border_sheet():
@@ -1112,6 +1671,8 @@ def build_step2():
     draw_death_bg().save(UI + "death_bg.png")
     draw_dim().save(UI + "dim_checker.png")
     draw_border_sheet().save(SPRITES + "arena_border.png")
+    draw_decals().save(SPRITES + "ground_decals.png")
+    draw_wire_sheet().save(SPRITES + "arena_wire.png")
     return glyphs
 
 

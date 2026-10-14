@@ -3,6 +3,7 @@ extends CharacterBody2D
 ## Игрок: движение WASD/стрелками, здоровье, магнит для XP, перки, смерть.
 
 @onready var _sprite: Sprite2D = $Sprite2D
+@onready var _animator: FrameAnimatorComponent = $FrameAnimator
 @onready var _camera: Camera2D = $Camera2D
 @onready var _health: HealthComponent = $HealthComponent
 @onready var _hurtbox: HurtboxComponent = $Hurtbox
@@ -36,7 +37,8 @@ func _physics_process(delta: float) -> void:
 	var direction: Vector2 = Input.get_vector(&"move_left", &"move_right", &"move_up", &"move_down")
 	velocity = direction * Balance.PLAYER_MOVE_SPEED * GameState.move_speed_mult
 	if direction.x != 0.0:
-		_sprite.flip_h = direction.x < 0.0
+		_sprite.flip_h = direction.x > 0.0
+	_animator.active = direction != Vector2.ZERO
 	move_and_slide()
 	global_position = global_position.clamp(Vector2.ZERO, _arena_max)
 	if GameState.regen_hp > 0.0:

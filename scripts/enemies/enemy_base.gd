@@ -38,6 +38,15 @@ func _physics_process(_delta: float) -> void:
 	if velocity.x != 0.0:
 		_sprite.flip_h = velocity.x < 0.0
 	move_and_slide()
+	_keep_distance_from_target()
+
+
+## Мягкое расталкивание: враг не заходит внутрь игрока, а отъезжает — через толпу можно проломиться.
+func _keep_distance_from_target() -> void:
+	var offset: Vector2 = global_position - _target.global_position
+	var distance: float = offset.length()
+	if distance < Balance.ENEMY_PLAYER_MIN_DISTANCE and distance > 0.001:
+		global_position += offset / distance * (Balance.ENEMY_PLAYER_MIN_DISTANCE - distance)
 
 
 func _on_died() -> void:

@@ -3,7 +3,7 @@ extends Node
 ## Autoload: Balance. Числа не хардкодить в сценах — брать отсюда.
 
 # --- Арена (Шаг 1) ---
-const ARENA_SIZE: float = 2000.0        # квадрат ARENA_SIZE x ARENA_SIZE, старт в центре
+const ARENA_SIZE: float = 900.0        # квадрат ARENA_SIZE x ARENA_SIZE, старт в центре
 
 # --- Игрок (Шаг 1; в GDD чисел нет — стартовые значения) ---
 const PLAYER_MOVE_SPEED: float = 100.0
@@ -12,8 +12,8 @@ const PLAYER_HURT_COOLDOWN_SEC: float = 0.5  # неуязвимость посл
 
 # --- Спавн врагов (Шаг 1: простой хардкод-спавнер) ---
 const ENEMY_TARGET_COUNT: int = 20
-const ENEMY_SPAWN_RADIUS_MIN: float = 260.0  # за пределами экрана при CAMERA_ZOOM 0.7 (половина диагонали ~262)
-const ENEMY_SPAWN_RADIUS_MAX: float = 300.0
+const ENEMY_SPAWN_RADIUS_MIN: float = 300.0  # за пределами экрана 480x270 (половина диагонали ~275)
+const ENEMY_SPAWN_RADIUS_MAX: float = 340.0
 const ENEMY_RESPAWN_INTERVAL_SEC: float = 1.0
 
 # --- Автоатака (Шаг 1) ---
@@ -30,8 +30,12 @@ const XP_DROP_SCATTER: float = 4.0           # разброс места пад�
 const PERK_DOUBLE_SHOT_SPREAD_DEG: float = 10.0
 
 # --- Арена и камера ---
-const ARENA_BORDER_THICKNESS: float = 64.0  # ширина полосы мусора за краем арены (кратно высоте сегмента 32)
-const CAMERA_ZOOM: float = 0.7  # <1 — камера дальше (видно больше)
+const ARENA_BORDER_THICKNESS: float = 64.0  # проволока (16) + зона редких декораций (48) за краем арены
+const BORDER_DECOR_CHANCE: float = 0.3   # шанс декорации на каждые 48 px границы
+const WIRE_SHOCK_DAMAGE: float = 5.0     # удар током/огнём от проволоки
+const ENEMY_PLAYER_MIN_DISTANCE: float = 10.0  # ближе враг не подходит — игрок его расталкивает
+const GROUND_DECAL_AREA_PX2: float = 9000.0  # одна декаль пола на столько px² арены
+const CAMERA_ZOOM: float = 1.0  # только целое: дробный зум рвёт пиксели (виден шум); «дальше» = больше viewport
 
 # --- Предметы ---
 # «Обосранные портки Supreme»: шанс, что враг в контакте охуевает от вони и не подходит (реализация — шаг с предметами).
