@@ -3,8 +3,9 @@ extends Node2D
 ## Оружие в руках героя: значок крутится вокруг тела (у каждого слота своё место), смотрит в сторону цели
 ## и показывает атаку: ствол отдаёт назад, швабра машет, носок трясётся. Висит ребёнком узла оружия.
 
-const RING_X: float = 11.0
-const RING_Y: float = 7.0
+const RING_X: float = 19.0
+const RING_Y: float = 13.0
+const BIG_COUNT: int = 3            # до стольких оружий значки в натуральную величину, дальше вдвое меньше
 const FIRST_ANGLE: float = 0.6      # первое оружие у правой руки, остальные по кругу
 const KICK_DECAY: float = 6.0
 const RECOIL_PX: float = 3.0
@@ -47,14 +48,15 @@ func _place(_delta: float) -> void:
 	var side: float = -1.0 if _aim.x < 0.0 else 1.0
 	_sprite.flip_h = _aim.x < 0.0
 	var offset: Vector2 = Vector2.ZERO
+	var base_scale: float = 1.0 if slot_count <= BIG_COUNT else 0.5
 	_sprite.rotation = 0.0
-	_sprite.scale = Vector2.ONE
+	_sprite.scale = Vector2.ONE * base_scale
 	match _weapon_id:
 		&"mop":
 			_sprite.rotation = side * (-0.6 + SWING_RAD * sin(_kick * PI))   # взмах
 			offset = _aim * 3.0 * _kick
 		&"sock":
-			_sprite.scale = Vector2.ONE * (1.0 + 0.4 * _kick)                  # раздувается при вони
+			_sprite.scale = Vector2.ONE * base_scale * (1.0 + 0.4 * _kick)                  # раздувается при вони
 			offset = Vector2(roundf(sin(_kick * 40.0)) * 1.0, 0.0)
 		_:
 			offset = -_aim * RECOIL_PX * _kick                                  # отдача
