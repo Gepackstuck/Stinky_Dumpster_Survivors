@@ -2,6 +2,7 @@ class_name PauseMenu
 extends CanvasLayer
 ## Простейшее меню паузы по Esc: продолжить / заново / выйти.
 
+const UI_BUTTONS: GDScript = preload("res://scripts/ui/ui_buttons.gd")
 const PANELS: Texture2D = preload("res://assets/ui/death_panels.png")
 const PANEL_SIZE: Vector2 = Vector2(360.0, 160.0)
 const PANEL_VARIANTS: int = 4
@@ -41,10 +42,9 @@ func _build_menu_button() -> void:
 	_menu_button = Button.new()
 	_menu_button.text = "В ГЛАВНОЕ МЕНЮ"
 	_menu_button.size = _quit.size
-	_menu_button.theme_type_variation = _quit.theme_type_variation
-	for key: String in ["font_color", "font_hover_color", "font_focus_color"]:
-		if _quit.has_theme_color_override(key):
-			_menu_button.add_theme_color_override(key, _quit.get_theme_color(key))
+	var skinned: Array[Button] = [_resume, _inventory_button, _restart, _menu_button, _quit]
+	for i: int in skinned.size():
+		UI_BUTTONS.skin(skinned[i], i)
 	_root.add_child(_menu_button)
 	order[3] = _menu_button
 	for i: int in order.size():
@@ -74,11 +74,13 @@ func _build_confirm() -> void:
 	_confirm_yes.text = "ДА, ПОХЕРИТЬ"
 	_confirm_yes.position = Vector2(100.0, 150.0)
 	_confirm_yes.size = Vector2(130.0, 22.0)
+	UI_BUTTONS.skin(_confirm_yes, 4)
 	_confirm.add_child(_confirm_yes)
 	_confirm_no = Button.new()
 	_confirm_no.text = "НЕТ, ЕЩЁ ПОЖИВУ"
 	_confirm_no.position = Vector2(250.0, 150.0)
 	_confirm_no.size = Vector2(130.0, 22.0)
+	UI_BUTTONS.skin(_confirm_no, 0)
 	_confirm.add_child(_confirm_no)
 	_root.add_child(_confirm)
 	_confirm_yes.pressed.connect(func() -> void: SceneFlow.go("res://scenes/ui/main_menu.tscn", Vector2.UP))

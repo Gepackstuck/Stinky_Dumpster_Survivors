@@ -3,6 +3,7 @@ extends Control
 ## Главное меню: «Пошла ебаторя» ведёт на кладбище, «Я ливаю» закрывает игру.
 
 const GRAVEYARD_SCENE: String = "res://scenes/ui/graveyard.tscn"
+const UI_BUTTONS: GDScript = preload("res://scripts/ui/ui_buttons.gd")
 const SCREEN: Vector2 = Vector2(480.0, 270.0)
 const GROUND: Texture2D = preload("res://assets/sprites/ground_tile.png")
 const PLAYER_TEX: Texture2D = preload("res://assets/sprites/player.png")
@@ -45,6 +46,8 @@ func _ready() -> void:
 	add_child(_hero)
 	_start = _button("ПОШЛА ЕБАТОРИЯ", 140.0)
 	_quit = _button("Я ЛИВАЮ", 176.0)
+	UI_BUTTONS.skin(_start, 0)
+	UI_BUTTONS.skin(_quit, 4)
 	_start.pressed.connect(func() -> void: SceneFlow.go(GRAVEYARD_SCENE, Vector2.DOWN))
 	_quit.pressed.connect(func() -> void: get_tree().quit())
 	_start.grab_focus()
@@ -69,8 +72,8 @@ func _title(text: String, y: float, color: Color, shadow: Color) -> Label:
 func _button(text: String, y: float) -> Button:
 	var button: Button = Button.new()
 	button.text = text
-	button.position = Vector2((SCREEN.x - 160.0) * 0.5, y)
-	button.size = Vector2(160.0, 26.0)
+	button.position = Vector2((SCREEN.x - 180.0) * 0.5, y)
+	button.size = Vector2(180.0, 28.0)
 	add_child(button)
 	return button
 

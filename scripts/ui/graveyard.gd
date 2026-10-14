@@ -3,6 +3,7 @@ extends Control
 ## Кладбище: экран выбора персонажа. Закрытый герой - закопанная могила с именем на плите,
 ## открытый сидит в раскопанной яме. A/D или мышь - выбор, пробел/клик - на помойку.
 
+const UI_BUTTONS: GDScript = preload("res://scripts/ui/ui_buttons.gd")
 const BOOK: GDScript = preload("res://scripts/ui/weapon_book.gd")
 const MENU_SCENE: String = "res://scenes/ui/main_menu.tscn"
 const GAME_SCENE: String = "res://scenes/levels/main.tscn"
@@ -92,6 +93,7 @@ func _build_menu_button() -> void:
 	menu.size = Vector2(80.0, 16.0)
 	menu.focus_mode = Control.FOCUS_NONE
 	menu.pressed.connect(_to_menu)
+	UI_BUTTONS.skin(menu, 3)
 	add_child(menu)
 	var book: Button = Button.new()
 	book.text = "ОРУЖИЕ (TAB)"
@@ -99,6 +101,7 @@ func _build_menu_button() -> void:
 	book.size = Vector2(80.0, 16.0)
 	book.focus_mode = Control.FOCUS_NONE
 	book.pressed.connect(_toggle_book)
+	UI_BUTTONS.skin(book, 5)
 	add_child(book)
 
 
