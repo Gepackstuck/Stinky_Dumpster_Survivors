@@ -40,6 +40,8 @@ var thorns_damage: float = 0.0
 var explode_percent: float = 0.0
 var lifesteal_percent: float = 0.0
 var discount_percent: float = 0.0
+var pet_count: int = 0
+var turret_count: int = 0
 var _item_stats: Dictionary[StringName, float] = {}
 var _coin_remainder: float = 0.0
 var shop_offers: Array[Dictionary] = []  # витрина Ларька (замороженные переходят на след. волну)
@@ -191,6 +193,8 @@ func _recompute_items() -> void:
 	explode_percent = minf(fx.get(&"explode", 0.0), 75.0)
 	lifesteal_percent = minf(fx.get(&"lifesteal", 0.0), 60.0)
 	discount_percent = minf(fx.get(&"discount", 0.0), 60.0)
+	pet_count = roundi(fx.get(&"pets", 0.0))
+	turret_count = roundi(fx.get(&"turrets", 0.0))
 
 
 ## Урон выстрела с учётом статов, перков и крита.

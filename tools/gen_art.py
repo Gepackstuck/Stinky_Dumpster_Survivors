@@ -1918,6 +1918,8 @@ def build_step1():
         sheet([fn(0), fn(1)]).save(SPRITES + "enemy_" + name + ".png")
     sheet([draw_proj_spit(0), draw_proj_spit(1)]).save(SPRITES + "proj_spit.png")
     sheet([draw_proj_slipper(0), draw_proj_slipper(1)]).save(SPRITES + "proj_slipper.png")
+    sheet([draw_turret(0), draw_turret(1)]).save(SPRITES + "structure_turret.png")
+    sheet([draw_rat(0), draw_rat(1)]).save(SPRITES + "pet_rat.png")
     sheet([draw_proj_milk(0), draw_proj_milk(1)]).save(SPRITES + "proj_milk.png")
     for v in range(len(_BIN_VARIANTS)):
         sheet([draw_trash_bin(0, v), draw_trash_bin(1, v)]).save(SPRITES + "enemy_trash_bin_%d.png" % v)
@@ -2871,12 +2873,58 @@ def item_golden_toilet():
     return _item([(tank, YELLOW), (bowl, YELLOW), (stand, YELLOW)], [(5, 3, WHITE), (6, 3, WHITE), (9, 8, WHITE), (10, 8, BLACK), (6, 9, GREEN), (7, 9, BLACK), (11, 3, BROWN), (4, 11, BROWN)])
 
 
+
+def draw_turret(frame):
+    """16x16: турель из ведра — ржавое ведро, ствол из трубы, мигающий кривой глаз."""
+    img = new_img(16, 16)
+    bucket = new_mask(16, 16); poly(bucket, [(3, 6), (12, 6), (11, 14), (4, 14)])
+    rim = new_mask(16, 16); rect(rim, 2, 5, 13, 6)
+    barrel = new_mask(16, 16); rect(barrel, 7, 1, 9, 5)
+    sil = union(bucket, rim, barrel)
+    paint(img, bucket, BROWN); dither(img, bucket, YELLOW, "dots_off"); paint(img, rim, GREY); paint(img, barrel, GREY)
+    out = finish(img, sil)
+    px(out, 6, 9, WHITE); px(out, 7, 9, WHITE); px(out, 6, 10, WHITE); px(out, 7, 10, BLACK if frame else RED)
+    px(out, 10, 10, RED if frame else YELLOW); px(out, 8, 0, YELLOW if frame else RED)
+    px(out, 5, 13, GREEN); px(out, 10, 12, GREEN)
+    return out
+
+
+def draw_rat(frame):
+    """14x8: дохлая на вид, но шустрая крыса: серое тельце, розовый хвост, красный глаз."""
+    img = new_img(14, 8)
+    body = new_mask(14, 8); blob(body, 6, 4, 5, 2.5, random.Random(51), 0.3, 10)
+    head = new_mask(14, 8); rect(head, 9, 2 + frame, 12, 5)
+    tail = new_mask(14, 8); line(tail, [(1, 4), (0, 5 - frame)], 1)
+    sil = union(body, head, tail)
+    paint(img, body, GREY); paint(img, head, WHITE); paint(img, tail, PINK)
+    out = finish(img, sil)
+    px(out, 11, 3 + frame, RED); px(out, 12, 4 + frame, BLACK); px(out, 10, 1 + frame, PINK)
+    px(out, 3 + frame, 6, BROWN); px(out, 7, 6 - frame, BROWN)
+    return out
+
+
+def item_dead_rat():
+    return draw_rat(0).resize((14, 8), 0) if False else _rat_icon()
+
+
+def _rat_icon():
+    body = _m(); blob(body, 7, 9, 6, 3, random.Random(52), 0.3, 12)
+    head = _m(); rect(head, 10, 6, 14, 10)
+    tail = _m(); line(tail, [(1, 9), (0, 12), (2, 14)], 1)
+    ear = _m(); rect(ear, 11, 4, 12, 6)
+    return _item([(body, GREY), (head, WHITE), (tail, PINK), (ear, PINK)], [(12, 8, RED), (14, 9, BLACK), (4, 10, BROWN), (8, 11, BROWN)])
+
+
+def item_bucket_turret():
+    return draw_turret(0)
+
+
 ITEM_ICONS = [
     ("cigarette", item_cigarette), ("sandwich", item_sandwich), ("holey_sock", item_holey_sock), ("pot", item_pot),
     ("energy_can", item_energy_can), ("poop_wallet", item_poop_wallet), ("old_milk", item_old_milk),
     ("nail_knuckles", item_nail_knuckles), ("dirty_glasses", item_dirty_glasses), ("junk_magnet", item_junk_magnet),
     ("stinky_pants", item_stinky_pants), ("foil_hat", item_foil_hat), ("shawarma", item_shawarma), ("coupon", item_coupon),
-    ("barbed_wire", item_barbed_wire), ("diarrhea", item_diarrhea), ("bloody_rag", item_bloody_rag), ("golden_toilet", item_golden_toilet),
+    ("barbed_wire", item_barbed_wire), ("diarrhea", item_diarrhea), ("bloody_rag", item_bloody_rag), ("golden_toilet", item_golden_toilet), ("dead_rat", item_dead_rat), ("bucket_turret", item_bucket_turret),
 ]
 
 

@@ -146,6 +146,8 @@ const ITEMS: Dictionary = {
 	&"barbed_wire": {"tier": 3, "price": 40, "limit": 0, "fx": {&"thorns": 6.0}, "mods": {&"armor": 1.0}},
 	&"diarrhea": {"tier": 4, "price": 70, "limit": 3, "fx": {&"explode": 20.0}},
 	&"bloody_rag": {"tier": 4, "price": 68, "limit": 4, "fx": {&"lifesteal": 8.0}},
+	&"dead_rat": {"tier": 2, "price": 32, "limit": 3, "fx": {&"pets": 1.0}},
+	&"bucket_turret": {"tier": 3, "price": 46, "limit": 3, "fx": {&"turrets": 1.0}},
 	&"golden_toilet": {"tier": 4, "price": 90, "limit": 1, "mods": {&"damage": 14.0, &"crit": 8.0, &"armor": 2.0, &"speed": -8.0}},
 }
 
@@ -264,7 +266,17 @@ const WEAPONS: Dictionary = {
 	&"slipper": {"damage": 25.0, "cooldown": 2.5, "aoe_radius": 40.0, "flight_sec": 0.5, "tag": "ВЗРЫВ"},
 	&"condensed_milk": {"damage": 3.0, "cooldown": 0.5, "slow_factor": 0.5, "slow_duration": 2.0,
 			"projectile": "res://assets/sprites/proj_milk.png", "tag": "ЗАМЕДЛЯЕТ"},
+	&"turret": {"damage": 7.0, "cooldown": 0.9, "tag": "ТУРЕЛЬ"},   # структура: стоит на месте, стреляет сама
 }
+
+# --- Структуры и питомцы (появляются в начале волны, пропадают в конце) ---
+const STRUCTURE_SPAWN_MIN_DIST: float = 28.0      # от игрока
+const STRUCTURE_SPAWN_MAX_DIST: float = 90.0
+const PET_DAMAGE: float = 6.0
+const PET_BITE_SEC: float = 0.55
+const PET_SPEED: float = 120.0
+const PET_AGGRO_RANGE: float = 110.0              # от игрока: дальше крыса не бегает за врагом
+const PET_LEASH_DIST: float = 38.0                # где ходит рядом с игроком без цели
 
 # --- Перки (GDD) ---
 const PERK_CAFFEINE_ATTACK_SPEED_MULT: float = 1.5

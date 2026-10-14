@@ -12,6 +12,7 @@ func _enter_tree() -> void:
 func _ready() -> void:
 	size = Vector2(Balance.ARENA_SIZE, Balance.ARENA_SIZE)
 	_player.position = size / 2.0
+	add_child(CompanionManager.new())
 
 
 func _unhandled_input(event: InputEvent) -> void:
