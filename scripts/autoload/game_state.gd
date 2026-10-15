@@ -56,6 +56,7 @@ var stash_percent: float = 0.0     # рюкзак: шанс найти пред�
 var temp_attack_bonus: float = 0.0 # временная прибавка к скорости атаки (пьянка, серия)
 var block_charges: int = 0          # осталось гашений в этой волне
 var turret_count: int = 0
+var comp_counts: Dictionary = {}   # пёс, голуби, мины, лампы, миномёты: ключ fx -> штук
 var ghost_drunk_count: int = 0
 var ghost_granny_count: int = 0
 var _item_stats: Dictionary[StringName, float] = {}
@@ -237,6 +238,9 @@ func _recompute_items() -> void:
 	slow_field_count = roundi(fx.get(&"slow_field", 0.0))
 	stash_percent = minf(fx.get(&"stash", 0.0), 80.0)
 	turret_count = roundi(fx.get(&"turrets", 0.0))
+	comp_counts = {}
+	for comp_key: StringName in [&"dogs", &"pigeons", &"mines", &"lamps", &"mortars"]:
+		comp_counts[comp_key] = roundi(fx.get(comp_key, 0.0))
 	ghost_drunk_count = roundi(fx.get(&"ghost_drunk", 0.0))
 	ghost_granny_count = roundi(fx.get(&"ghost_granny", 0.0))
 

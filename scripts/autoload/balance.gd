@@ -200,6 +200,11 @@ const ITEMS: Dictionary = {
 	&"crown": {"tier": 4, "price": 75, "limit": 1, "mods": {&"max_hp": 12.0, &"damage": 8.0, &"armor": 1.0, &"dodge": -5.0}, "fx": {&"crown": 15.0}},
 	&"junk_backpack": {"tier": 4, "price": 72, "limit": 0, "mods": {&"pickup": 60.0, &"max_hp": 10.0, &"speed": -6.0}, "fx": {&"stash": 30.0}},
 	&"bone_club": {"tier": 4, "price": 80, "limit": 0, "mods": {&"damage": 20.0, &"attack_speed": 8.0, &"speed": -10.0}},
+	&"stray_dog": {"tier": 2, "price": 34, "limit": 3, "fx": {&"dogs": 1.0}},
+	&"bomber_pigeon": {"tier": 2, "price": 36, "limit": 3, "fx": {&"pigeons": 1.0}},
+	&"bottle_mine": {"tier": 1, "price": 20, "limit": 4, "fx": {&"mines": 2.0}},
+	&"stink_lamp": {"tier": 3, "price": 42, "limit": 2, "fx": {&"lamps": 1.0}},
+	&"cart_mortar": {"tier": 3, "price": 46, "limit": 2, "fx": {&"mortars": 1.0}},
 }
 
 # --- Забег ---
@@ -337,7 +342,10 @@ const WEAPONS: Dictionary = {
 	&"slipper": {"damage": 25.0, "cooldown": 2.5, "aoe_radius": 40.0, "flight_sec": 0.5, "tag": "ВЗРЫВ"},
 	&"condensed_milk": {"damage": 3.0, "cooldown": 0.5, "slow_factor": 0.5, "slow_duration": 2.0,
 			"projectile": "res://assets/sprites/proj_milk.png", "tag": "ЗАМЕДЛЯЕТ"},
-	&"turret": {"damage": 7.0, "cooldown": 0.9, "tag": "ТУРЕЛЬ"},   # структура: стоит на месте, стреляет сама
+	&"turret": {"damage": 7.0, "cooldown": 0.9, "tag": "ТУРЕЛЬ", "structure": true},
+	&"stink_lamp": {"damage": 4.0, "cooldown": 0.5, "radius": 70.0, "tag": "ЛАМПА", "structure": true},
+	&"cart_mortar": {"damage": 24.0, "cooldown": 2.4, "aoe_radius": 42.0, "flight_sec": 0.6, "range": 230.0,
+			"projectile": "res://assets/sprites/proj_tin_bomb.png", "tag": "МИНОМЁТ", "structure": true},   # структура: стоит на месте, стреляет сама
 	# --- Пачка 2: pellets/spread_deg/jitter_deg/proj_speed/proj_life/pierce - у стрелков; reach/arc_deg/knockback - у ближних; radius - у аур
 	&"pipe_gun": {"damage": 4.0, "cooldown": 1.1, "pellets": 5, "spread_deg": 9.0, "proj_life": 0.45, "tag": "ДРОБЬ"},
 	&"crossbow": {"damage": 14.0, "cooldown": 1.2, "pierce": 3, "proj_speed": 300.0, "tag": "ПРОБИВАЕТ"},
@@ -379,6 +387,22 @@ const GHOST_GRANNY_ACT_SEC: float = 1.4            # бабка-повитуха
 const GHOST_GRANNY_HEAL_CHANCE: float = 0.3        # ...с таким шансом лечит, иначе кидает тапок
 const GHOST_GRANNY_HEAL: float = 1.0
 const GHOST_GRANNY_SLIPPER_DAMAGE: float = 9.0
+const DOG_DAMAGE: float = 9.0                     # пёс: кусает сильнее и чаще крысы
+const DOG_BITE_SEC: float = 0.45
+const DOG_SPEED: float = 155.0
+const DOG_AGGRO_RANGE: float = 130.0
+const PIGEON_BOMB_SEC: float = 2.2                # голубь-бомбардир
+const PIGEON_BOMB_DAMAGE: float = 14.0
+const PIGEON_BOMB_RADIUS: float = 34.0
+const PIGEON_RANGE: float = 150.0
+const PIGEON_SPEED: float = 95.0
+const PIGEON_ORBIT_DIST: float = 32.0
+const MINE_DAMAGE: float = 32.0                   # мина из крышек
+const MINE_RADIUS: float = 44.0
+const MINE_TRIGGER_DIST: float = 20.0
+const MINE_SPAWN_MIN_DIST: float = 40.0
+const MINE_SPAWN_MAX_DIST: float = 130.0
+const LAMP_SLOW_FACTOR: float = 0.45              # лампа-вонялка
 const PET_LEASH_DIST: float = 38.0                # где ходит рядом с игроком без цели
 
 # --- Перки (GDD) ---

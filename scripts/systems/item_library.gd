@@ -46,6 +46,11 @@ const _TITLES: Dictionary[StringName, String] = {
 	&"crown": "КОРОНА ИЗ КРЫШЕК",
 	&"junk_backpack": "РЮКЗАК С ХЛАМОМ",
 	&"bone_club": "ДУБИНА ИЗ БЕДРА",
+	&"stray_dog": "ПЁС С ПОМОЙКИ",
+	&"bomber_pigeon": "ГОЛУБЬ-БОМБАРДИР",
+	&"bottle_mine": "МИНА ИЗ КРЫШЕК",
+	&"stink_lamp": "ЛАМПА-ВОНЯЛКА",
+	&"cart_mortar": "ТЕЛЕЖКА-МИНОМЁТ",
 }
 const _SLOTS: Dictionary[StringName, StringName] = {
 	&"pot": &"head",
@@ -107,7 +112,7 @@ static func title(item_id: StringName) -> String:
 
 static func is_companion(item_id: StringName) -> bool:
 	var fx: Dictionary = Balance.ITEMS[item_id].get("fx", {})
-	return fx.has(&"pets") or fx.has(&"turrets") or fx.has(&"ghost_drunk") or fx.has(&"ghost_granny")
+	return fx.has(&"pets") or fx.has(&"turrets") or fx.has(&"ghost_drunk") or fx.has(&"ghost_granny") or fx.has(&"dogs") or fx.has(&"pigeons") or fx.has(&"mines") or fx.has(&"lamps") or fx.has(&"mortars")
 
 
 ## Куда предмет крепится на герое (пусто — компаньоны, их видно и так).
@@ -193,6 +198,16 @@ static func describe(data: Dictionary) -> String:
 				lines.append("+1 ПЬЯНЫЙ ДУХ КИДАЕТ БУТЫЛКИ")
 			&"ghost_granny":
 				lines.append("+1 БАБКА КИДАЕТ ТАПКИ, ИНОГДА ЛЕЧИТ")
+			&"dogs":
+				lines.append("+%d ПЁС РВЁТ ВРАГОВ" % v)
+			&"pigeons":
+				lines.append("+%d ГОЛУБЬ БОМБИТ ВРАГОВ ПОМЁТОМ" % v)
+			&"mines":
+				lines.append("+%d МИНЫ НА ВОЛНУ, БАБАХ ПО ПЛОЩАДИ" % v)
+			&"lamps":
+				lines.append("+%d ЛАМПА КОПТИТ И ТОРМОЗИТ ВРАГОВ" % v)
+			&"mortars":
+				lines.append("+%d МИНОМЁТ КИДАЕТ БАНКИ НА ВОЛНУ" % v)
 			&"turrets":
 				lines.append("+%d ТУРЕЛЬ НА ВОЛНУ" % v)
 			&"burn":

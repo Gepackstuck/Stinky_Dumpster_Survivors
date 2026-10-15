@@ -23,7 +23,7 @@ func _run() -> void:
 		if GameState.weapons.is_empty():
 			GameState.apply_perk(&"w_mop")
 		get_tree().paused = false
-		var pool: Array = Balance.WEAPONS.keys().filter(func(w: StringName) -> bool: return w != &"turret")
+		var pool: Array = Balance.WEAPONS.keys().filter(func(w: StringName) -> bool: return not Balance.WEAPONS[w].get("structure", false))
 		GameState.weapons.clear()
 		for k: int in Balance.WEAPON_SLOTS:
 			GameState.add_weapon(pool[(offset + k) % pool.size()], 1 + randi() % 4)   # каждому герою своя шестёрка оружий
