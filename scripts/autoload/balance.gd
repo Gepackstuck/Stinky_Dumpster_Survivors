@@ -387,7 +387,7 @@ const SHOP_PRICES: Dictionary = {
 
 # --- Персонажи кладбища (Шаг 8). mods/fx - как у предметов; weapon - стартовое оружие (пусто - выбор в начале).
 # unlock: open | kills | coins | deaths | wins (накопительные счётчики профиля).
-const CHARACTER_ORDER: Array[StringName] = [&"hobo", &"squid", &"clerk", &"janitor", &"uncle_vitya", &"blogger", &"granny", &"courier", &"pigeon", &"punk"]
+const CHARACTER_ORDER: Array[StringName] = [&"hobo", &"squid", &"clerk", &"janitor", &"uncle_vitya", &"blogger", &"granny", &"courier", &"pigeon", &"punk", &"shawarma", &"guard", &"student", &"plumber", &"dacha", &"skater"]
 const CHARACTERS: Dictionary = {
 	&"hobo": {"weapon": &"", "mods": {&"max_hp": 4.0, &"pickup": 15.0}, "unlock": &"open", "need": 0, "tint": Color(1.0, 1.0, 1.0), "hat": &"ushanka"},
 	&"squid": {"weapon": &"mop", "mods": {&"damage": 15.0, &"speed": 8.0, &"max_hp": -3.0}, "unlock": &"open", "need": 0, "tint": Color(0.65, 0.85, 1.0), "hat": &"cigarette"},
@@ -399,4 +399,10 @@ const CHARACTERS: Dictionary = {
 	&"courier": {"weapon": &"spray_can", "mods": {&"speed": 20.0, &"attack_speed": 8.0, &"max_hp": -4.0}, "fx": {&"coin_bonus": 25.0}, "unlock": &"coins", "need": 1000, "tint": Color(1, 1, 1), "hat": &"bottle_cap"},
 	&"pigeon": {"weapon": &"condensed_milk", "mods": {&"dodge": 10.0, &"speed": 10.0, &"max_hp": -5.0}, "fx": {&"lifesteal": 5.0}, "unlock": &"deaths", "need": 5, "tint": Color(1, 1, 1), "hat": &"dried_fish"},
 	&"punk": {"weapon": &"frying_pan", "mods": {&"damage": 10.0, &"armor": -1.0, &"speed": 6.0}, "fx": {&"pets": 1.0}, "unlock": &"wins", "need": 1, "tint": Color(1, 1, 1), "hat": &"crowbar"},
+	&"shawarma": {"weapon": &"rolling_pin", "mods": {&"max_hp": 8.0, &"damage": -5.0, &"armor": 1.0}, "fx": {&"coin_bonus": 15.0}, "unlock": &"coins", "need": 2500, "tint": Color(1, 1, 1), "hat": &"shawarma"},
+	&"guard": {"weapon": &"mosin", "mods": {&"armor": 2.0, &"crit": 10.0, &"speed": -10.0}, "unlock": &"kills", "need": 2000, "tint": Color(1, 1, 1), "hat": &"binoculars"},
+	&"student": {"weapon": &"bottle", "mods": {&"attack_speed": 20.0, &"max_hp": -4.0, &"speed": 8.0}, "unlock": &"deaths", "need": 10, "tint": Color(1, 1, 1), "hat": &"energy_can"},
+	&"plumber": {"weapon": &"pipe_gun", "mods": {&"damage": 8.0, &"armor": 1.0, &"speed": -5.0}, "unlock": &"kills", "need": 3500, "tint": Color(1, 1, 1), "hat": &"pot"},
+	&"dacha": {"weapon": &"rotten_cheese", "mods": {&"max_hp": 10.0, &"speed": -12.0, &"pickup": 30.0}, "unlock": &"coins", "need": 4000, "tint": Color(1, 1, 1), "hat": &"plastic_bag"},
+	&"skater": {"weapon": &"crossbow", "mods": {&"speed": 25.0, &"dodge": 10.0, &"max_hp": -5.0}, "unlock": &"deaths", "need": 15, "tint": Color(1, 1, 1), "hat": &"skateboard"},
 }

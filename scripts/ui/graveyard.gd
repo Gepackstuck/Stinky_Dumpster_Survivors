@@ -13,7 +13,7 @@ const GRID_MAX_W: float = 450.0
 const GRID_MAX_H: float = 130.0
 const GRAVE_W: float = 48.0
 const GRAVE_H: float = 56.0
-const ARROW_H: float = 14.0   # место над могилой под стрелку
+const ARROW_H: float = 22.0   # место под подпись и стрелку между рядами
 const GRAVE_OPEN: Texture2D = preload("res://assets/ui/grave_open.png")
 const ARROW: Texture2D = preload("res://assets/ui/select_arrow.png")
 const GATE_POS: Vector2 = Vector2(240.0, 252.0)   # ворота на арену: внизу по центру (арена под кладбищем в бесконечной петле)
@@ -39,6 +39,8 @@ var _selected: int = 0
 var _fresh: Array[StringName] = []
 var _time: float = 0.0
 var _scale: float = 1.0
+var _leaves: Array[TextureRect] = []
+var _captions: Array[Label] = []
 var _cols: int = 8
 var _arrow: TextureRect
 var _preview: Sprite2D
@@ -169,10 +171,18 @@ func _to_menu() -> void:
 
 ## Реплика героя над головой (исчезает сама).
 func _say(text: String) -> void:
-	var label: Label = _label(text, Vector2(0.0, 0.0), 80.0, YELLOW, HORIZONTAL_ALIGNMENT_CENTER)
+	if _speech != null:
+		_speech.queue_free()
+	var label: Label = _label(text, _rest_pos(_selected) + Vector2(-50.0, -34.0), 100.0, YELLOW, HORIZONTAL_ALIGNMENT_CENTER)
 	label.z_index = 30
 	_speech = label
 	_speech_left = 1.4
+
+
+## Створки ворот: 0 закрыты, 1 распахнуты.
+func _set_gate_open(amount: float) -> void:
+	for leaf: TextureRect in _leaves:
+		leaf.scale.x = lerpf(1.0, 0.18, clampf(amount, 0.0, 1.0))
 
 
 func _build_background() -> void:
@@ -190,12 +200,21 @@ func _build_background() -> void:
 	ground.size = SCREEN
 	ground.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(ground)
-	var gate: TextureRect = TextureRect.new()
-	gate.texture = _gate_tex
-	gate.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	gate.position = GATE_POS - _gate_tex.get_size() * 0.5
-	gate.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(gate)
+	var half: float = _gate_tex.get_width() * 0.5
+	var top_left: Vector2 = GATE_POS - _gate_tex.get_size() * 0.5
+	for side: int in 2:
+		var leaf: TextureRect = TextureRect.new()
+		var atlas: AtlasTexture = AtlasTexture.new()
+		atlas.atlas = _gate_tex
+		atlas.region = Rect2(Vector2(half * side, 0.0), Vector2(half, _gate_tex.get_height()))
+		leaf.texture = atlas
+		leaf.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		leaf.position = top_left + Vector2(half * side, 0.0)
+		leaf.size = Vector2(half, _gate_tex.get_height())
+		leaf.pivot_offset = Vector2(0.0 if side == 0 else half, 0.0)   # створка поворачивается у внешнего края
+		leaf.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		add_child(leaf)
+		_leaves.append(leaf)
 
 
 func _label(text: String, pos: Vector2, width: float, color: Color, align: HorizontalAlignment = HORIZONTAL_ALIGNMENT_LEFT) -> Label:
@@ -283,6 +302,21 @@ func _build_grave(i: int) -> void:
 		hat.position = Vector2(0.0, -10.0)
 		sitter.add_child(hat)
 	_sitters.append(sitter)
+	if _scale >= 0.75:
+		var caption: Label = Label.new()
+		caption.text = CharacterLibrary.short_title(id) if unlocked else "???"
+		caption.position = root.position + Vector2(-8.0, GRAVE_H * _scale - 3.0)
+		caption.size = Vector2(GRAVE_W * _scale + 16.0, 10.0)
+		caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		caption.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		caption.add_theme_font_size_override(&"font_size", 6)
+		caption.add_theme_color_override(&"font_shadow_color", Color(0.0, 0.0, 0.0))
+		caption.add_theme_constant_override(&"shadow_offset_x", 1)
+		caption.add_theme_constant_override(&"shadow_offset_y", 1)
+		add_child(caption)
+		_captions.append(caption)
+	else:
+		_captions.append(null)
 	if id in _fresh:
 		var tag: Label = Label.new()
 		tag.text = "!"
@@ -375,8 +409,11 @@ func _on_grave_pressed(i: int) -> void:
 
 
 func _select(i: int) -> void:
+	var changed: bool = i != _selected
 	_selected = i
 	_refresh()
+	if changed and not _leaving and Profile.is_unlocked(_ids[i]):
+		_say(CharacterLibrary.quip(_ids[i]))
 
 
 func _choose() -> void:
@@ -420,6 +457,10 @@ func _refresh() -> void:
 	else:
 		_status.text = "ЗАКОПАН: %s %s" % [CharacterLibrary.unlock_text(id), CharacterLibrary.progress_text(id)]
 		_status.add_theme_color_override(&"font_color", RED)
+	for k: int in _captions.size():
+		if _captions[k] != null:
+			var open_k: bool = Profile.is_unlocked(_ids[k])
+			_captions[k].add_theme_color_override(&"font_color", YELLOW if k == _selected else (WHITE if open_k else GREY))
 	var sheet: Texture2D = CharacterLibrary.sprite_sheet(id)
 	_preview.texture = (sheet if sheet != null else PLAYER_TEX) if unlocked else null
 	_preview.visible = unlocked
@@ -439,6 +480,8 @@ func _process(delta: float) -> void:
 		var t: float = dist / maxf(_path_len, 0.001)
 		var at: Array = _path_at(dist)
 		var dir: Vector2 = at[1]
+		if not _arriving:
+			_set_gate_open(1.0 - (_path_len - dist - 14.0) / 60.0)
 		_walker.global_position = (at[0] as Vector2).round()
 		if _speech != null:
 			_speech.position = _walker.global_position + Vector2(-40.0, -26.0)
@@ -471,4 +514,4 @@ func _process(delta: float) -> void:
 		var pulse: float = 0.5 + 0.5 * sin(_time * 12.0)
 		_graves[i].modulate = Color(1.0, 1.0, 1.0).lerp(Color(1.0, 1.0, 0.6), pulse * 0.3) if chosen else Color(0.55, 0.55, 0.6)
 		_sitters[i].position.y = 30.0 + (roundf(sin(_time * 6.0)) if chosen else 0.0)
-	_arrow.position = _graves[_selected].position + Vector2(GRAVE_W * 0.5 * _scale - ARROW.get_width() * 0.5, -ARROW_H + roundf(2.0 * sin(_time * 10.0)))
+	_arrow.position = _graves[_selected].position + Vector2(GRAVE_W * 0.5 * _scale - ARROW.get_width() * 0.5, -16.0 + roundf(2.0 * sin(_time * 10.0)))

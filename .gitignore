@@ -23,3 +23,5 @@ export_credentials.cfg
 
 # Превью арта (генерируется tools/gen_art.py preview)
 tools/_preview/
+builds/
+_proj_src.tar

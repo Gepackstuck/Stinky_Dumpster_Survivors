@@ -21,7 +21,7 @@ func _shot(label: String) -> void:
 
 func _run() -> void:
 	var yard: Node = null
-	for count: int in [10, 30, 45]:
+	for count: int in [0, 16, 45]:
 		if yard != null:
 			yard.queue_free()
 		Graveyard.test_fill = count
