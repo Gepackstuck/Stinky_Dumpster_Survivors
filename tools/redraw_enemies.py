@@ -150,17 +150,21 @@ def healer(t):
 
 
 def looter(t):
-    c = Canvas(30, 24)
+    """Крыса-ворюга: серая крыса с длинным хвостом, мешком добычи, маской и жёлтыми зубами."""
+    c = Canvas(34, 26)
     lg = t * 2
-    c.rect(11, 17, 13, 21 - lg // 2, PINK); c.rect(17, 17, 19, 21 + lg // 2 - 1, PINK)
-    c.ell(14, 12, 7, 6, PINK, dither=(255, 120, 245))
-    c.ell(7, 8, 7, 7, BROWN, dither=YELLOW); c.rect(5, 1, 9, 2, YELLOW)  # мешок на спине
-    c.pts([(6, 7), (7, 7), (7, 8), (6, 9), (7, 9)], BLACK)  # знак $
-    c.ell(21, 8, 5, 5, WHITE); c.eye(22, 7, 2, (1, 0)); c.rect(19, 3, 26, 4, BLACK)  # маска вора
-    c.pts([(25, 10), (26, 10), (26, 11)], YELLOW); c.rect(22, 12, 25, 12, BLACK)
-    c.line(18, 12, 24, 14 + t, YELLOW, 2)  # лапа с монеткой
-    c.ell(25, 15 + t, 2, 2, YELLOW)
-    return c.finish(CYAN, YELLOW)
+    c.line(2, 16, 0, 10 + lg, PINK, 2); c.line(0, 10 + lg, 3, 5, PINK, 1)            # длинный голый хвост
+    c.rect(9, 19, 11, 22 - lg // 2, GREY); c.rect(19, 19, 21, 21 + lg // 2, GREY)    # лапы
+    c.ell(14, 14, 9, 6, GREY, dither=WHITE)                                           # тело
+    c.ell(7, 11, 7, 8, BROWN, dither=YELLOW); c.rect(5, 2, 9, 4, BROWN); c.rect(4, 3, 10, 4, YELLOW)   # мешок
+    c.pts([(6, 9), (7, 9), (7, 10), (6, 11), (7, 11)], BLACK)                          # $ на мешке
+    c.ell(24, 11, 5, 4, GREY, dither=WHITE); c.ell(30, 13, 3, 2, GREY)                 # голова и морда
+    c.ell(22, 5, 3, 3, PINK); c.ell(27, 5, 3, 3, PINK)                                 # большие уши
+    c.rect(20, 8, 29, 9, BLACK); c.eye(25, 10, 2, (1, 0), blood=True)                  # маска вора
+    c.px(33, 13, PINK); c.line(31, 15, 34, 16, WHITE); c.line(31, 12, 34, 10 + t, WHITE)  # нос и усы
+    c.rect(29, 15, 31, 17, YELLOW); c.px(30, 16, WHITE)                                # зубы
+    c.line(19, 14, 25, 17 + t, PINK, 1); c.ell(26, 18 + t, 2, 2, YELLOW)               # лапка с монеткой
+    return c.finish(CYAN, YELLOW, lim=0.05)
 
 
 def mamka(t):
@@ -236,8 +240,13 @@ def wifi_ghost(t):
         c.rect(x, 20, x + 3, 25 + ((k + t) % 2) * 3, CYAN, dither=WHITE)
     c.eye(9, 13, 3, (0, 1)); c.eye(17, 13, 3, (0, 1))
     c.ell(13, 20, 3, 2, BLACK)
-    c.line(13, 3, 13, 0, YELLOW)
-    c.px(13, 0 if t == 0 else 1, YELLOW); c.line(9, 3 - t, 13, 1, YELLOW); c.line(17, 3 - t, 13, 1, YELLOW)  # антенна-вайфай
+    for k, r in enumerate((3, 6, 9)):   # дуги вайфая над головой
+        if k <= (t + 1) % 3 + 0: c.ell(13, 3, r, r - 1, YELLOW) if False else None
+    c.rect(13, 0, 13, 3, YELLOW)
+    for k, r in enumerate((2, 4, 6)):
+        for dx in range(-r, r + 1):
+            yy = 3 - int((r * r - dx * dx) ** 0.5 * 0.7)
+            if (k <= t % 3) and 0 <= yy: c.px(13 + dx, yy, YELLOW)
     c.pts([(2, 12), (24, 15), (5, 6)], PINK)
     return c.finish(BLUE, WHITE)
 

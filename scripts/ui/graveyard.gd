@@ -54,6 +54,8 @@ var _hint: Label
 var _leaving: bool = false
 var _book: Control = null
 var _walker: Node2D = null
+var _dossier: bool = false
+var _lore: Label = null
 var _walk_time: float = 0.0
 var _path: PackedVector2Array = PackedVector2Array()
 var _path_len: float = 0.0
@@ -133,6 +135,18 @@ func _path_at(dist: float) -> Array:
 func _set_info(shown: bool) -> void:
 	for node: CanvasItem in _info_nodes:
 		node.visible = shown
+	_apply_dossier(shown)
+
+
+## Досье: вместо цифр показываем, как персонаж выглядит (лор).
+func _apply_dossier(shown: bool = true) -> void:
+	if _lore == null:
+		return
+	_lore.visible = shown and _dossier
+	_lore.text = CharacterLibrary.lore(_ids[_selected])
+	if shown:
+		for node: Label in [_tagline, _plus, _minus, _weapon]:
+			node.visible = not _dossier
 
 
 func _build_menu_button() -> void:
@@ -366,7 +380,9 @@ func _build_panel() -> void:
 	_status = _label("", Vector2(96.0, 228.0), 350.0, GREEN)
 	for node: Label in [_title, _tagline, _plus, _minus, _weapon, _status]:
 		_info_nodes.append(node)
-	_hint = _label("WASD - ВЫБОР\nПРОБЕЛ - ПОГНАЛИ", Vector2(8.0, 243.0), 200.0, GREY)
+	_lore = _label("", Vector2(96.0, 170.0), 346.0, WHITE)
+	_lore.visible = false
+	_hint = _label("WASD - ВЫБОР\nПРОБЕЛ - ПОГНАЛИ\nE - ДОСЬЕ", Vector2(8.0, 243.0), 200.0, GREY)
 
 
 func _input(event: InputEvent) -> void:
@@ -376,6 +392,11 @@ func _input(event: InputEvent) -> void:
 	if key != null and key.pressed and not key.echo and key.keycode == KEY_TAB:
 		get_viewport().set_input_as_handled()
 		_toggle_book()
+		return
+	if key != null and key.pressed and not key.echo and key.keycode == KEY_E and _book == null and _walker == null:
+		get_viewport().set_input_as_handled()
+		_dossier = not _dossier
+		_apply_dossier()
 		return
 	if key != null and key.pressed and not key.echo and key.keycode == KEY_ESCAPE:
 		get_viewport().set_input_as_handled()
@@ -464,6 +485,8 @@ func _refresh() -> void:
 	var sheet: Texture2D = CharacterLibrary.sprite_sheet(id)
 	_preview.texture = (sheet if sheet != null else PLAYER_TEX) if unlocked else null
 	_preview.visible = unlocked
+	if _lore != null and not _info_nodes.is_empty():
+		_apply_dossier((_info_nodes[0] as CanvasItem).visible)
 
 
 func _process(delta: float) -> void:

@@ -440,7 +440,7 @@ const SHOP_PRICES: Dictionary = {
 
 # --- Персонажи кладбища (Шаг 8). mods/fx - как у предметов; weapon - стартовое оружие (пусто - выбор в начале).
 # unlock: open | kills | coins | deaths | wins (накопительные счётчики профиля).
-const CHARACTER_ORDER: Array[StringName] = [&"hobo", &"squid", &"clerk", &"janitor", &"uncle_vitya", &"blogger", &"granny", &"courier", &"pigeon", &"punk", &"shawarma", &"guard", &"student", &"plumber", &"dacha", &"skater"]
+const CHARACTER_ORDER: Array[StringName] = [&"hobo", &"squid", &"clerk", &"janitor", &"uncle_vitya", &"blogger", &"granny", &"courier", &"pigeon", &"punk", &"shawarma", &"guard", &"student", &"plumber", &"dacha", &"skater", &"slime"]
 const CHARACTERS: Dictionary = {
 	&"hobo": {"weapon": &"", "mods": {&"max_hp": 4.0, &"pickup": 15.0}, "unlock": &"open", "need": 0, "tint": Color(1.0, 1.0, 1.0), "hat": &"ushanka"},
 	&"squid": {"weapon": &"mop", "mods": {&"damage": 15.0, &"speed": 8.0, &"max_hp": -3.0}, "unlock": &"open", "need": 0, "tint": Color(0.65, 0.85, 1.0), "hat": &"cigarette"},
@@ -458,4 +458,5 @@ const CHARACTERS: Dictionary = {
 	&"plumber": {"weapon": &"pipe_gun", "mods": {&"damage": 8.0, &"armor": 1.0, &"speed": -5.0}, "unlock": &"kills", "need": 3500, "tint": Color(1, 1, 1), "hat": &"pot"},
 	&"dacha": {"weapon": &"rotten_cheese", "mods": {&"max_hp": 10.0, &"speed": -12.0, &"pickup": 30.0}, "unlock": &"coins", "need": 4000, "tint": Color(1, 1, 1), "hat": &"plastic_bag"},
 	&"skater": {"weapon": &"crossbow", "mods": {&"speed": 25.0, &"dodge": 10.0, &"max_hp": -5.0}, "unlock": &"deaths", "need": 15, "tint": Color(1, 1, 1), "hat": &"skateboard"},
+	&"slime": {"weapon": &"plunger", "mods": {&"max_hp": 6.0, &"damage": 6.0, &"speed": -6.0, &"pickup": 10.0}, "fx": {&"thorns": 2.0}, "unlock": &"kills", "need": 5000, "tint": Color(1, 1, 1), "hat": &"rubber_boot"},
 }
