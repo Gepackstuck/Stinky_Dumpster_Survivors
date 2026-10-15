@@ -22,6 +22,8 @@ var _animated: Array[Dictionary] = []
 var _anim_time: float = 0.0
 var _anim_step: int = 0
 var _decor_anim: Array[Dictionary] = []
+var _bag: Array[int] = []        # «мешок» видов декора: пока не вытащены все, повторов нет
+var _last_kind: int = -1
 var _decor_time: float = 0.0
 
 
@@ -110,7 +112,7 @@ func _add_decor(side: Node2D, center_x: float) -> void:
 	sprite.texture = DECOR_TEXTURE
 	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	sprite.region_enabled = true
-	var kind: int = _rng.randi_range(0, kinds - 1)
+	var kind: int = _next_kind(kinds)
 	sprite.region_rect = Rect2(Vector2(kind * DECOR_FRAMES * DECOR_SIZE.x, 0.0), DECOR_SIZE)
 	_decor_anim.append({"sprite": sprite, "kind": kind, "phase": _rng.randi_range(0, DECOR_FRAMES - 1)})
 	sprite.flip_h = _rng.randf() < 0.5
@@ -118,6 +120,17 @@ func _add_decor(side: Node2D, center_x: float) -> void:
 	var depth: float = WIRE_SIZE.y + DECOR_SIZE.y * 0.5 + _rng.randf_range(0.0, Balance.ARENA_BORDER_THICKNESS - WIRE_SIZE.y - DECOR_SIZE.y)
 	sprite.position = Vector2(center_x, -depth)
 	side.add_child(sprite)
+
+
+func _next_kind(kinds: int) -> int:
+	if _bag.is_empty():
+		for k: int in kinds:
+			_bag.append(k)
+		_bag.shuffle()
+		if _bag.size() > 1 and _bag.back() == _last_kind:   # на стыке мешков тоже без подряд-повторов
+			_bag.push_front(_bag.pop_back())
+	_last_kind = _bag.pop_back()
+	return _last_kind
 
 
 func _add_backdrop(arena: float, thickness: float) -> void:

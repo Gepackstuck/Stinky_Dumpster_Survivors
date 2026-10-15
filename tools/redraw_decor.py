@@ -197,7 +197,170 @@ def pigeons(t):
     return c, (PINK, WHITE)
 
 
-KINDS = [barrel, dumpster, tv, car, toilet, tires, pipe, rat, fridge, grave, lamp, cart, bottles, dummy, radbarrel, pigeons]
+def piano(t):
+    c = Canvas(W, H)
+    c.rect(4, 8, 42, 20, BLACK, dither=DGREY); c.rect(4, 20, 42, 24, WHITE)
+    for x in range(6, 42, 3): c.line(x, 20, x, 24, BLACK)
+    c.rect(10 + t * 2, 20, 12 + t * 2, 25, PINK)
+    c.rect(6, 24, 9, 29, BLACK); c.rect(37, 24, 40, 29, BLACK); c.rect(8, 4, 38, 8, DGREY)
+    c.pts([(14 + t * 6, 3 - t % 2), (30, 2 + t)], YELLOW); c.pts([(20, 14), (21, 13), (22, 14)], WHITE)
+    return c, (PINK, YELLOW)
+
+
+def couch(t):
+    c = Canvas(W, H)
+    c.rect(4, 8, 42, 22, PINK, dither=(200, 0, 190)); c.rect(2, 14, 8, 26, PINK); c.rect(38, 14, 44, 26, PINK)
+    c.rect(10, 16, 36, 24, (255, 90, 245)); c.line(22, 16, 22, 24, BLACK)
+    c.rect(5, 26, 8, 29, BLACK); c.rect(38, 26, 41, 29, BLACK)
+    sp = [0, 2, 4, 2][t]
+    c.line(28, 16, 31, 8 - sp, GREY); c.line(31, 8 - sp, 27, 4 - sp, GREY); c.ell(26, 3 - sp, 3, 2, WHITE)   # пружина и вата
+    smoke(c, 14, 8, t, WHITE); c.pts([(33, 18), (14, 20)], BROWN)
+    return c, (CYAN, YELLOW)
+
+
+def washer(t):
+    c = Canvas(W, H)
+    c.rect(10, 2, 36, 28, WHITE, dither=GREY); c.rect(12, 4, 20, 6, DGREY); c.pts([(32, 5)], RED)
+    c.ell(23, 17, 9, 9, DGREY); c.ell(23, 17, 7, 7, CYAN, dither=WHITE)
+    a = t * math.pi / 2
+    c.ell(23 + math.cos(a) * 3, 17 + math.sin(a) * 3, 2, 2, PINK); c.ell(23 - math.cos(a) * 3, 17 - math.sin(a) * 3, 2, 2, YELLOW)
+    for k in range(3): c.ell(34 + k, 8 - (t + k) % 3 * 3, 2, 2, WHITE)
+    c.rect(10, 28, 14, 29, BLACK); c.rect(32, 28, 36, 29, BLACK)
+    return c, (PINK, WHITE)
+
+
+def bath(t):
+    c = Canvas(W, H)
+    c.ell(23, 16, 20, 10, WHITE, dither=GREY); c.ell(23, 13, 17, 6, GREEN, dither=YELLOW)
+    for k in range(3): c.ell(14 + k * 8, 11 - (t + k) % 3, 2, 2, GREEN)
+    c.ell(30, 10 - t % 2, 4, 3, YELLOW); c.px(33, 9 - t % 2, ORANGE); c.px(31, 8 - t % 2, BLACK)    # уточка
+    c.rect(6, 26, 10, 29, GREY); c.rect(36, 26, 40, 29, GREY); c.line(5, 8, 5, 3, GREY, 2); c.line(5, 3, 10, 3, GREY, 2)
+    c.pts([(5, 10 + t * 3)], CYAN)
+    return c, (CYAN, WHITE)
+
+
+def skulls(t):
+    c = Canvas(W, H)
+    for (x, y, r) in ((12, 22, 6), (26, 21, 7), (36, 23, 5), (19, 14, 5)):
+        c.ell(x, y, r, r, WHITE, dither=GREY); c.ell(x - 2, y, 1, 2, BLACK); c.ell(x + 2, y, 1, 2, BLACK); c.px(x, y + 2, BLACK)
+    c.line(4, 28, 40, 26, WHITE, 2)
+    c.rect(24, 8, 26, 14, YELLOW); fire(c, 25, 8, t, 1)
+    c.pts([(8, 8), (40, 12)], PINK)
+    return c, (PURPLE, CYAN)
+
+
+def tentacle(t):
+    c = Canvas(W, H)
+    c.rect(8, 24, 38, 29, DGREY); 
+    for x in range(10, 38, 4): c.line(x, 24, x, 29, BLACK)
+    for k, base in enumerate((16, 26, 34)):
+        for j in range(14):
+            x = base + math.sin((j * 0.6) + t * 1.5 + k) * (2 + j * 0.3); y = 24 - j
+            c.ell(x, y, 3 - j * 0.12, 2, PINK if k != 1 else GREEN)
+        c.px(base + math.sin(14 * 0.6 + t * 1.5 + k) * 6, 9, YELLOW)
+    return c, (CYAN, WHITE)
+
+
+def arcade(t):
+    c = Canvas(W, H)
+    c.rect(12, 2, 34, 28, BLUE, dither=(80, 80, 255)); c.rect(14, 5, 32, 15, BLACK)
+    rng = random.Random(t * 3)
+    for _ in range(16): c.px(rng.randint(15, 31), rng.randint(6, 14), rng.choice([GREEN, PINK, YELLOW, CYAN]))
+    c.rect(14, 18, 32, 21, DGREY); c.ell(18, 19, 2, 2, RED); c.ell(26, 19, 2, 2, YELLOW); c.ell(30, 19, 1, 1, GREEN)
+    c.rect(18, 24, 28, 28, BLACK); c.px(23, 26, YELLOW if t % 2 else BLACK)
+    c.pts([(10, 6), (36, 10 + t)], PINK)
+    return c, (PINK, WHITE)
+
+
+def mailbox(t):
+    c = Canvas(W, H)
+    c.rect(10, 8, 34, 24, BLUE, dither=CYAN); c.ell(22, 8, 12, 4, BLUE); c.rect(20, 24, 24, 29, DGREY)
+    c.rect(36, 10, 38, 16, RED); c.rect(34, 10, 38, 12, RED)
+    c.rect(12, 14, 32, 18, BLACK)
+    for k in range(3):
+        y = 2 + (t * 3 + k * 5) % 12
+        c.rect(14 + k * 9, 8 - y // 3, 19 + k * 9, 10 - y // 3, WHITE); c.px(16 + k * 9, 9 - y // 3, RED)
+    return c, (PINK, YELLOW)
+
+
+def dish(t):
+    c = Canvas(W, H)
+    c.line(22, 28, 22, 14, DGREY, 3); c.rect(14, 28, 30, 29, DGREY)
+    a = [0, 1, 2, 1][t]
+    c.ell(22 + a, 11, 14, 8, GREY, dither=WHITE); c.ell(22 + a, 13, 12, 6, WHITE, dither=GREY)
+    c.line(22 + a, 13, 28 + a, 3, DGREY); c.ell(28 + a, 3, 2, 2, RED if t % 2 else YELLOW)
+    for k in range(3): c.px(8 + k * 4 + t, 2 + k, CYAN)
+    c.pts([(10, 4), (36, 6)], YELLOW)
+    return c, (PINK, YELLOW)
+
+
+def slippers(t):
+    c = Canvas(W, H)
+    for (x, y) in ((10, 22), (22, 24), (33, 21), (16, 14)):
+        c.ell(x, y, 7, 4, BROWN, dither=ORANGE); c.rect(x - 4, y - 5, x + 3, y - 2, BROWN)
+    c.ell(22, 24, 2, 2, RED if t % 2 == 0 else BLACK); c.px(22, 24, WHITE)         # мигающая мина
+    c.rect(8, 9, 12, 9, YELLOW); c.pts([(30, 10), (31, 9), (32, 10)], GREEN)
+    smoke(c, 40, 20, t, GREEN)
+    return c, (PINK, YELLOW)
+
+
+def monitors(t):
+    c = Canvas(W, H)
+    for (x, y, w, h) in ((6, 16, 14, 11), (20, 18, 14, 10), (13, 5, 14, 11), (28, 8, 12, 9)):
+        c.rect(x, y, x + w, y + h, DGREY, dither=GREY); c.rect(x + 2, y + 2, x + w - 2, y + h - 2, BLACK)
+    rng = random.Random(t)
+    for (x, y) in ((8, 18), (22, 20), (15, 7), (30, 10)):
+        for _ in range(8): c.px(x + rng.randint(0, 9), y + rng.randint(0, 6), rng.choice([GREEN, CYAN, WHITE]))
+    c.line(10, 28, 36, 28, BLACK); c.line(34, 12, 40, 2, BLACK)
+    return c, (PINK, YELLOW)
+
+
+def carriage(t):
+    c = Canvas(W, H)
+    c.ell(20, 14, 14, 9, PINK, dither=(255, 120, 245)); c.rect(6, 14, 34, 20, PINK); c.line(32, 14, 40, 6, DGREY, 2)
+    for (x, r) in ((12, 5), (30, 5)):
+        c.ell(x, 24, r, r, BLACK); k = t % 4
+        c.px(x + [0, 3, 0, -3][k], 24 + [-3, 0, 3, 0][k], WHITE); c.ell(x, 24, 1, 1, GREY)
+    c.eye(19, 12, 3, [(0, 0), (1, 0), (0, 1), (-1, 0)][t]); c.pts([(8, 10), (30, 12)], YELLOW)
+    return c, (CYAN, YELLOW)
+
+
+def pole(t):
+    c = Canvas(W, H)
+    c.rect(21, 4, 24, 29, BROWN); c.rect(10, 7, 36, 9, BROWN); c.rect(14, 13, 32, 14, BROWN)
+    for x in (10, 22, 36): c.rect(x, 5, x + 1, 7, WHITE)
+    for k in range(3):
+        sx = [11, 23, 36][k]
+        y1 = 10 + (t + k) % 3 * 3
+        c.line(sx, 7, sx + (-1) ** k * 4, y1 + 6, YELLOW); c.line(sx + (-1) ** k * 4, y1 + 6, sx + (-1) ** k * 2, y1 + 12, CYAN)
+    c.pts([(26, 12 + t), (18, 16 - t)], WHITE)
+    return c, (PINK, YELLOW)
+
+
+def bike(t):
+    c = Canvas(W, H)
+    for x in (11, 34):
+        c.ell(x, 20, 8, 8, BLACK); c.ell(x, 20, 6, 6, None or (0, 0, 0)) if False else None
+        a = t * math.pi / 4
+        for k in range(4):
+            ang = a + k * math.pi / 4
+            c.line(x - math.cos(ang) * 6, 20 - math.sin(ang) * 6, x + math.cos(ang) * 6, 20 + math.sin(ang) * 6, GREY)
+    c.line(11, 20, 21, 10, RED, 2); c.line(21, 10, 34, 20, RED, 2); c.line(21, 10, 29, 10, RED, 2); c.line(29, 10, 34, 20, RED, 2); c.line(26, 8, 31, 6, BLACK, 2)
+    c.pts([(20, 6), (38, 8)], YELLOW)
+    return c, (CYAN, YELLOW)
+
+
+def vending(t):
+    c = Canvas(W, H)
+    c.rect(12, 2, 34, 28, RED, dither=(150, 0, 30)); c.rect(15, 5, 31, 18, BLACK if t % 3 == 2 else (30, 40, 60))
+    for r in range(2):
+        for k in range(4): c.rect(16 + k * 4, 6 + r * 6, 18 + k * 4, 9 + r * 6, [CYAN, GREEN, YELLOW, PINK][(k + r + t) % 4])
+    c.rect(15, 21, 31, 24, DGREY); c.rect(17, 25 + t % 2, 22, 27, CYAN)
+    c.px(33, 8, GREEN if t < 2 else RED); c.pts([(36, 6), (8, 14)], YELLOW)
+    return c, (CYAN, WHITE)
+
+KINDS = [barrel, dumpster, tv, car, toilet, tires, pipe, rat, fridge, grave, lamp, cart, bottles, dummy, radbarrel, pigeons,
+         piano, couch, washer, bath, skulls, tentacle, arcade, mailbox, dish, slippers, monitors, carriage, pole, bike, vending]
 
 if __name__ == "__main__":
     out = Image.new("RGBA", (48 * FR * len(KINDS), 32), (0, 0, 0, 0))
