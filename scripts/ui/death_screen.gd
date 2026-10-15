@@ -148,10 +148,10 @@ func _scatter_decor() -> void:
 	for i: int in DECAL_COUNT:
 		var decal_pos: Vector2 = _random_point_outside_panel()
 		_add_sprite(GROUND_DECALS, Rect2(Vector2(randi_range(0, decal_kinds - 1) * DECAL_CELL, 0.0), Vector2(DECAL_CELL, DECAL_CELL)), decal_pos, 1.0)
-	var kinds: int = int(BORDER_DECOR.get_width() / DECOR_SIZE.x)
+	var kinds: int = int(BORDER_DECOR.get_width() / (DECOR_SIZE.x * 4.0))
 	for i: int in DECOR_COUNT:
 		var pos: Vector2 = _random_point_outside_panel()
-		_add_sprite(BORDER_DECOR, Rect2(Vector2(randi_range(0, kinds - 1) * DECOR_SIZE.x, 0.0), DECOR_SIZE), pos, 2.0)
+		_add_sprite(BORDER_DECOR, Rect2(Vector2(randi_range(0, kinds - 1) * DECOR_SIZE.x * 4.0, 0.0), DECOR_SIZE), pos, 2.0)
 
 
 func _random_point_outside_panel() -> Vector2:
