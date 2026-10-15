@@ -101,7 +101,10 @@ func _show_small(title: String, subtitle: String, color: Color) -> void:
 
 
 func _on_boss_spawned(boss_id: StringName) -> void:
-	var texture: Texture2D = load("res://assets/sprites/enemy_%s.png" % boss_id) as Texture2D
+	var sheet: Texture2D = load("res://assets/sprites/enemy_%s.png" % boss_id) as Texture2D
+	var texture: AtlasTexture = AtlasTexture.new()   # лист из 4 кадров: в баннере только первый
+	texture.atlas = sheet
+	texture.region = Rect2(0.0, 0.0, sheet.get_width() / 4.0, sheet.get_height())
 	_show(1, Balance.BOSS_NAMES.get(boss_id, "???"), FlavorText.boss_tagline(boss_id), Color(1, 0.0627451, 0.2, 1), texture)
 
 

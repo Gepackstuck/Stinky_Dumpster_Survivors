@@ -83,7 +83,7 @@ func _show_killer(enemy_id: StringName) -> void:
 		_killer_sprite.hframes = 1
 	else:
 		_killer_sprite.texture = load("res://assets/sprites/enemy_%s.png" % enemy_id) as Texture2D
-		_killer_sprite.hframes = 2
+		_killer_sprite.hframes = 4
 		_killer_sprite.frame = 0
 	var size: Vector2 = _killer_sprite.texture.get_size() / Vector2(float(_killer_sprite.hframes), 1.0)
 	var k: float = minf(2.0, KILLER_MAX_SIZE / maxf(size.x, size.y))

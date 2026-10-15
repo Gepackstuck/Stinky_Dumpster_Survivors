@@ -73,9 +73,9 @@ func _build_cell(i: int) -> void:
 	var tex: Texture2D = load("res://assets/sprites/enemy_%s.png" % id) as Texture2D
 	var sprite: Sprite2D = Sprite2D.new()
 	sprite.texture = tex
-	sprite.hframes = 2
+	sprite.hframes = 4
 	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	var frame: Vector2 = tex.get_size() / Vector2(2.0, 1.0)
+	var frame: Vector2 = tex.get_size() / Vector2(4.0, 1.0)
 	var k: float = minf(1.0, 30.0 / maxf(frame.x, frame.y))
 	sprite.scale = Vector2.ONE * (1.0 if k >= 1.0 else k)
 	if Profile.killed(id) <= 0:
@@ -95,8 +95,8 @@ func _select(index: int) -> void:
 	var known: bool = Profile.killed(id) > 0
 	var tex: Texture2D = load("res://assets/sprites/enemy_%s.png" % id) as Texture2D
 	_big.texture = tex
-	_big.hframes = 2
-	var frame: Vector2 = tex.get_size() / Vector2(2.0, 1.0)
+	_big.hframes = 4
+	var frame: Vector2 = tex.get_size() / Vector2(4.0, 1.0)
 	_big.scale = Vector2.ONE * maxf(1.0, floorf(46.0 / maxf(frame.x, frame.y)))
 	_big.modulate = Color.WHITE if known else Color(0.0, 0.0, 0.0, 1.0)
 	if known:
