@@ -6,7 +6,7 @@ extends Node2D
 ## Висит ребёнком узла оружия (там же сигнал `fired`).
 
 const OUTLINE: GDScript = preload("res://scripts/systems/outline_fx.gd")
-const RING_X: float = 22.0
+const RING_X: float = 23.0
 const RING_Y: float = 16.0
 const FIRST_ANGLE: float = 0.5      # первое оружие у правой руки, остальные по кругу
 const TRACK_SEC: float = 0.12       # как часто искать цель для поворота
@@ -14,6 +14,8 @@ const KICK_DECAY: float = 5.0
 const RECOIL_PX: float = 3.0
 const SWING_RAD: float = 1.3
 const SNAP_RAD: float = PI / 4.0    # поворот шагом 45 градусов (дёрганый пиксель-арт)
+const HELD_SCALE: float = 0.62      # спрайты 26x26, в руках делаем компактнее
+const ANIM_STEP_SEC: float = 0.14   # смена кадров анимации (лист из 4 кадров)
 
 var slot_index: int = 0
 var slot_count: int = 1
@@ -25,6 +27,9 @@ var _aim: Vector2 = Vector2.RIGHT
 var _kick: float = 0.0
 var _track_left: float = 0.0
 var _range_sq: float = 0.0
+var _frames: Array[Texture2D] = []
+var _anim_clock: float = 0.0
+var _frame_idx: int = 0
 
 
 func _ready() -> void:
@@ -34,7 +39,8 @@ func _ready() -> void:
 	_home = Vector2(cos(angle) * RING_X, sin(angle) * RING_Y)
 	_aim = _home.normalized()
 	_sprite = Sprite2D.new()
-	_sprite.texture = OUTLINE.outlined(_load_texture("res://assets/sprites/held_%s.png" % _weapon_id), get_parent().tier)
+	_build_frames(_load_texture("res://assets/sprites/held_%s.png" % _weapon_id), get_parent().tier)
+	_sprite.texture = _frames[0] if not _frames.is_empty() else null
 	_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	var back_layer: Node = get_parent().get_parent().get_node_or_null("HeldBack")
 	if back_layer != null and _home.y < -1.0:
@@ -59,6 +65,12 @@ func _on_fired(direction: Vector2) -> void:
 
 
 func _process(delta: float) -> void:
+	if _frames.size() > 1:
+		_anim_clock += delta
+		var idx: int = int(_anim_clock / ANIM_STEP_SEC) % _frames.size()
+		if idx != _frame_idx:
+			_frame_idx = idx
+			_sprite.texture = _frames[idx]
 	_kick = maxf(_kick - delta * KICK_DECAY, 0.0)
 	_track_left -= delta
 	if _track_left <= 0.0:
@@ -87,7 +99,7 @@ func _track_target() -> void:
 func _place() -> void:
 	var angle: float = snappedf(_aim.angle(), SNAP_RAD)
 	var offset: Vector2 = Vector2.ZERO
-	_sprite.scale = Vector2.ONE
+	_sprite.scale = Vector2.ONE * HELD_SCALE
 	_sprite.rotation = angle
 	_sprite.flip_v = absf(angle) > PI * 0.5 + 0.01    # чтобы смотря влево, не быть вверх ногами
 	match _weapon_id:
@@ -96,13 +108,26 @@ func _place() -> void:
 			_sprite.rotation = angle + side * (-0.5 + SWING_RAD * sin(_kick * PI))   # взмах
 			offset = _aim * 3.0 * _kick
 		&"sock", &"rotten_cheese":
-			_sprite.scale = Vector2.ONE * (1.0 + 0.4 * _kick)                          # раздувается при вони
+			_sprite.scale = Vector2.ONE * HELD_SCALE * (1.0 + 0.4 * _kick)                          # раздувается при вони
 			offset = Vector2(roundf(sin(_kick * 40.0)), 0.0)
 		_:
 			offset = -_aim * RECOIL_PX * _kick                                          # отдача
 	var base: Vector2 = Vector2(roundf(_home.x), roundf(_home.y))
 	var shifted: Vector2 = base + offset
 	_sprite.position = Vector2(roundf(shifted.x), roundf(shifted.y))
+
+
+## Лист из кадров (квадраты шириной = высоте) режем на текстуры, каждая получает обводку тира.
+func _build_frames(sheet: Texture2D, tier: int) -> void:
+	_frames.clear()
+	if sheet == null:
+		return
+	var img: Image = sheet.get_image()
+	var h: int = img.get_height()
+	var count: int = maxi(img.get_width() / h, 1)
+	for i: int in count:
+		var part: Image = img.get_region(Rect2i(i * h, 0, h, h)) if count > 1 else img
+		_frames.append(OUTLINE.outlined(ImageTexture.create_from_image(part), tier))
 
 
 ## Обычная загрузка; если редактор ещё не импортировал новый PNG - читаем файл напрямую (удобно для тестов).
