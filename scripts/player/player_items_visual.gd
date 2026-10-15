@@ -9,8 +9,8 @@ const ICON_SCALE: float = 0.5
 const SLOT_SCALE: Dictionary[StringName, float] = {&"head": 1.0}
 ## Точки крепления; несколько предметов в одной точке занимают следующие смещения.
 const SLOT_OFFSETS: Dictionary[StringName, Array] = {
-	&"head": [Vector2(0, -11)],   # на голове один предмет: самый новый
-	&"face": [Vector2(0, -3)],
+	&"head": [Vector2(0, -13)],   # на голове один предмет: самый новый
+	&"face": [Vector2(0, -4)],
 }
 # На герое видно только то, что надевают на голову и лицо (шапки, очки и т.п.). Грудь и спина - перебор, не рисуем.
 

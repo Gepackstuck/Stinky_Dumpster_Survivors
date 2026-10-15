@@ -8,12 +8,12 @@ const BOOK: GDScript = preload("res://scripts/ui/weapon_book.gd")
 const MENU_SCENE: String = "res://scenes/ui/main_menu.tscn"
 const GAME_SCENE: String = "res://scenes/levels/main.tscn"
 const SCREEN: Vector2 = Vector2(480.0, 270.0)
-const GRID_TOP: float = 20.0   # сетка могил как в Brotato: все перед глазами
+const GRID_TOP: float = 18.0   # сетка могил как в Brotato: все перед глазами
 const GRID_MAX_W: float = 450.0
-const GRID_MAX_H: float = 126.0
+const GRID_MAX_H: float = 134.0
 const GRAVE_W: float = 48.0
 const GRAVE_H: float = 56.0
-const ARROW_H: float = 22.0   # место под подпись и стрелку между рядами
+const ARROW_H: float = 16.0   # место под подпись и стрелку между рядами
 const GRAVE_OPEN: Texture2D = preload("res://assets/ui/grave_open.png")
 const ARROW: Texture2D = preload("res://assets/ui/select_arrow.png")
 const GATE_POS: Vector2 = Vector2(240.0, 252.0)   # ворота на арену: внизу по центру (арена под кладбищем в бесконечной петле)
@@ -255,7 +255,7 @@ func _build_header() -> void:
 
 func _layout_grid() -> void:
 	var n: int = _ids.size()
-	for candidate: float in [1.0, 0.75, 0.5, 0.4]:
+	for candidate: float in [1.0, 0.85, 0.75, 0.6, 0.5, 0.4]:
 		_scale = candidate
 		var max_cols: int = maxi(int((GRID_MAX_W - AISLE) / (GRAVE_W * _scale + 4.0)), 1)
 		var rows: int = ceili(float(n) / float(max_cols))
@@ -300,6 +300,7 @@ func _build_grave(i: int) -> void:
 	root.add_child(pic)
 	var sitter: Node2D = Node2D.new()
 	sitter.position = Vector2(GRAVE_W * 0.5, 30.0)
+	sitter.scale = Vector2.ONE * 1.25   # герой крупнее могилы: видно, кого выбираешь
 	root.add_child(sitter)
 	if unlocked:
 		var body: Sprite2D = Sprite2D.new()
@@ -309,12 +310,6 @@ func _build_grave(i: int) -> void:
 		body.frame = 8
 		body.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		sitter.add_child(body)
-		var hat: Sprite2D = Sprite2D.new()
-		hat.texture = CharacterLibrary.hat_icon(id)
-		hat.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-		hat.scale = Vector2.ONE * 0.5
-		hat.position = Vector2(0.0, -10.0)
-		sitter.add_child(hat)
 	_sitters.append(sitter)
 	if _scale >= 0.75:
 		var caption: Label = Label.new()
@@ -364,7 +359,7 @@ func _build_panel() -> void:
 	_info_nodes.append(panel)
 	_preview = Sprite2D.new()
 	_preview.position = Vector2(58.0, 198.0)
-	_preview.scale = Vector2.ONE * 3.0
+	_preview.scale = Vector2.ONE * 2.6
 	_preview.hframes = 4
 	_preview.vframes = 3
 	_preview.frame = 8
