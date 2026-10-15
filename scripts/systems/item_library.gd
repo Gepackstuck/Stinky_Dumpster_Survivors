@@ -30,7 +30,7 @@ const _TITLES: Dictionary[StringName, String] = {
 	&"gum": "ЖВАЧКА С АСФАЛЬТА",
 	&"ushanka": "УШАНКА БОМЖА",
 	&"lighter": "ЗАЖИГАЛКА",
-	&"plastic_bag": "ПАКЕТ ИЗ ПЯТЁРОЧКИ",
+	&"plastic_bag": "ПАКЕТ ИЗ ПРОДМАГА",
 	&"rubber_boot": "РЕЗИНОВЫЙ САПОГ",
 	&"vodka": "БУТЫЛКА ПАЛЁНКИ",
 	&"hot_dog": "ПРОТУХШИЙ ХОТ-ДОГ",
