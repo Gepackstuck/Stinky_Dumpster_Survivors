@@ -43,7 +43,7 @@ const _TITLES: Dictionary[StringName, String] = {
 	W_SLINGSHOT: "Рогатка",
 	W_MOP: "Швабра",
 	W_LASER: "Лазерная указка",
-	W_SLIPPER: "Тапок",
+	W_SLIPPER: "Заминированный тапок",
 	W_MILK: "Сгущёнка",
 	W_PIPE_GUN: "Самопал",
 	W_CROSSBOW: "Арбалет",
@@ -114,7 +114,7 @@ static func description(perk_id: StringName) -> String:
 		W_LASER:
 			return "ОРУЖИЕ. Красный луч пробивает всех на линии. Бесит кота и врагов."
 		W_SLIPPER:
-			return "ОРУЖИЕ. Бросок тапка: %d урона по площади. Мать так же делала." % roundi(Balance.WEAPONS[&"slipper"]["damage"])
+			return "ОРУЖИЕ. Заминированный тапок: %d урона по площади при падении. Мать так же делала." % roundi(Balance.WEAPONS[&"slipper"]["damage"])
 		W_MILK:
 			return "ОРУЖИЕ. Липкая капля замедляет врага вдвое. Сладко и мерзко."
 		W_SOCK:
