@@ -382,7 +382,7 @@ func _build_panel() -> void:
 		_info_nodes.append(node)
 	_lore = _label("", Vector2(96.0, 170.0), 346.0, WHITE)
 	_lore.visible = false
-	_hint = _label("WASD - ВЫБОР\nПРОБЕЛ - ПОГНАЛИ\nE - ДОСЬЕ", Vector2(8.0, 243.0), 200.0, GREY)
+	_hint = _label("WASD - ВЫБОР   E - ДОСЬЕ\nПРОБЕЛ - ПОГНАЛИ", Vector2(8.0, 243.0), 200.0, GREY)
 
 
 func _input(event: InputEvent) -> void:
