@@ -2,6 +2,7 @@ class_name ItemLibrary
 extends RefCounted
 ## Каталог предметов Ларька: название, иконка, описание из модификаторов. Числа — в Balance.ITEMS.
 
+const TEX: GDScript = preload("res://scripts/systems/tex.gd")
 const _TITLES: Dictionary[StringName, String] = {
 	&"cigarette": "ОКУРОК",
 	&"sandwich": "ТУХЛЫЙ СЭНДВИЧ",
@@ -119,7 +120,7 @@ static func tier(item_id: StringName) -> int:
 
 
 static func icon(item_id: StringName) -> Texture2D:
-	return load("res://assets/ui/item_%s.png" % item_id) as Texture2D
+	return TEX.load_tex("res://assets/ui/item_%s.png" % item_id)
 
 
 static func max_count(item_id: StringName) -> int:

@@ -239,12 +239,19 @@ const WEAPON_UNLOCK: Dictionary = {
 	&"rotten_cheese": {"kind": &"wins", "need": 1},
 	&"crossbow": {"kind": &"coins", "need": 1500},
 	&"mosin": {"kind": &"wins", "need": 2},
+	&"shiv": {"kind": &"deaths", "need": 4},
+	&"shovel": {"kind": &"wins", "need": 3},
+	&"blowtorch": {"kind": &"coins", "need": 3000},
+	&"syringe": {"kind": &"kills", "need": 2000},
+	&"tin_bomb": {"kind": &"coins", "need": 6000},
+	&"extension_cord": {"kind": &"kills", "need": 3000},
 }
 const WEAPON_SLOTS: int = 6
 const WEAPON_TIER_DAMAGE: Array[float] = [1.0, 1.5, 2.0, 2.7]      # множитель урона по тирам I-IV
 const WEAPON_TIER_COOLDOWN: Array[float] = [1.0, 0.92, 0.85, 0.75]  # множитель паузы между атаками
 const WEAPON_PRICE: Dictionary = {&"lighter": 22, &"sock": 24, &"slingshot": 22, &"mop": 26, &"laser_pointer": 24, &"slipper": 30, &"condensed_milk": 22,
-		&"pipe_gun": 26, &"crossbow": 30, &"frying_pan": 24, &"rolling_pin": 20, &"rotten_cheese": 26, &"spray_can": 24, &"bottle": 22, &"mosin": 34}
+		&"pipe_gun": 26, &"crossbow": 30, &"frying_pan": 24, &"rolling_pin": 20, &"rotten_cheese": 26, &"spray_can": 24, &"bottle": 22, &"mosin": 34,
+		&"plunger": 22, &"shiv": 18, &"shovel": 30, &"blowtorch": 28, &"syringe": 24, &"tin_bomb": 30, &"extension_cord": 28}
 const PERK_PRICE: Dictionary = {&"speed": 14, &"regen": 16, &"double_shot": 30, &"loot_goblin": 12}
 const SHOP_SLOTS: int = 4
 const SHOP_PRICE_TIER_MULT: Array[float] = [1.0, 2.0, 3.5, 6.0]
@@ -340,6 +347,16 @@ const WEAPONS: Dictionary = {
 	&"spray_can": {"damage": 2.0, "cooldown": 0.1, "jitter_deg": 12.0, "proj_life": 0.32, "burn_dps": 1.5, "burn_duration": 2.0, "tag": "ПОДЖИГАЕТ"},
 	&"bottle": {"damage": 10.0, "cooldown": 1.0, "ricochets": 4, "ricochet_range": 140.0, "projectile": "res://assets/sprites/proj_bottle.png", "tag": "ОТСКОКИ"},
 	&"mosin": {"damage": 42.0, "cooldown": 2.1, "pierce": 2, "proj_speed": 520.0, "proj_life": 1.2, "tag": "СНАЙПЕР"},
+	# --- Пачка 3: range - дальность прицела (меньше общей), chain_* - цепная молния
+	&"plunger": {"damage": 21.0, "cooldown": 0.8, "knockback": 340.0, "reach": 44.0, "arc_deg": 90.0, "tag": "ОТБРОС"},
+	&"shiv": {"damage": 5.0, "cooldown": 0.2, "knockback": 40.0, "reach": 30.0, "arc_deg": 70.0, "tag": "ОЧЕНЬ БЫСТРАЯ"},
+	&"shovel": {"damage": 34.0, "cooldown": 1.35, "knockback": 220.0, "reach": 48.0, "arc_deg": 120.0, "tag": "ТЯЖЁЛАЯ"},
+	&"blowtorch": {"damage": 3.0, "cooldown": 0.11, "jitter_deg": 9.0, "proj_speed": 300.0, "proj_life": 0.3, "pierce": 2, "range": 95.0,
+			"burn_dps": 3.0, "burn_duration": 2.5, "projectile": "res://assets/sprites/proj_flame.png", "tag": "ПОДЖИГАЕТ"},
+	&"syringe": {"damage": 6.0, "cooldown": 0.5, "proj_speed": 380.0, "pierce": 1, "burn_dps": 3.5, "burn_duration": 4.0,
+			"projectile": "res://assets/sprites/proj_poison.png", "tag": "ЯД"},
+	&"tin_bomb": {"damage": 30.0, "cooldown": 2.3, "aoe_radius": 46.0, "flight_sec": 0.55, "projectile": "res://assets/sprites/proj_tin_bomb.png", "tag": "ВЗРЫВ"},
+	&"extension_cord": {"damage": 9.0, "cooldown": 0.8, "chain_jumps": 3, "chain_range": 80.0, "chain_falloff": 0.85, "tag": "ЦЕПНАЯ МОЛНИЯ"},
 }
 
 # --- Структуры и питомцы (появляются в начале волны, пропадают в конце) ---

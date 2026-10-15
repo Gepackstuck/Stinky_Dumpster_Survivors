@@ -3,6 +3,7 @@ extends Node2D
 ## Автоатака: стреляет по ближайшему врагу в радиусе. Числа — из Balance.WEAPONS.
 ## Шаг 1: единственное оружие — заглушка на статах `lighter`.
 
+const TEX: GDScript = preload("res://scripts/systems/tex.gd")
 const PROJECTILE_SCENE: PackedScene = preload("res://scenes/weapons/projectile.tscn")
 const MUZZLE_DIST: float = 6.0                # кончик оружия от его центра
 const RETARGET_INTERVAL_SEC: float = 0.1  # как часто искать цель, пока врагов в радиусе нет
@@ -50,8 +51,9 @@ func _ready() -> void:
 	_proj_life = stats.get("proj_life", Balance.PROJECTILE_LIFETIME_SEC)
 	_pierce = stats.get("pierce", 0)
 	if stats.has("projectile"):
-		_texture = load(stats["projectile"]) as Texture2D
-	_range_sq = Balance.WEAPON_TARGET_RANGE * Balance.WEAPON_TARGET_RANGE
+		_texture = TEX.load_tex(stats["projectile"])
+	var reach: float = stats.get("range", Balance.WEAPON_TARGET_RANGE)
+	_range_sq = reach * reach
 	EventBus.player_died.connect(_on_player_died)
 
 

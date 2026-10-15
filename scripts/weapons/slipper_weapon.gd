@@ -5,6 +5,8 @@ extends WeaponBase
 
 func _fire(target: Node2D) -> void:
 	var shot: ThrownSlipper = ThrownSlipper.new()
+	if Balance.WEAPONS[weapon_id].has("projectile"):
+		shot.texture = TEX.load_tex(Balance.WEAPONS[weapon_id]["projectile"])
 	get_tree().current_scene.add_child(shot)
 	shot.launch(_muzzle(target), target.global_position, GameState.roll_damage(_damage),
 			Balance.WEAPONS[weapon_id]["aoe_radius"], Balance.WEAPONS[weapon_id]["flight_sec"])

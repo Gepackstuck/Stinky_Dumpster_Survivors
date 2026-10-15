@@ -14,12 +14,13 @@ var _flight: float = 0.5
 var _t: float = 0.0
 var _landed: bool = false
 var _ring: float = 0.0
+var texture: Texture2D = null   # своя картинка снаряда (банка), если нужна
 var _sprite: Sprite2D = null
 
 
 func _ready() -> void:
 	_sprite = Sprite2D.new()
-	_sprite.texture = TEXTURE
+	_sprite.texture = texture if texture != null else TEXTURE
 	_sprite.hframes = 2
 	_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	add_child(_sprite)

@@ -5,7 +5,7 @@ extends Node
 const PLAYER: PackedScene = preload("res://scenes/player/player.tscn")
 const CELL: Vector2i = Vector2i(80, 64)
 const SCALE: int = 3
-const WEAPON_ORDER: Array[StringName] = [&"lighter", &"sock", &"slingshot", &"mop", &"laser_pointer", &"slipper", &"pipe_gun", &"crossbow", &"frying_pan", &"rolling_pin", &"rotten_cheese", &"spray_can", &"bottle", &"mosin"]
+const WEAPON_ORDER: Array[StringName] = [&"lighter", &"sock", &"slingshot", &"mop", &"laser_pointer", &"slipper", &"pipe_gun", &"crossbow", &"frying_pan", &"rolling_pin", &"rotten_cheese", &"spray_can", &"bottle", &"mosin", &"plunger", &"shiv", &"shovel", &"blowtorch", &"syringe", &"tin_bomb", &"extension_cord"]
 
 
 func _ready() -> void:
@@ -101,6 +101,16 @@ func _run() -> void:
 					ws2.append(WEAPON_ORDER[start + i])
 				cells.append(await _snap("НОВЫЕ %d" % start, [], ws2, row, kick))
 	_sheet(cells, 4, "res://tools/_preview/showcase_weapons2.png")
+	# 2в) оружие пачки 3 (вантуз, заточка, лопата, лампа, шприц, банка, удлинитель)
+	cells = []
+	for kick: bool in [false, true]:
+		for row: int in [2, 0]:
+			for start: int in [14, 15]:
+				var ws3: Array[StringName] = []
+				for i: int in 6:
+					ws3.append(WEAPON_ORDER[start + i])
+				cells.append(await _snap("ПАЧКА3 %d" % start, [], ws3, row, kick))
+	_sheet(cells, 4, "res://tools/_preview/showcase_weapons3.png")
 	# 3) одетый герой: по предмету на каждую точку + 3 оружия
 	var dressed: Array[StringName] = [&"pot", &"dirty_glasses", &"scarf", &"vodka", &"crowbar", &"rubber_boot", &"junk_backpack"]
 	cells = []

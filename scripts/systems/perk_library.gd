@@ -2,6 +2,7 @@ class_name PerkLibrary
 extends RefCounted
 ## Каталог перков: id, название, описание, иконка. Числа берутся из Balance.
 
+const TEX: GDScript = preload("res://scripts/systems/tex.gd")
 const SPEED: StringName = &"speed"
 const REGEN: StringName = &"regen"
 const DOUBLE_SHOT: StringName = &"double_shot"
@@ -21,9 +22,16 @@ const W_ROTTEN_CHEESE: StringName = &"w_rotten_cheese"
 const W_SPRAY_CAN: StringName = &"w_spray_can"
 const W_BOTTLE: StringName = &"w_bottle"
 const W_MOSIN: StringName = &"w_mosin"
+const W_PLUNGER: StringName = &"w_plunger"
+const W_SHIV: StringName = &"w_shiv"
+const W_SHOVEL: StringName = &"w_shovel"
+const W_BLOWTORCH: StringName = &"w_blowtorch"
+const W_SYRINGE: StringName = &"w_syringe"
+const W_TIN_BOMB: StringName = &"w_tin_bomb"
+const W_EXTENSION_CORD: StringName = &"w_extension_cord"
 const START_WEAPONS: Array[StringName] = [W_LIGHTER, W_SOCK, W_SLINGSHOT, W_MOP]  # на выбор в начале забега
-const WEAPON_PERKS: Array[StringName] = [W_LIGHTER, W_SOCK, W_SLINGSHOT, W_MOP, W_LASER, W_SLIPPER, W_MILK, W_PIPE_GUN, W_CROSSBOW, W_FRYING_PAN, W_ROLLING_PIN, W_ROTTEN_CHEESE, W_SPRAY_CAN, W_BOTTLE, W_MOSIN]  # всё оружие (Ларёк)
-const ALL: Array[StringName] = [SPEED, REGEN, DOUBLE_SHOT, LOOT_GOBLIN, W_LIGHTER, W_SOCK, W_SLINGSHOT, W_MOP, W_LASER, W_SLIPPER, W_MILK, W_PIPE_GUN, W_CROSSBOW, W_FRYING_PAN, W_ROLLING_PIN, W_ROTTEN_CHEESE, W_SPRAY_CAN, W_BOTTLE, W_MOSIN]
+const WEAPON_PERKS: Array[StringName] = [W_LIGHTER, W_SOCK, W_SLINGSHOT, W_MOP, W_LASER, W_SLIPPER, W_MILK, W_PIPE_GUN, W_CROSSBOW, W_FRYING_PAN, W_ROLLING_PIN, W_ROTTEN_CHEESE, W_SPRAY_CAN, W_BOTTLE, W_MOSIN, W_PLUNGER, W_SHIV, W_SHOVEL, W_BLOWTORCH, W_SYRINGE, W_TIN_BOMB, W_EXTENSION_CORD]  # всё оружие (Ларёк)
+const ALL: Array[StringName] = [SPEED, REGEN, DOUBLE_SHOT, LOOT_GOBLIN, W_LIGHTER, W_SOCK, W_SLINGSHOT, W_MOP, W_LASER, W_SLIPPER, W_MILK, W_PIPE_GUN, W_CROSSBOW, W_FRYING_PAN, W_ROLLING_PIN, W_ROTTEN_CHEESE, W_SPRAY_CAN, W_BOTTLE, W_MOSIN, W_PLUNGER, W_SHIV, W_SHOVEL, W_BLOWTORCH, W_SYRINGE, W_TIN_BOMB, W_EXTENSION_CORD]
 
 const _TITLES: Dictionary[StringName, String] = {
 	SPEED: "Скорость",
@@ -45,6 +53,13 @@ const _TITLES: Dictionary[StringName, String] = {
 	W_SPRAY_CAN: "Баллончик",
 	W_BOTTLE: "Бутылка",
 	W_MOSIN: "Мосинка",
+	W_PLUNGER: "Вантуз",
+	W_SHIV: "Заточка",
+	W_SHOVEL: "Лопата",
+	W_BLOWTORCH: "Паяльная лампа",
+	W_SYRINGE: "Шприц",
+	W_TIN_BOMB: "Банка с гвоздями",
+	W_EXTENSION_CORD: "Удлинитель",
 }
 const _ICONS: Dictionary[StringName, String] = {
 	SPEED: "res://assets/ui/perk_speed.png",
@@ -66,6 +81,13 @@ const _ICONS: Dictionary[StringName, String] = {
 	W_SPRAY_CAN: "res://assets/ui/perk_w_spray_can.png",
 	W_BOTTLE: "res://assets/ui/perk_w_bottle.png",
 	W_MOSIN: "res://assets/ui/perk_w_mosin.png",
+	W_PLUNGER: "res://assets/ui/perk_w_plunger.png",
+	W_SHIV: "res://assets/ui/perk_w_shiv.png",
+	W_SHOVEL: "res://assets/ui/perk_w_shovel.png",
+	W_BLOWTORCH: "res://assets/ui/perk_w_blowtorch.png",
+	W_SYRINGE: "res://assets/ui/perk_w_syringe.png",
+	W_TIN_BOMB: "res://assets/ui/perk_w_tin_bomb.png",
+	W_EXTENSION_CORD: "res://assets/ui/perk_w_extension_cord.png",
 }
 
 
@@ -74,7 +96,7 @@ static func title(perk_id: StringName) -> String:
 
 
 static func icon(perk_id: StringName) -> Texture2D:
-	return load(_ICONS[perk_id]) as Texture2D
+	return TEX.load_tex(_ICONS[perk_id])
 
 
 static func description(perk_id: StringName) -> String:

@@ -2,6 +2,7 @@ class_name PlayerController
 extends CharacterBody2D
 ## Игрок: движение WASD/стрелками, здоровье, магнит для XP, перки, смерть.
 
+const CHAIN_WEAPON: GDScript = preload("res://scripts/weapons/chain_weapon.gd")
 const HELD_WEAPON: GDScript = preload("res://scripts/weapons/held_weapon.gd")
 
 @onready var _sprite: Sprite2D = $Sprite2D
@@ -180,12 +181,17 @@ func _sync_weapons() -> void:
 				laser.weapon_id = &"laser_pointer"
 				laser.tier = entry["tier"]
 				weapon = laser
-			&"slipper":
+			&"extension_cord":
+				var chain: Node2D = CHAIN_WEAPON.new()
+				chain.set(&"weapon_id", &"extension_cord")
+				chain.set(&"tier", entry["tier"])
+				weapon = chain
+			&"slipper", &"tin_bomb":
 				var slipper: SlipperWeapon = SlipperWeapon.new()
-				slipper.weapon_id = &"slipper"
+				slipper.weapon_id = entry["id"]
 				slipper.tier = entry["tier"]
 				weapon = slipper
-			&"lighter", &"slingshot", &"condensed_milk", &"pipe_gun", &"crossbow", &"spray_can", &"bottle", &"mosin":
+			&"lighter", &"slingshot", &"condensed_milk", &"pipe_gun", &"crossbow", &"spray_can", &"bottle", &"mosin", &"blowtorch", &"syringe":
 				var shooter: WeaponBase = WeaponBase.new()
 				shooter.weapon_id = entry["id"]
 				shooter.tier = entry["tier"]
@@ -195,7 +201,7 @@ func _sync_weapons() -> void:
 				aura.weapon_id = entry["id"]
 				aura.tier = entry["tier"]
 				weapon = aura
-			&"mop", &"frying_pan", &"rolling_pin":
+			&"mop", &"frying_pan", &"rolling_pin", &"plunger", &"shiv", &"shovel":
 				var mop: MeleeWeapon = MeleeWeapon.new()
 				mop.weapon_id = entry["id"]
 				mop.tier = entry["tier"]
