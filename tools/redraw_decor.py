@@ -34,7 +34,7 @@ def dumpster(t):
     c.rect(6, 12, 40, 27, GREEN, dither=DGREEN); lid = [0, 1, 3, 1][t]
     c.rect(4, 8 - lid, 42, 12 - lid, BLUE, dither=CYAN)
     for x in range(10, 38, 6): c.line(x, 14, x, 26, DGREEN)
-    c.eye(16, 20, 3, (1, 1)); c.eye(30, 20, 3, (-1, 1)); c.teeth(18, 28, 24, h=2)
+    c.rect(12, 18, 34, 19, DGREEN); c.pts([(20, 22), (26, 24), (14, 25)], BROWN); c.line(30, 14, 30, 18, GREEN)
     c.rect(8, 28, 12, 29, BLACK); c.rect(34, 28, 38, 29, BLACK)
     for i in range(3): c.px(10 + ((t * 5 + i * 11) % 30), 4 + (i + t) % 4, YELLOW)
     c.line(20, 9 - lid, 18, 3, GREEN); c.line(26, 9 - lid, 29, 4 - (t % 2), PINK)

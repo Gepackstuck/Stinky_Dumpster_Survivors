@@ -206,21 +206,27 @@ def egg(t):
 
 def trash_bin(t, kind=0):
     c = Canvas(34, 38)
-    c.rect(6, 12, 28, 34, GREEN, dither=DGREEN); c.rect(5, 6 + t, 29, 12, BLUE, dither=CYAN)  # крышка
-    c.rect(14, 2 + t, 20, 5 + t, GREY)
-    for x in range(8, 28, 4): c.line(x, 14, x, 33, DGREEN)
-    junk = [lambda: (c.line(8, 6, 4, 0 + t, WHITE), c.pts([(3, 0), (5, 1)], WHITE)),   # кость
-            lambda: (c.ell(10, 3, 4, 2, YELLOW), c.line(12, 3, 16, 0, YELLOW)),            # банан
-            lambda: (c.rect(22, 0 + t, 25, 5, CYAN), c.rect(23, 0, 24, 1, WHITE)),         # бутылка
-            lambda: (c.line(24, 6, 27, 0 + t, PINK, 2), c.line(26, 6, 30, 2, PINK))][kind]  # перчатка
+    r = t % 2
+    c.rect(7, 13, 27, 34, GREY, dither=DGREY)                                  # корпус (мятый металл)
+    for x in range(10, 27, 4): c.line(x, 14, x, 33, DGREY)                      # рёбра жёсткости
+    c.rect(6, 16, 28, 17, DGREY); c.rect(6, 29, 28, 30, DGREY)                  # обручи
+    c.rect(7, 13, 8, 34, WHITE, dither=GREY)                                    # блик
+    c.pts([(14, 22), (15, 23), (20, 25), (21, 25), (12, 28)], BROWN)            # ржавчина и подтёки
+    c.line(22, 18, 22, 22, GREEN); c.line(11, 31, 11, 33, GREEN)
+    c.rect(8, 35, 11, 37, BLACK); c.rect(23, 35, 26, 37, BLACK)                 # колёсики
+    c.ell(9, 37, 2, 1, DGREY); c.ell(25, 37, 2, 1, DGREY)
+    c.rect(4, 8 + r, 30, 12, BLUE, dither=CYAN)                                 # крышка, чуть подпрыгивает
+    c.rect(4, 8 + r, 30, 8 + r, WHITE); c.rect(14, 5 + r, 20, 7 + r, DGREY)    # ручка
+    c.line(5, 12, 3, 15, BLUE)                                                  # вмятина-перекос
+    c.rect(2, 20, 5, 22, DGREY); c.rect(29, 20, 32, 22, DGREY)                 # боковые ручки
+    junk = [lambda: (c.line(10, 8 + r, 6, 1, WHITE), c.pts([(5, 0), (7, 1), (4, 2)], WHITE), c.line(22, 8 + r, 25, 3, YELLOW)),   # кость, банан
+            lambda: (c.ell(10, 5, 4, 3, YELLOW), c.line(13, 5, 17, 1, YELLOW), c.px(9, 4, BROWN), c.rect(24, 4 + r, 26, 8, GREEN)),  # шкурка, бутылка
+            lambda: (c.rect(22, 1 + r, 25, 7, CYAN), c.rect(23, 0 + r, 24, 1, WHITE), c.line(9, 8, 6, 3, PINK, 2)),                 # бутылка, носок
+            lambda: (c.line(24, 8, 28, 2 + r, PINK, 2), c.line(27, 3, 30, 1, PINK), c.ell(10, 5, 3, 2, WHITE), c.px(10, 4, BLACK))][kind]  # перчатка, пакет
     junk()
-    c.eye(12, 21, 3, (1, 1)); c.eye(22, 21, 3, (-1, 1))
-    c.line(7, 17, 15, 19, BLACK); c.line(27, 17, 19, 19, BLACK)
-    c.teeth(10, 24, 27, h=3)
-    c.rect(2, 22, 5, 33, DGREY); c.rect(29, 22, 32, 33, DGREY)  # колёса-ручки
-    c.rect(7, 35, 10, 37, BLACK); c.rect(24, 35, 27, 37, BLACK)
-    c.pts([(4, 14), (30, 16)], YELLOW)
-    return c.finish(PURPLE, YELLOW)
+    for i in range(2): c.px(5 + (t * 7 + i * 17) % 24, 3 + (t * 3 + i * 5) % 9, YELLOW)   # мухи
+    c.pts([(15, 24), (16, 24), (17, 24), (16, 25)], BLACK)                       # дырка-пробоина
+    return c.finish(PURPLE, YELLOW, lim=0.1)
 
 
 def wifi_ghost(t):
