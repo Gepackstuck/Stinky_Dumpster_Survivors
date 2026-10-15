@@ -58,7 +58,7 @@ const _TITLES: Dictionary[StringName, String] = {
 	W_SHOVEL: "Лопата",
 	W_BLOWTORCH: "Паяльная лампа",
 	W_SYRINGE: "Шприц",
-	W_TIN_BOMB: "Банка с гвоздями",
+	W_TIN_BOMB: "Банка гвоздей",
 	W_EXTENSION_CORD: "Удлинитель",
 }
 const _ICONS: Dictionary[StringName, String] = {

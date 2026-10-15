@@ -10,7 +10,7 @@ const GAME_SCENE: String = "res://scenes/levels/main.tscn"
 const SCREEN: Vector2 = Vector2(480.0, 270.0)
 const GRID_TOP: float = 20.0   # сетка могил как в Brotato: все перед глазами
 const GRID_MAX_W: float = 450.0
-const GRID_MAX_H: float = 130.0
+const GRID_MAX_H: float = 126.0
 const GRAVE_W: float = 48.0
 const GRAVE_H: float = 56.0
 const ARROW_H: float = 22.0   # место под подпись и стрелку между рядами
@@ -338,8 +338,8 @@ func _build_grave(i: int) -> void:
 
 func _build_panel() -> void:
 	var panel: Panel = Panel.new()
-	panel.position = Vector2(24.0, 150.0)
-	panel.size = Vector2(432.0, 90.0)
+	panel.position = Vector2(24.0, 154.0)
+	panel.size = Vector2(432.0, 88.0)
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var style: StyleBoxFlat = StyleBoxFlat.new()
 	style.bg_color = Color(0.02, 0.02, 0.03)
@@ -349,7 +349,7 @@ func _build_panel() -> void:
 	add_child(panel)
 	_info_nodes.append(panel)
 	_preview = Sprite2D.new()
-	_preview.position = Vector2(58.0, 198.0)
+	_preview.position = Vector2(58.0, 200.0)
 	_preview.scale = Vector2.ONE * 2.0
 	_preview.hframes = 4
 	_preview.vframes = 3
@@ -357,13 +357,13 @@ func _build_panel() -> void:
 	_preview.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	add_child(_preview)
 	_info_nodes.append(_preview)
-	_title = _label("", Vector2(96.0, 156.0), 350.0, YELLOW)
+	_title = _label("", Vector2(96.0, 158.0), 350.0, YELLOW)
 	_title.add_theme_color_override(&"font_shadow_color", PINK)
 	_tagline = _label("", Vector2(96.0, 168.0), 350.0, WHITE)
-	_plus = _label("", Vector2(96.0, 184.0), 170.0, GREEN)
-	_minus = _label("", Vector2(272.0, 184.0), 170.0, RED)
-	_weapon = _label("", Vector2(96.0, 212.0), 350.0, YELLOW)
-	_status = _label("", Vector2(96.0, 224.0), 350.0, GREEN)
+	_plus = _label("", Vector2(96.0, 180.0), 210.0, GREEN)
+	_minus = _label("", Vector2(316.0, 180.0), 130.0, RED)
+	_weapon = _label("", Vector2(96.0, 217.0), 350.0, YELLOW)
+	_status = _label("", Vector2(96.0, 228.0), 350.0, GREEN)
 	for node: Label in [_title, _tagline, _plus, _minus, _weapon, _status]:
 		_info_nodes.append(node)
 	_hint = _label("WASD - ВЫБОР\nПРОБЕЛ - ПОГНАЛИ", Vector2(8.0, 243.0), 200.0, GREY)

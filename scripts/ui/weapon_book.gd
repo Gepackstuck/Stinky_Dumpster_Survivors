@@ -2,12 +2,18 @@ class_name WeaponBook
 extends Control
 ## Книга оружия на кладбище: всё оружие игры, закрытое тёмное с условием открытия и прогрессом.
 
-const COLUMNS: int = 5
-const CELL: Vector2 = Vector2(92.0, 70.0)
+const COLUMNS: int = 6
+const CELL_W: float = 76.0
+const CELL_H_MAX: float = 70.0
+const TOP: float = 24.0
+const BOTTOM: float = 246.0   # ниже - подсказка «назад»
 const YELLOW: Color = Color(0.968627, 1.0, 0.0)
 const GREEN: Color = Color(0.2235, 1.0, 0.0784)
 const GREY: Color = Color(0.55, 0.55, 0.6)
 const RED: Color = Color(1.0, 0.1, 0.2)
+
+
+var _cell_h: float = CELL_H_MAX
 
 
 func _ready() -> void:
@@ -22,8 +28,10 @@ func _ready() -> void:
 	var ids: Array[StringName] = []
 	for perk_id: StringName in PerkLibrary.WEAPON_PERKS:
 		ids.append(StringName(String(perk_id).trim_prefix("w_")))
+	var rows: int = ceili(float(ids.size()) / float(COLUMNS))
+	_cell_h = minf(CELL_H_MAX, (BOTTOM - TOP) / float(maxi(rows, 1)))   # ряды сжимаются, чтобы всё влезло в экран
 	for i: int in ids.size():
-		_cell(ids[i], Vector2(10.0 + (i % COLUMNS) * CELL.x, 26.0 + floorf(float(i) / COLUMNS) * CELL.y))
+		_cell(ids[i], Vector2(12.0 + (i % COLUMNS) * CELL_W, TOP + floorf(float(i) / COLUMNS) * _cell_h))
 	_text("TAB / ESC - НАЗАД", Vector2(0.0, 250.0), 480.0, GREY, HORIZONTAL_ALIGNMENT_CENTER)
 
 
@@ -32,16 +40,16 @@ func _cell(id: StringName, pos: Vector2) -> void:
 	var icon: TextureRect = TextureRect.new()
 	icon.texture = PerkLibrary.icon(StringName("w_" + String(id)))
 	icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	icon.position = pos + Vector2((CELL.x - 16.0) * 0.5 - 4.0, 0.0)
+	icon.position = pos + Vector2((CELL_W - 16.0) * 0.5 - 4.0, 0.0)
 	icon.modulate = Color.WHITE if open else Color(0.15, 0.15, 0.2)
 	add_child(icon)
 	var title: String = PerkLibrary.title(StringName("w_" + String(id))) if open else "???"
-	_text(title, pos + Vector2(0.0, 20.0), CELL.x - 8.0, Color.WHITE if open else GREY, HORIZONTAL_ALIGNMENT_CENTER)
+	_text(title, pos + Vector2(0.0, 17.0), CELL_W - 8.0, Color.WHITE if open else GREY, HORIZONTAL_ALIGNMENT_CENTER)
 	if open:
-		_text("ОТКРЫТО", pos + Vector2(0.0, 32.0), CELL.x - 8.0, GREEN, HORIZONTAL_ALIGNMENT_CENTER)
+		_text("ОТКРЫТО", pos + Vector2(0.0, 38.0), CELL_W - 8.0, GREEN, HORIZONTAL_ALIGNMENT_CENTER)
 	else:
 		var rule: Dictionary = Balance.WEAPON_UNLOCK[id]
-		_text("%s\n%d/%d" % [_rule_text(rule), mini(Profile.counter(rule["kind"]), rule["need"]), rule["need"]], pos + Vector2(0.0, 32.0), CELL.x - 8.0, RED, HORIZONTAL_ALIGNMENT_CENTER)
+		_text("%s\n%d/%d" % [_rule_text(rule), mini(Profile.counter(rule["kind"]), rule["need"]), rule["need"]], pos + Vector2(0.0, 29.0), CELL_W - 8.0, RED, HORIZONTAL_ALIGNMENT_CENTER)
 
 
 func _rule_text(rule: Dictionary) -> String:

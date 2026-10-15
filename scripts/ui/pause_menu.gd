@@ -107,6 +107,7 @@ func _build_confirm() -> void:
 	_confirm_no.size = Vector2(130.0, 22.0)
 	UI_BUTTONS.skin(_confirm_no, 0)
 	_confirm.add_child(_confirm_no)
+	_confirm.z_index = 100
 	_root.add_child(_confirm)
 	UI_BUTTONS.add_focus_arrows([_confirm_yes, _confirm_no])
 	_confirm_yes.pressed.connect(func() -> void: _confirm_action.call())
@@ -233,6 +234,7 @@ func _build_inventory() -> void:
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	hint.add_theme_color_override(&"font_color", Color(0.6, 0.6, 0.65))
 	_inventory.add_child(hint)
+	_inventory.z_index = 100   # поверх кнопок паузы и их стрелок
 	_root.add_child(_inventory)
 
 

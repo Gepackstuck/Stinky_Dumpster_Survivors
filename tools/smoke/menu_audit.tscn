@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://tools/smoke/menu_audit.gd" id="1_ma"]
+
+[node name="MenuAudit" type="Node"]
+script = ExtResource("1_ma")
