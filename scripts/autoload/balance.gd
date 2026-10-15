@@ -7,7 +7,7 @@ const ARENA_SIZE: float = 520.0        # квадрат ARENA_SIZE x ARENA_SIZE,
 
 # --- Игрок (Шаг 1; в GDD чисел нет — стартовые значения) ---
 const PLAYER_MOVE_SPEED: float = 100.0
-const PLAYER_MAX_HP: float = 15.0
+const PLAYER_MAX_HP: float = 18.0
 const PLAYER_HURT_COOLDOWN_SEC: float = 0.7  # неуязвимость после попадания
 
 # --- Спавн врагов (Шаг 1: простой хардкод-спавнер) ---
@@ -31,8 +31,8 @@ const WAVE_DURATION_FIRST_SEC: float = 20.0
 const WAVE_DURATION_STEP_SEC: float = 4.0
 const WAVE_DURATION_MAX_SEC: float = 70.0
 const WAVE_DURATION_FINAL_SEC: float = 120.0      # последняя волна (боссы)
-const WAVE_ENEMIES_BASE: int = 18                    # врагов за 1-ю волну (в Brotato их на старте совсем немного)
-const WAVE_ENEMIES_PER_WAVE: int = 26                 # + столько врагов за каждую следующую волну (≈190 к последней)
+const WAVE_ENEMIES_BASE: int = 10   # врагов за 1-ю волну (баланс по Brotato: старт спокойный)
+const WAVE_ENEMIES_PER_WAVE: int = 9   # + столько за каждую следующую (к 15-й волне ~136)
 const MAX_ALIVE_ENEMIES: int = 160                    # потолок врагов на карте — как в Brotato
 const WAVE_MIN_GROUPS: int = 3                       # минимум групп за волну
 const WAVE_GROUP_SIZE_BASE: int = 3               # размер группы = BASE + (волна-1)/STEP (±1, +1)
@@ -54,18 +54,26 @@ const FINAL_BOSS_SPAWN_SEC: float = 1.5
 const WAVE_END_BONUS_XP_BASE: int = 6          # «копание в помойке» в конце волны (аналог Harvesting в Brotato)
 const WAVE_END_BONUS_XP_PER_WAVE: int = 2
 const WAVE_END_COLLECT_SEC: float = 1.5           # время на авто-сбор материалов после волны
-const WAVE_HP_GROWTH: float = 0.38          # +30% HP за каждую волну после первой
+const ENEMY_HP_MULT: float = 0.6                  # общий множитель HP врагов (под Brotato: враги умирают за 1-2 удара)
+# Поздние волны растут быстрее (как в Brotato: к 10-й волне экран уже забит, к 15-й это настоящая орда).
+const WAVE_LATE_START: int = 7
+const WAVE_ENEMIES_LATE: float = 2.5        # + это * (волна - LATE_START)^2 врагов за волну
+const WAVE_HP_QUAD: float = 0.06           # + это * (волна-1)^2 к множителю HP
+const WAVE_DAMAGE_QUAD: float = 0.02       # + это * (волна-1)^2 к множителю урона
+const BOSS_HP_MULT: float = 2.0                   # боссы последней волны крепче обычного роста
+const ELITE_HP_MULT: float = 1.3
+const WAVE_HP_GROWTH: float = 0.30   # рост HP врагов за волну
 const PLAYER_MAX_HIT_FRACTION: float = 0.34   # один удар не снимает больше трети максимума HP (нет ваншотов)
-const WAVE_DAMAGE_GROWTH: float = 0.18       # +10% урона врагов за волну
+const WAVE_DAMAGE_GROWTH: float = 0.10   # рост урона врагов за волну
 const WAVE_SPEED_GROWTH: float = 0.04        # +3% скорости за волну
 const WAVE_SPEED_MAX_MULT: float = 1.5
 const GROUND_BODY_LAYER: int = 2                 # тела наземных врагов толкаются друг с другом и со стеной
 const GROUND_BODY_MASK: int = 34
 const FLYER_BODY_LAYER: int = 64                 # летающие: свой слой, сталкиваются только со стеной (бит 6)
 const FLYER_BODY_MASK: int = 32
-const ENEMY_DAMAGE_MULT: float = 1.4             # общий множитель урона врагов по игроку
+const ENEMY_DAMAGE_MULT: float = 1.0   # общий множитель урона врагов по игроку
 const WAVE_ENEMY_UNLOCK: Dictionary = {     # с какой волны тип может выпасть (15 волн)
-	&"squid_gopnik": 1, &"chaser": 2, &"microbe": 3, &"charger": 3, &"npc_bot": 4, &"spitter": 4,
+	&"squid_gopnik": 1, &"chaser": 2, &"microbe": 3, &"charger": 3, &"npc_bot": 4, &"spitter": 5,
 	&"looter": 4, &"cockroach": 5, &"bruiser": 6, &"wifi_ghost": 7,
 	&"healer": 5, &"glutton": 6, &"egg": 8, &"mamka": 9,
 }
@@ -240,7 +248,7 @@ const WEAPON_PRICE: Dictionary = {&"lighter": 22, &"sock": 24, &"slingshot": 22,
 const PERK_PRICE: Dictionary = {&"speed": 14, &"regen": 16, &"double_shot": 30, &"loot_goblin": 12}
 const SHOP_SLOTS: int = 4
 const SHOP_PRICE_TIER_MULT: Array[float] = [1.0, 2.0, 3.5, 6.0]
-const COIN_PER_XP: float = 0.5                     # сколько говна-денег даёт 1 XP (опыт и деньги больше не равны: копить придётся)
+const COIN_PER_XP: float = 0.9   # сколько говна даёт 1 XP
 const SHOP_PRICE_WAVE_GROWTH: float = 0.12          # цена *(1 + это * волна)
 const SHOP_WEAPON_CHANCE: float = 0.45              # шанс, что слот — оружие (предмет — SHOP_ITEM_CHANCE, иначе перк)
 const SHOP_TIER2_PER_WAVE: float = 0.05             # II-тир: (волна-1)*это, до 0.5
@@ -271,13 +279,13 @@ const GLUTTON_MAX_SCALE: float = 1.9
 # --- Враги: hp, damage, speed, xp, coins (GDD) ---
 const ENEMIES: Dictionary = {
 	&"squid_gopnik": {"hp": 40.0, "damage": 2.0, "speed": 60.0, "xp": 2, "coins": 1},
-	&"microbe": {"hp": 60.0, "damage": 2.0, "speed": 40.0, "xp": 3, "coins": 1},
+	&"microbe": {"hp": 60.0, "damage": 1.5, "speed": 40.0, "xp": 3, "coins": 1},
 	&"npc_bot": {"hp": 32.0, "damage": 2.0, "speed": 50.0, "xp": 2, "coins": 1},
 	&"cockroach": {"hp": 9.0, "damage": 2.0, "speed": 140.0, "xp": 1, "coins": 2},
 	&"wifi_ghost": {"hp": 50.0, "damage": 3.0, "speed": 70.0, "xp": 4, "coins": 2, "flying": true},
 	# Враги Шага 4 (поведение как в Brotato): group_mult — множитель размера группы.
 	&"chaser": {"hp": 10.0, "damage": 1.0, "speed": 88.0, "xp": 1, "coins": 1, "radius": 5.0, "group_mult": 1.4, "flying": true},
-	&"charger": {"hp": 50.0, "damage": 2.0, "speed": 70.0, "xp": 3, "coins": 1, "radius": 8.0, "group_mult": 0.7,
+	&"charger": {"hp": 50.0, "damage": 1.5, "speed": 70.0, "xp": 3, "coins": 1, "radius": 8.0, "group_mult": 0.7,
 			"brain": "res://scripts/enemies/brains/charger_brain.gd"},
 	&"spitter": {"hp": 34.0, "damage": 1.0, "speed": 60.0, "xp": 3, "coins": 1, "radius": 7.0, "group_mult": 0.7,
 			"brain": "res://scripts/enemies/brains/spitter_brain.gd"},

@@ -74,14 +74,14 @@ func _spawn_special_units() -> void:
 	var wave: int = GameState.wave
 	if GameState.wave_kind == &"elite" and not _elite_spawned and _wave_elapsed >= Balance.ELITE_SPAWN_SEC:
 		_elite_spawned = true
-		spawner.spawn_single(Balance.ELITE_ID, WaveRules.hp_mult(wave))
+		spawner.spawn_single(Balance.ELITE_ID, WaveRules.hp_mult(wave) * Balance.ELITE_HP_MULT)
 	elif GameState.wave_kind == &"boss" and not _bosses_spawned and _wave_elapsed >= Balance.FINAL_BOSS_SPAWN_SEC:
 		_bosses_spawned = true
 		var pool: Array[StringName] = Balance.FINAL_BOSS_POOL.duplicate()
 		pool.shuffle()
 		var count: int = randi_range(1, pool.size())
 		for i: int in count:
-			spawner.spawn_single(pool[i], WaveRules.hp_mult(wave))
+			spawner.spawn_single(pool[i], WaveRules.hp_mult(wave) * Balance.BOSS_HP_MULT)
 			_bosses_alive += 1
 			EventBus.boss_spawned.emit(pool[i])
 

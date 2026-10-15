@@ -4,9 +4,9 @@ extends BossBrain
 const SPIT: Texture2D = preload("res://assets/sprites/proj_spit.png")
 const NEAR: float = 70.0
 const FAR: float = 110.0
-const SPIT_INTERVAL_SEC: float = 2.0
+const SPIT_INTERVAL_SEC: float = 2.6
 const SPIT_SPEED: float = 90.0
-const SPIT_DAMAGE: float = 2.0
+const SPIT_DAMAGE: float = 1.0
 
 var _spit_left: float = 1.0
 

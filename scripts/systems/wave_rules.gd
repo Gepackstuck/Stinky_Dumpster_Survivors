@@ -12,7 +12,8 @@ static func duration_sec(wave: int) -> float:
 
 ## Сколько групп за волну: общее число врагов (BASE + PER_WAVE × (волна−1)) делим на средний размер группы.
 static func group_count(wave: int, kind: StringName) -> int:
-	var total: int = Balance.WAVE_ENEMIES_BASE + Balance.WAVE_ENEMIES_PER_WAVE * (maxi(wave, 1) - 1)
+	var late: float = float(maxi(wave - Balance.WAVE_LATE_START, 0))
+	var total: int = Balance.WAVE_ENEMIES_BASE + Balance.WAVE_ENEMIES_PER_WAVE * (maxi(wave, 1) - 1) + roundi(Balance.WAVE_ENEMIES_LATE * late * late)
 	var avg_size: float = float(Balance.WAVE_GROUP_SIZE_BASE + floori(float(wave - 1) / float(Balance.WAVE_GROUP_SIZE_WAVES_PER_STEP)) + 1)
 	var count: int = maxi(roundi(float(total) / avg_size), Balance.WAVE_MIN_GROUPS)
 	count = maxi(count, ceili(duration_sec(wave) / Balance.WAVE_MAX_GAP_SEC))  # поле не должно пустеть надолго
@@ -26,12 +27,18 @@ static func group_size(wave: int) -> int:
 	return maxi(size + randi_range(-1, 1) + 1, 1)
 
 
+static func _late(wave: int) -> float:
+	return float(maxi(wave - Balance.WAVE_LATE_START, 0))
+
+
 static func hp_mult(wave: int) -> float:
-	return 1.0 + (maxi(wave, 1) - 1) * Balance.WAVE_HP_GROWTH
+	var n: float = float(maxi(wave, 1) - 1)
+	return (1.0 + n * Balance.WAVE_HP_GROWTH + _late(wave) * _late(wave) * Balance.WAVE_HP_QUAD) * Balance.ENEMY_HP_MULT
 
 
 static func damage_mult(wave: int) -> float:
-	return (1.0 + (maxi(wave, 1) - 1) * Balance.WAVE_DAMAGE_GROWTH) * Balance.ENEMY_DAMAGE_MULT
+	var n: float = float(maxi(wave, 1) - 1)
+	return (1.0 + n * Balance.WAVE_DAMAGE_GROWTH + _late(wave) * _late(wave) * Balance.WAVE_DAMAGE_QUAD) * Balance.ENEMY_DAMAGE_MULT
 
 
 static func speed_mult(wave: int) -> float:
