@@ -28,3 +28,10 @@ func _process(delta: float) -> void:
 		_time = fmod(_time, FRAME_TIME_SEC)
 		_col = (_col + 1) % sprite.hframes
 	sprite.frame = row * sprite.hframes + _col
+
+
+## Начать текущий ряд с первого кадра (замах атаки босса должен начинаться с начала анимации).
+func restart() -> void:
+	_col = 0
+	_time = 0.0
+	sprite.frame = row * sprite.hframes

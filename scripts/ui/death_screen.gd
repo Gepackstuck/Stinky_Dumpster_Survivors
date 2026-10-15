@@ -81,11 +81,13 @@ func _show_killer(enemy_id: StringName) -> void:
 		cell.region = Rect2(Vector2(5.0 * 48.0, 0.0), Vector2(48.0, 16.0))
 		_killer_sprite.texture = cell
 		_killer_sprite.hframes = 1
+		_killer_sprite.vframes = 1
 	else:
 		_killer_sprite.texture = load("res://assets/sprites/enemy_%s.png" % enemy_id) as Texture2D
 		_killer_sprite.hframes = 4
+		_killer_sprite.vframes = int(Balance.ENEMIES[enemy_id].get("anim_rows", 1))
 		_killer_sprite.frame = 0
-	var size: Vector2 = _killer_sprite.texture.get_size() / Vector2(float(_killer_sprite.hframes), 1.0)
+	var size: Vector2 = _killer_sprite.texture.get_size() / Vector2(float(_killer_sprite.hframes), float(_killer_sprite.vframes))
 	var k: float = minf(2.0, KILLER_MAX_SIZE / maxf(size.x, size.y))
 	_killer_sprite.scale = Vector2.ONE * (floorf(k) if k >= 1.0 else k)
 

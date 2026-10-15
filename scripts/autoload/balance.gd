@@ -102,7 +102,8 @@ const ZAKHAR_FART_RADIUS: float = 26.0
 const ZAKHAR_FART_DAMAGE: float = 4.0           # за каждый удар (с кулдауном неуязвимости игрока)
 const ZAKHAR_FART_LIFETIME_SEC: float = 3.5
 const ZAKHAR_KICK_RANGE: float = 70.0
-const ZAKHAR_KICK_WINDUP_SEC: float = 0.45      # замах — мигает жёлтым
+const ZAKHAR_KICK_WINDUP_SEC: float = 0.5       # замах = цикл анимации — мигает жёлтым
+const ZAKHAR_CAST_SEC: float = 0.5              # замах броска/пука (цикл анимации)
 const ZAKHAR_KICK_SPEED: float = 280.0
 const ZAKHAR_KICK_DURATION_SEC: float = 0.25
 
@@ -118,6 +119,10 @@ const MINION_PUDDLE_RADIUS: float = 22.0
 const MINION_PUDDLE_DAMAGE: float = 4.0
 const MINION_PUDDLE_LIFETIME_SEC: float = 4.0
 const MINION_STRAFE_SPEED: float = 45.0         # «психованные» дёрганья в стороны
+const MINION_CAST_SEC: float = 0.5               # замах броска (цикл анимации)
+const MINION_WHIRL_INTERVAL_SEC: float = 6.0     # вихрь булавой (только в ярости <50% HP)
+const MINION_WHIRL_WRENCHES: int = 8
+const MINION_ENRAGE_MULT: float = 0.7            # в ярости кулдауны ×0.7
 const PROJECTILE_BOSS_LIFETIME_SEC: float = 3.0
 
 # --- Отдача от попаданий ---
@@ -320,16 +325,26 @@ const ENEMIES: Dictionary = {
 	&"trash_bin": {"hp": 40.0, "damage": 0.0, "speed": 0.0, "xp": 6, "coins": 0, "radius": 12.0, "group_mult": 0.0,
 			"contact": false, "neutral": true, "brain": "res://scripts/enemies/brains/bin_brain.gd"},
 	# Босс-заглушка Шага 3 (особое поведение — позже); radius — размер тела в px.
-	&"boss_mega_hamster": {"hp": 600.0, "damage": 5.0, "speed": 35.0, "xp": 30, "coins": 20, "radius": 28.0},
-	&"boss_zakhar": {"hp": 900.0, "damage": 4.0, "speed": 45.0, "xp": 40, "coins": 25, "radius": 30.0,
+	&"boss_mega_hamster": {"hp": 600.0, "damage": 5.0, "speed": 35.0, "xp": 30, "coins": 20, "radius": 28.0, "anim_rows": 5,
+			"brain": "res://scripts/enemies/brains/boss_hamster_brain.gd"},
+	&"boss_zakhar": {"hp": 900.0, "damage": 4.0, "speed": 45.0, "xp": 40, "coins": 25, "radius": 30.0, "anim_rows": 6,
 			"brain": "res://scripts/enemies/brains/boss_zakhar_brain.gd"},
-	&"boss_minion": {"hp": 700.0, "damage": 3.0, "speed": 70.0, "xp": 40, "coins": 25, "radius": 22.0,
+	&"boss_minion": {"hp": 700.0, "damage": 3.0, "speed": 70.0, "xp": 40, "coins": 25, "radius": 22.0, "anim_rows": 5,
 			"brain": "res://scripts/enemies/brains/boss_minion_brain.gd"},
 }
 
 # --- Боссы (GDD) ---
 const BOSS_MEGA_HAMSTER_SPAWN_SEC: float = 300.0
 const BOSS_MEGA_HAMSTER_SPLIT_COUNT: int = 8  # микробов при смерти
+const HAMSTER_ATTACK_INTERVAL_SEC: float = 2.6   # пауза между атаками (в ярости ×0.65 — на <50% HP)
+const HAMSTER_CAST_SEC: float = 0.5              # замах = один цикл анимации (4 кадра по 8 fps)
+const HAMSTER_SEED_DAMAGE: float = 6.0
+const HAMSTER_SEED_SPEED: float = 130.0
+const HAMSTER_SEED_FAN_DEG: float = 20.0         # веер из пяти семечек
+const HAMSTER_SLAM_SEEDS: int = 12               # ударная волна: кольцо семечек
+const HAMSTER_SLAM_SPEED: float = 95.0
+const HAMSTER_ROLL_SPEED: float = 210.0
+const HAMSTER_ROLL_SEC: float = 0.9
 const BOSS_UNCLE_VITYA_SPAWN_SEC: float = 600.0
 const BOSS_UNCLE_VITYA_AURA_RADIUS: float = 100.0
 const BOSS_UNCLE_VITYA_AURA_DPS: float = 2.0

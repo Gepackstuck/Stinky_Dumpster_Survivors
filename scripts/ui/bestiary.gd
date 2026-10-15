@@ -68,14 +68,20 @@ func _cell_pos(i: int) -> Vector2:
 	return GRID_POS + Vector2((i % COLUMNS) * CELL.x, floorf(float(i) / COLUMNS) * CELL.y)
 
 
+## Рядов анимации в листе врага (у боссов несколько; в бестиарии играем только ход).
+func _rows(id: StringName) -> int:
+	return int(Balance.ENEMIES[id].get("anim_rows", 1))
+
+
 func _build_cell(i: int) -> void:
 	var id: StringName = _ids[i]
 	var tex: Texture2D = load("res://assets/sprites/enemy_%s.png" % id) as Texture2D
 	var sprite: Sprite2D = Sprite2D.new()
 	sprite.texture = tex
 	sprite.hframes = 4
+	sprite.vframes = _rows(id)
 	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	var frame: Vector2 = tex.get_size() / Vector2(4.0, 1.0)
+	var frame: Vector2 = tex.get_size() / Vector2(4.0, float(_rows(id)))
 	var k: float = minf(1.0, 30.0 / maxf(frame.x, frame.y))
 	sprite.scale = Vector2.ONE * (1.0 if k >= 1.0 else k)
 	if Profile.killed(id) <= 0:
@@ -96,7 +102,8 @@ func _select(index: int) -> void:
 	var tex: Texture2D = load("res://assets/sprites/enemy_%s.png" % id) as Texture2D
 	_big.texture = tex
 	_big.hframes = 4
-	var frame: Vector2 = tex.get_size() / Vector2(4.0, 1.0)
+	_big.vframes = _rows(id)
+	var frame: Vector2 = tex.get_size() / Vector2(4.0, float(_rows(id)))
 	_big.scale = Vector2.ONE * maxf(1.0, floorf(46.0 / maxf(frame.x, frame.y)))
 	_big.modulate = Color.WHITE if known else Color(0.0, 0.0, 0.0, 1.0)
 	if known:
@@ -129,9 +136,9 @@ func _num(value: float) -> String:
 func _process(delta: float) -> void:
 	_time += delta
 	for i: int in _sprites.size():
-		_sprites[i].frame = int(_time * (3.0 if i == _selected else 0.0)) % 2
+		_sprites[i].frame = int(_time * (5.0 if i == _selected else 0.0)) % 4
 	_arrow.position.y = _cell_pos(_selected).y - 6.0 + roundf(sin(_time * 6.0) * 1.5)
-	_big.frame = int(_time * 3.0) % 2
+	_big.frame = int(_time * 5.0) % 4
 
 
 func _input(event: InputEvent) -> void:

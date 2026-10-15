@@ -1,45 +1,51 @@
 extends BossBrain
 ## Захар из Морковска: кидает морковку (в ярости веером), пердит ядовитым облаком, пинает рывком.
+## Каждая атака — свой ряд листа: замах проигрывается целиком, удар в конце цикла.
 
 const CARROT: Texture2D = preload("res://assets/sprites/proj_carrot.png")
 const CLOUD_SCENE: PackedScene = preload("res://scenes/hazards/stink_cloud.tscn")
 const ENRAGE_HP_FRACTION: float = 0.5
 const ENRAGE_COOLDOWN_MULT: float = 0.65
 const FIRST_ATTACK_DELAY_SEC: float = 1.5
+# ряды листа enemy_boss_zakhar.png
+const ROW_WALK: int = 0
+const ROW_THROW: int = 1
+const ROW_FART: int = 2
+const ROW_KICK: int = 3
+const ROW_ENRAGE: int = 4
+const ROW_FAN: int = 5
 
-enum State { WALK, KICK_WINDUP }
-
-var _state: State = State.WALK
 var _cooldown: float = FIRST_ATTACK_DELAY_SEC
-var _windup_left: float = 0.0
+
+
+func _enraged() -> bool:
+	return boss.health_fraction() < ENRAGE_HP_FRACTION
+
+
+func idle_row() -> int:
+	return ROW_ENRAGE if _enraged() else ROW_WALK
 
 
 func physics_tick(delta: float) -> void:
-	match _state:
-		State.WALK:
-			boss.speed_mult = 1.0
-			_cooldown -= delta
-			if _cooldown <= 0.0:
-				_choose_attack()
-		State.KICK_WINDUP:
-			boss.speed_mult = 0.0
-			_windup_left -= delta
-			if _windup_left <= 0.0:
-				_kick()
+	if tick_cast(delta):
+		return
+	boss.speed_mult = 1.0
+	_cooldown -= delta
+	if _cooldown <= 0.0:
+		_choose_attack()
 
 
 func _choose_attack() -> void:
-	var enraged: bool = boss.health_fraction() < ENRAGE_HP_FRACTION
+	var enraged: bool = _enraged()
 	_cooldown = Balance.ZAKHAR_ATTACK_INTERVAL_SEC * (ENRAGE_COOLDOWN_MULT if enraged else 1.0)
 	if distance_to_target() < Balance.ZAKHAR_KICK_RANGE and randf() < 0.6:
-		_state = State.KICK_WINDUP
-		_windup_left = Balance.ZAKHAR_KICK_WINDUP_SEC
 		boss.flash(Color(0.9686, 1.0, 0.0))  # замах: мигает жёлтым
+		start_cast(ROW_KICK, Balance.ZAKHAR_KICK_WINDUP_SEC, _kick, true, Balance.ZAKHAR_KICK_DURATION_SEC)
 		return
 	if randf() < 0.6:
-		_throw_carrots(enraged)
+		start_cast(ROW_FAN if enraged else ROW_THROW, Balance.ZAKHAR_CAST_SEC, _throw_carrots.bind(enraged))
 	else:
-		_fart()
+		start_cast(ROW_FART, Balance.ZAKHAR_CAST_SEC, _fart)
 
 
 func _throw_carrots(enraged: bool) -> void:
@@ -61,7 +67,6 @@ func _fart() -> void:
 
 
 func _kick() -> void:
-	_state = State.WALK
 	boss.forced_velocity = direction_to_target() * Balance.ZAKHAR_KICK_SPEED
 	boss.forced_sec = Balance.ZAKHAR_KICK_DURATION_SEC
 	HitFx.burst(boss.get_tree(), boss.global_position, Color(0.9686, 1.0, 0.0), 8, 80.0)

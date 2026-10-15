@@ -13,6 +13,7 @@ static var _textures: Dictionary[StringName, Texture2D] = {}
 @onready var _hurtbox: HurtboxComponent = $Hurtbox
 @onready var _flash: HitFlashComponent = $HitFlash
 @onready var _hitbox: HitboxComponent = $Hitbox
+@onready var _anim: FrameAnimatorComponent = $FrameAnimator
 
 var _target: Node2D = null
 var _speed: float = 0.0
@@ -66,6 +67,8 @@ func setup(target: Node2D, spawn_position: Vector2, id: StringName = &"squid_gop
 		_sprite.texture = _texture_for(StringName("trash_bin_%d" % randi_range(0, Balance.BIN_VARIANTS - 1)))  # разная начинка
 	else:
 		_sprite.texture = _texture_for(enemy_id)
+	_sprite.vframes = int(stats.get("anim_rows", 1))   # у боссов лист: ряд на каждое состояние (ходьба, замахи, ярость)
+	_anim.row = 0
 	_apply_size(stats.get("radius", BASE_RADIUS))
 	# летающие проходят сквозь наземных (и наоборот): тело на своём слое, сталкивается только со стеной
 	collision_layer = Balance.FLYER_BODY_LAYER if stats.get("flying", false) else Balance.GROUND_BODY_LAYER
@@ -204,6 +207,15 @@ static func spawn_enemy(parent: Node, target: Node2D, id: StringName, at: Vector
 	var enemy: EnemyBase = PoolManager.acquire(load("res://scenes/enemies/enemy_base.tscn") as PackedScene) as EnemyBase
 	parent.add_child(enemy)
 	enemy.setup(target, at, id, hp_mult)
+
+
+## Ряд анимации (состояние босса); restart — начать ряд с первого кадра.
+func set_anim_row(row: int, restart: bool = true) -> void:
+	if _anim.row == row and not restart:
+		return
+	_anim.row = row
+	if restart:
+		_anim.restart()
 
 
 func flash(color: Color) -> void:
