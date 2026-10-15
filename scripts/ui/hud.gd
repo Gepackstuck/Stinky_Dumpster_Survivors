@@ -10,6 +10,7 @@ const POOP: Color = Color(0.58, 0.34, 0.12)      # мало опыта — цв�
 const XP_FULL: Color = Color(0.2235, 1.0, 0.0784)  # много опыта — кислотно-зелёный
 const XP_CURVE: float = 2.2                      # >1: дерьмовый цвет XP держится дольше
 
+@onready var _heart: TextureRect = $Root/Heart
 @onready var _hp_bar: TextureProgressBar = $Root/HpBar
 @onready var _hp_label: Label = $Root/HpLabel
 @onready var _xp_bar: TextureProgressBar = $Root/XpBar
@@ -27,9 +28,11 @@ var _last_second: int = -1
 var _last_wave: int = -1
 var _boss_bars: Array = []   # [{root, fill, label}]
 var _boss_scan: float = 0.0
+var _beat_clock: float = 0.0
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
+	_beat(delta)
 	if GameState.hp != _last_hp or GameState.max_hp != _last_max_hp:
 		_last_hp = GameState.hp
 		_last_max_hp = GameState.max_hp
@@ -54,6 +57,22 @@ func _process(_delta: float) -> void:
 	if GameState.wave != _last_wave:
 		_last_wave = GameState.wave
 		_wave_label.text = "ВОЛНА %d/%d" % [GameState.wave, Balance.WAVE_COUNT]
+
+
+## Сердечко стучит: двойной удар «тук-тук», чем меньше HP, тем чаще.
+func _beat(delta: float) -> void:
+	var ratio: float = clampf(GameState.hp / maxf(GameState.max_hp, 1.0), 0.0, 1.0)
+	var period: float = lerpf(0.42, 1.1, ratio)
+	_beat_clock = fmod(_beat_clock + delta, period)
+	var t: float = _beat_clock / period
+	var pulse: float = maxf(_thump(t, 0.0), 0.7 * _thump(t, 0.22))
+	_heart.pivot_offset = _heart.size * 0.5
+	_heart.scale = Vector2.ONE * (1.0 + 0.3 * pulse)
+
+
+static func _thump(t: float, at: float) -> float:
+	var d: float = t - at
+	return exp(-d * 18.0) * clampf(d * 40.0, 0.0, 1.0) if d >= 0.0 else 0.0
 
 
 func _ready() -> void:

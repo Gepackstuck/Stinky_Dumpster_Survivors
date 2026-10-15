@@ -6,11 +6,21 @@ extends Area2D
 var _value: int = 0
 var _target: Node2D = null
 var _speed: float = 0.0
+var _phase: float = 0.0
+@onready var _sprite: Sprite2D = $Sprite2D
 
 
 func _ready() -> void:
 	add_to_group(&"pickups")
+	_phase = randf() * TAU
 	set_physics_process(false)
+
+
+## Кристалл покачивается и «поворачивается» (сужается по ширине), дёргано, шагами по 1 px.
+func _process(_delta: float) -> void:
+	var t: float = Time.get_ticks_msec() * 0.001 * 4.0 + _phase
+	_sprite.position.y = roundf(sin(t) * 1.5)
+	_sprite.scale.x = snappedf(0.65 + 0.35 * absf(cos(t * 0.8)), 0.1)
 
 
 func setup(at: Vector2, value: int) -> void:
