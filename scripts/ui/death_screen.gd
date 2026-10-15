@@ -2,6 +2,7 @@ class_name DeathScreen
 extends CanvasLayer
 ## Экран смерти: случайная фраза, статистика, кнопка «Ещё раз».
 
+const HINTS: GDScript = preload("res://scripts/systems/unlock_hints.gd")
 const BORDER_DECOR: Texture2D = preload("res://assets/sprites/arena_border.png")
 const GROUND_DECALS: Texture2D = preload("res://assets/sprites/ground_decals.png")
 const PANELS: Texture2D = preload("res://assets/ui/death_panels.png")
@@ -26,6 +27,7 @@ const KILLER_MAX_SIZE: float = 30.0
 const KILLER_FRAME_SEC: float = 0.25
 const WIRE_TEXTURE: Texture2D = preload("res://assets/sprites/arena_wire.png")
 
+var _hint_label: Label = null
 var _killer_sprite: Sprite2D = null
 var _killer_label: Label = null
 var _killer_id: StringName = &""
@@ -36,6 +38,16 @@ func _ready() -> void:
 	_root.hide()
 	_retry.pressed.connect(_on_retry)
 	_build_killer()
+	_hint_label = Label.new()
+	_hint_label.position = Vector2(20.0, 220.0)
+	_hint_label.size = Vector2(440.0, 40.0)
+	_hint_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_hint_label.add_theme_color_override(&"font_color", Color(0.2235, 1.0, 0.0784))
+	_hint_label.add_theme_color_override(&"font_shadow_color", Color.BLACK)
+	_hint_label.add_theme_constant_override(&"shadow_offset_x", 1)
+	_hint_label.add_theme_constant_override(&"shadow_offset_y", 1)
+	_hint_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_root.add_child(_hint_label)
 	EventBus.player_died.connect(_on_player_died)
 	EventBus.run_won.connect(_on_run_won)
 
@@ -112,6 +124,7 @@ func _show_result(title: String, died: bool = false) -> void:
 	_killer_label.hide()
 	if died and GameState.last_damage_source != &"":
 		_show_killer(GameState.last_damage_source)
+	_hint_label.text = "\n".join(HINTS.death_lines()) if died else ""
 	_scatter_decor()
 	_root.show()
 	_retry.grab_focus()

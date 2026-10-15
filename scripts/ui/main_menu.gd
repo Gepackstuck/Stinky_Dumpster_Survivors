@@ -3,6 +3,7 @@ extends Control
 ## Главное меню: «Погнали» ведёт на кладбище, «Я ливаю» закрывает игру.
 
 const GRAVEYARD_SCENE: String = "res://scenes/ui/graveyard.tscn"
+const BESTIARY: GDScript = preload("res://scripts/ui/bestiary.gd")
 const UI_BUTTONS: GDScript = preload("res://scripts/ui/ui_buttons.gd")
 const SCREEN: Vector2 = Vector2(480.0, 270.0)
 const GROUND: Texture2D = preload("res://assets/sprites/ground_tile.png")
@@ -16,6 +17,8 @@ var _time: float = 0.0
 var _hero: Sprite2D
 var _start: Button
 var _quit: Button
+var _bestiary_button: Button
+var _bestiary: Control = null
 
 
 func _ready() -> void:
@@ -44,13 +47,16 @@ func _ready() -> void:
 	_hero.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	_hero.position = Vector2(SCREEN.x * 0.5, 112.0)
 	add_child(_hero)
-	_start = _button("ПОГНАЛИ", 140.0)
-	_quit = _button("Я ЛИВАЮ", 176.0)
+	_start = _button("ПОГНАЛИ", 132.0)
+	_bestiary_button = _button("БЕСТИАРИЙ", 164.0)
+	_quit = _button("Я ЛИВАЮ", 196.0)
 	UI_BUTTONS.skin(_start, 0)
+	UI_BUTTONS.skin(_bestiary_button, 2)
 	UI_BUTTONS.skin(_quit, 4)
+	_bestiary_button.pressed.connect(_open_bestiary)
 	_start.pressed.connect(func() -> void: SceneFlow.go(GRAVEYARD_SCENE, Vector2.DOWN))
 	_quit.pressed.connect(func() -> void: get_tree().quit())
-	UI_BUTTONS.add_focus_arrows([_start, _quit])
+	UI_BUTTONS.add_focus_arrows([_start, _bestiary_button, _quit])
 	_start.grab_focus()
 	_title("A/D, W/S - ВЫБОР     ПРОБЕЛ - ОК", 246.0, GREY, Color.BLACK)
 
@@ -79,7 +85,18 @@ func _button(text: String, y: float) -> Button:
 	return button
 
 
+func _open_bestiary() -> void:
+	_bestiary = BESTIARY.new()
+	_bestiary.closed.connect(func() -> void:
+		_bestiary.queue_free()
+		_bestiary = null
+		_bestiary_button.grab_focus())
+	add_child(_bestiary)
+
+
 func _input(event: InputEvent) -> void:
+	if _bestiary != null:
+		return
 	var step: int = 0
 	if event.is_action_pressed(&"move_up") or event.is_action_pressed(&"ui_up"):
 		step = -1
@@ -87,7 +104,12 @@ func _input(event: InputEvent) -> void:
 		step = 1
 	if step != 0:
 		get_viewport().set_input_as_handled()
-		(_quit if _start.has_focus() else _start).grab_focus()
+		var order: Array[Button] = [_start, _bestiary_button, _quit]
+		var at: int = 0
+		for i: int in order.size():
+			if order[i].has_focus():
+				at = i
+		order[posmod(at + step, order.size())].grab_focus()
 
 
 func _process(delta: float) -> void:

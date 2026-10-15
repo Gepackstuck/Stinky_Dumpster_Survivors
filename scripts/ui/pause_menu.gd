@@ -2,6 +2,7 @@ class_name PauseMenu
 extends CanvasLayer
 ## Простейшее меню паузы по Esc: продолжить / заново / выйти.
 
+const BESTIARY: GDScript = preload("res://scripts/ui/bestiary.gd")
 const UI_BUTTONS: GDScript = preload("res://scripts/ui/ui_buttons.gd")
 const PANELS: Texture2D = preload("res://assets/ui/death_panels.png")
 const PANEL_SIZE: Vector2 = Vector2(360.0, 160.0)
@@ -21,6 +22,8 @@ var _confirm_no: Button = null
 var _confirm_text: Label = null
 var _confirm_action: Callable = Callable()
 var _confirm_return: Button = null
+var _bestiary_button: Button = null
+var _bestiary: Control = null
 var _inventory: Control = null
 var _inventory_text: Label = null
 var _inventory_items: GridContainer = null
@@ -40,18 +43,23 @@ func _ready() -> void:
 
 ## Пятая кнопка «В главное меню» (с подтверждением) - кнопки сдвигаются теснее.
 func _build_menu_button() -> void:
-	var ys: Array[float] = [92.0, 111.0, 130.0, 149.0, 190.0]   # перед «валить» большой отступ: кнопка опасная
-	var order: Array[Button] = [_resume, _inventory_button, _restart, null, _quit]
+	var ys: Array[float] = [84.0, 102.0, 120.0, 138.0, 156.0, 192.0]   # перед «валить» большой отступ: кнопка опасная
+	_bestiary_button = Button.new()
+	_bestiary_button.text = "БЕСТИАРИЙ"
+	_bestiary_button.size = _quit.size
+	_root.add_child(_bestiary_button)
+	_bestiary_button.pressed.connect(_open_bestiary)
+	var order: Array[Button] = [_resume, _inventory_button, _bestiary_button, _restart, null, _quit]
 	_menu_button = Button.new()
 	_menu_button.text = "В ГЛАВНОЕ МЕНЮ"
 	_menu_button.size = _quit.size
-	var skinned: Array[Button] = [_resume, _inventory_button, _restart, _menu_button, _quit]
+	var skinned: Array[Button] = [_resume, _inventory_button, _bestiary_button, _restart, _menu_button, _quit]
 	for i: int in skinned.size():
 		UI_BUTTONS.skin(skinned[i], i)
 	_root.add_child(_menu_button)
-	order[3] = _menu_button
+	order[4] = _menu_button
 	for i: int in order.size():
-		order[i].position = Vector2(order[i].position.x if i != 3 else _quit.position.x, ys[i])
+		order[i].position = Vector2(order[i].position.x if i != 4 and i != 2 else _quit.position.x, ys[i])
 		order[i].size.y = 18.0
 	_menu_button.pressed.connect(func() -> void: _ask("ТОЧНО В МЕНЮ?\nВЕСЬ ПРОГРЕСС ЗАБЕГА\nПРОПАДЁТ.", "ДА, ПРОПАДАЙ", func() -> void: SceneFlow.go("res://scenes/ui/main_menu.tscn", Vector2.UP)))
 	_quit.text = "! ВАЛИТЬ ОТСЮДА !"
@@ -59,7 +67,7 @@ func _build_menu_button() -> void:
 	_quit.add_theme_color_override(&"font_hover_color", Color(1.0, 0.1, 0.2))
 	_quit.add_theme_color_override(&"font_focus_color", Color(1.0, 1.0, 1.0))
 	UI_BUTTONS.skin_danger(_quit)
-	UI_BUTTONS.add_focus_arrows([_resume, _inventory_button, _restart, _menu_button, _quit])
+	UI_BUTTONS.add_focus_arrows([_resume, _inventory_button, _bestiary_button, _restart, _menu_button, _quit])
 
 
 ## Спросить подтверждение: текст, подпись «да» и действие.
@@ -115,6 +123,8 @@ func _input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 			(_confirm_no if _confirm_yes.has_focus() else _confirm_yes).grab_focus()
 		return
+	if _bestiary != null:
+		return
 	if _inventory.visible:
 		if event.is_action_pressed(&"ui_accept") or event.is_action_pressed(&"move_left") or event.is_action_pressed(&"move_right"):
 			get_viewport().set_input_as_handled()
@@ -129,7 +139,7 @@ func _input(event: InputEvent) -> void:
 	if step == 0:
 		return
 	get_viewport().set_input_as_handled()  # W/S и стрелки — между кнопками
-	var buttons: Array[Button] = [_resume, _inventory_button, _restart, _menu_button, _quit]
+	var buttons: Array[Button] = [_resume, _inventory_button, _bestiary_button, _restart, _menu_button, _quit]
 	var current: int = 0
 	for i: int in buttons.size():
 		if buttons[i].has_focus():
@@ -142,6 +152,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	if key == null or not key.pressed or key.echo or key.keycode != KEY_ESCAPE:
 		return
 	get_viewport().set_input_as_handled()
+	if _bestiary != null:
+		return
 	if _confirm.visible:
 		_confirm.hide()
 		_confirm_return.grab_focus()
@@ -162,6 +174,15 @@ func _open() -> void:
 	_root.show()
 	get_tree().paused = true
 	_resume.grab_focus()
+
+
+func _open_bestiary() -> void:
+	_bestiary = BESTIARY.new()
+	_bestiary.closed.connect(func() -> void:
+		_bestiary.queue_free()
+		_bestiary = null
+		_bestiary_button.grab_focus())
+	_root.add_child(_bestiary)
 
 
 func _close() -> void:
