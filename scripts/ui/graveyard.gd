@@ -8,7 +8,6 @@ const BOOK: GDScript = preload("res://scripts/ui/weapon_book.gd")
 const MENU_SCENE: String = "res://scenes/ui/main_menu.tscn"
 const GAME_SCENE: String = "res://scenes/levels/main.tscn"
 const SCREEN: Vector2 = Vector2(480.0, 270.0)
-const WALK_SEC: float = 0.8   # герой вылезает из ямы и идёт вниз к арене
 const GRID_TOP: float = 20.0   # сетка могил как в Brotato: все перед глазами
 const GRID_MAX_W: float = 450.0
 const GRID_MAX_H: float = 130.0
@@ -19,7 +18,8 @@ const GRAVE_OPEN: Texture2D = preload("res://assets/ui/grave_open.png")
 const ARROW: Texture2D = preload("res://assets/ui/select_arrow.png")
 const GATE_POS: Vector2 = Vector2(240.0, 252.0)   # ворота на арену: внизу по центру (арена под кладбищем в бесконечной петле)
 var _gate_tex: Texture2D = CharacterLibrary.load_texture("res://assets/sprites/gate.png")
-const ARRIVE_SEC: float = 1.0
+const WALK_SPEED: float = 110.0   # пикселей в секунду по дорожке между могилами
+const AISLE: float = 30.0   # проход по центру сетки: по нему герой идёт к воротам и обратно
 const GROUND: Texture2D = preload("res://assets/sprites/ground_tile.png")
 const GRAVE_CLOSED: Texture2D = preload("res://assets/ui/grave_closed.png")
 const PLAYER_TEX: Texture2D = preload("res://assets/sprites/player.png")
@@ -30,6 +30,8 @@ const RED: Color = Color(1.0, 0.1, 0.2)
 const WHITE: Color = Color(1.0, 1.0, 1.0)
 const GREY: Color = Color(0.55, 0.55, 0.6)
 
+## ТОЛЬКО ДЛЯ ТЕСТА (tools/smoke/graves_test): добить список героев повторами до этого числа. В игре всегда 0.
+static var test_fill: int = 0
 var _ids: Array[StringName] = []
 var _graves: Array[Control] = []
 var _sitters: Array[Node2D] = []
@@ -51,7 +53,9 @@ var _leaving: bool = false
 var _book: Control = null
 var _walker: Node2D = null
 var _walk_time: float = 0.0
-var _walk_from: Vector2 = Vector2.ZERO
+var _path: PackedVector2Array = PackedVector2Array()
+var _path_len: float = 0.0
+var _info_nodes: Array[CanvasItem] = []
 var _arriving: bool = false
 var _speech: Label = null
 var _speech_left: float = 0.0
@@ -59,6 +63,9 @@ var _speech_left: float = 0.0
 
 func _ready() -> void:
 	_ids = CharacterLibrary.ids().duplicate()
+	var base_count: int = _ids.size()
+	while _ids.size() < test_fill:
+		_ids.append(_ids[_ids.size() % base_count])
 	_fresh = Profile.fresh_unlocks()
 	_selected = maxi(_ids.find(Profile.selected), 0)
 	if not Profile.is_unlocked(_ids[_selected]):
@@ -88,10 +95,42 @@ func _start_arrival() -> void:
 	_leaving = true
 	_arriving = true
 	_walker = _sitters[_selected]
-	_walk_from = Vector2(240.0, -24.0)   # приходит сверху экрана
+	var rest: Vector2 = _rest_pos(_selected)
+	var lane: float = _graves[_selected].position.y - ARROW_H * 0.5   # дорожка над рядом могилы
+	_begin_path(PackedVector2Array([Vector2(GATE_POS.x, -24.0), Vector2(GATE_POS.x, lane), Vector2(rest.x, lane), rest]))
 	_say("ОХ, ЧЁРТ")
-	_walk_time = 0.0
 	_arrow.hide()
+	_set_info(false)
+
+
+## Где сидит герой в своей могиле (экранные координаты).
+func _rest_pos(i: int) -> Vector2:
+	return _graves[i].position + Vector2(GRAVE_W * 0.5, 30.0) * _scale
+
+
+func _begin_path(points: PackedVector2Array) -> void:
+	_path = points
+	_path_len = 0.0
+	for k: int in range(1, points.size()):
+		_path_len += points[k - 1].distance_to(points[k])
+	_walk_time = 0.0
+
+
+## Точка и направление на пройденном расстоянии вдоль маршрута.
+func _path_at(dist: float) -> Array:
+	var left: float = dist
+	for k: int in range(1, _path.size()):
+		var seg: float = _path[k - 1].distance_to(_path[k])
+		if left <= seg or k == _path.size() - 1:
+			var t: float = clampf(left / maxf(seg, 0.001), 0.0, 1.0)
+			return [_path[k - 1].lerp(_path[k], t), (_path[k] - _path[k - 1]).normalized()]
+		left -= seg
+	return [_path[_path.size() - 1], Vector2.DOWN]
+
+
+func _set_info(shown: bool) -> void:
+	for node: CanvasItem in _info_nodes:
+		node.visible = shown
 
 
 func _build_menu_button() -> void:
@@ -185,8 +224,10 @@ func _layout_grid() -> void:
 	var n: int = _ids.size()
 	for candidate: float in [1.0, 0.75, 0.5, 0.4]:
 		_scale = candidate
-		_cols = mini(n, int(GRID_MAX_W / (GRAVE_W * _scale + 4.0)))
-		if ceili(float(n) / float(_cols)) * _cell_h() <= GRID_MAX_H:
+		var max_cols: int = maxi(int((GRID_MAX_W - AISLE) / (GRAVE_W * _scale + 4.0)), 1)
+		var rows: int = ceili(float(n) / float(max_cols))
+		_cols = ceili(float(n) / float(rows))
+		if rows * _cell_h() <= GRID_MAX_H:
 			return
 
 
@@ -194,13 +235,19 @@ func _cell_h() -> float:
 	return GRAVE_H * _scale + ARROW_H
 
 
+## Могилы рядами, посередине проход шириной AISLE (под воротами).
 func _cell_pos(i: int) -> Vector2:
-	var full_rows: int = _ids.size() / _cols
 	var row: int = i / _cols
-	var in_row: int = _cols if row < full_rows else _ids.size() - full_rows * _cols
+	var col: int = i % _cols
+	var in_row: int = mini(_cols, _ids.size() - row * _cols)
+	var left_count: int = in_row / 2
 	var step: float = GRAVE_W * _scale + 4.0
-	var left: float = (SCREEN.x - step * in_row) * 0.5
-	return Vector2(left + step * (i % _cols), GRID_TOP + _cell_h() * row + ARROW_H)
+	var x: float
+	if col < left_count:
+		x = GATE_POS.x - AISLE * 0.5 - step * (left_count - col)
+	else:
+		x = GATE_POS.x + AISLE * 0.5 + step * (col - left_count)
+	return Vector2(x + 2.0, GRID_TOP + _cell_h() * row + ARROW_H)
 
 
 func _build_grave(i: int) -> void:
@@ -266,6 +313,7 @@ func _build_panel() -> void:
 	style.set_border_width_all(2)
 	panel.add_theme_stylebox_override(&"panel", style)
 	add_child(panel)
+	_info_nodes.append(panel)
 	_preview = Sprite2D.new()
 	_preview.position = Vector2(58.0, 198.0)
 	_preview.scale = Vector2.ONE * 2.0
@@ -274,6 +322,7 @@ func _build_panel() -> void:
 	_preview.frame = 8
 	_preview.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	add_child(_preview)
+	_info_nodes.append(_preview)
 	_title = _label("", Vector2(96.0, 156.0), 350.0, YELLOW)
 	_title.add_theme_color_override(&"font_shadow_color", PINK)
 	_tagline = _label("", Vector2(96.0, 168.0), 350.0, WHITE)
@@ -281,6 +330,8 @@ func _build_panel() -> void:
 	_minus = _label("", Vector2(272.0, 184.0), 170.0, RED)
 	_weapon = _label("", Vector2(96.0, 212.0), 350.0, YELLOW)
 	_status = _label("", Vector2(96.0, 224.0), 350.0, GREEN)
+	for node: Label in [_title, _tagline, _plus, _minus, _weapon, _status]:
+		_info_nodes.append(node)
 	_hint = _label("WASD - ВЫБОР\nПРОБЕЛ - ПОГНАЛИ", Vector2(8.0, 243.0), 200.0, GREY)
 
 
@@ -339,10 +390,12 @@ func _choose() -> void:
 	GameState.character = id
 	_leaving = true
 	_arrow.hide()
+	_set_info(false)
 	_walker = _sitters[_selected]
-	_walk_from = _walker.global_position
-	_walk_time = 0.0
-	await get_tree().create_timer(WALK_SEC).timeout
+	var rest: Vector2 = _rest_pos(_selected)
+	var lane: float = _graves[_selected].position.y + GRAVE_H * _scale + ARROW_H * 0.5   # дорожка под рядом могилы
+	_begin_path(PackedVector2Array([rest, Vector2(rest.x, lane), Vector2(GATE_POS.x, lane), GATE_POS + Vector2(0.0, 10.0)]))
+	await get_tree().create_timer(_path_len / WALK_SPEED).timeout
 	SceneFlow.go(GAME_SCENE, Vector2.DOWN)
 
 
@@ -382,26 +435,36 @@ func _process(delta: float) -> void:
 	if _walker != null:
 		_walk_time += delta
 		_walker.z_index = 20
-		var span: float = ARRIVE_SEC if _arriving else WALK_SEC
-		var t: float = clampf(_walk_time / span, 0.0, 1.0)
-		var rest: Vector2 = _graves[_selected].position + Vector2(GRAVE_W * 0.5, 30.0) * _scale
-		var gate_point: Vector2 = GATE_POS + Vector2(0.0, 10.0)
-		var from: Vector2 = _walk_from
-		var to: Vector2 = rest if _arriving else gate_point
-		_walker.global_position = (from.lerp(to, t)).round()
+		var dist: float = minf(WALK_SPEED * _walk_time, _path_len)
+		var t: float = dist / maxf(_path_len, 0.001)
+		var at: Array = _path_at(dist)
+		var dir: Vector2 = at[1]
+		_walker.global_position = (at[0] as Vector2).round()
 		if _speech != null:
 			_speech.position = _walker.global_position + Vector2(-40.0, -26.0)
-		_walker.scale = Vector2.ONE if _arriving else Vector2.ONE * (1.0 - 0.4 * t)
+		_walker.scale = Vector2.ONE * _scale if _arriving else Vector2.ONE * _scale * (1.0 - 0.4 * t)
 		var body: Sprite2D = _walker.get_child(0) as Sprite2D
 		if body != null:
-			body.frame = (8 + int(_walk_time * 10.0) % 4) if t < 1.0 or not _arriving else 8
+			var step_frame: int = int(_walk_time * 10.0) % 4
+			if absf(dir.x) > absf(dir.y):
+				body.frame = step_frame
+				body.flip_h = dir.x > 0.0
+			elif dir.y < 0.0:
+				body.frame = 4 + step_frame
+			else:
+				body.frame = 8 + step_frame
+			if _arriving and t >= 1.0:
+				body.frame = 8
+				body.flip_h = false
 		if _arriving and t >= 1.0:
 			_arriving = false
 			_leaving = false
 			_walker.scale = Vector2.ONE
 			_walker.z_index = 0
+			_walker.position = Vector2(GRAVE_W * 0.5, 30.0)
 			_walker = null
 			_arrow.show()
+			_set_info(true)
 		return
 	for i: int in _graves.size():
 		var chosen: bool = i == _selected

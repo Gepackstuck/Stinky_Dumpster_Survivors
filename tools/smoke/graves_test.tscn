@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://tools/smoke/graves_test.gd" id="1_gt"]
+
+[node name="GravesTest" type="Node"]
+script = ExtResource("1_gt")

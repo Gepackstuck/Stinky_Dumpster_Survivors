@@ -23,9 +23,15 @@ func _run() -> void:
 	await get_tree().create_timer(0.4).timeout
 	_shot("book")
 	book.queue_free()
-	GameState.character = &"hobo"
-	SceneFlow.go("res://scenes/levels/main.tscn", Vector2.UP)
-	await get_tree().create_timer(0.3).timeout
+	var yard: Node = get_tree().current_scene
+	yard.set("_selected", 2)
+	yard.call("_refresh")
+	yard.call("_choose")
+	await get_tree().create_timer(0.5).timeout
+	_shot("walk1")
+	await get_tree().create_timer(0.6).timeout
+	_shot("walk2")
+	await get_tree().create_timer(0.6).timeout
 	_shot("transition")
 	await get_tree().create_timer(2.5).timeout
 	print("FLOW arena: ", get_tree().current_scene.name)
