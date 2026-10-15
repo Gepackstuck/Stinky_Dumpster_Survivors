@@ -12,7 +12,7 @@ var _armed: bool = true
 func _ready() -> void:
 	_sprite = Sprite2D.new()
 	_sprite.texture = TEX.load_tex("res://assets/sprites/structure_mine.png")
-	_sprite.hframes = 2
+	_sprite.hframes = 4
 	_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	add_child(_sprite)
 	_anim = randf()
@@ -22,7 +22,7 @@ func _physics_process(delta: float) -> void:
 	if not _armed:
 		return
 	_anim += delta
-	_sprite.frame = int(_anim * 2.5) % 2
+	_sprite.frame = int(_anim * 4.0) % 4
 	var trigger_sq: float = Balance.MINE_TRIGGER_DIST * Balance.MINE_TRIGGER_DIST
 	for node: Node in get_tree().get_nodes_in_group(&"enemies"):
 		var enemy: Node2D = node as Node2D

@@ -13,7 +13,7 @@ func _ready() -> void:
 	super._ready()
 	_sprite = Sprite2D.new()
 	_sprite.texture = TEX.load_tex("res://assets/sprites/structure_lamp.png")
-	_sprite.hframes = 2
+	_sprite.hframes = 4
 	_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	_sprite.position = Vector2(0.0, -8.0)
 	add_child(_sprite)
@@ -22,7 +22,7 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	super._physics_process(delta)
 	_anim += delta
-	_sprite.frame = int(_anim * 4.0) % 2
+	_sprite.frame = int(_anim * 6.0) % 4
 	_slow_left -= delta
 	if _slow_left <= 0.0:
 		_slow_left = 0.3

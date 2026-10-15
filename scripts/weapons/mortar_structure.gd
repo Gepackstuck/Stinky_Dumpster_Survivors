@@ -10,7 +10,7 @@ func _ready() -> void:
 	super._ready()
 	_sprite = Sprite2D.new()
 	_sprite.texture = TEX.load_tex("res://assets/sprites/structure_mortar.png")
-	_sprite.hframes = 2
+	_sprite.hframes = 4
 	_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	_sprite.position = Vector2(0.0, -4.0)
 	add_child(_sprite)
@@ -19,7 +19,12 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	super._physics_process(delta)
 	_flash = maxf(_flash - delta * 4.0, 0.0)
-	_sprite.frame = 1 if _flash > 0.0 else 0
+	if _flash > 0.6:
+		_sprite.frame = 2
+	elif _flash > 0.0:
+		_sprite.frame = 3
+	else:
+		_sprite.frame = int(Time.get_ticks_msec() * 0.002) % 2
 
 
 func _fire(target: Node2D) -> void:

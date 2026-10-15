@@ -5,6 +5,9 @@ const TEX: GDScript = preload("res://scripts/systems/tex.gd")
 const THROWN: GDScript = preload("res://scripts/weapons/thrown_slipper.gd")
 
 var player: Node2D = null
+const BANTER: GDScript = preload("res://scripts/weapons/pet_banter.gd")
+const LINES: Array[String] = ["КУР-Р!", "ГУ-ГУ", "БОМБА!", "ПО ЦЕЛИ"]
+var _talk_left: float = 4.0
 var _sprite: Sprite2D = null
 var _bomb_left: float = 0.0
 var _anim: float = 0.0
@@ -14,7 +17,7 @@ var _orbit: float = 0.0
 func _ready() -> void:
 	_sprite = Sprite2D.new()
 	_sprite.texture = TEX.load_tex("res://assets/sprites/pet_pigeon.png")
-	_sprite.hframes = 2
+	_sprite.hframes = 4
 	_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	add_child(_sprite)
 	_orbit = randf() * TAU
@@ -26,7 +29,11 @@ func _physics_process(delta: float) -> void:
 		return
 	_anim += delta
 	_orbit += delta * 1.3
-	_sprite.frame = int(_anim * 8.0) % 2
+	_sprite.frame = int(_anim * 12.0) % 4
+	_talk_left -= delta
+	if _talk_left <= 0.0:
+		_talk_left = BANTER.next_delay()
+		BANTER.say(self, LINES, Color(0.7, 0.8, 1.0))
 	_sprite.position.y = -14.0 + sin(_anim * 5.0) * 2.0
 	var goal: Vector2 = player.global_position + Vector2.from_angle(_orbit) * Balance.PIGEON_ORBIT_DIST
 	var step: Vector2 = goal - global_position

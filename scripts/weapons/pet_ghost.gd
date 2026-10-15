@@ -7,6 +7,10 @@ const PROJECTILE_SCENE: PackedScene = preload("res://scenes/weapons/projectile.t
 const BOTTLE: Texture2D = preload("res://assets/sprites/proj_bottle.png")
 const SLIPPER: Texture2D = preload("res://assets/sprites/proj_slipper_flat.png")
 
+const BANTER: GDScript = preload("res://scripts/weapons/pet_banter.gd")
+const DRUNK_LINES: Array[String] = ["ИК!", "ЗА ЗДОРОВЬЕ!", "Я В ПОРЯДКЕ", "БУЛЬК"]
+const GRANNY_LINES: Array[String] = ["ВНУЧЕК...", "ПОКУШАЙ", "ШЬЮ-ШЬЮ", "ДЕРЖИСЬ, ГОВНОЕД"]
+var _talk_left: float = 5.0
 var kind: StringName = &"drunk"
 var player: Node2D = null
 var _sprite: Sprite2D = null
@@ -18,7 +22,7 @@ var _home: Vector2 = Vector2.ZERO
 func _ready() -> void:
 	_sprite = Sprite2D.new()
 	_sprite.texture = load("res://assets/sprites/pet_ghost_%s.png" % kind) as Texture2D
-	_sprite.hframes = 2
+	_sprite.hframes = 4
 	_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	_sprite.modulate = Color(1.0, 1.0, 1.0, Balance.GHOST_ALPHA)
 	add_child(_sprite)
@@ -30,7 +34,11 @@ func _physics_process(delta: float) -> void:
 	if not is_instance_valid(player) or not GameState.run_active:
 		return
 	_anim += delta
-	_sprite.frame = int(_anim * 3.0) % 2
+	_sprite.frame = int(_anim * 5.0) % 4
+	_talk_left -= delta
+	if _talk_left <= 0.0:
+		_talk_left = BANTER.next_delay()
+		BANTER.say(self, DRUNK_LINES if kind == &"drunk" else GRANNY_LINES, Color(0.6, 1.0, 1.0) if kind == &"drunk" else Color(1.0, 0.5, 0.95))
 	_sprite.position.y = sin(_anim * 3.0) * 2.0   # парит
 	_follow(delta)
 	_act_left -= delta
