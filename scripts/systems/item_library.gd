@@ -128,6 +128,11 @@ static func icon(item_id: StringName) -> Texture2D:
 	return TEX.load_tex("res://assets/ui/item_%s.png" % item_id)
 
 
+## Мелкая версия (16 px) для сеток, паузы и надетых на героя предметов.
+static func icon_small(item_id: StringName) -> Texture2D:
+	return TEX.load_tex("res://assets/ui/item_%s_s.png" % item_id)
+
+
 static func max_count(item_id: StringName) -> int:
 	return Balance.ITEMS[item_id]["limit"]
 

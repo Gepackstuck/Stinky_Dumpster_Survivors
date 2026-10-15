@@ -168,65 +168,107 @@ def vodka(c):
 def stray_dog(c):
     c.ell(7, 7, 5, 5, (160, 110, 60), dither=BROWN); c.pts([(2, 2), (3, 2), (2, 3), (3, 3), (4, 3), (11, 2), (10, 3), (11, 3), (12, 3), (12, 4)], BROWN); c.ell(7, 9, 2.5, 2, WHITE); c.rect(6, 8, 8, 9, BLACK); c.px(4, 6, BLACK); c.px(10, 6, BLACK); c.px(3, 6, WHITE); c.rect(6, 11, 7, 12, PINK); c.px(5, 4, GREEN)
 
-# --- статы (внутри 14×14)
-@icon(RED)
+# --- статы: каждая иконка должна читаться без подписи
+@icon(RED, PINK, lim=0.4)
 def stat_max_hp(c):
-    c.ell(4, 4, 3.5, 3, RED); c.ell(9, 4, 3.5, 3, RED)
-    for y in range(5, 13): c.rect(round(6.5 - (6.5 - (y - 5) * 0.8)), y, round(6.5 + (6.5 - (y - 5) * 0.8)), y, RED)
-    c.rect(6, 4, 7, 9, WHITE); c.rect(4, 6, 9, 7, WHITE); c.px(3, 2, WHITE)
-@icon(GREEN)
-def stat_regen(c):
-    c.ell(6.5, 7, 5, 5, GREEN, dither=(20, 180, 20)); c.ell(6.5, 7, 3, 3, BLACK); c.rect(6, 5, 7, 9, GREEN); c.rect(4, 7, 9, 8, GREEN); c.pts([(11, 1), (12, 2), (1, 12)], YELLOW)
-@icon(RED)
-def stat_damage(c):
-    c.line(1, 12, 10, 3, LG, 2); c.pts([(10, 2), (11, 1), (12, 0), (11, 3), (12, 4)], WHITE); c.rect(0, 10, 3, 13, BROWN); c.line(2, 9, 5, 12, RED, 2); c.pts([(10, 6), (12, 7), (11, 10)], YELLOW)
-@icon(ORANGE, YELLOW)
-def stat_attack_speed(c):
-    c.pts([(8, 0), (7, 1), (6, 2), (5, 3), (4, 4), (3, 5), (2, 6)], YELLOW); c.rect(2, 6, 9, 7, YELLOW); c.pts([(8, 7), (7, 8), (6, 9), (5, 10), (5, 11), (4, 12), (4, 13)], YELLOW); c.rect(5, 5, 7, 6, ORANGE)
-    c.pts([(0, 4), (1, 4), (0, 9), (1, 9), (0, 11)], CYAN)
-@icon(YELLOW if False else RED, WHITE)
-def stat_crit(c):
+    c.ell(3.5, 4, 3.5, 3.2, RED); c.ell(9.5, 4, 3.5, 3.2, RED)
+    for y in range(5, 13):
+        half = 6.5 - (y - 5) * 0.8; c.rect(round(6.5 - half), y, round(6.5 + half), y, RED)
+    c.rect(6, 3, 7, 9, WHITE); c.rect(4, 5, 9, 6, WHITE); c.px(2, 2, WHITE); c.px(1, 3, PINK)
+@icon(GREEN, WHITE, lim=0.4)
+def stat_regen(c):   # пластырь + зелёные плюсики
+    for i in range(-3, 4):
+        c.line(1 + i, 12 + i * 0 - 0, 1 + i, 12, (0, 0, 0, ) if False else (235, 200, 160)) if False else None
+    c.line(1, 11, 10, 2, (235, 200, 160), 5); c.line(1, 11, 10, 2, (250, 225, 190), 2)
+    c.rect(5, 5, 7, 7, WHITE); c.px(6, 6, RED); c.pts([(3, 9), (4, 8), (8, 4), (9, 3)], (200, 150, 110))
+    c.rect(11, 8, 11, 12, GREEN); c.rect(9, 10, 13, 10, GREEN); c.rect(1, 0, 1, 4, GREEN); c.rect(0, 2, 3, 2, GREEN)
+@icon(RED, ORANGE, lim=0.4)
+def stat_damage(c):   # злая рожа
+    c.rect(1, 2, 12, 11, RED); c.rect(2, 1, 11, 12, RED); c.pts([(0, 3), (1, 1), (12, 1), (13, 3)], RED)
+    c.line(2, 3, 5, 6, BLACK, 2); c.line(11, 3, 8, 6, BLACK, 2); c.rect(3, 6, 4, 7, YELLOW); c.rect(9, 6, 10, 7, YELLOW); c.px(4, 7, BLACK); c.px(9, 7, BLACK)
+    c.rect(3, 9, 10, 10, BLACK); c.pts([(4, 9), (6, 9), (8, 9), (10, 9)], WHITE); c.pts([(5, 11), (8, 11)], WHITE)
+@icon(ORANGE, YELLOW, lim=0.4)
+def stat_attack_speed(c):   # очередь пуль с полосами скорости
+    for y in (2, 6, 10):
+        c.rect(5, y, 9, y + 2, YELLOW); c.rect(9, y, 10, y + 2, ORANGE); c.px(11, y + 1, ORANGE); c.rect(5, y, 6, y + 2, (255, 200, 80)); c.px(6, y, WHITE)
+        c.line(0, y + 1, 3, y + 1, WHITE if y != 6 else CYAN)
+@icon(CYAN, WHITE, lim=0.4)
+def stat_speed(c):   # крылатый ботинок
+    c.rect(4, 2, 9, 9, WHITE); c.rect(3, 8, 12, 11, WHITE); c.rect(9, 7, 12, 11, WHITE); c.rect(3, 11, 12, 12, BLACK); c.rect(4, 3, 8, 3, RED); c.px(5, 6, GREY); c.px(7, 6, GREY)
+    c.pts([(0, 2), (1, 3), (2, 4), (0, 4), (1, 5), (0, 7), (1, 7), (2, 7), (0, 9), (1, 9)], CYAN)
+@icon(GREY, WHITE, lim=0.4)
+def stat_armor(c):   # клёпаный стальной щит
+    c.rect(1, 1, 12, 7, MG); c.ell(6.5, 7, 5.5, 5.5, MG); c.rect(1, 1, 12, 2, LG); c.rect(2, 3, 3, 8, LG); c.rect(6, 3, 6, 11, DGREY)
+    for p in [(3, 3), (10, 3), (3, 8), (10, 8), (6, 12)]: c.px(*p, WHITE)
+    c.rect(4, 4, 5, 9, GREY)
+@icon(CYAN, WHITE, lim=0.4)
+def stat_dodge(c):   # силуэт и остаточные тени
+    for ox, col in ((0, (90, 120, 150)), (3, (130, 160, 190)), (7, WHITE)):
+        c.ell(3 + ox, 4, 1.8, 1.8, col); c.rect(2 + ox, 6, 4 + ox, 11, col); c.line(2 + ox, 12, 1 + ox, 13, col); c.line(4 + ox, 12, 5 + ox, 13, col)
+    c.pts([(12, 3), (13, 3), (12, 8), (13, 8)], CYAN)
+@icon(YELLOW if False else ORANGE, YELLOW, lim=0.4)
+def stat_pickup(c):   # цепкая рука
+    c.rect(3, 6, 9, 12, (240, 190, 150)); c.rect(3, 2, 4, 6, (240, 190, 150)); c.rect(5, 1, 6, 6, (240, 190, 150)); c.rect(7, 2, 8, 6, (240, 190, 150)); c.rect(9, 3, 10, 6, (240, 190, 150))
+    c.line(2, 9, 0, 6, (240, 190, 150), 2); c.pts([(3, 2), (5, 1), (7, 2), (9, 3)], WHITE); c.rect(3, 12, 9, 13, DGREY); c.pts([(4, 8), (6, 9), (8, 8)], (200, 140, 100))
+    c.ell(12, 10, 1.5, 1.5, YELLOW); c.px(12, 10, ORANGE)
+@icon(RED, YELLOW, lim=0.4)
+def stat_crit(c):   # нож в красной вспышке
     pts = []
-    for i in range(10):
-        r = 6 if i % 2 == 0 else 2.5; a = -math.pi / 2 + i * math.pi / 5
+    for i in range(16):
+        r = 6.5 if i % 2 == 0 else 3.5; a = i * math.pi / 8
         pts.append((6.5 + math.cos(a) * r, 6.5 + math.sin(a) * r))
     for y in range(14):
         for x in range(14):
-            # point in polygon
             inside = False; j = len(pts) - 1
             for i in range(len(pts)):
                 xi, yi = pts[i]; xj, yj = pts[j]
                 if ((yi > y) != (yj > y)) and (x < (xj - xi) * (y - yi) / (yj - yi) + xi): inside = not inside
                 j = i
-            if inside: c.px(x, y, YELLOW)
-    c.ell(6.5, 6.5, 1.5, 1.5, RED); c.px(5, 3, WHITE)
-@icon(CYAN, WHITE)
-def stat_speed(c):
-    c.rect(4, 3, 10, 11, WHITE); c.rect(1, 9, 11, 12, WHITE); c.rect(8, 8, 12, 12, WHITE); c.rect(1, 12, 12, 13, BLACK); c.rect(5, 4, 8, 4, RED); c.pts([(0, 3), (1, 3), (0, 6), (2, 6), (1, 8)], CYAN); c.pts([(0, 10)], CYAN)
-@icon(CYAN, WHITE)
-def stat_armor(c):
-    c.rect(1, 1, 12, 7, BLUE); c.ell(6.5, 7, 5.5, 5.5, BLUE); c.rect(2, 2, 11, 2, WHITE); c.rect(6, 2, 7, 11, CYAN); c.rect(2, 5, 11, 6, CYAN); c.px(3, 3, WHITE)
-@icon(CYAN, WHITE)
-def stat_dodge(c):
-    c.ell(7, 6, 4, 5, (150, 235, 255), dither=WHITE); c.rect(3, 6, 10, 12, (150, 235, 255), dither=WHITE); c.pts([(0, 3), (1, 5), (0, 8), (1, 10), (11, 4)], CYAN); c.pts([(5, 4), (8, 4)], BLACK); c.px(7, 8, BLACK)
-@icon(RED)
-def stat_pickup(c):
-    c.rect(1, 1, 4, 8, RED); c.rect(9, 1, 12, 8, RED); c.ell(6.5, 9, 6, 4, RED); c.rect(4, 2, 9, 8, BLACK); c.rect(1, 1, 4, 3, WHITE); c.rect(9, 1, 12, 3, WHITE); c.pts([(6, 11), (7, 12)], GREEN)
+            if inside: c.px(x, y, RED if (x + y) % 5 else ORANGE)
+    c.ell(6.5, 6.5, 3, 3, YELLOW); c.line(1, 1, 8, 8, LG, 2); c.line(1, 0, 7, 6, WHITE); c.rect(8, 8, 11, 9, DGREY); c.line(10, 9, 12, 12, BROWN, 2); c.px(1, 1, WHITE)
 
-# --- перки
-@icon(ORANGE, YELLOW)
+@icon(ORANGE, YELLOW, lim=0.4)
 def perk_double_shot(c):
-    for y in (3, 8):
-        c.rect(0, y, 3, y + 2, DGREY); c.rect(3, y, 9, y + 2, ORANGE); c.pts([(10, y + 1), (11, y + 1), (12, y + 1)], YELLOW); c.px(13, y + 1, WHITE)
+    for y in (2, 8):
+        c.rect(0, y, 3, y + 3, DGREY); c.rect(3, y, 9, y + 3, ORANGE); c.rect(3, y, 9, y, YELLOW); c.rect(10, y + 1, 12, y + 2, YELLOW); c.px(13, y + 1, WHITE); c.px(13, y + 2, WHITE)
 @icon(GREEN)
 def perk_loot_goblin(c):
-    c.ell(6.5, 7, 5.5, 5, GREEN, dither=(20, 180, 20)); c.pts([(0, 3), (1, 4), (13, 3), (12, 4), (0, 2), (13, 2)], GREEN); c.px(4, 5, YELLOW); c.px(9, 5, YELLOW); c.px(4, 6, BLACK); c.px(9, 6, BLACK); c.rect(4, 9, 9, 10, BLACK); c.pts([(5, 9), (8, 9)], WHITE)
+    c.ell(6.5, 7, 5.5, 5, GREEN, dither=(20, 180, 20)); c.pts([(0, 3), (1, 4), (13, 3), (12, 4), (0, 2), (13, 2), (1, 2), (12, 2)], GREEN); c.rect(3, 4, 5, 5, YELLOW); c.rect(8, 4, 10, 5, YELLOW); c.px(4, 5, BLACK); c.px(9, 5, BLACK); c.rect(4, 9, 9, 10, BLACK); c.pts([(5, 9), (8, 9)], WHITE)
+    c.ell(12, 12, 1.5, 1.5, YELLOW)
+@icon(GREEN, WHITE, lim=0.4)
+def perk_regen(c): stat_regen(c)
+@icon(CYAN, WHITE, lim=0.4)
+def perk_speed(c): stat_speed(c)
+
+# --- переделка слабых предметов ларька
+@icon(PINK)
+def gum(c):
+    c.rect(0, 9, 13, 13, DGREY, dither=GREY); c.pts([(2, 9), (6, 10), (10, 9)], BLACK); c.ell(5, 6, 4.5, 3.5, PINK, dither=(255, 120, 245)); c.ell(9, 7, 3, 2.5, PINK); c.pts([(3, 5), (4, 4)], WHITE)
+    c.line(11, 7, 13, 1, PINK); c.line(12, 7, 13, 2, PINK); c.px(13, 0, (255, 150, 245)); c.pts([(4, 8), (7, 8)], (200, 0, 190))
+@icon(PURPLE, YELLOW)
+def hot_dog(c):
+    c.rect(0, 5, 13, 9, (230, 70, 50)); c.rect(0, 6, 13, 6, (255, 130, 110)); c.rect(1, 3, 12, 6, (235, 175, 95), dither=(205, 140, 70)); c.rect(1, 9, 12, 12, (235, 175, 95), dither=(205, 140, 70))
+    c.rect(0, 5, 0, 9, (230, 70, 50)); c.rect(13, 5, 13, 9, (230, 70, 50)); c.pts([(2, 6), (4, 5), (6, 6), (8, 5), (10, 6), (12, 5)], YELLOW); c.pts([(3, 7), (5, 8), (7, 7), (9, 8), (11, 7)], YELLOW); c.pts([(3, 4), (6, 11), (10, 3)], GREEN)
+@icon(RED)
+def scarf(c):
+    c.rect(1, 1, 12, 5, PINK, dither=(200, 0, 190)); c.ell(6.5, 3, 6, 2.5, PINK); c.rect(8, 5, 11, 12, PINK); c.rect(8, 6, 11, 6, WHITE); c.rect(8, 9, 11, 9, WHITE); c.rect(1, 3, 12, 3, WHITE)
+    c.pts([(8, 13), (9, 13), (10, 13), (11, 13)], WHITE); c.pts([(8, 12), (10, 12)], PINK); c.px(4, 2, YELLOW); c.px(9, 2, YELLOW)
 @icon(GREEN)
-def perk_regen(c):
-    stat_regen(c)
-@icon(CYAN, WHITE)
-def perk_speed(c):
-    stat_speed(c)
+def stinky_pants(c):
+    c.rect(2, 0, 11, 3, (50, 90, 160)); c.rect(2, 4, 6, 12, (50, 90, 160), dither=(40, 70, 130)); c.rect(7, 4, 11, 12, (50, 90, 160), dither=(40, 70, 130)); c.rect(2, 0, 11, 0, DGREY); c.rect(6, 4, 6, 12, BLACK); c.pts([(2, 12), (3, 12), (9, 12), (10, 12)], CREAM)
+    c.ell(4, 7, 2, 2.5, BROWN); c.ell(9, 6, 1.5, 2, BROWN); c.pts([(4, 13), (8, 13)], GREEN); c.pts([(0, 3), (13, 6), (1, 9)], GREEN); c.px(3, 7, (150, 90, 40))
+@icon(PURPLE, WHITE)
+def ushanka(c):
+    c.ell(6.5, 5, 5.5, 4.5, (150, 120, 85), dither=BROWN); c.rect(0, 6, 3, 13, BROWN, dither=(130, 75, 30)); c.rect(10, 6, 13, 13, BROWN, dither=(130, 75, 30)); c.rect(3, 6, 10, 8, (130, 75, 30)); c.ell(6.5, 2, 2, 1, (170, 140, 100))
+    c.pts([(6, 3), (5, 4), (7, 4), (6, 5), (4, 3), (8, 3)], RED); c.px(6, 4, YELLOW); c.pts([(1, 13), (12, 13)], WHITE); c.pts([(0, 8), (13, 8)], WHITE); c.rect(1, 12, 2, 12, (190, 190, 170)); c.rect(11, 12, 12, 12, (190, 190, 170))
+@icon(GREEN, WHITE)
+def stink_lamp(c):
+    c.ell(6.5, 5, 4.5, 4.5, (200, 240, 200), dither=WHITE); c.ell(6.5, 6, 3, 3, GREEN); c.rect(4, 9, 9, 10, MG); c.rect(5, 11, 8, 12, DGREY); c.rect(6, 13, 7, 13, DGREY); c.pts([(5, 5), (8, 7)], (180, 255, 120)); c.px(4, 2, WHITE)
+    c.pts([(1, 0), (2, 1), (1, 2), (12, 0), (11, 1), (12, 2)], GREEN)
+@icon(ORANGE, YELLOW)
+def golden_toilet(c):
+    c.rect(1, 0, 6, 6, YELLOW, dither=ORANGE); c.rect(0, 0, 7, 1, ORANGE); c.rect(1, 5, 12, 6, YELLOW); c.ell(8, 8, 5, 2.5, YELLOW, dither=ORANGE); c.rect(3, 8, 12, 9, YELLOW); c.rect(4, 10, 9, 12, YELLOW, dither=ORANGE); c.rect(2, 12, 11, 13, ORANGE)
+    c.rect(7, 7, 11, 8, BROWN if False else (110, 70, 20)); c.pts([(2, 1), (2, 3), (4, 5)], WHITE); c.px(12, 3, WHITE); c.px(11, 2, RED); c.px(6, 1, RED)
 
 def render(name):
     f, sh, hi, w, h, lim = I[name]

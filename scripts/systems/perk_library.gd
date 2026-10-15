@@ -99,6 +99,10 @@ static func icon(perk_id: StringName) -> Texture2D:
 	return TEX.load_tex(_ICONS[perk_id])
 
 
+static func icon_small(perk_id: StringName) -> Texture2D:
+	return TEX.load_tex(String(_ICONS[perk_id]).replace(".png", "_s.png"))
+
+
 static func description(perk_id: StringName) -> String:
 	match perk_id:
 		SPEED:

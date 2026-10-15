@@ -102,7 +102,7 @@ static func stat_lines(id: StringName) -> PackedStringArray:
 
 
 static func hat_icon(id: StringName) -> Texture2D:
-	return ItemLibrary.icon(Balance.CHARACTERS[id]["hat"])
+	return ItemLibrary.icon_small(Balance.CHARACTERS[id]["hat"])
 
 
 static func unlock_text(id: StringName) -> String:

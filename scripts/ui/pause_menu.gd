@@ -261,10 +261,10 @@ func _open_inventory() -> void:
 		var row: HBoxContainer = HBoxContainer.new()
 		row.custom_minimum_size = Vector2(148.0, 14.0)
 		var icon: TextureRect = TextureRect.new()
-		icon.texture = ItemLibrary.icon(item_id)
+		icon.texture = ItemLibrary.icon_small(item_id)
 		icon.custom_minimum_size = Vector2(14.0, 14.0)
 		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		icon.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
 		row.add_child(icon)
 		var label: Label = Label.new()
 		var count: int = GameState.items[item_id]
@@ -276,9 +276,10 @@ func _open_inventory() -> void:
 		child.queue_free()
 	for entry: Dictionary in GameState.weapons:
 		var weapon_icon: TextureRect = TextureRect.new()
-		weapon_icon.texture = PerkLibrary.icon(ShopLibrary.perk_id_of(entry["id"]))
+		weapon_icon.texture = PerkLibrary.icon_small(ShopLibrary.perk_id_of(entry["id"]))
 		weapon_icon.custom_minimum_size = Vector2(20.0, 20.0)
 		weapon_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		weapon_icon.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
 		weapon_icon.modulate = Color.WHITE.lerp(StatLibrary.tier_color(entry["tier"]), 0.4)
 		_inventory_weapons.add_child(weapon_icon)
 	_inventory.show()

@@ -49,7 +49,7 @@ func _rebuild() -> void:
 			continue
 		used[slot] = index + 1
 		var icon: Sprite2D = Sprite2D.new()
-		icon.texture = OUTLINE.outlined(ItemLibrary.icon(item_id), int(Balance.ITEMS[item_id].get("tier", 1)))
+		icon.texture = OUTLINE.outlined(ItemLibrary.icon_small(item_id), int(Balance.ITEMS[item_id].get("tier", 1)))
 		icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		icon.scale = Vector2.ONE * SLOT_SCALE.get(slot, ICON_SCALE)
 		var back_layer: Node = get_parent().get_node_or_null("HeldBack")

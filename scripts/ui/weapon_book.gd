@@ -38,7 +38,7 @@ func _ready() -> void:
 func _cell(id: StringName, pos: Vector2) -> void:
 	var open: bool = Profile.is_weapon_unlocked(id)
 	var icon: TextureRect = TextureRect.new()
-	icon.texture = PerkLibrary.icon(StringName("w_" + String(id)))
+	icon.texture = PerkLibrary.icon_small(StringName("w_" + String(id)))
 	icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	icon.position = pos + Vector2((CELL_W - 16.0) * 0.5 - 4.0, 0.0)
 	icon.modulate = Color.WHITE if open else Color(0.15, 0.15, 0.2)

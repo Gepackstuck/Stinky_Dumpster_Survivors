@@ -118,7 +118,7 @@ func _refresh_items() -> void:
 		cell.custom_minimum_size = Vector2(16.0, 16.0)
 		cell.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		var icon: TextureRect = TextureRect.new()
-		icon.texture = ItemLibrary.icon(item_id)
+		icon.texture = ItemLibrary.icon_small(item_id)
 		icon.size = Vector2(16.0, 16.0)
 		icon.modulate = Color.WHITE.lerp(StatLibrary.tier_color(ItemLibrary.tier(item_id)), 0.25)
 		icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -139,7 +139,7 @@ func _build_slot_buttons() -> void:
 	for i: int in Balance.WEAPON_SLOTS:
 		var button: Button = Button.new()
 		button.custom_minimum_size = Vector2(19.0, 19.0)
-		button.expand_icon = true
+		button.expand_icon = false
 		button.focus_entered.connect(_update_slot_info.bind(i))
 		button.pressed.connect(_on_slot_pressed.bind(i))
 		_slots_box.add_child(button)
@@ -378,7 +378,7 @@ func _refresh_slots() -> void:
 		var border: Color = Color(0.25, 0.25, 0.3)
 		if filled:
 			var entry: Dictionary = GameState.weapons[i]
-			button.icon = PerkLibrary.icon(ShopLibrary.perk_id_of(entry["id"]))
+			button.icon = PerkLibrary.icon_small(ShopLibrary.perk_id_of(entry["id"]))
 			border = StatLibrary.tier_color(entry["tier"])
 		else:
 			button.icon = null

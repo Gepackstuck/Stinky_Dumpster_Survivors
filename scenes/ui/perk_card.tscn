@@ -10,11 +10,12 @@ script = ExtResource("1_card")
 [node name="Icon" type="TextureRect" parent="."]
 layout_mode = 0
 offset_left = 40.0
-offset_top = 14.0
-offset_right = 56.0
-offset_bottom = 30.0
-scale = Vector2(2, 2)
+offset_top = 10.0
+offset_right = 72.0
+offset_bottom = 50.0
 mouse_filter = 2
+expand_mode = 1
+stretch_mode = 3
 
 [node name="Hotkey" type="Label" parent="."]
 layout_mode = 0
