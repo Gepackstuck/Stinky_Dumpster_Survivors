@@ -6,9 +6,10 @@ extends Node
 const MAIN: PackedScene = preload("res://scenes/levels/main.tscn")
 const RUNS: Array[StringName] = [&"hobo", &"janitor", &"clerk", &"squid", &"blogger", &"pigeon", &"uncle_vitya", &"granny", &"courier", &"punk", &"guard", &"plumber"]
 const TIME_SCALE: float = 8.0
+const STAND_STILL: bool = false   # true: бот не двигается — проверка, что кемперить нельзя
 const FLEE_RADIUS: float = 95.0
-const STAT_WEIGHT: Dictionary = {&"damage": 3.0, &"attack_speed": 2.6, &"max_hp": 2.0, &"armor": 2.2, &"crit": 1.4,
-		&"speed": 1.4, &"dodge": 1.5, &"regen": 1.3, &"pickup": 0.8}
+const STAT_WEIGHT: Dictionary = {&"damage": 4.2, &"attack_speed": 3.6, &"max_hp": 3.4, &"armor": 3.0, &"crit": 1.6,
+		&"speed": 2.0, &"dodge": 2.2, &"regen": 2.2, &"pickup": 0.8}
 
 var _file: FileAccess
 var _level: Node = null
@@ -28,6 +29,13 @@ var _last_hp: float = 0.0
 var _rerolls: int = 0
 var _projectiles: Array[Node] = []
 var _frame: int = 0
+var _last_dir: Vector2 = Vector2.ZERO
+var _pos_hist: Array[Vector2] = []
+var _escape_dir: Vector2 = Vector2.ZERO
+var _escape_left: float = 0.0
+var _goal: Vector2 = Vector2.ZERO
+var _goal_left: float = 0.0
+var _results: Array = []
 var _src: Dictionary = {}   # урон по источникам за волну
 
 
@@ -79,6 +87,13 @@ func _finish() -> void:
 	Profile.deaths = _backup["d"]
 	Profile.wins = _backup["w"]
 	Profile.save()
+	var killers: Dictionary = {}
+	var waves: Array = []
+	for r: Dictionary in _results:
+		killers[r["killer"]] = killers.get(r["killer"], 0) + 1
+		waves.append(r["wave"])
+	waves.sort()
+	_out("СВОДКА: волны смерти %s, медиана %s; убийцы %s" % [str(waves), str(waves[waves.size() / 2]) if not waves.is_empty() else "-", str(killers)])
 	_out("BOT DONE")
 	_release_keys()
 	get_tree().quit()
@@ -134,6 +149,7 @@ func _end_run(result: String) -> void:
 		return
 	_finished = true
 	_running = false
+	_results.append({"hero": RUNS[_run_index], "wave": GameState.wave, "killer": GameState.last_damage_source if result == "СМЕРТЬ" else &"win"})
 	_release_keys()
 	_out("ИТОГ %s: %s на волне %d (осталось %.0fс), последний удар от %s, урон за волну: %s, убито %d, реальное время %.0fс. %s" % [RUNS[_run_index], result, GameState.wave, GameState.wave_time_left, GameState.last_damage_source, _src_text(), GameState.kills, (Time.get_ticks_msec() - _real_start) / 1000.0, _stats_line()])
 	await get_tree().create_timer(1.0).timeout
@@ -166,83 +182,197 @@ func _physics_process(_delta: float) -> void:
 	if Time.get_ticks_msec() - _real_start > 900000:
 		_end_run("ТАЙМАУТ")
 		return
-	_steer()
+	if not STAND_STILL:
+		_steer()
 
 
 func _steer() -> void:
 	var pos: Vector2 = _player.global_position
-	var flee: Vector2 = Vector2.ZERO
-	var nearest: float = 9999.0
 	var enemies: Array[Node] = get_tree().get_nodes_in_group(&"enemies")
 	_w_peak = maxi(_w_peak, enemies.size())
-	var nearest_enemy: Node2D = null
-	for node: Node in enemies:
-		var enemy: Node2D = node as Node2D
-		var offset: Vector2 = enemy.global_position - pos
-		var dist: float = offset.length()
-		if dist < nearest:
-			nearest = dist
-			nearest_enemy = enemy
-		if dist < FLEE_RADIUS and dist > 0.1:
-			flee -= offset / dist * pow((FLEE_RADIUS - dist) / FLEE_RADIUS, 1.5) * 2.0
-	var want: Vector2 = flee
-	if nearest > 50.0:
-		var best: Node2D = null
-		var best_d: float = 220.0
-		for node: Node in get_tree().get_nodes_in_group(&"pickups"):
-			var pickup: Node2D = node as Node2D
-			var d: float = pos.distance_to(pickup.global_position)
-			if d < best_d:
-				best_d = d
-				best = pickup
-		if best != null:
-			want += (best.global_position - pos).normalized() * 0.9
-		elif nearest_enemy != null and nearest > 130.0:
-			want += (nearest_enemy.global_position - pos).normalized() * 0.5   # подойти, чтобы оружие доставало
-	if nearest_enemy != null and flee.length() > 0.05:
-		var side: Vector2 = (nearest_enemy.global_position - pos).orthogonal().normalized()   # обходить по кругу, а не упираться в стену
-		want += side * 0.35
-	# уворот от снарядов врагов: шаг в сторону от траектории
 	_frame += 1
 	if _frame % 3 == 0:
 		_projectiles = _level.find_children("*", "EnemyProjectile", true, false)
-	for node: Node in _projectiles:
-		if not is_instance_valid(node):
-			continue
-		var proj: Node2D = node as Node2D
-		var to_me: Vector2 = pos - proj.global_position
-		var dist_p: float = to_me.length()
-		var heading: Vector2 = proj.get("_direction")
-		if dist_p < 120.0 and dist_p > 1.0 and heading.dot(to_me / dist_p) > 0.75:
-			var perp: Vector2 = heading.orthogonal()
-			if perp.dot(to_me) < 0.0:
-				perp = -perp
-			want += perp * 2.2 * (1.0 - dist_p / 120.0)
+	var speed: float = Balance.PLAYER_MOVE_SPEED * GameState.move_speed_mult
+	var near: Array = []   # [pos, vel, danger]
+	for node: Node in enemies:
+		var enemy: Node2D = node as Node2D
+		if enemy.global_position.distance_squared_to(pos) < 200.0 * 200.0:
+			var vel: Vector2 = Vector2.ZERO
+			if enemy is CharacterBody2D:
+				vel = (enemy as CharacterBody2D).velocity
+			var danger: float = 1.0
+			var id: StringName = enemy.get("enemy_id") if enemy.get("enemy_id") != null else &""
+			if id == &"charger" or id == &"boss_zakhar" or id == &"boss_minion" or id == &"boss_mega_hamster" or id == &"bruiser":
+				danger = 1.8
+			near.append([enemy.global_position, vel, danger])
+	var pickups: Array = []
+	for node: Node in get_tree().get_nodes_in_group(&"pickups"):
+		var pk: Node2D = node as Node2D
+		if pk.global_position.distance_squared_to(pos) < 220.0 * 220.0:
+			pickups.append(pk.global_position)
 	var arena: float = Balance.ARENA_SIZE
-	var margin: float = 70.0
-	if pos.x < margin:
-		want.x += (margin - pos.x) / margin * 3.2
-	if pos.x > arena - margin:
-		want.x -= (pos.x - (arena - margin)) / margin * 3.2
-	if pos.y < margin:
-		want.y += (margin - pos.y) / margin * 3.2
-	if pos.y > arena - margin:
-		want.y -= (pos.y - (arena - margin)) / margin * 3.2
-	var hard: float = 34.0   # у самой проволоки внутрь стены не идём совсем
-	if pos.x < hard:
-		want.x = maxf(want.x, 0.0)
-	if pos.x > arena - hard:
-		want.x = minf(want.x, 0.0)
-	if pos.y < hard:
-		want.y = maxf(want.y, 0.0)
-	if pos.y > arena - hard:
-		want.y = minf(want.y, 0.0)
-	if want.length() > 1.0:
-		want = want.normalized()
-	_press(&"move_left", maxf(-want.x, 0.0))
-	_press(&"move_right", maxf(want.x, 0.0))
-	_press(&"move_up", maxf(-want.y, 0.0))
-	_press(&"move_down", maxf(want.y, 0.0))
+	# зажали в угол/толпой: пробиваемся — игрок расталкивает врагов, надо давить в сторону с самым пустым просветом
+	_pos_hist.append(pos)
+	if _pos_hist.size() > 36:
+		_pos_hist.pop_front()
+	var crowd: int = 0
+	for e: Array in near:
+		if pos.distance_to(e[0]) < 38.0:
+			crowd += 1
+	if _escape_left > 0.0:
+		_escape_left -= get_physics_process_delta_time()
+		_drive(_escape_dir)
+		return
+	if _pos_hist.size() >= 36 and crowd >= 1 and _pos_hist[0].distance_to(pos) < 14.0:
+		var center: Vector2 = Vector2(arena, arena) * 0.5
+		var pick: Vector2 = Vector2.ZERO
+		var pick_score: float = -INF
+		for k: int in 16:
+			var d2: Vector2 = Vector2.from_angle(TAU * k / 16.0)
+			var sc: float = d2.dot((center - pos).normalized()) * 2.0
+			for e: Array in near:
+				var off: Vector2 = (e[0] as Vector2) - pos
+				if off.length() < 90.0 and off.normalized().dot(d2) > 0.6:
+					sc -= 1.5
+			var after: Vector2 = pos + d2 * 40.0
+			if after.x < 30.0 or after.y < 30.0 or after.x > arena - 30.0 or after.y > arena - 30.0:
+				sc -= 4.0
+			if sc > pick_score:
+				pick_score = sc
+				pick = d2
+		_escape_dir = pick
+		_escape_left = 0.7
+		_pos_hist.clear()
+		return
+	_goal_left -= get_physics_process_delta_time()
+	if _goal_left <= 0.0 or pos.distance_to(_goal) < 30.0:
+		_pick_goal(pos, near)
+	var danger_r: float = clampf(_want_range() + 32.0, 55.0, 95.0)
+	var bold: float = 1.0
+	if _want_range() < 70.0 and GameState.hp > GameState.max_hp * 0.5:
+		bold = 0.3   # ближнему бою надо подходить вплотную, иначе оружие не работает
+	var best_dir: Vector2 = Vector2.ZERO
+	var best_score: float = -INF
+	var dirs: int = 16
+	for i: int in dirs + 1:
+		var dir: Vector2 = Vector2.ZERO if i == dirs else Vector2.from_angle(TAU * i / dirs)
+		var score: float = 0.0
+		# смотрим три момента вперёд: через 0.25, 0.5 и 0.8 сек
+		for t: float in [0.15, 0.4, 0.8]:
+			var me: Vector2 = pos + dir * speed * t
+			var w: float = 1.0 if t < 0.6 else 0.7
+			for e: Array in near:
+				var ep: Vector2 = (e[0] as Vector2) + (e[1] as Vector2) * t
+				var d: float = me.distance_to(ep)
+				var danger: float = e[2]
+				if d < danger_r:
+					score -= w * danger * pow((danger_r - d) / danger_r, 2.0) * 90.0 * bold
+			for node: Node in _projectiles:
+				if not is_instance_valid(node):
+					continue
+				var proj: Node2D = node as Node2D
+				var heading: Vector2 = proj.get("_direction")
+				var pv: float = float(proj.get("_speed"))
+				var pp: Vector2 = proj.global_position + heading * pv * t
+				var dd: float = me.distance_to(pp)
+				if dd < 22.0:
+					score -= w * (22.0 - dd) * 6.0
+			# стены и углы
+			var edge: float = minf(minf(me.x, arena - me.x), minf(me.y, arena - me.y))
+			if edge < 70.0:
+				score -= w * pow((70.0 - edge) / 70.0, 2.0) * 60.0
+			if edge < 44.0:
+				score -= w * 200.0
+		# простор: чем дальше от центра масс врагов, тем лучше, но не уходим в угол
+		if not near.is_empty():
+			var centroid: Vector2 = Vector2.ZERO
+			for e: Array in near:
+				centroid += e[0]
+			centroid /= near.size()
+			score += (pos + dir * speed * 0.8).distance_to(centroid) * 0.12
+		# собираем говно, когда рядом тихо
+		var calm: bool = true
+		for e: Array in near:
+			if pos.distance_to(e[0]) < danger_r:
+				calm = false
+				break
+		if calm and not pickups.is_empty():
+			var closest: float = 9999.0
+			for pk: Vector2 in pickups:
+				closest = minf(closest, (pos + dir * speed * 0.5).distance_to(pk))
+			score -= closest * 0.25
+		elif calm and not near.is_empty():
+			# подойти к врагам на дистанцию стрельбы, чтобы оружие доставало
+			score -= absf((pos + dir * speed * 0.5).distance_to(_nearest(near, pos)) - _want_range()) * 0.08
+		if dir != Vector2.ZERO:
+			score += dir.dot(_last_dir) * 4.0   # без дёрганья
+			score += dir.dot((_goal - pos).normalized()) * 9.0   # идём к цели по прямой, а не кружим
+		else:
+			score -= 6.0   # стоять на месте — плохо
+		if score > best_score:
+			best_score = score
+			best_dir = dir
+	_last_dir = best_dir
+	_drive(best_dir)
+
+
+## Цель манёвра: точка простора подальше от толпы и стен — бежим к ней прямо, а не кружим вокруг врагов.
+func _pick_goal(pos: Vector2, near: Array) -> void:
+	var arena: float = Balance.ARENA_SIZE
+	var best: Vector2 = Vector2(arena, arena) * 0.5
+	var best_score: float = -INF
+	for i: int in 14:
+		var cand: Vector2 = Vector2(randf_range(80.0, arena - 80.0), randf_range(80.0, arena - 80.0))
+		var sc: float = -cand.distance_to(pos) * 0.15
+		for e: Array in near:
+			var d: float = cand.distance_to(e[0])
+			if d < 110.0:
+				sc -= (110.0 - d) * 0.6
+		var line_blocked: float = 0.0
+		var heading: Vector2 = (cand - pos).normalized()
+		for e: Array in near:
+			var off: Vector2 = (e[0] as Vector2) - pos
+			var along: float = off.dot(heading)
+			if along > 0.0 and absf(off.dot(heading.orthogonal())) < 26.0 and along < pos.distance_to(cand):
+				line_blocked += 1.0
+		sc -= line_blocked * 14.0
+		if sc > best_score:
+			best_score = sc
+			best = cand
+	_goal = best
+	_goal_left = 2.5
+
+
+func _drive(dir: Vector2) -> void:
+	_press(&"move_left", maxf(-dir.x, 0.0))
+	_press(&"move_right", maxf(dir.x, 0.0))
+	_press(&"move_up", maxf(-dir.y, 0.0))
+	_press(&"move_down", maxf(dir.y, 0.0))
+
+
+func _nearest(near: Array, pos: Vector2) -> Vector2:
+	var best: Vector2 = near[0][0]
+	for e: Array in near:
+		if pos.distance_squared_to(e[0]) < pos.distance_squared_to(best):
+			best = e[0]
+	return best
+
+
+## Желаемая дистанция до врагов: ближний бой — вплотную, стрелки — подальше.
+func _want_range() -> float:
+	var shortest: float = 110.0
+	for w: Dictionary in GameState.weapons:
+		var data: Dictionary = Balance.WEAPONS.get(w["id"], {})
+		if data.has("reach"):
+			shortest = minf(shortest, float(data["reach"]) * 0.6)
+		elif data.has("radius"):
+			shortest = minf(shortest, float(data["radius"]) * 0.6)
+		elif data.has("range"):
+			shortest = minf(shortest, float(data["range"]) * 0.7)
+		elif data.has("proj_life"):
+			shortest = minf(shortest, float(data["proj_life"]) * Balance.PROJECTILE_SPEED * 0.7)
+	return shortest
 
 
 func _press(action: StringName, strength: float) -> void:
@@ -280,46 +410,104 @@ func _level_up() -> void:
 	_ui.call("_on_card_pressed", best)
 
 
+func _weapon_power(id: StringName, tier: int) -> float:
+	var data: Dictionary = Balance.WEAPONS.get(id, {})
+	var dmg: float = float(data.get("damage", 5.0)) * float(data.get("pellets", 1)) * (1.0 + 0.8 * float(tier - 1))
+	return dmg / maxf(float(data.get("cooldown", 1.0)), 0.05) * (1.15 if data.has("burn_dps") else 1.0)
+
+
+func _avg_power() -> float:
+	var total: float = 0.0
+	for w: Dictionary in GameState.weapons:
+		total += _weapon_power(w["id"], w["tier"])
+	return total / maxf(float(GameState.weapons.size()), 1.0)
+
+
+func _worst_weapon() -> int:
+	var worst: int = -1
+	var worst_power: float = INF
+	for i: int in GameState.weapons.size():
+		var w: Dictionary = GameState.weapons[i]
+		var pw: float = _weapon_power(w["id"], w["tier"])
+		if pw < worst_power:
+			worst_power = pw
+			worst = i
+	return worst
+
+
 func _offer_score(offer: Dictionary) -> float:
 	var tier: int = offer["tier"]
 	if offer["kind"] == &"weapon":
-		var merge: float = 6.0 if GameState.find_weapon(offer["id"], tier) >= 0 else 0.0
-		var free: float = 8.0 if GameState.weapons.size() < Balance.WEAPON_SLOTS else 0.0
-		return 6.0 + tier * 3.0 + merge + free
+		var merge: float = 10.0 if GameState.find_weapon(offer["id"], tier) >= 0 else 0.0
+		var power: float = _weapon_power(offer["id"], tier)
+		if GameState.weapons.size() < Balance.WEAPON_SLOTS:
+			if merge == 0.0 and GameState.weapons.size() >= 3 and power < _avg_power() * 0.9:
+				return -50.0   # слабый хлам в слот не берём
+			return 8.0 + power * 0.5 + merge
+		if merge > 0.0:
+			return 8.0 + merge
+		var worst: int = _worst_weapon()
+		var worst_power: float = _weapon_power(GameState.weapons[worst]["id"], GameState.weapons[worst]["tier"])
+		if power > worst_power * 1.4 and GameState.weapons.size() > 1:
+			return 6.0 + (power - worst_power) * 0.4   # замена слабого оружия
+		return -50.0
 	if offer["kind"] == &"item":
 		var data: Dictionary = Balance.ITEMS[offer["id"]]
 		var score: float = 3.0 + tier * 2.5
 		for stat: StringName in data.get("mods", {}):
 			var v: float = data["mods"][stat]
-			score += STAT_WEIGHT.get(stat, 1.0) * v * (0.25 if v > 0.0 else 0.18)
-		if data.get("fx", {}).has(&"pets") or data.get("fx", {}).has(&"turrets"):
-			score += 4.0
+			score += STAT_WEIGHT.get(stat, 1.0) * v * (0.3 if v > 0.0 else 0.2)
+		var fx: Dictionary = data.get("fx", {})
+		for key: StringName in [&"pets", &"turrets", &"dogs", &"pigeons", &"mines", &"lamps", &"mortars", &"ghost_granny", &"ghost_drunk"]:
+			if fx.has(key):
+				score += 4.0
 		return score
-	return 2.0
+	return 4.0 + STAT_WEIGHT.get(offer["id"], 1.0) * 0.5
 
 
 func _shop() -> void:
-	var offers: Array[Dictionary] = GameState.shop_offers
-	var best: int = -1
-	var best_score: float = 0.0
-	for i: int in offers.size():
-		if ShopLibrary.why_not(offers[i]) != "":
-			continue
-		var score: float = _offer_score(offers[i])
-		if score > best_score:
-			best_score = score
-			best = i
-	if best >= 0:
-		_ui.call("_on_card_pressed", best)
-		return
-	var cost: int = Balance.REROLL_BASE_COST + int(GameState.wave * Balance.REROLL_WAVE_FACTOR) + GameState.reroll_count * Balance.REROLL_STEP_COST
-	if _rerolls < 3 and GameState.coins >= cost + 25:
-		_rerolls += 1
-		_ui.call("_on_reroll_pressed")
-		return
+	# 1. слить одинаковые оружия
 	for slot: int in GameState.weapons.size():
 		if GameState.find_merge_partner(slot) >= 0:
 			GameState.merge_weapons(slot)
 			_ui.call("_refresh_shop")
 			return
+	var offers: Array[Dictionary] = GameState.shop_offers
+	# 2. купить лучшее из доступного; если слоты забиты, а предложение сильнее худшего оружия — сначала сдать худшее
+	var best: int = -1
+	var best_score: float = -30.0
+	for i: int in offers.size():
+		if offers[i]["sold"]:
+			continue
+		var score: float = _offer_score(offers[i])
+		if score <= best_score:
+			continue
+		if offers[i]["kind"] == &"weapon" and GameState.weapons.size() >= Balance.WEAPON_SLOTS and GameState.find_weapon(offers[i]["id"], offers[i]["tier"]) < 0:
+			if GameState.coins < offers[i]["price"]:
+				continue
+		elif ShopLibrary.why_not(offers[i]) != "":
+			continue
+		best_score = score
+		best = i
+	if best >= 0:
+		var offer: Dictionary = offers[best]
+		if offer["kind"] == &"weapon" and GameState.weapons.size() >= Balance.WEAPON_SLOTS and GameState.find_weapon(offer["id"], offer["tier"]) < 0:
+			GameState.recycle_weapon(_worst_weapon())
+		_ui.call("_on_card_pressed", best)
+		return
+	# 3. заморозить дорогое, но нужное (оно переживёт реролл и волну)
+	var locked_any: bool = false
+	for offer: Dictionary in offers:
+		if not offer["sold"] and not offer["locked"] and offer["price"] > GameState.coins and _offer_score(offer) >= 9.0:
+			offer["locked"] = true
+			locked_any = true
+	if locked_any:
+		_ui.call("_show_choices")
+		return
+	# 4. реролл, пока есть на что
+	var cost: int = Balance.REROLL_BASE_COST + int(GameState.wave * Balance.REROLL_WAVE_FACTOR) + GameState.reroll_count * Balance.REROLL_STEP_COST
+	if _rerolls < 25 and GameState.coins >= cost + 8:
+		_rerolls += 1
+		_ui.call("_on_reroll_pressed")
+		return
 	_ui.call("_on_next_pressed")

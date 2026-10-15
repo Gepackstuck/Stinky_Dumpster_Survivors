@@ -31,8 +31,8 @@ const WAVE_DURATION_FIRST_SEC: float = 20.0
 const WAVE_DURATION_STEP_SEC: float = 4.0
 const WAVE_DURATION_MAX_SEC: float = 70.0
 const WAVE_DURATION_FINAL_SEC: float = 120.0      # последняя волна (боссы)
-const WAVE_ENEMIES_BASE: int = 10   # врагов за 1-ю волну (баланс по Brotato: старт спокойный)
-const WAVE_ENEMIES_PER_WAVE: int = 9   # + столько за каждую следующую (к 15-й волне ~136)
+const WAVE_ENEMIES_BASE: int = 12   # врагов за 1-ю волну (баланс по Brotato: старт спокойный)
+const WAVE_ENEMIES_PER_WAVE: int = 11   # + столько за каждую следующую (к 15-й волне ~136)
 const MAX_ALIVE_ENEMIES: int = 160                    # потолок врагов на карте — как в Brotato
 const WAVE_MIN_GROUPS: int = 3                       # минимум групп за волну
 const WAVE_GROUP_SIZE_BASE: int = 3               # размер группы = BASE + (волна-1)/STEP (±1, +1)
@@ -41,11 +41,11 @@ const WAVE_MAX_GAP_SEC: float = 4.0               # максимум секун�
 const WAVE_FIRST_GROUP_SEC: float = 0.5
 const WAVE_SPAWN_END_FRACTION: float = 0.85       # последняя группа не позже 85% времени волны
 const SPAWN_MARKER_SEC: float = 1.0               # красный крест за секунду до появления
-const SPAWN_MIN_DISTANCE_FROM_PLAYER: float = 120.0
+const SPAWN_MIN_DISTANCE_FROM_PLAYER: float = 75.0
 const SPAWN_ARENA_MARGIN: float = 40.0
 const SPAWN_GROUP_SPREAD: float = 28.0
 const SPECIAL_WAVE_WINDOWS: Array = [[7, 8], [10, 11], [13, 14]]  # в каждом окне — элита или орда (последнее всегда элита)
-const ELITE_CHANCE: float = 0.6
+const ELITE_CHANCE: float = 1.0
 const HORDE_GROUP_MULT: float = 2.0
 const ELITE_REWARD_XP_DROPS: int = 6                 # за убийство элиты: куча говна + бесплатный предмет
 const ELITE_REWARD_XP_VALUE: int = 14
@@ -54,31 +54,31 @@ const FINAL_BOSS_SPAWN_SEC: float = 1.5
 const WAVE_END_BONUS_XP_BASE: int = 6          # «копание в помойке» в конце волны (аналог Harvesting в Brotato)
 const WAVE_END_BONUS_XP_PER_WAVE: int = 2
 const WAVE_END_COLLECT_SEC: float = 1.5           # время на авто-сбор материалов после волны
-const ENEMY_HP_MULT: float = 0.6                  # общий множитель HP врагов (под Brotato: враги умирают за 1-2 удара)
+const ENEMY_HP_MULT: float = 0.8                  # общий множитель HP врагов (под Brotato: враги умирают за 1-2 удара)
 # Поздние волны растут быстрее (как в Brotato: к 10-й волне экран уже забит, к 15-й это настоящая орда).
 const WAVE_LATE_START: int = 7
-const WAVE_ENEMIES_LATE: float = 2.5        # + это * (волна - LATE_START)^2 врагов за волну
-const WAVE_HP_QUAD: float = 0.06           # + это * (волна-1)^2 к множителю HP
-const WAVE_DAMAGE_QUAD: float = 0.02       # + это * (волна-1)^2 к множителю урона
-const BOSS_HP_MULT: float = 2.0                   # боссы последней волны крепче обычного роста
+const WAVE_ENEMIES_LATE: float = 3.0        # + это * (волна - LATE_START)^2 врагов за волну
+const WAVE_HP_QUAD: float = 0.10           # + это * (волна-1)^2 к множителю HP
+const WAVE_DAMAGE_QUAD: float = 0.05       # + это * (волна-1)^2 к множителю урона
+const BOSS_HP_MULT: float = 3.5                   # боссы последней волны крепче обычного роста
 const ELITE_HP_MULT: float = 1.3
-const WAVE_HP_GROWTH: float = 0.30   # рост HP врагов за волну
+const WAVE_HP_GROWTH: float = 0.35   # рост HP врагов за волну
 const PLAYER_MAX_HIT_FRACTION: float = 0.34   # один удар не снимает больше трети максимума HP (нет ваншотов)
-const WAVE_DAMAGE_GROWTH: float = 0.10   # рост урона врагов за волну
-const WAVE_SPEED_GROWTH: float = 0.04        # +3% скорости за волну
-const WAVE_SPEED_MAX_MULT: float = 1.5
+const WAVE_DAMAGE_GROWTH: float = 0.15   # рост урона врагов за волну
+const WAVE_SPEED_GROWTH: float = 0.05        # +3% скорости за волну
+const WAVE_SPEED_MAX_MULT: float = 1.6
 const GROUND_BODY_LAYER: int = 2                 # тела наземных врагов толкаются друг с другом и со стеной
 const GROUND_BODY_MASK: int = 34
 const FLYER_BODY_LAYER: int = 64                 # летающие: свой слой, сталкиваются только со стеной (бит 6)
 const FLYER_BODY_MASK: int = 32
 const ENEMY_DAMAGE_MULT: float = 1.0   # общий множитель урона врагов по игроку
 const WAVE_ENEMY_UNLOCK: Dictionary = {     # с какой волны тип может выпасть (15 волн)
-	&"squid_gopnik": 1, &"chaser": 2, &"microbe": 3, &"charger": 3, &"npc_bot": 4, &"spitter": 5,
-	&"looter": 4, &"cockroach": 5, &"bruiser": 6, &"wifi_ghost": 7,
+	&"squid_gopnik": 1, &"chaser": 3, &"microbe": 3, &"charger": 3, &"npc_bot": 3, &"spitter": 3,
+	&"looter": 4, &"cockroach": 4, &"bruiser": 5, &"wifi_ghost": 6,
 	&"healer": 5, &"glutton": 6, &"egg": 8, &"mamka": 9,
 }
 const WAVE_ENEMY_WEIGHTS: Dictionary = {    # вес в взвешенном рандоме
-	&"squid_gopnik": 10, &"chaser": 8, &"microbe": 5, &"charger": 6, &"npc_bot": 5, &"spitter": 5,
+	&"squid_gopnik": 10, &"chaser": 8, &"microbe": 5, &"charger": 7, &"npc_bot": 4, &"spitter": 8,
 	&"looter": 1, &"cockroach": 4, &"bruiser": 4, &"wifi_ghost": 3,
 	&"healer": 3, &"glutton": 3, &"egg": 2, &"mamka": 2,
 }
@@ -260,8 +260,8 @@ const WEAPON_PRICE: Dictionary = {&"lighter": 22, &"sock": 24, &"slingshot": 22,
 const PERK_PRICE: Dictionary = {&"speed": 14, &"regen": 16, &"double_shot": 30, &"loot_goblin": 12}
 const SHOP_SLOTS: int = 4
 const SHOP_PRICE_TIER_MULT: Array[float] = [1.0, 2.0, 3.5, 6.0]
-const COIN_PER_XP: float = 0.9   # сколько говна даёт 1 XP
-const SHOP_PRICE_WAVE_GROWTH: float = 0.12          # цена *(1 + это * волна)
+const COIN_PER_XP: float = 1.3   # сколько говна даёт 1 XP
+const SHOP_PRICE_WAVE_GROWTH: float = 0.15          # цена *(1 + это * волна)
 const SHOP_WEAPON_CHANCE: float = 0.45              # шанс, что слот — оружие (предмет — SHOP_ITEM_CHANCE, иначе перк)
 const SHOP_TIER2_PER_WAVE: float = 0.05             # II-тир: (волна-1)*это, до 0.5
 const SHOP_TIER3_PER_WAVE: float = 0.03             # III-тир: (волна-3)*это, до 0.35
@@ -290,16 +290,16 @@ const GLUTTON_MAX_SCALE: float = 1.9
 
 # --- Враги: hp, damage, speed, xp, coins (GDD) ---
 const ENEMIES: Dictionary = {
-	&"squid_gopnik": {"hp": 40.0, "damage": 2.0, "speed": 60.0, "xp": 2, "coins": 1},
+	&"squid_gopnik": {"hp": 40.0, "damage": 2.5, "speed": 68.0, "xp": 2, "coins": 1},
 	&"microbe": {"hp": 60.0, "damage": 1.5, "speed": 40.0, "xp": 3, "coins": 1},
 	&"npc_bot": {"hp": 32.0, "damage": 2.0, "speed": 50.0, "xp": 2, "coins": 1},
 	&"cockroach": {"hp": 9.0, "damage": 2.0, "speed": 140.0, "xp": 1, "coins": 2},
 	&"wifi_ghost": {"hp": 50.0, "damage": 3.0, "speed": 70.0, "xp": 4, "coins": 2, "flying": true},
 	# Враги Шага 4 (поведение как в Brotato): group_mult — множитель размера группы.
-	&"chaser": {"hp": 10.0, "damage": 1.0, "speed": 88.0, "xp": 1, "coins": 1, "radius": 5.0, "group_mult": 1.4, "flying": true},
-	&"charger": {"hp": 50.0, "damage": 1.5, "speed": 70.0, "xp": 3, "coins": 1, "radius": 8.0, "group_mult": 0.7,
+	&"chaser": {"hp": 10.0, "damage": 1.0, "speed": 90.0, "xp": 1, "coins": 1, "radius": 5.0, "group_mult": 1.4, "flying": true},
+	&"charger": {"hp": 50.0, "damage": 2.5, "speed": 70.0, "xp": 3, "coins": 1, "radius": 8.0, "group_mult": 0.7,
 			"brain": "res://scripts/enemies/brains/charger_brain.gd"},
-	&"spitter": {"hp": 34.0, "damage": 1.0, "speed": 60.0, "xp": 3, "coins": 1, "radius": 7.0, "group_mult": 0.7,
+	&"spitter": {"hp": 34.0, "damage": 2.0, "speed": 60.0, "xp": 3, "coins": 1, "radius": 7.0, "group_mult": 0.7,
 			"brain": "res://scripts/enemies/brains/spitter_brain.gd"},
 	&"bruiser": {"hp": 170.0, "damage": 3.0, "speed": 55.0, "xp": 8, "coins": 3, "radius": 11.0, "group_mult": 0.3},
 	&"looter": {"hp": 90.0, "damage": 1.0, "speed": 85.0, "xp": 25, "coins": 10, "radius": 7.0, "group_mult": 0.0,
@@ -340,7 +340,7 @@ const WEAPONS: Dictionary = {
 	&"laser_pointer": {"damage": 3.0, "cooldown": 0.2, "beam_half_width": 5.0, "tag": "ПРОБИВАЕТ"},
 	&"mop": {"damage": 14.0, "cooldown": 0.8, "knockback": 240.0, "reach": 52.0, "arc_deg": 140.0, "tag": "ОТБРОС"},
 	&"slipper": {"damage": 25.0, "cooldown": 2.5, "aoe_radius": 40.0, "flight_sec": 0.5, "tag": "ВЗРЫВ"},
-	&"condensed_milk": {"damage": 3.0, "cooldown": 0.5, "slow_factor": 0.5, "slow_duration": 2.0,
+	&"condensed_milk": {"damage": 6.0, "cooldown": 0.5, "slow_factor": 0.5, "slow_duration": 2.0,
 			"projectile": "res://assets/sprites/proj_milk.png", "tag": "ЗАМЕДЛЯЕТ"},
 	&"turret": {"damage": 7.0, "cooldown": 0.9, "tag": "ТУРЕЛЬ", "structure": true},
 	&"stink_lamp": {"damage": 4.0, "cooldown": 0.5, "radius": 70.0, "tag": "ЛАМПА", "structure": true},

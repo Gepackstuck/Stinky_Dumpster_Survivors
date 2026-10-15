@@ -167,10 +167,10 @@ func _input(event: InputEvent) -> void:
 			_select(_selected)
 	elif event.is_action_pressed(&"move_up") and not _start_mode:
 		get_viewport().set_input_as_handled()
-		if _zone == 1:
+		if _zone == 1 and not _visible_cards().is_empty():
 			_zone = 0
 			_select(_selected)
-		elif _zone == 0:
+		elif _zone == 1 or _zone == 0:
 			_focus_top()
 	elif event is InputEventKey and event.pressed and not event.echo:
 		var code: Key = (event as InputEventKey).physical_keycode

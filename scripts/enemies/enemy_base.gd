@@ -40,6 +40,15 @@ func _ready() -> void:
 	_health.health_changed.connect(func(current: float, maximum: float) -> void: _flash.set_outline_by_health(current / maxf(maximum, 1.0)))
 
 
+## Текущее и максимальное здоровье (для полоски элиты/босса в HUD).
+func health_pair() -> Vector2:
+	return Vector2(_health.current_health, _health.max_health)
+
+
+func is_alive() -> bool:
+	return not _dead
+
+
 ## Инициализировать (или заново инициализировать при выдаче из пула).
 func setup(target: Node2D, spawn_position: Vector2, id: StringName = &"squid_gopnik", hp_mult: float = 1.0) -> void:
 	enemy_id = id
@@ -251,7 +260,10 @@ func _on_hurt(damage: float) -> void:
 	if not _neutral:
 		HitFx.burst(get_tree(), global_position, Color(1.0, 0.0, 0.2), 5, 70.0)
 		_item_hit_effects()
-	HitFx.popup(get_tree(), global_position + Vector2(0.0, -10.0), str(int(damage)), Color.WHITE)
+	if GameState.is_crit_damage(damage):
+		HitFx.popup(get_tree(), global_position + Vector2(0.0, -14.0), str(int(damage)) + "!", Color(1.0, 0.85, 0.0), 22.0, 0.8, true)
+	else:
+		HitFx.popup(get_tree(), global_position + Vector2(0.0, -10.0), str(int(damage)), Color.WHITE)
 	_health.take_damage(damage)
 
 

@@ -247,12 +247,21 @@ func _recompute_items() -> void:
 
 ## Урон выстрела с учётом статов, перков и крита.
 func roll_damage(base: float) -> float:
-	var result: float = base * projectile_damage_mult * damage_mult
+	var result: float = floorf(base * projectile_damage_mult * damage_mult * 100.0) / 100.0
 	if randf() * 100.0 < crit_percent:
-		result *= Balance.CRIT_DAMAGE_MULT
+		result = floorf(result * Balance.CRIT_DAMAGE_MULT * 100.0) / 100.0 + CRIT_MARK
 		if randf() * 100.0 < crit_coin_percent:
 			coins += 1
 	return result
+
+
+## Крит помечается микроскопической добавкой к урону — по ней враг красит цифру.
+const CRIT_MARK: float = 0.00037
+
+
+static func is_crit_damage(damage: float) -> bool:
+	var rest: float = fposmod(damage, 0.01)
+	return rest > 0.0003 and rest < 0.00044
 
 
 func cooldown_for(base_sec: float) -> float:

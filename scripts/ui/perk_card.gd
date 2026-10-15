@@ -98,5 +98,5 @@ func _process(_delta: float) -> void:
 
 ## Невыбранные карточки затемнены, выбранная яркая и мигает — сразу видно, на какой стоишь.
 func _refresh_highlight() -> void:
-	modulate = Color.WHITE if has_focus() else Color(0.45, 0.45, 0.5)
+	modulate = Color.WHITE if has_focus() else Color(0.8, 0.8, 0.85)
 	_arrow.visible = has_focus()

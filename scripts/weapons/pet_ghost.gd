@@ -40,17 +40,15 @@ func _physics_process(delta: float) -> void:
 
 
 func _follow(delta: float) -> void:
-	var goal: Vector2 = player.global_position + _home
-	var step: Vector2 = goal - global_position
-	if step.length_squared() < 4.0:
-		return
-	var dir: Vector2 = step.normalized()
-	var speed: float = Balance.GHOST_DRUNK_SPEED if kind == &"drunk" else Balance.PET_SPEED * 0.7
-	var velocity: Vector2 = dir * speed
+	# духи кружатся вокруг игрока: у каждого своё место на кольце, кольцо медленно вращается
+	var spin: float = _anim * (0.9 if kind == &"granny" else -0.7)
+	var goal: Vector2 = player.global_position + _home.rotated(spin)
 	if kind == &"drunk":
-		velocity += dir.orthogonal() * sin(_anim * 4.0) * Balance.GHOST_DRUNK_WOBBLE   # шатает из стороны в сторону
-	global_position += velocity * delta
-	_sprite.flip_h = step.x < 0.0
+		goal += Vector2.from_angle(_anim * 4.0) * Balance.GHOST_DRUNK_WOBBLE * 0.08   # пошатывает
+	var step: Vector2 = goal - global_position
+	global_position = global_position.lerp(goal, 1.0 - exp(-5.0 * delta))
+	if absf(step.x) > 0.5:
+		_sprite.flip_h = step.x < 0.0
 
 
 func _act() -> void:

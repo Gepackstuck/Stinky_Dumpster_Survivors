@@ -25,6 +25,8 @@ var _last_xp: int = -1
 var _last_xp_max: int = -1
 var _last_second: int = -1
 var _last_wave: int = -1
+var _boss_bars: Array = []   # [{root, fill, label}]
+var _boss_scan: float = 0.0
 
 
 func _process(_delta: float) -> void:
@@ -34,7 +36,7 @@ func _process(_delta: float) -> void:
 		_hp_bar.max_value = maxf(GameState.max_hp, 1.0)
 		_hp_bar.value = GameState.hp
 		_hp_bar.tint_progress = URINE.lerp(HP_FULL, pow(clampf(GameState.hp / maxf(GameState.max_hp, 1.0), 0.0, 1.0), HP_CURVE))
-		_hp_label.text = "%d/%d" % [ceili(GameState.hp), int(GameState.max_hp)]
+		_hp_label.text = "%d/%d" % [mini(ceili(GameState.hp), ceili(GameState.max_hp)), ceili(GameState.max_hp)]
 	if GameState.xp != _last_xp or GameState.xp_to_next != _last_xp_max:
 		_last_xp = GameState.xp
 		_last_xp_max = GameState.xp_to_next
@@ -52,3 +54,60 @@ func _process(_delta: float) -> void:
 	if GameState.wave != _last_wave:
 		_last_wave = GameState.wave
 		_wave_label.text = "ВОЛНА %d/%d" % [GameState.wave, Balance.WAVE_COUNT]
+
+
+func _ready() -> void:
+	for i: int in 2:
+		var root: Control = Control.new()
+		root.position = Vector2(80.0, 236.0 - 17.0 * i)
+		root.size = Vector2(320.0, 14.0)
+		root.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		root.visible = false
+		var back: ColorRect = ColorRect.new()
+		back.color = Color(0.0, 0.0, 0.0, 0.85)
+		back.size = Vector2(320.0, 14.0)
+		root.add_child(back)
+		var fill: ColorRect = ColorRect.new()
+		fill.color = Color(0.85, 0.1, 0.9)
+		fill.position = Vector2(2.0, 2.0)
+		fill.size = Vector2(316.0, 10.0)
+		root.add_child(fill)
+		var label: Label = Label.new()
+		label.theme = preload("res://assets/ui/theme.tres")
+		label.add_theme_color_override(&"font_color", Color.WHITE)
+		label.add_theme_color_override(&"font_shadow_color", Color.BLACK)
+		label.add_theme_constant_override(&"outline_size", 2)
+		label.add_theme_color_override(&"font_outline_color", Color.BLACK)
+		label.size = Vector2(320.0, 14.0)
+		label.position = Vector2(0.0, -1.0)
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		root.add_child(label)
+		$Root.add_child(root)
+		_boss_bars.append({"root": root, "fill": fill, "label": label})
+
+
+func _physics_process(delta: float) -> void:
+	_boss_scan -= delta
+	if _boss_scan > 0.0:
+		return
+	_boss_scan = 0.1
+	var found: Array = []
+	for node: Node in get_tree().get_nodes_in_group(&"enemies"):
+		var enemy: EnemyBase = node as EnemyBase
+		if enemy == null or not enemy.is_alive():
+			continue
+		if enemy.enemy_id == Balance.ELITE_ID or Balance.FINAL_BOSS_POOL.has(enemy.enemy_id):
+			found.append(enemy)
+	for i: int in _boss_bars.size():
+		var bar: Dictionary = _boss_bars[i]
+		var root: Control = bar["root"]
+		if i >= found.size():
+			root.visible = false
+			continue
+		var enemy: EnemyBase = found[i]
+		var pair: Vector2 = enemy.health_pair()
+		var ratio: float = clampf(pair.x / maxf(pair.y, 1.0), 0.0, 1.0)
+		root.visible = true
+		(bar["fill"] as ColorRect).size.x = 316.0 * ratio
+		var title: String = EnemyNames.title(enemy.enemy_id).to_upper()
+		(bar["label"] as Label).text = "%s  %d/%d" % [title, ceili(pair.x), ceili(pair.y)]

@@ -32,13 +32,18 @@ static func burst(tree: SceneTree, at: Vector2, color: Color, count: int, speed:
 
 
 ## Всплывающая надпись: поднимается и тает.
-static func popup(tree: SceneTree, at: Vector2, text: String, color: Color, rise: float = 14.0, duration: float = 0.55) -> void:
+static func popup(tree: SceneTree, at: Vector2, text: String, color: Color, rise: float = 14.0, duration: float = 0.55, big: bool = false) -> void:
 	var label: Label = Label.new()
 	label.theme = FONT_THEME
 	label.text = text
 	label.add_theme_color_override(&"font_color", color)
 	label.add_theme_color_override(&"font_shadow_color", Color.BLACK)
 	label.z_index = 30
+	if big:
+		label.add_theme_color_override(&"font_outline_color", Color(0.7, 0.0, 0.0))
+		label.add_theme_constant_override(&"outline_size", 3)
+		label.scale = Vector2(1.5, 1.5)
+		label.pivot_offset = label.size * 0.5
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	tree.current_scene.add_child(label)
 	label.reset_size()
