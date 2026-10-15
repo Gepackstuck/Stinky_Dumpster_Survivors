@@ -204,7 +204,7 @@ if __name__ == "__main__":
     for ki, fn in enumerate(KINDS):
         for t in range(FR):
             c, (shade, hi) = fn(t)
-            a = c.finish(shade, hi, glitch=4, rng=random.Random(ki * 31 + t), lim=0.05)
+            a = c.finish(shade, hi, glitch=(5 if t == 3 else 0), rng=random.Random(ki * 31 + t), lim=0.05)
             im = Image.fromarray(a, "RGBA")
             out.paste(im, ((ki * FR + t) * 48 + (48 - im.width) // 2, 32 - im.height), im)
     out.save("assets/sprites/arena_border.png")

@@ -10,7 +10,7 @@ const BACKDROP_COLOR: Color = Color(0.2353, 0.1333, 0.0627)  # тёмная зе
 const WALL_LAYER: int = 32  # слой 6 «wall»
 const ANIM_FRAME_SEC: float = 0.125
 const DECOR_FRAMES: int = 4   # кадров анимации у каждой декорации (лист: вид × кадр)
-const DECOR_STEP_SEC: float = 0.2
+const DECOR_STEP_SEC: float = 0.3
 # Ячейки листа проволоки: 0..5 — статичные виды; 6-7 ток (2 кадра); 8-9 огонь (2 кадра).
 const STATIC_WIRE_KINDS: int = 6
 const ELECTRIC_CELL: int = 6
