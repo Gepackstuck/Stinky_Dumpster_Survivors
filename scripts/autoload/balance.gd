@@ -128,7 +128,7 @@ const SHAKE_DECAY: float = 28.0              # px/с — затухание тр
 
 # --- Арена и камера ---
 const ARENA_BORDER_THICKNESS: float = 64.0  # проволока (16) + зона редких декораций (48) за краем арены
-const BORDER_DECOR_CHANCE: float = 0.3   # шанс декорации на каждые 48 px границы
+const BORDER_DECOR_CHANCE: float = 0.5   # шанс декорации на каждые 48 px границы
 const WIRE_SHOCK_DAMAGE: float = 5.0     # удар током/огнём от проволоки
 const ENEMY_PLAYER_MIN_DISTANCE: float = 10.0  # ближе враг не подходит — игрок его расталкивает
 const GROUND_DECAL_AREA_PX2: float = 9000.0  # одна декаль пола на столько px² арены
@@ -305,7 +305,7 @@ const ENEMIES: Dictionary = {
 			"brain": "res://scripts/enemies/brains/charger_brain.gd"},
 	&"spitter": {"hp": 34.0, "damage": 2.0, "speed": 60.0, "xp": 3, "coins": 1, "radius": 7.0, "group_mult": 1.0,
 			"brain": "res://scripts/enemies/brains/spitter_brain.gd"},
-	&"bruiser": {"hp": 170.0, "damage": 3.0, "speed": 55.0, "xp": 8, "coins": 3, "radius": 11.0, "group_mult": 0.3},
+	&"bruiser": {"hp": 170.0, "damage": 3.0, "speed": 55.0, "xp": 8, "coins": 3, "radius": 13.0, "group_mult": 0.3},
 	&"looter": {"hp": 90.0, "damage": 1.0, "speed": 85.0, "xp": 25, "coins": 10, "radius": 7.0, "group_mult": 0.0,
 			"brain": "res://scripts/enemies/brains/looter_brain.gd"},
 	# Враги Шага 4б (Brotato: healer, slasher egg, spawner, gobbler, tree).
@@ -313,17 +313,17 @@ const ENEMIES: Dictionary = {
 			"brain": "res://scripts/enemies/brains/healer_brain.gd"},
 	&"egg": {"hp": 24.0, "damage": 0.0, "speed": 0.0, "xp": 2, "coins": 0, "radius": 6.0, "group_mult": 0.3, "contact": false,
 			"brain": "res://scripts/enemies/brains/egg_brain.gd"},
-	&"mamka": {"hp": 140.0, "damage": 2.0, "speed": 45.0, "xp": 6, "coins": 2, "radius": 10.0, "group_mult": 0.25,
+	&"mamka": {"hp": 140.0, "damage": 2.0, "speed": 45.0, "xp": 6, "coins": 2, "radius": 12.0, "group_mult": 0.25,
 			"brain": "res://scripts/enemies/brains/mamka_brain.gd"},
 	&"glutton": {"hp": 60.0, "damage": 2.0, "speed": 70.0, "xp": 5, "coins": 2, "radius": 8.0, "group_mult": 0.4,
 			"brain": "res://scripts/enemies/brains/glutton_brain.gd"},
 	&"trash_bin": {"hp": 40.0, "damage": 0.0, "speed": 0.0, "xp": 6, "coins": 0, "radius": 12.0, "group_mult": 0.0,
 			"contact": false, "neutral": true, "brain": "res://scripts/enemies/brains/bin_brain.gd"},
 	# Босс-заглушка Шага 3 (особое поведение — позже); radius — размер тела в px.
-	&"boss_mega_hamster": {"hp": 600.0, "damage": 5.0, "speed": 35.0, "xp": 30, "coins": 20, "radius": 16.0},
-	&"boss_zakhar": {"hp": 900.0, "damage": 4.0, "speed": 45.0, "xp": 40, "coins": 25, "radius": 14.0,
+	&"boss_mega_hamster": {"hp": 600.0, "damage": 5.0, "speed": 35.0, "xp": 30, "coins": 20, "radius": 28.0},
+	&"boss_zakhar": {"hp": 900.0, "damage": 4.0, "speed": 45.0, "xp": 40, "coins": 25, "radius": 30.0,
 			"brain": "res://scripts/enemies/brains/boss_zakhar_brain.gd"},
-	&"boss_minion": {"hp": 700.0, "damage": 3.0, "speed": 70.0, "xp": 40, "coins": 25, "radius": 11.0,
+	&"boss_minion": {"hp": 700.0, "damage": 3.0, "speed": 70.0, "xp": 40, "coins": 25, "radius": 22.0,
 			"brain": "res://scripts/enemies/brains/boss_minion_brain.gd"},
 }
 

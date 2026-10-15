@@ -138,7 +138,16 @@ func _fire(target: Node2D) -> void:
 		projectile.burn_sec = _burn_sec
 		projectile.slow_factor = _slow_factor
 		projectile.slow_sec = _slow_sec
-		projectile.set_texture(_texture)
+		projectile.set_texture(_pick_texture())
+		projectile.trail_kind = &"flame" if _burn_dps > 0.0 else &"tracer"
+		projectile.trail_color = Color(1.0, 0.5, 0.05) if _burn_dps > 0.0 else (Color(0.5, 1.0, 1.0) if _slow_sec > 0.0 else Color(1.0, 0.92, 0.25))
+
+
+## Рогатка стреляет мелочью: камень или кусок кала (случайно).
+func _pick_texture() -> Texture2D:
+	if weapon_id == &"slingshot":
+		return TEX.load_tex("res://assets/sprites/proj_stone.png" if randf() < 0.5 else "res://assets/sprites/proj_dung.png")
+	return _texture
 
 
 func _on_player_died() -> void:

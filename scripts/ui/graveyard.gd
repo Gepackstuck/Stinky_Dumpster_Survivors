@@ -349,8 +349,8 @@ func _build_panel() -> void:
 	add_child(panel)
 	_info_nodes.append(panel)
 	_preview = Sprite2D.new()
-	_preview.position = Vector2(58.0, 200.0)
-	_preview.scale = Vector2.ONE * 2.0
+	_preview.position = Vector2(58.0, 198.0)
+	_preview.scale = Vector2.ONE * 3.0
 	_preview.hframes = 4
 	_preview.vframes = 3
 	_preview.frame = 8
@@ -485,7 +485,7 @@ func _process(delta: float) -> void:
 		_walker.global_position = (at[0] as Vector2).round()
 		if _speech != null:
 			_speech.position = _walker.global_position + Vector2(-40.0, -26.0)
-		_walker.scale = Vector2.ONE * _scale if _arriving else Vector2.ONE * _scale * (1.0 - 0.4 * t)
+		_walker.scale = Vector2.ONE * _scale if _arriving else Vector2.ONE * maxf(_scale, 1.4) * (1.0 - 0.12 * t)
 		var body: Sprite2D = _walker.get_child(0) as Sprite2D
 		if body != null:
 			var step_frame: int = int(_walk_time * 10.0) % 4
@@ -509,6 +509,8 @@ func _process(delta: float) -> void:
 			_arrow.show()
 			_set_info(true)
 		return
+	if _preview != null and _preview.visible:
+		_preview.frame = 8 + int(_time * 7.0) % 4   # герой в карточке «шагает» на месте
 	for i: int in _graves.size():
 		var chosen: bool = i == _selected
 		var pulse: float = 0.5 + 0.5 * sin(_time * 12.0)

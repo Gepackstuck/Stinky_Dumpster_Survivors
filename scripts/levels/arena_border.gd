@@ -9,6 +9,8 @@ const WIRE_SIZE: Vector2 = Vector2(48.0, 16.0)
 const BACKDROP_COLOR: Color = Color(0.2353, 0.1333, 0.0627)  # тёмная земля под декорациями
 const WALL_LAYER: int = 32  # слой 6 «wall»
 const ANIM_FRAME_SEC: float = 0.125
+const DECOR_FRAMES: int = 4   # кадров анимации у каждой декорации (лист: вид × кадр)
+const DECOR_STEP_SEC: float = 0.2
 # Ячейки листа проволоки: 0..5 — статичные виды; 6-7 ток (2 кадра); 8-9 огонь (2 кадра).
 const STATIC_WIRE_KINDS: int = 6
 const ELECTRIC_CELL: int = 6
@@ -19,6 +21,8 @@ var _wire_cell: int = 0  # один вид проволоки на весь за
 var _animated: Array[Dictionary] = []
 var _anim_time: float = 0.0
 var _anim_step: int = 0
+var _decor_anim: Array[Dictionary] = []
+var _decor_time: float = 0.0
 
 
 func _ready() -> void:
@@ -36,6 +40,11 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
+	_decor_time += delta
+	var decor_tick: int = int(_decor_time / DECOR_STEP_SEC)
+	for entry: Dictionary in _decor_anim:
+		var frame: int = (decor_tick + int(entry["phase"])) % DECOR_FRAMES
+		(entry["sprite"] as Sprite2D).region_rect = Rect2(Vector2((int(entry["kind"]) * DECOR_FRAMES + frame) * DECOR_SIZE.x, 0.0), DECOR_SIZE)
 	_anim_time += delta
 	if _anim_time < ANIM_FRAME_SEC:
 		return
@@ -96,12 +105,14 @@ func _add_shock_area(side: Node2D, center_x: float) -> void:
 
 
 func _add_decor(side: Node2D, center_x: float) -> void:
-	var kinds: int = int(DECOR_TEXTURE.get_width() / DECOR_SIZE.x)
+	var kinds: int = int(DECOR_TEXTURE.get_width() / (DECOR_SIZE.x * DECOR_FRAMES))
 	var sprite: Sprite2D = Sprite2D.new()
 	sprite.texture = DECOR_TEXTURE
 	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	sprite.region_enabled = true
-	sprite.region_rect = Rect2(Vector2(_rng.randi_range(0, kinds - 1) * DECOR_SIZE.x, 0.0), DECOR_SIZE)
+	var kind: int = _rng.randi_range(0, kinds - 1)
+	sprite.region_rect = Rect2(Vector2(kind * DECOR_FRAMES * DECOR_SIZE.x, 0.0), DECOR_SIZE)
+	_decor_anim.append({"sprite": sprite, "kind": kind, "phase": _rng.randi_range(0, DECOR_FRAMES - 1)})
 	sprite.flip_h = _rng.randf() < 0.5
 	# Зона за проволокой: от WIRE_SIZE.y до толщины границы.
 	var depth: float = WIRE_SIZE.y + DECOR_SIZE.y * 0.5 + _rng.randf_range(0.0, Balance.ARENA_BORDER_THICKNESS - WIRE_SIZE.y - DECOR_SIZE.y)

@@ -16,6 +16,9 @@ var burn_sec: float = 0.0
 var slow_factor: float = 1.0
 var slow_sec: float = 0.0
 var pierce: int = 0   # сколько врагов пробивает насквозь
+var trail_kind: StringName = &"tracer"   # tracer — светящийся росчерк, flame — огненный шлейф
+var trail_color: Color = Color(1.0, 0.92, 0.25)
+var _age: float = 0.0
 
 
 func _ready() -> void:
@@ -34,13 +37,19 @@ func launch(from: Vector2, direction: Vector2, damage: float, speed: float, life
 	_life_left = lifetime_sec
 	_ignore = null
 	_active = true
+	_age = 0.0
+	trail_kind = &"tracer"
+	trail_color = Color(1.0, 0.92, 0.25)
+	queue_redraw()
 
 
 func _physics_process(delta: float) -> void:
 	if not _active:
 		return
 	global_position += _direction * _speed * delta
+	_age += delta
 	_life_left -= delta
+	queue_redraw()
 	if _life_left <= 0.0:
 		_deactivate()
 
@@ -90,3 +99,31 @@ func _try_ricochet(hit: Node) -> bool:
 func _deactivate() -> void:
 	_active = false
 	PoolManager.release(self)
+
+
+## Трассер: светящийся росчерк с чёрной обводкой за снарядом (или огненный шлейф у зажигалок и горелок) — видно, куда и чем стреляют.
+func _draw() -> void:
+	if not _active or _direction == Vector2.ZERO:
+		return
+	var back: Vector2 = -_direction
+	if trail_kind == &"flame":
+		for i: int in 7:
+			var t: float = float(i) / 6.0
+			var wob: Vector2 = _direction.orthogonal() * sin(_age * 40.0 + float(i) * 1.7) * (1.0 + t * 2.5)
+			var pos: Vector2 = back * (1.0 + t * 15.0) + wob
+			var radius: float = 2.2 + t * 2.6
+			draw_circle(pos, radius + 1.0, Color(0.1, 0.0, 0.0, 0.8 - t * 0.5))   # тёмный ореол, чтобы пламя не терялось на коричневом
+		for i: int in 7:
+			var t2: float = float(i) / 6.0
+			var wob2: Vector2 = _direction.orthogonal() * sin(_age * 40.0 + float(i) * 1.7) * (1.0 + t2 * 2.5)
+			var pos2: Vector2 = back * (1.0 + t2 * 15.0) + wob2
+			var col: Color = Color(1.0, 0.97, 0.4).lerp(Color(1.0, 0.2, 0.0), t2)
+			col.a = 1.0 - t2 * 0.45
+			draw_circle(pos2, 2.2 + t2 * 2.6, col)
+		draw_circle(Vector2.ZERO, 2.6, Color(1.0, 1.0, 0.85, 1.0))
+	else:
+		var length: float = clampf(_speed * 0.08, 12.0, 28.0)
+		var tail: Vector2 = back * length
+		draw_line(tail, _direction * 2.0, Color(0.05, 0.0, 0.05, 0.85), 6.0)
+		draw_line(tail * 0.85, Vector2.ZERO, trail_color, 4.0)
+		draw_line(tail * 0.45, _direction * 2.0, Color(1.0, 1.0, 1.0, 1.0), 2.0)
