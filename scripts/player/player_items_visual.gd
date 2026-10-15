@@ -11,9 +11,8 @@ const SLOT_SCALE: Dictionary[StringName, float] = {&"head": 1.0}
 const SLOT_OFFSETS: Dictionary[StringName, Array] = {
 	&"head": [Vector2(0, -11)],   # на голове один предмет: самый новый
 	&"face": [Vector2(0, -3)],
-	&"chest": [Vector2(0, 5)],
-	&"back": [Vector2(-8, -2)],   # рисуется за телом (слой HeldBack)
 }
+# На герое видно только то, что надевают на голову и лицо (шапки, очки и т.п.). Грудь и спина - перебор, не рисуем.
 
 var _sprite: Sprite2D
 var _animator: FrameAnimatorComponent
