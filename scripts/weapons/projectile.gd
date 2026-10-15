@@ -57,6 +57,7 @@ func _on_area_entered(area: Area2D) -> void:
 			victim.call(&"ignite", burn_dps, burn_sec)
 		if slow_sec > 0.0 and victim.has_method(&"slow"):
 			victim.call(&"slow", slow_factor, slow_sec)
+		HitFx.sparks(get_tree(), global_position, Color(1.0, 0.5, 0.05) if burn_sec > 0.0 else Color(1.0, 0.92, 0.3))
 		if pierce > 0:
 			pierce -= 1
 			return

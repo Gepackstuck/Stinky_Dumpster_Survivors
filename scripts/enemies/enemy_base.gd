@@ -168,9 +168,10 @@ func _tick_status(delta: float) -> void:
 	_burn_left -= delta
 	_burn_tick -= delta
 	if _burn_tick <= 0.0:
-		_burn_tick = 0.5
+		_burn_tick = 0.25
 		HitFx.burst(get_tree(), global_position + Vector2(0.0, -4.0), Color(1.0, 0.45, 0.0), 3, 30.0, 2.0, 0.4, true)
-		_health.take_damage(_burn_dps * 0.5)
+		HitFx.burst(get_tree(), global_position + Vector2(0.0, -6.0), Color(1.0, 0.9, 0.2), 2, 24.0, 2.0, 0.35, true)
+		_health.take_damage(_burn_dps * 0.25)
 
 
 ## Лечение долей от максимума (знахарка, обжора).
@@ -273,7 +274,6 @@ func _item_hit_effects() -> void:
 		ignite(Balance.ITEM_BURN_DPS, Balance.ITEM_BURN_SEC)
 	if GameState.bash_percent > 0.0 and randf() * 100.0 < GameState.bash_percent and is_instance_valid(_target):
 		_knockback = _target.global_position.direction_to(global_position) * Balance.ITEM_BASH_PUSH
-		HitFx.popup(get_tree(), global_position + Vector2(0.0, -18.0), "ХРЯСЬ!", Color(1.0, 0.5, 0.0), 12.0, 0.5)
 
 
 func _on_died() -> void:

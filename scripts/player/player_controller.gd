@@ -67,6 +67,7 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 	global_position = global_position.clamp(Vector2.ZERO, _arena_max)
 	_update_shake(delta)
+	GameState.still_sec = GameState.still_sec + delta if direction == Vector2.ZERO else 0.0
 	_update_still_regen(delta, direction == Vector2.ZERO)
 	_update_item_timers(delta)
 	_update_slow_field(delta, direction != Vector2.ZERO)
@@ -228,7 +229,7 @@ func _on_hurt(raw_damage: float) -> void:
 	if randf() * 100.0 < GameState.repel_percent:
 		_stink_repel()
 		return
-	var reduced: float = raw_damage * Balance.ARMOR_K / (Balance.ARMOR_K + GameState.armor)
+	var reduced: float = raw_damage * maxf(Balance.ARMOR_K / (Balance.ARMOR_K + GameState.armor), Balance.ARMOR_MIN_FACTOR)
 	var damage: float = maxf(minf(roundf(reduced), _health.max_health * Balance.PLAYER_MAX_HIT_FRACTION), 1.0)
 	EventBus.player_hit.emit(damage)
 	_flash.flash(Color(1.0, 0.0, 0.2))

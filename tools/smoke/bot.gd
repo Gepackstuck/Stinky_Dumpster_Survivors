@@ -4,8 +4,13 @@ extends Node
 ## Сцена tools/smoke/bot.tscn. Какие герои - в RUNS.
 
 const MAIN: PackedScene = preload("res://scenes/levels/main.tscn")
-const RUNS: Array[StringName] = [&"hobo", &"janitor", &"clerk", &"squid", &"blogger", &"pigeon", &"uncle_vitya", &"granny", &"courier", &"punk", &"guard", &"plumber"]
-const TIME_SCALE: float = 8.0
+const CAMP_TEST: bool = false   # к CAMP_FROM-й волне бот получает перекачанный билд (как у игрока) и стоит на месте: должен умереть
+const CAMP_FROM: int = 9
+const RUNS_CAMP: Array[StringName] = [&"hobo", &"janitor", &"squid", &"granny"]
+const RUNS_ALL: Array[StringName] = [&"hobo", &"janitor", &"clerk", &"squid", &"blogger", &"pigeon", &"uncle_vitya", &"granny", &"courier", &"punk", &"guard", &"plumber"]
+var RUNS: Array[StringName] = []
+const SHOT_MODE: bool = false    # true: бот играет 1 забег на обычной скорости и снимает скриншоты в tools/_preview/vfx_N.png
+const TIME_SCALE: float = 1.0 if SHOT_MODE else 8.0
 const STAND_STILL: bool = false   # true: бот не двигается — проверка, что кемперить нельзя
 const FLEE_RADIUS: float = 95.0
 const STAT_WEIGHT: Dictionary = {&"damage": 4.2, &"attack_speed": 3.6, &"max_hp": 3.4, &"armor": 3.0, &"crit": 1.6,
@@ -35,11 +40,13 @@ var _escape_dir: Vector2 = Vector2.ZERO
 var _escape_left: float = 0.0
 var _goal: Vector2 = Vector2.ZERO
 var _goal_left: float = 0.0
+var _shots: int = 0
 var _results: Array = []
 var _src: Dictionary = {}   # урон по источникам за волну
 
 
 func _ready() -> void:
+	RUNS.assign([&"hobo"] if SHOT_MODE else (RUNS_CAMP if CAMP_TEST else RUNS_ALL))
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_backup = {"k": Profile.total_kills, "c": Profile.total_coins, "d": Profile.deaths, "w": Profile.wins}
 	_file = FileAccess.open(ProjectSettings.globalize_path("res://tools/_preview/bot_log.txt"), FileAccess.WRITE)
@@ -141,7 +148,30 @@ func _item_total() -> int:
 func _on_wave_ended(wave: int) -> void:
 	if not _running:
 		return
+	if CAMP_TEST and wave == CAMP_FROM - 1:
+		_buff_up()
 	_out("В%02d %s мин.хп %.0f урона получено %.0f (%s) убито %d пик.врагов %d | ур %d говна %d | %s" % [wave, GameState.wave_kind, _w_min_hp, _w_dmg, _src_text(), GameState.kills - _w_kills, _w_peak, GameState.level, GameState.coins, _stats_line()])
+
+
+## Перекачка как у живого игрока к 9-й волне: 6 сильных пушек 4 тира, все статы, питомцы и постройки.
+func _buff_up() -> void:
+	var ranked: Array = []
+	for id: StringName in Balance.WEAPONS:
+		if Balance.WEAPONS[id].get("structure", false):
+			continue
+		ranked.append(id)
+	ranked.sort_custom(func(a: StringName, b: StringName) -> bool: return _weapon_power(a, 4) > _weapon_power(b, 4))
+	GameState.weapons.clear()
+	for i: int in mini(Balance.WEAPON_SLOTS, ranked.size()):
+		GameState.weapons.append({"id": ranked[i], "tier": 4})
+	EventBus.weapons_changed.emit()
+	for stat: Array in [[&"damage", 12], [&"attack_speed", 8], [&"max_hp", 12], [&"armor", 8], [&"regen", 4], [&"crit", 4], [&"speed", 3]]:
+		for i: int in stat[1]:
+			GameState.apply_stat(stat[0], 3)
+	for item: Array in [[&"stray_dog", 3], [&"bomber_pigeon", 3], [&"bottle_mine", 4], [&"stink_lamp", 2], [&"cart_mortar", 2]]:
+		for i: int in item[1]:
+			GameState.add_item(item[0])
+	_out("ПЕРЕКАЧКА: оружие %s, урон+%d%% хп+%d бр%d" % [",".join(GameState.weapons.map(func(w: Dictionary) -> String: return str(w["id"]))), roundi(GameState.stat_total(&"damage")), roundi(GameState.bonus_max_hp), roundi(GameState.armor)])
 
 
 func _end_run(result: String) -> void:
@@ -170,27 +200,36 @@ func _release_keys() -> void:
 
 
 func _physics_process(_delta: float) -> void:
+	_frame += 1
+	if SHOT_MODE and _running and _frame % 150 == 0 and _shots < 14:
+		_shots += 1
+		get_viewport().get_texture().get_image().save_png(ProjectSettings.globalize_path("res://tools/_preview/vfx_%02d.png" % _shots))
 	if not _running or _player == null or not is_instance_valid(_player):
 		return
 	if GameState.hp < _last_hp:
 		_w_dmg += _last_hp - GameState.hp
 	_last_hp = GameState.hp
 	_w_min_hp = minf(_w_min_hp, GameState.hp)
+	if _frame % 10 == 0:
+		_w_peak = maxi(_w_peak, get_tree().get_nodes_in_group(&"enemies").size())
 	if get_tree().paused:
 		_release_keys()
 		return
 	if Time.get_ticks_msec() - _real_start > 900000:
 		_end_run("ТАЙМАУТ")
 		return
-	if not STAND_STILL:
+	if CAMP_TEST and GameState.wave < CAMP_FROM and GameState.hp < GameState.max_hp * 0.5 and _player.has_method(&"heal_full"):
+		_player.call(&"heal_full")   # тест кемпинга: до 9-й волны бот «читерит» ХП, чтобы дожить до перекачки
+	if not STAND_STILL and not (CAMP_TEST and GameState.wave >= CAMP_FROM):
 		_steer()
+	else:
+		_release_keys()
 
 
 func _steer() -> void:
 	var pos: Vector2 = _player.global_position
 	var enemies: Array[Node] = get_tree().get_nodes_in_group(&"enemies")
 	_w_peak = maxi(_w_peak, enemies.size())
-	_frame += 1
 	if _frame % 3 == 0:
 		_projectiles = _level.find_children("*", "EnemyProjectile", true, false)
 	var speed: float = Balance.PLAYER_MOVE_SPEED * GameState.move_speed_mult

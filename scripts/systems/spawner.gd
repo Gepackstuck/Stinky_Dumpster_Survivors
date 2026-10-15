@@ -28,6 +28,18 @@ func spawn_group(enemy_id: StringName, count: int, hp_mult: float) -> void:
 		_add_marker((center + offset).clamp(Vector2.ZERO, _arena_max), enemy_id, hp_mult)
 
 
+## Облава: группа появляется вокруг игрока, а не в случайной точке арены.
+func spawn_group_near(enemy_id: StringName, count: int, hp_mult: float, around: Vector2) -> void:
+	var room: int = Balance.MAX_ALIVE_ENEMIES - get_tree().get_nodes_in_group(&"enemies").size() - _markers.size()
+	count = mini(count, room)
+	if count <= 0:
+		return
+	var center: Vector2 = (around + Vector2.from_angle(randf() * TAU) * Balance.CAMP_RAID_DISTANCE).clamp(Vector2(30.0, 30.0), _arena_max - Vector2(30.0, 30.0))
+	for i: int in count:
+		var offset: Vector2 = Vector2(randf_range(-1.0, 1.0), randf_range(-1.0, 1.0)) * Balance.SPAWN_GROUP_SPREAD
+		_add_marker((center + offset).clamp(Vector2.ZERO, _arena_max), enemy_id, hp_mult)
+
+
 ## Одиночный спавн (элита/босс) в случайной точке.
 func spawn_single(enemy_id: StringName, hp_mult: float) -> void:
 	_add_marker(_random_arena_point(), enemy_id, hp_mult)

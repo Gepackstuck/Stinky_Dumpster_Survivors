@@ -40,6 +40,9 @@ const WAVE_GROUP_SIZE_WAVES_PER_STEP: int = 3
 const WAVE_MAX_GAP_SEC: float = 4.0               # максимум секунд между группами врагов (минимум групп = длительность / это)
 const WAVE_FIRST_GROUP_SEC: float = 0.5
 const WAVE_SPAWN_END_FRACTION: float = 0.85       # последняя группа не позже 85% времени волны
+const CAMP_WAIT_SEC: float = 2.5                  # стоишь дольше — начинается облава
+const CAMP_RAID_PERIOD_SEC: float = 1.4          # как часто облава подкидывает группу рядом с тобой
+const CAMP_RAID_DISTANCE: float = 95.0
 const SPAWN_MARKER_SEC: float = 1.0               # красный крест за секунду до появления
 const SPAWN_MIN_DISTANCE_FROM_PLAYER: float = 75.0
 const SPAWN_ARENA_MARGIN: float = 40.0
@@ -57,11 +60,11 @@ const WAVE_END_COLLECT_SEC: float = 1.5           # время на авто-с�
 const ENEMY_HP_MULT: float = 0.8                  # общий множитель HP врагов (под Brotato: враги умирают за 1-2 удара)
 # Поздние волны растут быстрее (как в Brotato: к 10-й волне экран уже забит, к 15-й это настоящая орда).
 const WAVE_LATE_START: int = 7
-const WAVE_ENEMIES_LATE: float = 3.0        # + это * (волна - LATE_START)^2 врагов за волну
-const WAVE_HP_QUAD: float = 0.10           # + это * (волна-1)^2 к множителю HP
-const WAVE_DAMAGE_QUAD: float = 0.05       # + это * (волна-1)^2 к множителю урона
-const BOSS_HP_MULT: float = 3.5                   # боссы последней волны крепче обычного роста
-const ELITE_HP_MULT: float = 1.3
+const WAVE_ENEMIES_LATE: float = 4.0        # + это * (волна - LATE_START)^2 врагов за волну
+const WAVE_HP_QUAD: float = 0.8           # + это * (волна-1)^2 к множителю HP
+const WAVE_DAMAGE_QUAD: float = 0.4       # + это * (волна-1)^2 к множителю урона
+const BOSS_HP_MULT: float = 1.0                   # боссы последней волны крепче обычного роста
+const ELITE_HP_MULT: float = 2.0
 const WAVE_HP_GROWTH: float = 0.35   # рост HP врагов за волну
 const PLAYER_MAX_HIT_FRACTION: float = 0.34   # один удар не снимает больше трети максимума HP (нет ваншотов)
 const WAVE_DAMAGE_GROWTH: float = 0.15   # рост урона врагов за волну
@@ -78,7 +81,7 @@ const WAVE_ENEMY_UNLOCK: Dictionary = {     # с какой волны тип м
 	&"healer": 5, &"glutton": 6, &"egg": 8, &"mamka": 9,
 }
 const WAVE_ENEMY_WEIGHTS: Dictionary = {    # вес в взвешенном рандоме
-	&"squid_gopnik": 10, &"chaser": 8, &"microbe": 5, &"charger": 7, &"npc_bot": 4, &"spitter": 8,
+	&"squid_gopnik": 10, &"chaser": 8, &"microbe": 5, &"charger": 7, &"npc_bot": 4, &"spitter": 12,
 	&"looter": 1, &"cockroach": 4, &"bruiser": 4, &"wifi_ghost": 3,
 	&"healer": 3, &"glutton": 3, &"egg": 2, &"mamka": 2,
 }
@@ -270,6 +273,7 @@ const RECYCLE_FRACTION: float = 0.5                 # возврат говна 
 const REROLL_BASE_COST: int = 3
 const REROLL_WAVE_FACTOR: float = 0.7               # + волна * это
 const REROLL_STEP_COST: int = 2                     # + за каждый реролл в эту волну
+const ARMOR_MIN_FACTOR: float = 0.45                # броня режет урон не больше чем на 55%
 const ARMOR_K: float = 15.0                         # урон *= K/(K+броня)
 const DODGE_MAX_PERCENT: float = 60.0
 const CRIT_DAMAGE_MULT: float = 2.0
@@ -299,7 +303,7 @@ const ENEMIES: Dictionary = {
 	&"chaser": {"hp": 10.0, "damage": 1.0, "speed": 90.0, "xp": 1, "coins": 1, "radius": 5.0, "group_mult": 1.4, "flying": true},
 	&"charger": {"hp": 50.0, "damage": 2.5, "speed": 70.0, "xp": 3, "coins": 1, "radius": 8.0, "group_mult": 0.7,
 			"brain": "res://scripts/enemies/brains/charger_brain.gd"},
-	&"spitter": {"hp": 34.0, "damage": 2.0, "speed": 60.0, "xp": 3, "coins": 1, "radius": 7.0, "group_mult": 0.7,
+	&"spitter": {"hp": 34.0, "damage": 2.0, "speed": 60.0, "xp": 3, "coins": 1, "radius": 7.0, "group_mult": 1.0,
 			"brain": "res://scripts/enemies/brains/spitter_brain.gd"},
 	&"bruiser": {"hp": 170.0, "damage": 3.0, "speed": 55.0, "xp": 8, "coins": 3, "radius": 11.0, "group_mult": 0.3},
 	&"looter": {"hp": 90.0, "damage": 1.0, "speed": 85.0, "xp": 25, "coins": 10, "radius": 7.0, "group_mult": 0.0,

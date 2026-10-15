@@ -2,6 +2,7 @@ extends Node
 ## Текущее состояние забега. Autoload: GameState.
 
 var hp: float = 0.0
+var still_sec: float = 0.0   # сколько секунд игрок стоит на месте (анти-кемпинг: облава)
 var max_hp: float = 0.0
 var xp: int = 0
 var xp_to_next: int = 0

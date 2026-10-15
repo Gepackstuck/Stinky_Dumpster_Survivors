@@ -63,6 +63,7 @@ func _land() -> void:
 			var enemy: EnemyBase = node as EnemyBase
 			if enemy != null and global_position.distance_squared_to(enemy.global_position) <= radius_sq:
 				enemy.hit_by_weapon(_damage, (enemy.global_position - global_position).normalized() * 120.0)
+	HitFx.explosion(get_tree(), global_position, maxf(_radius, 20.0))
 	HitFx.burst(get_tree(), global_position, Color(0.58, 0.34, 0.12), 12, _radius * 2.0, 3.0, 0.5, true)
 	HitFx.burst(get_tree(), global_position, Color(0.2235, 1.0, 0.0784), 8, _radius * 1.5, 2.0, 0.5, true)
 	queue_redraw()

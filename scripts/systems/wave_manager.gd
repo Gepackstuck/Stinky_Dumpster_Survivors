@@ -16,6 +16,10 @@ var _elite_spawned: bool = false
 var _bosses_spawned: bool = false
 
 
+var _camp_timer: float = 0.0
+var _camp_warned: bool = false
+
+
 func _ready() -> void:
 	_special = WaveRules.roll_special_waves()
 	GameState.special_waves = _special
@@ -39,8 +43,31 @@ func _process(delta: float) -> void:
 	GameState.wave_time_left = maxf(WaveRules.duration_sec(GameState.wave) - _wave_elapsed, 0.0)
 	_spawn_due_groups()
 	_spawn_special_units()
+	_camp_raid(delta)
 	if GameState.wave_kind != &"boss" and GameState.wave_time_left <= 0.0:
 		_end_wave()
+
+
+## Анти-кемпинг: пока игрок стоит, вокруг него появляются новые группы — стоять нельзя, надо маневрировать.
+func _camp_raid(delta: float) -> void:
+	if GameState.wave < 2 or GameState.still_sec < Balance.CAMP_WAIT_SEC:
+		_camp_timer = 0.0
+		return
+	if _camp_timer == 0.0 and not _camp_warned:
+		_camp_warned = true
+		var camper: Node2D = get_tree().get_first_node_in_group(&"player") as Node2D
+		if camper != null:
+			HitFx.popup(get_tree(), camper.global_position + Vector2(0.0, -22.0), "НЕ СТОЙ, БОМЖ! ОБЛАВА!", Color(1.0, 0.1, 0.2), 14.0, 1.2)
+	_camp_timer += delta
+	if _camp_timer >= Balance.CAMP_RAID_PERIOD_SEC:
+		_camp_timer = 0.0001
+		var player2: Node2D = get_tree().get_first_node_in_group(&"player") as Node2D
+		if player2 == null:
+			return
+		var wave: int = GameState.wave
+		var enemy_id: StringName = WaveRules.pick_enemy_id(wave)
+		var size: int = maxi(roundi(WaveRules.group_size(wave) * float(Balance.ENEMIES[enemy_id].get("group_mult", 1.0))), 2)
+		spawner.spawn_group_near(enemy_id, size, WaveRules.hp_mult(wave), player2.global_position)
 
 
 func _start_wave(wave: int) -> void:
@@ -48,6 +75,7 @@ func _start_wave(wave: int) -> void:
 	GameState.wave_kind = wave_kind(wave)
 	GameState.wave_note = ""
 	_wave_elapsed = 0.0
+	_camp_warned = false
 	GameState.wave_time_left = WaveRules.duration_sec(wave)
 	_spawn_times = WaveRules.spawn_times(wave, GameState.wave_kind)
 	_elite_spawned = false
@@ -65,9 +93,25 @@ func _spawn_due_groups() -> void:
 	var wave: int = GameState.wave
 	while not _spawn_times.is_empty() and _spawn_times[0] <= _wave_elapsed:
 		_spawn_times.remove_at(0)
-		var enemy_id: StringName = WaveRules.pick_enemy_id(wave)
+		var enemy_id: StringName = _pick_limited(wave)
 		var size: int = maxi(roundi(WaveRules.group_size(wave) * float(Balance.ENEMIES[enemy_id].get("group_mult", 1.0))), 1)
 		spawner.spawn_group(enemy_id, size, WaveRules.hp_mult(wave))
+
+
+## Выбор типа врага с лимитом лекарей: не больше 4 живых одновременно.
+func _pick_limited(wave: int) -> StringName:
+	var id: StringName = WaveRules.pick_enemy_id(wave)
+	for attempt: int in 6:
+		if id != &"healer":
+			return id
+		var alive: int = 0
+		for node: Node in get_tree().get_nodes_in_group(&"enemies"):
+			if (node as EnemyBase) != null and (node as EnemyBase).enemy_id == &"healer":
+				alive += 1
+		if alive < 4:
+			return id
+		id = WaveRules.pick_enemy_id(wave)
+	return &"squid_gopnik"
 
 
 func _spawn_special_units() -> void:
