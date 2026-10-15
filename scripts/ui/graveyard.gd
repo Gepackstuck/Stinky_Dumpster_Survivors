@@ -255,7 +255,7 @@ func _build_header() -> void:
 
 func _layout_grid() -> void:
 	var n: int = _ids.size()
-	for candidate: float in [1.0, 0.85, 0.75, 0.6, 0.5, 0.4]:
+	for candidate: float in [1.0, 0.875, 0.75, 0.6, 0.5, 0.4]:
 		_scale = candidate
 		var max_cols: int = maxi(int((GRID_MAX_W - AISLE) / (GRAVE_W * _scale + 4.0)), 1)
 		var rows: int = ceili(float(n) / float(max_cols))
@@ -314,8 +314,8 @@ func _build_grave(i: int) -> void:
 	if _scale >= 0.75:
 		var caption: Label = Label.new()
 		caption.text = CharacterLibrary.short_title(id) if unlocked else "???"
-		caption.position = root.position + Vector2(-8.0, GRAVE_H * _scale - 3.0)
-		caption.size = Vector2(GRAVE_W * _scale + 16.0, 10.0)
+		caption.position = (root.position + Vector2(-8.0, GRAVE_H * _scale - 3.0)).round()   # целые пиксели, иначе шрифт ломается
+		caption.size = Vector2(roundf(GRAVE_W * _scale + 16.0), 10.0)
 		caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		caption.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		caption.add_theme_font_size_override(&"font_size", 6)
