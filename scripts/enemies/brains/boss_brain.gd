@@ -63,6 +63,11 @@ func tick_cast(delta: float) -> bool:
 	return false
 
 
+## Урон, который дошёл до врага (щит, зеркало режут). Вызывается до вспышки и цифр.
+func filter_damage(damage: float) -> float:
+	return damage
+
+
 ## Вызывается, когда враг убит (не при исчезновении в конце волны).
 func on_death() -> void:
 	pass

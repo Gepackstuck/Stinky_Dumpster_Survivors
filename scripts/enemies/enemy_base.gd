@@ -281,6 +281,10 @@ func shove(push: Vector2) -> void:
 func _on_hurt(damage: float) -> void:
 	if _dead:
 		return
+	if _brain != null:
+		damage = _brain.filter_damage(damage)
+		if damage <= 0.0:
+			return
 	_flash.flash(Color.WHITE)
 	_squash(Vector2(1.25, 0.8))
 	if _neutral:

@@ -12,7 +12,7 @@ var _flies: Array[Sprite2D] = []
 
 func _process(delta: float) -> void:
 	_timer -= delta
-	_flies.assign(_flies.filter(func(f: Sprite2D) -> bool: return is_instance_valid(f)))
+	_flies.assign(_flies.filter(func(f: Variant) -> bool: return is_instance_valid(f)))
 	for f: Sprite2D in _flies:
 		f.frame = int(Time.get_ticks_msec() / 40) % 2
 	if _timer > 0.0 or _flies.size() >= MAX_FLIES:

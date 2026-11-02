@@ -79,11 +79,13 @@ const WAVE_ENEMY_UNLOCK: Dictionary = {     # с какой волны тип м
 	&"squid_gopnik": 1, &"chaser": 3, &"microbe": 3, &"charger": 3, &"npc_bot": 3, &"spitter": 3,
 	&"looter": 4, &"cockroach": 5, &"bruiser": 5, &"wifi_ghost": 6,
 	&"healer": 5, &"glutton": 6, &"egg": 8, &"mamka": 9,
+	&"blinker": 7, &"shield_bearer": 8, &"mirror": 10,
 }
 const WAVE_ENEMY_WEIGHTS: Dictionary = {    # вес в взвешенном рандоме
 	&"squid_gopnik": 10, &"chaser": 8, &"microbe": 5, &"charger": 7, &"npc_bot": 4, &"spitter": 12,
 	&"looter": 1, &"cockroach": 4, &"bruiser": 4, &"wifi_ghost": 3,
 	&"healer": 3, &"glutton": 3, &"egg": 2, &"mamka": 2,
+	&"blinker": 3, &"shield_bearer": 3, &"mirror": 2,
 }
 const FINAL_BOSS_POOL: Array[StringName] = [&"boss_zakhar", &"boss_minion", &"boss_blue_whale", &"boss_trash_golem", &"boss_pigeon_papa"]
 const ELITE_POOL: Array[StringName] = [&"boss_mega_hamster", &"boss_rat_queen", &"boss_roach_king"]   # элита окна - одна из них
@@ -714,6 +716,13 @@ const ENEMIES: Dictionary = {
 			"brain": "res://scripts/enemies/brains/mamka_brain.gd"},
 	&"glutton": {"hp": 60.0, "damage": 1.6, "speed": 70.0, "xp": 5, "coins": 2, "radius": 8.0, "group_mult": 0.4,
 			"brain": "res://scripts/enemies/brains/glutton_brain.gd"},
+	# Хитрые враги (идея 5): телепорт, щит, зеркало.
+	&"blinker": {"hp": 30.0, "damage": 1.6, "speed": 62.0, "xp": 4, "coins": 1, "radius": 7.0, "group_mult": 0.35,
+			"brain": "res://scripts/enemies/brains/blinker_brain.gd"},
+	&"shield_bearer": {"hp": 70.0, "damage": 2.0, "speed": 52.0, "xp": 5, "coins": 2, "radius": 8.0, "group_mult": 0.3,
+			"brain": "res://scripts/enemies/brains/shield_brain.gd"},
+	&"mirror": {"hp": 55.0, "damage": 1.6, "speed": 45.0, "xp": 5, "coins": 2, "radius": 9.0, "group_mult": 0.2,
+			"brain": "res://scripts/enemies/brains/mirror_brain.gd"},
 	&"trash_bin": {"hp": 40.0, "damage": 0.0, "speed": 0.0, "xp": 6, "coins": 0, "radius": 12.0, "group_mult": 0.0,
 			"contact": false, "neutral": true, "brain": "res://scripts/enemies/brains/bin_brain.gd"},
 	# Босс-заглушка Шага 3 (особое поведение — позже); radius — размер тела в px.
@@ -734,6 +743,21 @@ const ENEMIES: Dictionary = {
 	&"boss_minion": {"hp": 700.0, "damage": 3.0, "speed": 70.0, "xp": 40, "coins": 25, "radius": 22.0, "anim_rows": 5,
 			"brain": "res://scripts/enemies/brains/boss_minion_brain.gd"},
 }
+
+# --- Хитрые враги ---
+const BLINKER_INTERVAL_SEC: float = 3.2      # как часто глючный бомж прыгает
+const BLINKER_WARN_SEC: float = 0.6          # метка на земле до прыжка (успеть отойти)
+const BLINKER_RANGE: float = 150.0           # прыгает, только если игрок ближе
+const BLINKER_LAND_DIST: Vector2 = Vector2(34.0, 52.0)   # куда приземлиться: столько от игрока
+const SHIELD_TURN_DEG: float = 75.0          # скорость поворота крышки, град/с (обойди сбоку - и он твой)
+const SHIELD_ARC_DEG: float = 55.0           # полуугол, в котором крышка держит удар
+const SHIELD_BLOCK: float = 0.2              # доля урона, проходящая через крышку
+const MIRROR_OFF_SEC: float = 2.6            # зеркало мутное (бей)
+const MIRROR_ON_SEC: float = 1.4             # зеркало блестит: урон не проходит, отражает осколки
+const MIRROR_WARN_SEC: float = 0.35          # мигает перед блеском
+const MIRROR_SHARD_DAMAGE: float = 2.5
+const MIRROR_SHARD_SPEED: float = 110.0
+const MIRROR_SHARD_GAP_SEC: float = 0.3      # не чаще осколка за столько
 
 # --- Боссы (GDD) ---
 const BOSS_MEGA_HAMSTER_SPAWN_SEC: float = 300.0
