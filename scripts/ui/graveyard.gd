@@ -328,6 +328,13 @@ func _build_grave(i: int) -> void:
 		body.frame = 8
 		body.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		sitter.add_child(body)
+		var trophy: Texture2D = CharacterLibrary.trophy_hat(id)
+		if trophy != null:   # шапка-трофей за лучшую медаль
+			var hat: Sprite2D = Sprite2D.new()
+			hat.texture = trophy
+			hat.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+			hat.position = Vector2(0.0, -15.0)
+			sitter.add_child(hat)
 	_sitters.append(sitter)
 	if _scale >= 0.75:
 		var caption: Label = Label.new()

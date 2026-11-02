@@ -174,3 +174,14 @@ static func load_texture(path: String) -> Texture2D:
 		return load(path) as Texture2D
 	var image: Image = Image.load_from_file(ProjectSettings.globalize_path(path))
 	return ImageTexture.create_from_image(image) if image != null else null
+
+
+## Шапка-трофей героя: за самую высокую опасность, на которой он победил (как медаль). null - побед нет.
+static func trophy_hat(id: StringName) -> Texture2D:
+	var won: Array = Profile.hero_wins.get(id, [])
+	if won.is_empty():
+		return null
+	var best: int = 0
+	for d: Variant in won:
+		best = maxi(best, int(d))
+	return load("res://assets/sprites/trophy_hat_%d.png" % clampi(best, 0, 5)) as Texture2D

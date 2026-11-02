@@ -60,6 +60,15 @@ func _rebuild() -> void:
 		_icons.append(icon)
 		_slots.append(slot)
 		_bases.append(offsets[index])
+	var trophy: Texture2D = CharacterLibrary.trophy_hat(GameState.character)
+	if not used.has(&"head") and trophy != null:   # голова свободна - носим шапку-трофей за медаль
+		var hat: Sprite2D = Sprite2D.new()
+		hat.texture = trophy
+		hat.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		add_child(hat)
+		_icons.append(hat)
+		_slots.append(&"head")
+		_bases.append(Vector2(0, -15))
 	_layout()
 
 
