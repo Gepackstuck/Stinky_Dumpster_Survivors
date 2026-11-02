@@ -9,6 +9,8 @@ const SPIT_SPEED: float = 90.0
 const SPIT_DAMAGE: float = 1.0
 
 var _spit_left: float = 1.0
+var _windup_left: float = 0.0
+var _aim: Vector2 = Vector2.RIGHT
 
 
 func setup(owner_enemy: EnemyBase, player: Node2D) -> void:
@@ -17,6 +19,14 @@ func setup(owner_enemy: EnemyBase, player: Node2D) -> void:
 
 
 func physics_tick(delta: float) -> void:
+	if _windup_left > 0.0:   # надувается: стоит, мигает, линия плевка уже видна
+		_windup_left -= delta
+		boss.speed_mult = 0.0
+		boss.extra_velocity = Vector2.ZERO
+		boss.flash(Color(0.2235, 1.0, 0.0784))
+		if _windup_left <= 0.0:
+			shoot(SPIT, _aim, SPIT_DAMAGE * WaveRules.damage_mult(GameState.wave), SPIT_SPEED, 3.0, 4.0)
+		return
 	var dist: float = distance_to_target()
 	if dist > FAR:
 		boss.speed_mult = 1.0
@@ -29,5 +39,7 @@ func physics_tick(delta: float) -> void:
 		boss.extra_velocity = Vector2.ZERO
 	_spit_left -= delta
 	if _spit_left <= 0.0 and dist < FAR * 1.6:
-		_spit_left = SPIT_INTERVAL_SEC
-		shoot(SPIT, direction_to_target(), SPIT_DAMAGE * WaveRules.damage_mult(GameState.wave), SPIT_SPEED, 3.0, 4.0)
+		_spit_left = SPIT_INTERVAL_SEC + Balance.SPITTER_WINDUP_SEC
+		_aim = direction_to_target()
+		_windup_left = Balance.SPITTER_WINDUP_SEC
+		Telegraph.line(boss.get_tree(), boss.global_position, _aim, Balance.SPITTER_AIM_LENGTH, 3.5, Balance.SPITTER_WINDUP_SEC, boss)

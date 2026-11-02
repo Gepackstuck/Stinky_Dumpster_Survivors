@@ -43,17 +43,21 @@ func physics_tick(delta: float) -> void:
 	_whirl_cooldown -= delta
 	if _enraged() and _whirl_cooldown <= 0.0:
 		_whirl_cooldown = Balance.MINION_WHIRL_INTERVAL_SEC
+		Telegraph.circle(boss.get_tree(), boss.global_position, Balance.MINION_WHIRL_TELE_RADIUS, Balance.MINION_CAST_SEC, boss)
 		start_cast(ROW_WHIRL, Balance.MINION_CAST_SEC, _whirl, false)
 	elif _wrench_cooldown <= 0.0:
 		_wrench_cooldown = Balance.MINION_WRENCH_INTERVAL_SEC * mult
-		start_cast(ROW_WRENCH, Balance.MINION_CAST_SEC, _throw_wrenches, false)
+		var aim: Vector2 = direction_to_target()
+		Telegraph.cone(boss.get_tree(), boss.global_position, aim, Balance.MINION_WRENCH_FAN_DEG * (WRENCH_FAN_COUNT - 1) * 0.5 + 4.0, Balance.TELEGRAPH_SHOT_LENGTH, Balance.MINION_CAST_SEC, boss)
+		start_cast(ROW_WRENCH, Balance.MINION_CAST_SEC, _throw_wrenches.bind(aim), false)
 	elif _poop_cooldown <= 0.0:
 		_poop_cooldown = Balance.MINION_POOP_INTERVAL_SEC * mult
-		start_cast(ROW_POOP, Balance.MINION_CAST_SEC, _lob_poop, false)
+		var spot: Vector2 = target.global_position   # говно прилетит туда, где игрок стоял в момент замаха
+		Telegraph.circle(boss.get_tree(), spot, Balance.MINION_PUDDLE_RADIUS, Balance.MINION_CAST_SEC + boss.global_position.distance_to(spot) / Balance.MINION_POOP_SPEED)
+		start_cast(ROW_POOP, Balance.MINION_CAST_SEC, _lob_poop.bind(spot), false)
 
 
-func _throw_wrenches() -> void:
-	var base: Vector2 = direction_to_target()
+func _throw_wrenches(base: Vector2) -> void:
 	for i: int in WRENCH_FAN_COUNT:
 		var deg: float = (i - (WRENCH_FAN_COUNT - 1) * 0.5) * Balance.MINION_WRENCH_FAN_DEG
 		shoot(WRENCH, base.rotated(deg_to_rad(deg)), Balance.MINION_WRENCH_DAMAGE,
@@ -69,7 +73,7 @@ func _whirl() -> void:
 
 
 ## Говно летит к точке, где игрок стоит сейчас, и там превращается в лужу.
-func _lob_poop() -> void:
-	var distance: float = distance_to_target()
-	shoot(POOP, direction_to_target(), 0.0, Balance.MINION_POOP_SPEED,
+func _lob_poop(spot: Vector2) -> void:
+	var distance: float = boss.global_position.distance_to(spot)
+	shoot(POOP, boss.global_position.direction_to(spot), 0.0, Balance.MINION_POOP_SPEED,
 			distance / Balance.MINION_POOP_SPEED, 6.0, PUDDLE_SCENE)

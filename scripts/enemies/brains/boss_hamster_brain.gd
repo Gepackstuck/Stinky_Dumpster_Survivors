@@ -34,17 +34,21 @@ func physics_tick(delta: float) -> void:
 		return
 	_cooldown = Balance.HAMSTER_ATTACK_INTERVAL_SEC * (ENRAGE_COOLDOWN_MULT if _enraged() else 1.0)
 	var roll: float = randf()
+	var aim: Vector2 = direction_to_target()   # направление фиксируется в момент предупреждения
+	var tree: SceneTree = boss.get_tree()
 	if roll < 0.4:
-		start_cast(ROW_SPIT, Balance.HAMSTER_CAST_SEC, _spit)
+		Telegraph.cone(tree, boss.global_position, aim, Balance.HAMSTER_SEED_FAN_DEG * (SEED_FAN_COUNT - 1) * 0.25 + 4.0, Balance.TELEGRAPH_SHOT_LENGTH, Balance.HAMSTER_CAST_SEC, boss)
+		start_cast(ROW_SPIT, Balance.HAMSTER_CAST_SEC, _spit.bind(aim))
 	elif roll < 0.7:
+		Telegraph.circle(tree, boss.global_position, Balance.HAMSTER_SLAM_TELE_RADIUS, Balance.HAMSTER_CAST_SEC, boss)
 		start_cast(ROW_SLAM, Balance.HAMSTER_CAST_SEC, _slam)
 	else:
 		boss.flash(Color(0.968627, 1.0, 0.0))
-		start_cast(ROW_ROLL, Balance.HAMSTER_CAST_SEC, _roll, true, Balance.HAMSTER_ROLL_SEC)
+		Telegraph.line(tree, boss.global_position, aim, Balance.HAMSTER_ROLL_SPEED * Balance.HAMSTER_ROLL_SEC, float(Balance.ENEMIES[boss.enemy_id]["radius"]) * 0.8, Balance.HAMSTER_CAST_SEC, boss)
+		start_cast(ROW_ROLL, Balance.HAMSTER_CAST_SEC, _roll.bind(aim), true, Balance.HAMSTER_ROLL_SEC)
 
 
-func _spit() -> void:
-	var base: Vector2 = direction_to_target()
+func _spit(base: Vector2) -> void:
 	for i: int in SEED_FAN_COUNT:
 		var deg: float = (i - (SEED_FAN_COUNT - 1) * 0.5) * Balance.HAMSTER_SEED_FAN_DEG * 0.5
 		shoot(SEED, base.rotated(deg_to_rad(deg)), Balance.HAMSTER_SEED_DAMAGE, Balance.HAMSTER_SEED_SPEED, Balance.PROJECTILE_BOSS_LIFETIME_SEC, 8.0)
@@ -58,7 +62,7 @@ func _slam() -> void:
 	HitFx.burst(boss.get_tree(), boss.global_position, Color(0.7, 0.7, 0.75), 14, 90.0, 3.0, 0.5)
 
 
-func _roll() -> void:
-	boss.forced_velocity = direction_to_target() * Balance.HAMSTER_ROLL_SPEED
+func _roll(aim: Vector2) -> void:
+	boss.forced_velocity = aim * Balance.HAMSTER_ROLL_SPEED
 	boss.forced_sec = Balance.HAMSTER_ROLL_SEC
 	HitFx.burst(boss.get_tree(), boss.global_position, Color(0.968627, 1.0, 0.0), 8, 80.0)

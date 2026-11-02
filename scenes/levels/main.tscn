@@ -18,9 +18,11 @@
 offset_right = 320.0
 offset_bottom = 180.0
 color = Color(0.909804, 0.909804, 0.909804, 1)
+self_modulate = Color(1, 1, 1, 0)
 script = ExtResource("1_main")
 
 [node name="Ground" type="Sprite2D" parent="."]
+z_index = -10
 texture_filter = 1
 texture_repeat = 2
 texture = ExtResource("2_tile")

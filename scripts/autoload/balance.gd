@@ -98,6 +98,15 @@ const ZAKHAR_ATTACK_INTERVAL_SEC: float = 2.2   # пауза между атак
 const ZAKHAR_CARROT_DAMAGE: float = 8.0
 const ZAKHAR_CARROT_SPEED: float = 140.0
 const ZAKHAR_CARROT_FAN_DEG: float = 18.0       # в ярости — веер из трёх
+# --- Телеграфы атак (замах виден заранее: зона + наползающая заливка) ---
+const CHARGER_WINDUP_SEC: float = 0.6       # тележка стоит и показывает путь рывка
+const CHARGER_DASH_SEC: float = 0.55
+const CHARGER_DASH_SPEED: float = 260.0
+const SPITTER_WINDUP_SEC: float = 0.4       # плевун надувается и показывает линию плевка
+const SPITTER_AIM_LENGTH: float = 60.0
+const HAMSTER_SLAM_TELE_RADIUS: float = 60.0
+const MINION_WHIRL_TELE_RADIUS: float = 60.0
+const TELEGRAPH_SHOT_LENGTH: float = 110.0  # длина линии/конуса для бросков боссов
 const ZAKHAR_FART_RADIUS: float = 26.0
 const ZAKHAR_FART_DAMAGE: float = 4.0           # за каждый удар (с кулдауном неуязвимости игрока)
 const ZAKHAR_FART_LIFETIME_SEC: float = 3.5
