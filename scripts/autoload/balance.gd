@@ -314,6 +314,11 @@ const PROJECTILE_BOSS_LIFETIME_SEC: float = 3.0
 # --- Отдача от попаданий ---
 const ENEMY_KNOCKBACK_SPEED: float = 120.0   # импульс, который враг получает от попадания
 const KNOCKBACK_DECAY: float = 600.0         # px/с² — как быстро гаснет отдача
+const SHAKE_EXPLOSION: float = 2.5
+const SHAKE_BOSS_SLAM: float = 5.0
+const SHAKE_LIGHTNING: float = 3.0
+const SPLAT_MAX: int = 45                     # пятен от смертей на полу одновременно (больше - каша)
+const SPLAT_FADE_SEC: float = 8.0
 const PLAYER_HIT_SHAKE: float = 4.0          # px — тряска камеры при уроне по игроку
 const SHAKE_DECAY: float = 28.0              # px/с — затухание тряски
 

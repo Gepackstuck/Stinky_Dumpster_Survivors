@@ -5,6 +5,7 @@ extends CharacterBody2D
 
 const BASE_RADIUS: float = 6.0
 const PUDDLE_SCENE: PackedScene = preload("res://scenes/hazards/poop_puddle.tscn")
+const SPLAT: Texture2D = preload("res://assets/sprites/fx_splat.png")
 static var _textures: Dictionary[StringName, Texture2D] = {}
 
 @export var enemy_id: StringName = &"squid_gopnik"
@@ -72,6 +73,7 @@ func setup(target: Node2D, spawn_position: Vector2, id: StringName = &"squid_gop
 	_anim.row = 0
 	var mod_size: float = WaveRules.mod_f("enemy_size", 1.0) if not _neutral and not stats.has("anim_rows") else 1.0   # боссов не трогаем
 	_sprite.scale = Vector2.ONE * mod_size
+	_base_scale = _sprite.scale
 	_apply_size(float(stats.get("radius", BASE_RADIUS)) * mod_size)
 	_revived = false
 	modulate = Color.WHITE
@@ -280,6 +282,7 @@ func _on_hurt(damage: float) -> void:
 	if _dead:
 		return
 	_flash.flash(Color.WHITE)
+	_squash(Vector2(1.25, 0.8))
 	if _neutral:
 		_bin_hit_fx(false)
 	if is_instance_valid(_target) and not _neutral:
@@ -310,6 +313,38 @@ func _item_hit_effects() -> void:
 
 
 var _revived: bool = false
+var _base_scale: Vector2 = Vector2.ONE
+
+
+## Сплющивание при ударе: читается, что попал (возврат за 0.12 с).
+func _squash(amount: Vector2) -> void:
+	_sprite.scale = _base_scale * amount
+	create_tween().tween_property(_sprite, "scale", _base_scale, 0.12)
+
+
+## Пятно на полу после смерти (кровь/кишки/говно/слизь), медленно тает; не больше Balance.SPLAT_MAX.
+func _leave_splat() -> void:
+	var tree: SceneTree = get_tree()
+	var ground: Node = tree.current_scene.get_node_or_null(^"Ground")
+	if ground == null:
+		return
+	var splats: Array[Node] = tree.get_nodes_in_group(&"splats")
+	if splats.size() >= Balance.SPLAT_MAX:
+		splats[0].queue_free()
+	var splat: Sprite2D = Sprite2D.new()
+	splat.texture = SPLAT
+	splat.hframes = 4
+	splat.frame = randi() % 4
+	splat.flip_h = randf() < 0.5
+	splat.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	splat.scale = _base_scale
+	splat.add_to_group(&"splats")
+	ground.add_child(splat)
+	splat.global_position = global_position + Vector2(0.0, 4.0)
+	var tw: Tween = splat.create_tween()
+	tw.tween_interval(Balance.SPLAT_FADE_SEC * 0.6)
+	tw.tween_property(splat, "modulate:a", 0.0, Balance.SPLAT_FADE_SEC * 0.4)
+	tw.tween_callback(splat.queue_free)
 var _bounce_t: float = 0.0
 
 
@@ -370,6 +405,10 @@ func _on_died() -> void:
 		HitFx.burst(get_tree(), global_position, Color(0.2235, 1.0, 0.0784), 8, 80.0, 2.0, 0.5)
 	if not _neutral:
 		_mod_death_effect()
+	if not _neutral:
+		_leave_splat()
+		if Balance.ENEMIES[enemy_id].has("anim_rows"):
+			EventBus.shake_requested.emit(Balance.SHAKE_BOSS_SLAM * 1.5)
 	EventBus.enemy_died.emit(enemy_id, global_position)
 	if _brain != null:
 		_brain.on_death()

@@ -15,6 +15,8 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/death_screen.tscn" id="8_ds"]
 
 [ext_resource type="Script" path="res://scripts/systems/wave_modifiers.gd" id="50_mods"]
+[ext_resource type="Script" path="res://scripts/effects/screen_fx.gd" id="51_sfx"]
+[ext_resource type="Script" path="res://scripts/effects/ambient_fx.gd" id="52_amb"]
 
 [node name="Main" type="ColorRect"]
 offset_right = 320.0
@@ -54,6 +56,12 @@ pickups_root = NodePath("../Pickups")
 script = ExtResource("10_wm")
 spawner = NodePath("../Spawner")
 player = NodePath("../Player")
+
+[node name="AmbientFx" type="Node2D" parent="."]
+script = ExtResource("52_amb")
+
+[node name="ScreenFx" type="CanvasLayer" parent="."]
+script = ExtResource("51_sfx")
 
 [node name="WaveModifiers" type="Node2D" parent="."]
 script = ExtResource("50_mods")

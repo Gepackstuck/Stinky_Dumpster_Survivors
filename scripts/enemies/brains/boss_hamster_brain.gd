@@ -56,6 +56,7 @@ func _spit(base: Vector2) -> void:
 
 ## Прыжок-раздавливание: ударная волна — кольцо семечек во все стороны.
 func _slam() -> void:
+	EventBus.shake_requested.emit(Balance.SHAKE_BOSS_SLAM)
 	for i: int in Balance.HAMSTER_SLAM_SEEDS:
 		var dir: Vector2 = Vector2.RIGHT.rotated(TAU * float(i) / float(Balance.HAMSTER_SLAM_SEEDS))
 		shoot(SEED, dir, Balance.HAMSTER_SEED_DAMAGE, Balance.HAMSTER_SLAM_SPEED, Balance.PROJECTILE_BOSS_LIFETIME_SEC, 6.0)

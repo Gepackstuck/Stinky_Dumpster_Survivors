@@ -23,6 +23,8 @@ signal streak_changed(tier: int, bonus: float, broken: bool)   # серия бе
 @warning_ignore("unused_signal")
 signal weapon_fired(sfx: StringName)      # оружие выстрелило/махнуло (звук: shoot, swing, explosion)
 @warning_ignore("unused_signal")
+signal shake_requested(amount: float)      # тряска экрана (взрыв, удар босса); игрок решает, учитывая настройки
+@warning_ignore("unused_signal")
 signal telegraph_shown                     # враг/модификатор показал зону удара (звук-предупреждение)
 
 # --- Враги ---

@@ -66,6 +66,7 @@ func _flop(spot: Vector2) -> void:
 		if not is_instance_valid(boss) or not boss.is_alive():
 			return
 		_hit_player_at(spot, Balance.WHALE_FLOP_RADIUS, Balance.WHALE_FLOP_DAMAGE)
+		EventBus.shake_requested.emit(Balance.SHAKE_BOSS_SLAM)
 		for i: int in Balance.WHALE_FLOP_RING:
 			var dir: Vector2 = Vector2.RIGHT.rotated(TAU * float(i) / float(Balance.WHALE_FLOP_RING))
 			shoot(TEAR, dir, Balance.WHALE_TEAR_DAMAGE, Balance.WHALE_TEAR_SPEED * 0.8, Balance.PROJECTILE_BOSS_LIFETIME_SEC, 0.0)

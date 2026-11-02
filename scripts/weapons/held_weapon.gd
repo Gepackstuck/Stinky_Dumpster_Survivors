@@ -15,6 +15,10 @@ const RECOIL_PX: float = 3.0
 const SWING_RAD: float = 1.3
 const SNAP_RAD: float = PI / 4.0    # поворот шагом 45 градусов (дёрганый пиксель-арт)
 const HELD_SCALE: float = 0.62      # спрайты 26x26, в руках делаем компактнее
+const FLASH: Texture2D = preload("res://assets/sprites/fx_muzzle.png")
+const CASING: Texture2D = preload("res://assets/sprites/fx_casing.png")
+const CASING_WEAPONS: Array[StringName] = [&"pipe_gun", &"mosin", &"crossbow", &"slingshot", &"syringe"]
+const KICK_LIFT: float = 0.35       # ствол задирается при выстреле (рад)
 const ANIM_STEP_SEC: float = 0.14   # смена кадров анимации (лист из 4 кадров)
 
 var slot_index: int = 0
@@ -62,6 +66,47 @@ func _on_fired(direction: Vector2) -> void:
 	if direction != Vector2.ZERO:
 		_aim = direction
 	_kick = 1.0
+	if _weapon_id in [&"mop", &"frying_pan", &"rolling_pin", &"plunger", &"shiv", &"shovel", &"sock", &"rotten_cheese"]:
+		return
+	_muzzle_flash()
+	if _weapon_id in CASING_WEAPONS:
+		_eject_casing()
+
+
+## Вспышка-звезда у дула: 3 кадра за 0.07 с.
+func _muzzle_flash() -> void:
+	var flash: Sprite2D = Sprite2D.new()
+	flash.texture = FLASH
+	flash.hframes = 3
+	flash.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	flash.z_index = 6
+	get_tree().current_scene.add_child(flash)
+	flash.global_position = (sprite_global() + _aim * 7.0).round()
+	var tw: Tween = flash.create_tween()
+	tw.tween_property(flash, "frame", 2, 0.07)
+	tw.tween_callback(flash.queue_free)
+
+
+## Гильза: вылетает вбок-вверх, падает, подпрыгивает и тает на полу.
+func _eject_casing() -> void:
+	var casing: Sprite2D = Sprite2D.new()
+	casing.texture = CASING
+	casing.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	casing.z_index = -1
+	get_tree().current_scene.add_child(casing)
+	var start: Vector2 = sprite_global()
+	casing.global_position = start
+	var side: Vector2 = _aim.orthogonal() * (1.0 if randf() < 0.5 else -1.0)
+	var land: Vector2 = start + side * randf_range(6.0, 10.0) - _aim * 4.0 + Vector2(0.0, 6.0)
+	var tw: Tween = casing.create_tween()
+	tw.tween_property(casing, "global_position", start + side * 4.0 + Vector2(0.0, -6.0), 0.08)
+	tw.parallel().tween_property(casing, "rotation", randf_range(4.0, 8.0), 0.25)
+	tw.tween_property(casing, "global_position", land, 0.14).set_ease(Tween.EASE_IN)
+	tw.tween_property(casing, "global_position", land + side * 2.0 + Vector2(0.0, -2.0), 0.05)
+	tw.tween_property(casing, "global_position", land + side * 3.0, 0.05)
+	tw.tween_interval(0.8)
+	tw.tween_property(casing, "modulate:a", 0.0, 0.4)
+	tw.tween_callback(casing.queue_free)
 
 
 func _process(delta: float) -> void:
@@ -110,8 +155,12 @@ func _place() -> void:
 		&"sock", &"rotten_cheese":
 			_sprite.scale = Vector2.ONE * HELD_SCALE * (1.0 + 0.4 * _kick)                          # раздувается при вони
 			offset = Vector2(roundf(sin(_kick * 40.0)), 0.0)
-		_:
-			offset = -_aim * RECOIL_PX * _kick                                          # отдача
+		_:   # отдача: резкий толчок назад вдоль выстрела, ствол задирается, плавный возврат
+			var k: float = _kick * _kick
+			offset = -_aim * RECOIL_PX * 1.6 * k
+			var lift: float = -1.0 if not _sprite.flip_v else 1.0
+			_sprite.rotation = angle + lift * KICK_LIFT * k
+			_sprite.scale = Vector2(HELD_SCALE * (1.0 - 0.12 * k), HELD_SCALE * (1.0 + 0.12 * k))
 	var base: Vector2 = Vector2(roundf(_home.x), roundf(_home.y))
 	var shifted: Vector2 = base + offset
 	_sprite.position = Vector2(roundf(shifted.x), roundf(shifted.y))

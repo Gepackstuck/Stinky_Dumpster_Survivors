@@ -54,6 +54,9 @@ func _ready() -> void:
 	EventBus.wave_started.connect(_on_wave_started_items)
 	EventBus.wave_ended.connect(_on_wave_ended_items)
 	EventBus.streak_changed.connect(_on_streak_changed)
+	EventBus.shake_requested.connect(func(amount: float) -> void:
+		if Settings.screen_shake:
+			_shake = maxf(_shake, amount))
 	EventBus.dash_used.connect(func(_at: Vector2) -> void: GameState.trick_left = Balance.HERO_TRICK_SEC if GameState.trick_bonus > 0.0 else 0.0)
 	EventBus.xp_collected.connect(_on_xp_for_heal)
 	EventBus.wave_started.connect(func(_w: int) -> void:
@@ -292,7 +295,8 @@ func _on_hurt(raw_damage: float) -> void:
 	var damage: float = maxf(minf(roundf(reduced), _health.max_health * Balance.PLAYER_MAX_HIT_FRACTION), 1.0)
 	EventBus.player_hit.emit(damage)
 	_flash.flash(Color(1.0, 0.0, 0.2))
-	_shake = Balance.PLAYER_HIT_SHAKE
+	if Settings.screen_shake:
+		_shake = Balance.PLAYER_HIT_SHAKE
 	# «пердим»: зелёное облако вонючих пикселей (без надписей)
 	HitFx.burst(get_tree(), global_position + Vector2(0.0, 4.0), Color(0.2235, 1.0, 0.0784), 12, 60.0, 3.0, 0.7, true)
 	HitFx.burst(get_tree(), global_position + Vector2(0.0, 4.0), Color(0.9686, 1.0, 0.0), 5, 45.0, 2.0, 0.7, true)

@@ -233,6 +233,7 @@ func _bolt(at: Vector2) -> void:
 	get_tree().current_scene.add_child(glow)
 	HitFx.burst(get_tree(), at, Color(1.0, 1.0, 0.4), 12, 80.0, 3.0, 0.3, true)
 	AudioManager.play_sfx(&"lightning")
+	EventBus.shake_requested.emit(Balance.SHAKE_LIGHTNING)
 	for node: Line2D in [line, glow]:
 		var tw: Tween = node.create_tween()
 		tw.tween_property(node, "modulate:a", 0.0, 0.15)
