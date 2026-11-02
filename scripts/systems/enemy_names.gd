@@ -18,6 +18,8 @@ const _TITLES: Dictionary[StringName, String] = {
 	&"mamka": "МАМКА",
 	&"glutton": "ЖРУН",
 	&"wire": "КОЛЮЧАЯ ПРОВОЛОКА",
+	&"garbage_truck": "МУСОРОВОЗ",
+	&"acid_rain": "КИСЛОТНЫЙ ДОЖДЬ",
 	&"trash_bin": "МУСОРНЫЙ БАК",
 }
 

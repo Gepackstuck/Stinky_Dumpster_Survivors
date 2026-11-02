@@ -14,6 +14,8 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/level_up_screen.tscn" id="7_lu"]
 [ext_resource type="PackedScene" path="res://scenes/ui/death_screen.tscn" id="8_ds"]
 
+[ext_resource type="Script" path="res://scripts/systems/wave_modifiers.gd" id="50_mods"]
+
 [node name="Main" type="ColorRect"]
 offset_right = 320.0
 offset_bottom = 180.0
@@ -52,6 +54,9 @@ pickups_root = NodePath("../Pickups")
 script = ExtResource("10_wm")
 spawner = NodePath("../Spawner")
 player = NodePath("../Player")
+
+[node name="WaveModifiers" type="Node2D" parent="."]
+script = ExtResource("50_mods")
 
 [node name="WaveBanner" parent="." instance=ExtResource("11_wb")]
 

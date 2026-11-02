@@ -42,7 +42,21 @@ static func damage_mult(wave: int) -> float:
 
 
 static func speed_mult(wave: int) -> float:
-	return minf(1.0 + (maxi(wave, 1) - 1) * Balance.WAVE_SPEED_GROWTH, Balance.WAVE_SPEED_MAX_MULT)
+	var mult: float = minf(1.0 + (maxi(wave, 1) - 1) * Balance.WAVE_SPEED_GROWTH, Balance.WAVE_SPEED_MAX_MULT)
+	return mult * (Balance.PAYDAY_ENEMY_SPEED_MULT if GameState.wave_mod == &"payday" else 1.0)
+
+
+## Модификатор волны: только на обычных волнах с WAVE_MOD_FROM, не тот же, что в прошлый раз.
+static func roll_mod(wave: int, kind: StringName, last: StringName) -> StringName:
+	if kind != &"normal" or wave < Balance.WAVE_MOD_FROM or randf() >= Balance.WAVE_MOD_CHANCE:
+		return &""
+	var pool: Array[StringName] = Balance.WAVE_MODS.filter(func(m: StringName) -> bool: return m != last)
+	return pool[randi() % pool.size()]
+
+
+## Сила урона модификаторов (лужи, мусоровоз): мягче, чем у врагов.
+static func hazard_mult(wave: int) -> float:
+	return pow(damage_mult(wave), 0.7)
 
 
 ## Времена появления групп (сек от начала волны), отсортированы.

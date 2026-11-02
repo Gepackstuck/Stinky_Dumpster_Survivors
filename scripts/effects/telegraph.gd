@@ -50,6 +50,19 @@ static func _spawn(tree: SceneTree, shape: Shape, at: Vector2, dir: Vector2, len
 	return t
 
 
+## Точка внутри зоны удара? (для ботов: обходят телеграфы)
+func contains(point: Vector2) -> bool:
+	var off: Vector2 = point - global_position
+	match _shape:
+		Shape.LINE:
+			var along: float = off.dot(_dir)
+			return along >= 0.0 and along <= _length and absf(off.dot(_dir.orthogonal())) <= _width
+		Shape.CIRCLE:
+			return off.length() <= _length
+		_:
+			return off.length() <= _length and absf(_dir.angle_to(off)) <= _width
+
+
 func _process(delta: float) -> void:
 	_left -= delta
 	if _follow != null:

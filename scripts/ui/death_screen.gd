@@ -75,7 +75,12 @@ func _show_killer(enemy_id: StringName) -> void:
 	_killer_label.show()
 	_killer_label.text = "УБИЛ ТЕБЯ:\n%s" % EnemyNames.title(enemy_id)
 	_killer_label.add_theme_color_override(&"font_color", EnemyNames.color(enemy_id))
-	if enemy_id == &"wire":
+	if enemy_id == &"garbage_truck" or enemy_id == &"acid_rain":
+		_killer_sprite.texture = load("res://assets/sprites/garbage_truck.png" if enemy_id == &"garbage_truck" else "res://assets/ui/mod_acid_rain.png") as Texture2D
+		_killer_sprite.hframes = 2 if enemy_id == &"garbage_truck" else 1
+		_killer_sprite.vframes = 1
+		_killer_sprite.frame = 0
+	elif enemy_id == &"wire":
 		var cell: AtlasTexture = AtlasTexture.new()
 		cell.atlas = WIRE_TEXTURE
 		cell.region = Rect2(Vector2(5.0 * 48.0, 0.0), Vector2(48.0, 16.0))

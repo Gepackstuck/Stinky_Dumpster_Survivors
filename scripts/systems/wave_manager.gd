@@ -20,6 +20,9 @@ var _camp_timer: float = 0.0
 var _camp_warned: bool = false
 
 
+var _last_mod: StringName = &""
+
+
 func _ready() -> void:
 	_special = WaveRules.roll_special_waves()
 	GameState.special_waves = _special
@@ -73,6 +76,7 @@ func _camp_raid(delta: float) -> void:
 func _start_wave(wave: int) -> void:
 	GameState.wave = wave
 	GameState.wave_kind = wave_kind(wave)
+	GameState.wave_mod = WaveRules.roll_mod(wave, GameState.wave_kind, _last_mod)
 	GameState.wave_note = ""
 	_wave_elapsed = 0.0
 	_camp_warned = false
@@ -151,6 +155,9 @@ func _elite_reward(at: Vector2) -> void:
 
 
 func _end_wave() -> void:
+	if GameState.wave_mod != &"":
+		_last_mod = GameState.wave_mod
+	GameState.wave_mod = &""
 	_fighting = false
 	spawner.clear_all()
 	for node: Node in get_tree().get_nodes_in_group(&"pickups"):

@@ -75,6 +75,8 @@ func _on_wave_started(wave: int) -> void:
 			_show_small("ВОЛНА %d: ОРДА!" % wave, FlavorText.random_horde(), Color(1, 0.0627451, 0.2, 1))
 		&"boss":
 			_show_small("ВОЛНА %d: БОССЫ!" % wave, "", Color(1, 0.0627451, 0.2, 1))
+		_ when GameState.wave_mod != &"":
+			_show_small("ВОЛНА %d: %s!" % [wave, Balance.WAVE_MOD_TITLES[GameState.wave_mod]], Balance.WAVE_MOD_LINES[GameState.wave_mod], Color(0.2235, 1.0, 0.0784))
 		_:
 			if wave == 1:
 				_show(0, "ВОЛНА 1", FlavorText.random_intro(), Color(0.968627, 1, 0, 1))

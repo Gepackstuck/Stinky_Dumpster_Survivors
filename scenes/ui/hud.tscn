@@ -13,6 +13,7 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/weapon_panel.tscn" id="11_wpanel"]
 [ext_resource type="PackedScene" path="res://scenes/ui/dash_meter.tscn" id="12_dash"]
 [ext_resource type="Script" path="res://scripts/ui/streak_meter.gd" id="13_streak"]
+[ext_resource type="Script" path="res://scripts/ui/wave_mod_badge.gd" id="14_mod"]
 
 [node name="Hud" type="CanvasLayer"]
 layer = 5
@@ -148,3 +149,11 @@ offset_top = 5.0
 offset_right = 300.0
 offset_bottom = 15.0
 script = ExtResource("13_streak")
+
+[node name="WaveModBadge" type="HBoxContainer" parent="Root"]
+layout_mode = 0
+offset_left = 140.0
+offset_top = 36.0
+offset_right = 340.0
+offset_bottom = 52.0
+script = ExtResource("14_mod")

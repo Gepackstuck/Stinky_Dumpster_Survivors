@@ -98,6 +98,35 @@ const ZAKHAR_ATTACK_INTERVAL_SEC: float = 2.2   # пауза между атак
 const ZAKHAR_CARROT_DAMAGE: float = 8.0
 const ZAKHAR_CARROT_SPEED: float = 140.0
 const ZAKHAR_CARROT_FAN_DEG: float = 18.0       # в ярости — веер из трёх
+# --- Модификаторы волн (сюрприз в начале обычной волны) ---
+const WAVE_MOD_FROM: int = 3                 # не раньше этой волны
+const WAVE_MOD_CHANCE: float = 0.35          # шанс на обычную волну (элита/орда/боссы - без модификаторов)
+const WAVE_MODS: Array[StringName] = [&"acid_rain", &"darkness", &"garbage_truck", &"ice", &"payday"]
+const WAVE_MOD_TITLES: Dictionary = {&"acid_rain": "КИСЛОТНЫЙ ДОЖДЬ", &"darkness": "ОТРУБИЛИ СВЕТ", &"garbage_truck": "МУСОРОВОЗ",
+		&"ice": "ЖИРНЫЙ ПОЛ", &"payday": "ДЕНЬ ЗАРПЛАТЫ"}
+const WAVE_MOD_LINES: Dictionary = {
+	&"acid_rain": "С НЕБА ЛЬЁТ КИСЛОТА. СМОТРИ ПОД НОГИ, ЛОХ",
+	&"darkness": "СВЕТ ОТРУБИЛИ ЗА НЕУПЛАТУ. ТВОЮ",
+	&"garbage_truck": "МУСОРОВОЗ НЕ ТОРМОЗИТ. ТЫ ТОЖЕ МУСОР",
+	&"ice": "КТО-ТО РАЗЛИЛ ЖИР. СКОЛЬЗИ, ПОКА ЖИВ",
+	&"payday": "ГОВНА ВДВОЕ БОЛЬШЕ. ВРАГИ ТОЖЕ ЗЛЕЕ",
+}
+const ACID_DROP_INTERVAL_SEC: float = 1.0
+const ACID_DROP_WARN_SEC: float = 1.0
+const ACID_DROP_RADIUS: float = 16.0
+const ACID_DROP_NEAR_PLAYER: float = 0.55      # доля капель рядом с игроком (в радиусе 90)
+const ACID_PUDDLE_DAMAGE: float = 2.0          # × сила волны^0.7
+const ACID_PUDDLE_SEC: float = 3.5
+const DARKNESS_RADIUS: float = 70.0            # px вокруг героя видно
+const TRUCK_INTERVAL_SEC: float = 6.5
+const TRUCK_WARN_SEC: float = 1.3
+const TRUCK_SPEED: float = 380.0
+const TRUCK_HALF_WIDTH: float = 13.0
+const TRUCK_DAMAGE: float = 6.0                # × сила волны^0.7
+const ICE_ACCEL: float = 3.0                   # чем меньше, тем дольше разгон и торможение
+const PAYDAY_COIN_MULT: float = 2.0
+const PAYDAY_ENEMY_SPEED_MULT: float = 1.25
+
 # --- Награда за скилл: чистая волна и серия без урона ---
 const CLEAN_WAVE_BONUS_BASE: int = 6          # говна за волну без единого попадания
 const CLEAN_WAVE_BONUS_PER_WAVE: int = 3      # + за номер волны

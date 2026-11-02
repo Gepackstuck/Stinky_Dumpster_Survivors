@@ -58,7 +58,8 @@ var _rerolls: int = 0
 var _real_start: int = 0
 # управление
 var _projectiles: Array[Node] = []
-var _hazards: Array[Node] = []   # лужи говна, облака вони: [узел], радиус берём из формы
+var _hazards: Array[Node] = []
+var _telegraphs: Array[Node] = []   # зоны будущих ударов (видит и обходит)   # лужи говна, облака вони: [узел], радиус берём из формы
 var _frame: int = 0
 var _last_dir: Vector2 = Vector2.ZERO
 var _decide_left: float = 0.0
@@ -269,7 +270,8 @@ func _steer(delta: float) -> void:
 	var near: Array = []   # [pos, vel, danger]
 	for node: Node in enemies:
 		var enemy: Node2D = node as Node2D
-		if enemy.global_position.distance_squared_to(pos) < 200.0 * 200.0:
+		var sight: float = Balance.DARKNESS_RADIUS + 12.0 if GameState.wave_mod == &"darkness" else 200.0   # в темноте не видно
+		if enemy.global_position.distance_squared_to(pos) < sight * sight:
 			var vel: Vector2 = (enemy as CharacterBody2D).velocity if enemy is CharacterBody2D else Vector2.ZERO
 			var id: Variant = enemy.get("enemy_id")
 			var danger: float = 1.8 if id != null and DANGEROUS.has(id) else 1.0
@@ -351,6 +353,9 @@ func _steer(delta: float) -> void:
 				var dd: float = me.distance_to(pp)
 				if dd < 22.0:
 					score -= w * (22.0 - dd) * float(b["proj_w"])
+			for node: Node in _telegraphs:
+				if is_instance_valid(node) and (node as Telegraph).contains(me):
+					score -= w * float(b["hazard_w"]) * 1.5
 			for node: Node in _hazards:
 				if not is_instance_valid(node):
 					continue
@@ -397,6 +402,12 @@ func _scan_threats() -> void:
 		return
 	_projectiles = []
 	_hazards = []
+	_telegraphs = []
+	var ground: Node = _level.get_node_or_null(^"Ground") if _level != null else null
+	if ground != null:
+		for child: Node in ground.get_children():
+			if child is Telegraph:
+				_telegraphs.append(child)
 	for holder: Node in [get_tree().current_scene, _level]:
 		if holder == null:
 			continue

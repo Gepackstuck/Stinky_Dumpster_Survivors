@@ -60,7 +60,13 @@ func _physics_process(delta: float) -> void:
 		_facing = direction
 	if Input.is_action_just_pressed(&"dash"):
 		_dash.try_dash(direction, _facing)
-	velocity = _dash.dash_velocity() if _dash.is_dashing() else direction * Balance.PLAYER_MOVE_SPEED * GameState.move_speed_mult
+	var wanted: Vector2 = direction * Balance.PLAYER_MOVE_SPEED * GameState.move_speed_mult
+	if _dash.is_dashing():
+		velocity = _dash.dash_velocity()
+	elif GameState.wave_mod == &"ice":   # жирный пол: разгон и торможение с инерцией
+		velocity = velocity.lerp(wanted, clampf(Balance.ICE_ACCEL * delta, 0.0, 1.0))
+	else:
+		velocity = wanted
 	if direction.x != 0.0:
 		_sprite.flip_h = direction.x > 0.0
 	_animator.active = direction != Vector2.ZERO
