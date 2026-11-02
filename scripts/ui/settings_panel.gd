@@ -32,10 +32,10 @@ func _ready() -> void:
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.add_theme_color_override(&"font_color", YELLOW)
 	add_child(title)
-	for i: int in 6:
+	for i: int in 7:
 		var b: Button = Button.new()
-		b.position = Vector2(140.0, 76.0 + i * 21.0)
-		b.size = Vector2(200.0, 18.0)
+		b.position = Vector2(140.0, 74.0 + i * 19.0)
+		b.size = Vector2(200.0, 17.0)
 		UI_BUTTONS.skin(b, i)
 		b.pressed.connect(_on_press.bind(i))
 		add_child(b)
@@ -43,7 +43,7 @@ func _ready() -> void:
 	UI_BUTTONS.add_focus_arrows(_rows)
 	var hint: Label = Label.new()
 	hint.text = InputMode.hint(tr("SET_HINT"), "СТРЕЛКИ - СТРОКА/МЕНЯТЬ   B - НАЗАД")
-	hint.position = Vector2(110.0, 204.0)
+	hint.position = Vector2(110.0, 207.0)
 	hint.size = Vector2(260.0, 10.0)
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	hint.add_theme_color_override(&"font_color", Color(0.55, 0.55, 0.6))
@@ -58,7 +58,8 @@ func _refresh() -> void:
 	_rows[2].text = "%s: %s" % [tr("SET_FULLSCREEN"), tr("SET_YES") if Settings.fullscreen else tr("SET_NO")]
 	_rows[3].text = "%s: %s" % [tr("SET_SHAKE"), tr("SET_YES") if Settings.screen_shake else tr("SET_NO")]
 	_rows[4].text = "%s: %s" % [tr("SET_LANGUAGE"), Settings.language.to_upper()]
-	_rows[5].text = tr("SET_BACK")
+	_rows[5].text = "%s: %s" % [tr("SET_VICTORY"), tr("SET_YES") if Settings.victory_cutscene else tr("SET_NO")]
+	_rows[6].text = tr("SET_BACK")
 
 
 func _focused() -> int:
@@ -82,12 +83,14 @@ func _change(row: int, dir: int) -> void:
 		4:
 			var at: int = Settings.LANGUAGES.find(Settings.language)
 			Settings.language = Settings.LANGUAGES[posmod(at + (dir if dir != 0 else 1), Settings.LANGUAGES.size())]
+		5:
+			Settings.victory_cutscene = not Settings.victory_cutscene
 	Settings.save()
 	_refresh()
 
 
 func _on_press(row: int) -> void:
-	if row == 5:
+	if row == 6:
 		closed.emit()
 	else:
 		_change(row, 1 if row < 2 else 0)
@@ -104,9 +107,9 @@ func _input(event: InputEvent) -> void:
 	elif event.is_action_pressed(&"move_down") or event.is_action_pressed(&"ui_down"):
 		get_viewport().set_input_as_handled()
 		_rows[posmod(row + 1, _rows.size())].grab_focus()
-	elif (event.is_action_pressed(&"move_left") or event.is_action_pressed(&"ui_left")) and row < 5:
+	elif (event.is_action_pressed(&"move_left") or event.is_action_pressed(&"ui_left")) and row < 6:
 		get_viewport().set_input_as_handled()
 		_change(row, -1)
-	elif (event.is_action_pressed(&"move_right") or event.is_action_pressed(&"ui_right")) and row < 5:
+	elif (event.is_action_pressed(&"move_right") or event.is_action_pressed(&"ui_right")) and row < 6:
 		get_viewport().set_input_as_handled()
 		_change(row, 1)

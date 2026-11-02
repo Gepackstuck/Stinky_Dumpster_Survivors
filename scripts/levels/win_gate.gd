@@ -2,6 +2,7 @@ extends Node2D
 ## Ворота на нижней границе арены: появляются после победы над боссом. Войдёшь - бесшовно выходишь на кладбище.
 
 const GRAVEYARD: String = "res://scenes/ui/graveyard.tscn"
+const VICTORY: String = "res://scenes/ui/victory.tscn"
 const HALF_WIDTH: float = 16.0
 
 var _player: Node2D = null
@@ -51,4 +52,4 @@ func _process(delta: float) -> void:
 	if local.y > -14.0 and absf(local.x) < HALF_WIDTH:
 		_done = true
 		SceneFlow.from_arena = true
-		SceneFlow.go(GRAVEYARD, Vector2.DOWN)
+		SceneFlow.go(VICTORY if Settings.victory_cutscene else GRAVEYARD, Vector2.DOWN)   # ролик победы - если не выключен
