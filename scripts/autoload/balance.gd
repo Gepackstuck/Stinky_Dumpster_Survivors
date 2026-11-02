@@ -261,24 +261,29 @@ const DASH_FX_KNOCK: float = 300.0
 const DASH_FX_DAMAGE: float = 12.0       # урон рывка по пути (растёт с уроном героя)
 const DASH_FX_HEAL: float = 1.0
 const DASH_DRUNK_DEG: float = 30.0
+const DASH_FART_RADIUS: float = 38.0     # старики: вместо рывка иногда пердят (old, fart - шанс)
+const DASH_FART_DAMAGE: float = 7.0      # x урон героя
+const DASH_FART_KNOCK: float = 280.0
+const DASH_FART_CD_MULT: float = 1.8     # надорвался: перезарядка дольше
+const DASH_PIPE_SEC: float = 0.32        # сантехник: сколько сидит в трубе (неуязвим, ни во что не упирается)
 const DASH_BLOCK_PAD: float = 5.0        # рывок упирается во врага, если тот ближе (его радиус + это) прямо по курсу
 const DASH_BLOCK_DOT: float = 0.45       # «по курсу»: косинус угла между рывком и направлением на врага
 const HERO_DASH: Dictionary = {
-	&"hobo": {"name": "ПЕРЕКАТ ПО ЛУЖЕ", "dist": 55.0, "cd": 2.0, "fx": &"slow"},
+	&"hobo": {"name": "ПЕРЕКАТ ПО ЛУЖЕ", "dist": 30.0, "old": true, "fart": 0.3, "cd": 2.0, "fx": &"slow"},
 	&"squid": {"name": "ЧЕРНИЛЬНЫЙ ПСИХ", "dist": 75.0, "cd": 1.4, "fx": &"slow"},
 	&"clerk": {"name": "НА ПЛАНЁРКУ", "dist": 62.0, "cd": 2.2, "charges": 2},
-	&"janitor": {"name": "РАЗМАХ МЕТЛОЙ", "dist": 50.0, "cd": 2.0, "fx": &"sweep"},
-	&"uncle_vitya": {"name": "ПЬЯНЫЙ КУВЫРОК", "dist": 62.0, "cd": 1.8, "fx": &"drunk"},
+	&"janitor": {"name": "РАЗМАХ МЕТЛОЙ", "dist": 28.0, "old": true, "fart": 0.3, "cd": 2.0, "fx": &"sweep"},
+	&"uncle_vitya": {"name": "ПЬЯНЫЙ КУВЫРОК", "dist": 32.0, "old": true, "fart": 0.35, "cd": 1.8, "fx": &"drunk"},
 	&"blogger": {"name": "ДЛЯ КОНТЕНТА", "dist": 80.0, "cd": 1.3},
-	&"granny": {"name": "КЛЮКОЙ ПО ХРЕБТУ", "dist": 40.0, "cd": 2.4, "fx": &"knock"},
+	&"granny": {"name": "КЛЮКОЙ ПО ХРЕБТУ", "dist": 24.0, "old": true, "fart": 0.4, "cd": 2.4, "fx": &"knock"},
 	&"courier": {"name": "ОПАЗДЫВАЮ", "dist": 92.0, "cd": 1.1},
 	&"pigeon": {"name": "ВСПОРХ", "dist": 95.0, "sec": 0.3, "cd": 2.0, "fx": &"fly"},
 	&"punk": {"name": "ШМЫГ", "dist": 52.0, "cd": 0.9, "charges": 2},
 	&"shawarma": {"name": "ЖИРНЫЙ СКОЛЬЗ", "dist": 60.0, "cd": 1.7, "fx": &"trail"},
-	&"guard": {"name": "ТАРАН", "dist": 50.0, "cd": 2.0, "fx": &"sweep"},
+	&"guard": {"name": "ТАРАН", "dist": 28.0, "old": true, "fart": 0.25, "cd": 2.0, "fx": &"sweep"},
 	&"student": {"name": "ПРОГУЛ", "dist": 82.0, "cd": 1.2},
-	&"plumber": {"name": "ПО ТРУБАМ", "dist": 75.0, "cd": 2.2, "fx": &"blink"},
-	&"dacha": {"name": "ГРЯДКА ЛЕЧИТ", "dist": 45.0, "cd": 2.2, "fx": &"heal"},
+	&"plumber": {"name": "ПО ТРУБАМ", "dist": 95.0, "cd": 2.2, "fx": &"pipe"},
+	&"dacha": {"name": "ГРЯДКА ЛЕЧИТ", "dist": 26.0, "old": true, "fart": 0.3, "cd": 2.2, "fx": &"heal"},
 	&"skater": {"name": "ОЛЛИ", "dist": 100.0, "sec": 0.2, "cd": 1.6, "charges": 2},
 	&"slime": {"name": "ПОЛЗОК", "dist": 60.0, "cd": 1.5, "fx": &"trail"},
 }

@@ -8,8 +8,19 @@ import os, re, signal, subprocess, time, threading
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 GODOT = os.environ.get("GODOT", os.path.expanduser("~/Library/Application Support/Steam/steamapps/common/Godot Engine/Godot.app/Contents/MacOS/Godot"))
 STATUS = os.path.join(ROOT, "tools", "_bot_runs", "STATUS.md")
-MIN_IDLE = float(os.environ.get("BOT_MIN_IDLE", "10"))   # % свободного ЦП, ниже которого ставим ботов на паузу
-START_IDLE = MIN_IDLE + 8                                 # стартуем новый процесс, только если свободно столько
+DAY_IDLE = float(os.environ.get("BOT_MIN_IDLE", "10"))     # днём: % свободного ЦП, ниже которого ставим ботов на паузу
+NIGHT_IDLE = 32.5                                          # ночью (00:00-08:30): 30-35% свободно, чтобы вентиляторы не шумели
+
+
+def min_idle():
+    """Порог свободного ЦП по часам: ночью тише."""
+    t = time.localtime()
+    minutes = t.tm_hour * 60 + t.tm_min
+    return NIGHT_IDLE if minutes < 8 * 60 + 30 else DAY_IDLE
+
+
+MIN_IDLE = DAY_IDLE   # для статуса (обновляется в цикле)
+START_IDLE = MIN_IDLE + 8
 
 
 def cpu_idle():
@@ -65,6 +76,8 @@ class Pool:
                 if item[0].poll() is not None:
                     running.remove(item); done += 1
             idle = cpu_idle()
+            global MIN_IDLE, START_IDLE
+            MIN_IDLE = min_idle(); START_IDLE = MIN_IDLE + 8
             active = [r for r in running if not r[2]]
             paused = [r for r in running if r[2]]
             if idle < MIN_IDLE and active:

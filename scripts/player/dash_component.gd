@@ -17,6 +17,7 @@ var _speed: float = 0.0
 var _start: Vector2 = Vector2.ZERO
 var _ghost_left: float = 0.0
 var _last_sent: Vector3 = Vector3(-1, -1, -1)
+const PIPE: Texture2D = preload("res://assets/sprites/fx_pipe.png")
 
 
 func _ready() -> void:
@@ -51,6 +52,9 @@ func try_dash(move_dir: Vector2, facing: Vector2) -> bool:
 	_charges -= 1
 	if _recharge <= 0.0:
 		_recharge = float(_p["cd"])
+	if _p.get("old", false) and randf() < float(_p.get("fart", 0.0)):
+		_fart()
+		return true
 	_dir = (move_dir if move_dir != Vector2.ZERO else facing).normalized()
 	var fx: StringName = _p["fx"]
 	var iframe: float = float(_p["sec"]) + float(_p["iframe_extra"])
@@ -66,6 +70,10 @@ func try_dash(move_dir: Vector2, facing: Vector2) -> bool:
 	if fx == &"slow":
 		_slow_around(_start, Balance.DASH_FX_RADIUS)
 		HitFx.burst(get_tree(), _start, Color(0.2235, 1.0, 0.0784), 14, 70.0, 3.0, 0.5, true)
+	if fx == &"pipe":
+		_pipe_travel(iframe)
+		EventBus.dash_used.emit(_start)
+		return true
 	if fx == &"blink":
 		HitFx.burst(get_tree(), _start, Color(0.0, 0.94, 1.0), 12, 60.0, 2.0, 0.4, true)
 		body.global_position = _blink_target()
@@ -86,12 +94,12 @@ func _physics_process(delta: float) -> void:
 		if _recharge <= 0.0:
 			_charges = mini(_charges + 1, int(_p["charges"]))
 			_recharge = float(_p["cd"]) if _charges < int(_p["charges"]) else 0.0
-	if _dash_left > 0.0 and StringName(_p["fx"]) != &"fly" and _blocked(body.global_position, _dir):
+	if _dash_left > 0.0 and StringName(_p["fx"]) not in [&"fly", &"pipe"] and _blocked(body.global_position, _dir):
 		_bump()
 	if _dash_left > 0.0:
 		_dash_left -= delta
 		_ghost_left -= delta
-		if _ghost_left <= 0.0:
+		if _ghost_left <= 0.0 and StringName(_p["fx"]) != &"pipe":
 			_ghost_left = 0.035
 			_spawn_ghost()
 		if _dash_left <= 0.0:
@@ -100,6 +108,46 @@ func _physics_process(delta: float) -> void:
 	if state != _last_sent:
 		_last_sent = state
 		EventBus.dash_state.emit(_charges, int(_p["charges"]), state.z)
+
+
+## Старик надорвался: вместо рывка - пердёж. Бьёт и расталкивает всех вокруг, перезарядка дольше.
+func _fart() -> void:
+	var at: Vector2 = body.global_position
+	_recharge = float(_p["cd"]) * Balance.DASH_FART_CD_MULT
+	hurtbox.grant_invulnerability(0.12)
+	for enemy: EnemyBase in _enemies_near(at, Balance.DASH_FART_RADIUS):
+		enemy.hit_by_weapon(GameState.roll_damage(Balance.DASH_FART_DAMAGE), at.direction_to(enemy.global_position) * Balance.DASH_FART_KNOCK, &"dash")
+	HitFx.burst(get_tree(), at + Vector2(0.0, 6.0), Color(0.45, 0.85, 0.15), 22, 90.0, 4.0, 0.7, true)
+	HitFx.burst(get_tree(), at + Vector2(0.0, 6.0), Color(0.6, 0.45, 0.15), 10, 60.0, 3.0, 0.6, true)
+	HitFx.popup(get_tree(), at + Vector2(0.0, -14.0), ["ПРРР!", "ПФФФ!", "ОЙ...", "ЭХ, ГОДЫ..."][randi() % 4], Color(0.6, 1.0, 0.2), 12.0, 0.8)
+	AudioManager.play_sfx(&"fart", 0.1)
+	EventBus.dash_used.emit(at)
+
+
+## Сантехник: ныряет в трубу, вылезает из другой дальше (ни во что не упирается, всё время неуязвим).
+func _pipe_travel(iframe: float) -> void:
+	var arena: Vector2 = Vector2(Balance.ARENA_SIZE, Balance.ARENA_SIZE)
+	var exit: Vector2 = (_start + _dir * float(_p["dist"])).clamp(Vector2(12, 12), arena - Vector2(12, 12))
+	hurtbox.grant_invulnerability(Balance.DASH_PIPE_SEC + iframe)
+	_dash_left = Balance.DASH_PIPE_SEC
+	_speed = 0.0
+	for at: Vector2 in [_start, exit]:
+		var pipe: Sprite2D = Sprite2D.new()
+		pipe.texture = PIPE
+		pipe.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		pipe.z_index = -1
+		get_tree().current_scene.add_child(pipe)
+		pipe.global_position = at + Vector2(0.0, 6.0)
+		var tw: Tween = pipe.create_tween()
+		tw.tween_interval(Balance.DASH_PIPE_SEC + 0.25)
+		tw.tween_property(pipe, "modulate:a", 0.0, 0.2)
+		tw.tween_callback(pipe.queue_free)
+	AudioManager.play_sfx(&"pipe")
+	var tw2: Tween = create_tween()
+	tw2.tween_property(sprite, "scale:y", 0.0, Balance.DASH_PIPE_SEC * 0.4)
+	tw2.tween_callback(func() -> void: body.global_position = exit)
+	tw2.tween_interval(Balance.DASH_PIPE_SEC * 0.2)
+	tw2.tween_property(sprite, "scale:y", 1.0, Balance.DASH_PIPE_SEC * 0.4)
 
 
 func _finish() -> void:

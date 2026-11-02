@@ -15,6 +15,7 @@ const SKILLS: Dictionary = {
 	# see_proj - видит ли вражеские снаряды; shop/cards - как закупается и выбирает карточки.
 	&"noob": {"dash": &"random", "react": 0.30, "dirs": 8, "noise": 22.0, "mistake": 0.12, "look": [0.3], "see_proj": false, "shop": &"random", "cards": &"random"},
 	&"mid": {"dash": &"smart", "react": 0.12, "dirs": 12, "noise": 7.0, "mistake": 0.03, "look": [0.2, 0.5], "see_proj": true, "shop": &"greedy", "cards": &"weighted"},
+	&"god": {"dash": &"smart", "react": 0.0, "dirs": 32, "noise": 0.0, "mistake": 0.0, "look": [0.1, 0.25, 0.45, 0.8], "see_proj": true, "shop": &"sets", "cards": &"weighted", "god": true},
 	&"pro": {"dash": &"smart", "react": 0.0, "dirs": 24, "noise": 0.0, "mistake": 0.0, "look": [0.15, 0.4, 0.8], "see_proj": true, "shop": &"sets", "cards": &"weighted"},
 }
 # «Мозг» бота: веса манёвров. Подбираются обучением (tools/bot/train.py) и лежат в tools/bot/brain.json.

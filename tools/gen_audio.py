@@ -77,6 +77,9 @@ def sfx():
     tt = t(0.5); S["truck_horn"] = (sq(233, tt, 0.5) + sq(277, tt, 0.5)) * env(len(tt), a=0.02, d=0.4, s=0.5, sus=0.2)
     tt = t(0.35); S["lightning"] = crush(noise(len(tt), 0.9) * env(len(tt), a=0.001, d=0.3) + 0.5 * noise(len(tt), 0.05) * env(len(tt), d=0.33), 3)
     S["combo"] = np.concatenate([sq(f, t(0.06), 0.25) * env(len(t(0.06)), d=0.06) for f in [784, 988, 1175, 1568, 1976]])
+    tt = t(0.45)   # старческий пердёж: низкий, дребезжащий, с хвостом
+    S["fart"] = crush((sq(55 + 18 * np.sin(2 * np.pi * 22 * tt) + 10 * np.sin(2 * np.pi * 7 * tt), tt, 0.25) * env(len(tt), a=0.02, d=0.4) + 0.4 * noise(len(tt), 0.15) * env(len(tt), d=0.3)), 5)
+    tt = t(0.3); S["pipe"] = sq(np.linspace(400, 90, len(tt)), tt, 0.5) * env(len(tt), d=0.28) + 0.3 * noise(len(tt), 0.3) * env(len(tt), d=0.2)
     tt = t(0.2); S["streak_break"] = sq(np.linspace(600, 150, len(tt)), tt, 0.5) * env(len(tt), d=0.2)
     os.makedirs(OUT_SFX, exist_ok=True)
     for k, v in S.items():

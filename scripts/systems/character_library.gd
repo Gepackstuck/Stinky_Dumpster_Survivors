@@ -99,7 +99,7 @@ static func weapon_line(id: StringName) -> String:
 const _DASH_FX_TEXT: Dictionary = {
 	&"slow": "ТОРМОЗИТ ВРАГОВ", &"sweep": "БЬЁТ ПО ПУТИ", &"knock": "РАСПИХИВАЕТ",
 	&"trail": "СКОЛЬЗКИЙ СЛЕД", &"blink": "ТЕЛЕПОРТ", &"drunk": "КРИВОЙ, ДОЛЬШЕ НЕУЯЗВИМ",
-	&"heal": "+1 ХП", &"fly": "ПЕРЕЛЁТ",
+	&"heal": "+1 ХП", &"fly": "ПЕРЕЛЁТ", &"pipe": "ЧЕРЕЗ ТРУБУ, СКВОЗЬ ВСЕХ",
 }
 
 
@@ -109,6 +109,8 @@ static func dash_line(id: StringName) -> String:
 	var parts: Array[String] = []
 	if _DASH_FX_TEXT.has(p["fx"]):
 		parts.append(_DASH_FX_TEXT[p["fx"]])
+	if p.get("old", false):
+		parts.append("СТАРЫЙ: КОРОТКИЙ, %d%% ПЕРДИТ" % roundi(float(p["fart"]) * 100.0))
 	if int(p["charges"]) > 1:
 		parts.append("%d ЗАРЯДА" % int(p["charges"]))
 	if parts.is_empty():

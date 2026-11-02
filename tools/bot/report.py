@@ -4,7 +4,7 @@
 import json, sys, glob, os, statistics
 from collections import Counter, defaultdict
 
-TARGET = {"pro": (25, 35), "mid": (5, 10), "noob": (0, 2)}
+TARGET = {"god": (45, 55), "pro": (25, 35), "mid": (5, 10), "noob": (0, 2)}
 SHOP_SEC = 25  # сколько живой игрок в среднем сидит в Ларьке и на карточках за волну
 
 
@@ -34,7 +34,7 @@ def main(d):
     L.append("## Скиллозависимость\n")
     L.append("| Скилл | Забегов | Побед | Цель | Медиана волны смерти | Еле выжил (победы с ХП<25%) | Окружён при смерти | Длина победы, мин |")
     L.append("|---|---|---|---|---|---|---|---|")
-    for s in ["noob", "mid", "pro"]:
+    for s in ["noob", "mid", "pro", "god"]:
         rs = by_skill.get(s, [])
         if not rs:
             continue
@@ -50,10 +50,11 @@ def main(d):
         L.append(f"| {s} | {len(rs)} | {wr:.0f}% | {lo}-{hi}% ({mark}) | {med} | {pct(close, len(wins)):.0f}% | {pct(surr, len(deaths)):.0f}% | {dur:.1f} |")
     L.append("\n## Где умирают (волна: смертей по скиллам)\n")
     waves = sorted({r["wave"] for r in runs if r["result"] == "death"})
-    L.append("| Волна | " + " | ".join(s for s in ["noob", "mid", "pro"] if s in by_skill) + " |")
-    L.append("|---|" + "---|" * len([s for s in ["noob", "mid", "pro"] if s in by_skill]))
+    SK = [s for s in ["noob", "mid", "pro", "god"] if s in by_skill]
+    L.append("| Волна | " + " | ".join(SK) + " |")
+    L.append("|---|" + "---|" * len(SK))
     for w in waves:
-        row = [str(sum(1 for r in by_skill[s] if r["result"] == "death" and r["wave"] == w)) for s in ["noob", "mid", "pro"] if s in by_skill]
+        row = [str(sum(1 for r in by_skill[s] if r["result"] == "death" and r["wave"] == w)) for s in SK]
         L.append(f"| {w} | " + " | ".join(row) + " |")
     L.append("\n## Кто убивает (последний удар)\n")
     for k, v in Counter(r["killer"] for r in runs if r["result"] == "death").most_common(10):
