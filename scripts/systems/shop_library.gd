@@ -16,8 +16,10 @@ static func base_price(kind: StringName, id: StringName) -> float:
 
 static func price(kind: StringName, id: StringName, tier: int, wave: int) -> int:
 	var raw: float = float(Balance.ITEMS[id]["price"]) if kind == &"item" else base_price(kind, id) * Balance.SHOP_PRICE_TIER_MULT[tier - 1]
+	if id == ItemLibrary.TICKET and Balance.TICKET_PRICE_FIXED:
+		return int(raw)   # билет всегда 5 говна
 	raw *= 1.0 + Balance.SHOP_PRICE_WAVE_GROWTH * wave
-	return maxi(roundi(raw * (1.0 - GameState.discount_percent / 100.0)), 1)
+	return maxi(roundi(raw * (1.0 - (GameState.discount_percent + GameState.card_discount) / 100.0)), 1)
 
 
 ## Пересчитать цены уже лежащих на витрине товаров (после покупки талона бомжа).
@@ -102,7 +104,22 @@ static func fill_offers(existing: Array[Dictionary], wave: int, keep_unlocked: b
 			result.append(new_offer(wave))
 			fresh.append(i)
 	_place_shoes(result, fresh, wave)
+	_place_ticket(result, fresh, wave)
 	return result
+
+
+## Н12: лотерейный билет иногда лежит на витрине (не на месте обуви).
+static func _place_ticket(offers: Array[Dictionary], fresh: Array[int], wave: int) -> void:
+	if wave < Balance.TICKET_FROM_WAVE or fresh.size() < 2 or randf() >= Balance.TICKET_SHOP_CHANCE:
+		return
+	for offer: Dictionary in offers:
+		if offer.get("id", &"") == ItemLibrary.TICKET and not offer["sold"]:
+			return
+	var slot: int = fresh[fresh.size() - 1]
+	if offers[slot].get("id", &"") == ItemLibrary.SHOES:
+		return
+	offers[slot] = {"locked": false, "sold": false, "kind": &"item", "id": ItemLibrary.TICKET, "tier": 1,
+			"price": price(&"item", ItemLibrary.TICKET, 1, wave)}
 
 
 ## Обувь героя (= рывок): пока босой - пара лежит на витрине всегда; вторая пара - с шансом.
@@ -182,8 +199,11 @@ static func why_not(offer: Dictionary) -> String:
 
 static func buy(offer: Dictionary) -> void:
 	GameState.coins -= offer["price"]
+	GameState.card_spend(offer["price"])
 	offer["sold"] = true
-	if offer["kind"] == &"item":
+	if offer["id"] == ItemLibrary.TICKET:
+		GameState.lottery_tickets += 1
+	elif offer["kind"] == &"item":
 		GameState.add_item(offer["id"])
 		reprice(GameState.shop_offers, GameState.wave + 1)
 	elif offer["kind"] == &"weapon":

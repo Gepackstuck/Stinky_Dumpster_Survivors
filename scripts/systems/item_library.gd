@@ -4,7 +4,7 @@ extends RefCounted
 
 const TEX: GDScript = preload("res://scripts/systems/tex.gd")
 const _TITLES: Dictionary[StringName, String] = {
-	&"chef_apron": "ФАРТУК ПОВАРА", &"work_gloves": "РАБОЧИЕ ПЕРЧАТКИ", &"bottle_silencer": "ГЛУШИТЕЛЬ ИЗ БУТЫЛКИ",
+	&"lottery_ticket": "ГОВНОЛОТО", &"chef_apron": "ФАРТУК ПОВАРА", &"work_gloves": "РАБОЧИЕ ПЕРЧАТКИ", &"bottle_silencer": "ГЛУШИТЕЛЬ ИЗ БУТЫЛКИ",
 	&"gas_can": "КАНИСТРА", &"week_socks": "НЕДЕЛЬНЫЕ НОСКИ", &"prison_tattoo": "НАКОЛКА «НЕ ЗАБУДУ»",
 	&"pigeon_loft": "ГОЛУБЯТНЯ", &"dog_house": "СОБАЧЬЯ БУДКА",
 	&"cursed_cigcase": "ПОРТСИГАР МЕРТВЕЦА", &"cursed_teeth": "ЧУЖИЕ ЗУБЫ", &"cursed_chain": "ЦЕПЬ АЛКАША",
@@ -127,6 +127,8 @@ static func title(item_id: StringName) -> String:
 
 ## Обувь героя = рывок (см. Balance.ITEMS dash_shoes).
 const SHOES: StringName = &"dash_shoes"
+## Н12: лотерейный билет (не в рюкзак).
+const TICKET: StringName = &"lottery_ticket"
 
 
 ## Сколько пар обуви (зарядов рывка) может купить текущий герой.
@@ -209,8 +211,8 @@ static func at_limit(item_id: StringName) -> bool:
 static func pool(tier_value: int) -> Array[StringName]:
 	var result: Array[StringName] = []
 	for id: StringName in Balance.ITEMS:
-		if id == SHOES:
-			continue   # обувь выкладывает Ларёк отдельно (ShopLibrary.fill_offers)
+		if id == SHOES or id == TICKET:
+			continue   # обувь и билеты выкладывает Ларёк отдельно (ShopLibrary.fill_offers)
 		if Balance.ITEMS[id]["tier"] == tier_value and not at_limit(id) and not is_cursed(id) and not is_combo(id):
 			var weight: int = Balance.SHOP_COMPANION_WEIGHT if is_companion(id) else 1
 			for i: int in weight:
@@ -252,6 +254,9 @@ static func describe(data: Dictionary) -> String:
 	for key: StringName in fx:
 		var v: int = roundi(fx[key])
 		match key:
+			&"lottery":
+				lines.append(TranslationServer.translate("СОТРЁШЬ В СЛЕДУЮЩЕМ ЛАРЬКЕ"))
+				lines.append(TranslationServer.translate("ДЖЕКПОТ 100 ГОВНА"))
 			&"dash":
 				lines.append(TranslationServer.translate("+1 РЫВОК"))
 				lines.append(TranslationServer.translate("БОСИКОМ НЕ РВАНЁШЬ" if GameState.item_count(SHOES) == 0 else "ВТОРОЙ ЗАРЯД"))

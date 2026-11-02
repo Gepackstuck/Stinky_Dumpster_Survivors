@@ -76,9 +76,9 @@ def near():
 
 def road():
     """Дорога от зрителя к кладбищу на горизонте (неподвижный слой поверх помойки)."""
-    c = Canvas(480, 130)
-    for y in range(130):
-        k = y / 129.0                       # 0 - горизонт, 1 - у ног
+    c = Canvas(480, 90)
+    for y in range(90):
+        k = y / 89.0                        # 0 - горизонт, 1 - у ног
         half = int(8 + k * 70)
         x0, x1 = 240 - half, 240 + half
         c.a[y, x0:x1] = (*DMUD, 255)
@@ -86,7 +86,7 @@ def road():
         if y % 12 < 6: c.a[y, 239:241] = (*YELLOW, 200)          # стёртая разметка
         c.a[y, max(x0 - 1, 0)] = (*BLACK, 255); c.a[y, min(x1, 479)] = (*BLACK, 255)
     for _ in range(40):                                          # мусор на обочине и лужи
-        y = int(R.integers(10, 128)); k = y / 129.0; half = int(8 + k * 70)
+        y = int(R.integers(8, 88)); k = y / 89.0; half = int(8 + k * 70)
         x = 240 + int(R.choice([-1, 1])) * int(half * R.uniform(0.3, 0.9))
         c.ell(x, y, max(1, int(k * 4)), max(1, int(k * 2)), (60, 100, 160) if R.random() < 0.4 else BROWN)
     return c.a
@@ -117,5 +117,5 @@ if __name__ == "__main__":
     f = Image.open("assets/ui/victory_far.png"); n = Image.open("assets/ui/victory_near.png")
     s.paste(f, (-60, 120), f); s.paste(n, (-100, 140), n)
     r = Image.open("assets/ui/victory_road.png"); y = Image.open("assets/ui/victory_yard.png")
-    s.paste(r, (0, 140), r); s.paste(y, (180, 106), y)
+    s.paste(y, (180, 140), y); s.paste(n, (-100, 140), n); s.paste(r, (0, 180), r)
     s.save("tools/_preview/victory.png"); print("ok")

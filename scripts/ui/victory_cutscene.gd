@@ -23,9 +23,9 @@ func _ready() -> void:
 	size = Vector2(480.0, 270.0)
 	_layer(SKY, Vector2.ZERO)
 	_far = _layer(FAR, Vector2(0.0, 120.0))
+	_layer(YARD, Vector2(180.0, 140.0))   # кладбище посреди помойки: ближние кучи его частично закрывают
 	_near = _layer(NEAR, Vector2(0.0, 140.0))
-	_layer(ROAD, Vector2(0.0, 140.0))
-	_layer(YARD, Vector2(180.0, 106.0))
+	_layer(ROAD, Vector2(0.0, 180.0))
 	_hero = Sprite2D.new()
 	_hero.texture = CharacterLibrary.sprite_sheet(GameState.character)
 	_hero.hframes = 4
@@ -80,7 +80,7 @@ func _process(delta: float) -> void:
 	_far.position.x = roundf(-k * 120.0)    # параллакс: дальнее ползёт медленно, ближнее быстрее
 	_near.position.x = roundf(-k * 160.0)
 	var walk: float = clampf(_t / 5.0, 0.0, 1.0)   # герой уходит по дороге вдаль и уменьшается
-	_hero.position = Vector2(240.0, lerpf(290.0, 158.0, walk)).round()   # к воротам кладбища на горизонте
+	_hero.position = Vector2(240.0, lerpf(290.0, 186.0, walk)).round()   # к воротам кладбища на горизонте
 	_hero.scale = Vector2.ONE * (3.0 if walk < 0.4 else (2.0 if walk < 0.8 else 1.0))
 	_hero.frame = 4 + (int(_t * 8.0) % 4 if walk < 1.0 else 0)
 	var starts: Array[float] = [1.2, 3.0, 4.8]

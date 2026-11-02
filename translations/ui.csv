@@ -96,3 +96,11 @@ SET_VICTORY,РОЛИК ПОБЕДЫ,VICTORY CUTSCENE
 СВОЯ ЖЕ БУТЫЛКА,СВОЯ ЖЕ БУТЫЛКА,YOUR OWN BOTTLE
 ...ОБРАТНО НА КЛАДБИЩЕ.,...ОБРАТНО НА КЛАДБИЩЕ.,...BACK TO THE GRAVEYARD.
 "А ВОКРУГ ПОМОЙКА ДО ГОРИЗОНТА. ЭТО ТОЛЬКО НАЧАЛО, ЛОХ.","А ВОКРУГ ПОМОЙКА ДО ГОРИЗОНТА. ЭТО ТОЛЬКО НАЧАЛО, ЛОХ.","AND ALL AROUND - DUMP TO THE HORIZON. THIS IS JUST THE BEGINNING, LOSER."
+ГОВНОЛОТО,ГОВНОЛОТО,CRAPLOTTO
+СОТРЁШЬ В СЛЕДУЮЩЕМ ЛАРЬКЕ,СОТРЁШЬ В СЛЕДУЮЩЕМ ЛАРЬКЕ,SCRATCH IT AT THE NEXT STALL
+ДЖЕКПОТ 100 ГОВНА,ДЖЕКПОТ 100 ГОВНА,JACKPOT 100 CRAP
+ДЖЕКПОТ! +%d ГОВНА,ДЖЕКПОТ! +%d ГОВНА,JACKPOT! +%d CRAP
+БИЛЕТЫ: ПУСТО. ЛОХ.,БИЛЕТЫ: ПУСТО. ЛОХ.,TICKETS: NOTHING. LOSER.
+БИЛЕТЫ: %s,БИЛЕТЫ: %s,TICKETS: %s
+"КАРТА «ПОМОЙКА+» ПОЛНАЯ: РЕРОЛЛ БЕСПЛАТНО, ВСЁ -10%","КАРТА «ПОМОЙКА+» ПОЛНАЯ: РЕРОЛЛ БЕСПЛАТНО, ВСЁ -10%","DUMP+ CARD FULL: FREE REROLL, EVERYTHING -10%"
+ПОМОЙКА+ %d/%d,ПОМОЙКА+ %d/%d,DUMP+ %d/%d

@@ -38,7 +38,13 @@ var weapons: Array[Dictionary] = []    # оружие игрока: {id, tier}, 
 var endless: bool = false            # бесконечный режим после победы
 var daily: bool = false              # ежедневный забег (один сид на всех в этот день)
 var daily_seed: int = 0
-var seed_word: String = ""            # «Шизосид»: слово -> один и тот же забег (пусто - обычный рандом)
+var seed_word: String = ""
+var lottery_tickets: int = 0          # Н12: куплено билетов, сотрутся в следующем Ларьке
+var card_spent: int = 0               # Н13: говно, потраченное в Ларьке (идёт в штампы карты «Помойка+»)
+var card_stamps: int = 0
+var card_ready: bool = false          # карта заполнена: следующий Ларёк со скидкой и бесплатным рероллом
+var card_discount: float = 0.0        # скидка карты, действует в текущем Ларьке
+var free_rerolls: int = 0            # «Шизосид»: слово -> один и тот же забег (пусто - обычный рандом)
 var danger: int = 0                  # уровень опасности забега (Balance.DANGER_LEVELS)
 var character: StringName = &"hobo"   # выбранный на кладбище персонаж (живёт между забегами)
 var run_coins_earned: int = 0
@@ -121,6 +127,7 @@ func _ready() -> void:
 			active_bet["dashes"] = int(active_bet["dashes"]) + 1)
 	EventBus.wave_ended.connect(_settle_bet)
 	EventBus.wave_started.connect(func(_w: int) -> void:
+		card_discount = 0.0   # скидка карты - только на один Ларёк
 		wave_damage_taken = 0.0
 		hp_wave_marks.append(hp_history.size()))
 	EventBus.wave_ended.connect(_on_wave_ended_clean)   # бонусы наборов зависят от оружия в слотах
@@ -157,6 +164,12 @@ func reset_run() -> void:
 	active_bet = {}
 	roulette_pending = false
 	pending_mod = &""
+	lottery_tickets = 0
+	card_spent = 0
+	card_stamps = 0
+	card_ready = false
+	card_discount = 0.0
+	free_rerolls = 0
 	endless = false
 	if daily:
 		seed(daily_seed)
@@ -547,3 +560,70 @@ func _on_xp_collected(amount: int) -> void:
 func _on_player_died() -> void:
 	run_active = false
 	EventBus.run_ended.emit()
+
+
+## Н13: говно потрачено в Ларьке (покупка/реролл) - копим штампы карты «Помойка+».
+func card_spend(amount: int) -> void:
+	if card_ready:
+		return
+	card_spent += amount
+	while card_spent >= Balance.CARD_STAMP_COINS and card_stamps < Balance.CARD_STAMPS:
+		card_spent -= Balance.CARD_STAMP_COINS
+		card_stamps += 1
+	if card_stamps >= Balance.CARD_STAMPS:
+		card_ready = true
+
+
+## Н13: открылся новый Ларёк. Заполненная карта даёт бесплатный реролл и скидку на этот Ларёк. true - сработала.
+func card_open_shop() -> bool:
+	card_discount = 0.0
+	if not card_ready:
+		return false
+	card_ready = false
+	card_stamps = 0
+	card_spent = 0
+	free_rerolls += 1
+	card_discount = Balance.CARD_DISCOUNT
+	Profile.stat_add(&"card_filled", 1)
+	if Profile.stat(&"card_filled") >= 10:
+		Achievements.unlock(&"card_10")
+	return true
+
+
+## Н12: стереть все купленные билеты. Возвращает строку итога для тоста Ларька ("" - билетов не было).
+func scratch_tickets() -> String:
+	if lottery_tickets <= 0:
+		return ""
+	var won_coins: int = 0
+	var won_items: Array[String] = []
+	var jackpot: bool = false
+	for i: int in lottery_tickets:
+		var r: float = randf()
+		var odds: Array[float] = Balance.TICKET_ODDS
+		if r < odds[0]:
+			continue
+		elif r < odds[0] + odds[1]:
+			won_coins += randi_range(Balance.TICKET_SMALL.x, Balance.TICKET_SMALL.y)
+		elif r < odds[0] + odds[1] + odds[2]:
+			var item: StringName = ItemLibrary.roll_free_item(wave)
+			if item != &"":
+				add_item(item)
+				won_items.append(ItemLibrary.title(item))
+		else:
+			won_coins += Balance.TICKET_JACKPOT
+			jackpot = true
+	Profile.stat_add(&"tickets", lottery_tickets)
+	if Profile.stat(&"tickets") >= 50:
+		Achievements.unlock(&"tickets_50")
+	lottery_tickets = 0
+	coins += won_coins
+	if jackpot:
+		Achievements.unlock(&"ticket_jackpot")
+		return TranslationServer.translate("ДЖЕКПОТ! +%d ГОВНА") % won_coins
+	if won_coins == 0 and won_items.is_empty():
+		return TranslationServer.translate("БИЛЕТЫ: ПУСТО. ЛОХ.")
+	var parts: PackedStringArray = []
+	if won_coins > 0:
+		parts.append("+%d" % won_coins)
+	parts.append_array(won_items)
+	return TranslationServer.translate("БИЛЕТЫ: %s") % ", ".join(parts)

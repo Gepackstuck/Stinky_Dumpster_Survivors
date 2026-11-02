@@ -490,6 +490,8 @@ const ITEMS: Dictionary = {
 	# Обувь героя = рывок: герой начинает босиком, рывок покупается в Ларьке (у каждого своя пара).
 	# limit считает ItemLibrary.max_count: заряды рывка героя (HERO_DASH charges, обычно 1, у шустрых 2).
 	&"dash_shoes": {"tier": 1, "price": 16, "limit": 1, "fx": {&"dash": 1.0}},
+	# Н12: лотерейный билет - не в рюкзак, стирается в начале следующего Ларька (GameState.scratch_tickets).
+	&"lottery_ticket": {"tier": 1, "price": 5, "limit": 0, "fx": {&"lottery": 1.0}},
 	&"cigarette": {"tier": 1, "price": 14, "limit": 0, "mods": {&"speed": 6.0, &"max_hp": -3.0}},
 	&"sandwich": {"tier": 1, "price": 15, "limit": 0, "mods": {&"max_hp": 8.0, &"dodge": -3.0}},
 	&"holey_sock": {"tier": 1, "price": 13, "limit": 0, "mods": {&"dodge": 6.0, &"armor": -1.0}},
@@ -808,6 +810,20 @@ const BOTTLE_DAMAGE_PER_WAVE: float = 0.12   # +12% урона за волну
 const BOTTLE_RADIUS: float = 34.0
 const BOTTLE_SELF_RADIUS: float = 18.0       # стоял ближе - автогол
 const BOTTLE_SELF_DAMAGE: float = 3.0
+
+# --- Н12: лотерея. Шансы исходов: пусто / мелочь / предмет / джекпот ---
+const TICKET_FROM_WAVE: int = 2
+const TICKET_SHOP_CHANCE: float = 0.25
+const TICKET_PRICE_FIXED: bool = true         # цена 5 говна не растёт с волной
+const TICKET_ODDS: Array[float] = [0.60, 0.30, 0.09, 0.01]
+const TICKET_SMALL: Vector2i = Vector2i(5, 15)
+const TICKET_JACKPOT: int = 100
+
+# --- Н13: карта «Помойка+»: штамп за каждые CARD_STAMP_COINS потраченного говна, полная карта -
+# следующий Ларёк с бесплатным рероллом и скидкой CARD_DISCOUNT ---
+const CARD_STAMP_COINS: int = 40
+const CARD_STAMPS: int = 5
+const CARD_DISCOUNT: float = 10.0
 
 # --- Хитрые враги ---
 const BLINKER_INTERVAL_SEC: float = 3.2      # как часто глючный бомж прыгает

@@ -60,5 +60,18 @@ func _run() -> void:
 	GameState.character = &"skater"
 	_check(ItemLibrary.shoes_max() == 2 and not ItemLibrary.at_limit(ItemLibrary.SHOES), "скейтеру можно вторую пару")
 	_check(ItemLibrary.title(ItemLibrary.SHOES) == "КЕДЫ СКЕЙТЕРА", "в Ларьке обувь своего героя")
+	# Н12 лотерея: билет не в рюкзак, стирается и даёт итог
+	GameState.coins = 100
+	var ticket: Dictionary = {"kind": &"item", "id": ItemLibrary.TICKET, "tier": 1, "price": ShopLibrary.price(&"item", ItemLibrary.TICKET, 1, 9), "locked": false, "sold": false}
+	_check(ticket["price"] == 5, "билет всегда 5 говна")
+	ShopLibrary.buy(ticket)
+	_check(GameState.lottery_tickets == 1 and GameState.item_count(ItemLibrary.TICKET) == 0, "билет не в рюкзаке")
+	_check(GameState.scratch_tickets() != "" and GameState.lottery_tickets == 0, "билет стёрт")
+	# Н13 карта: 5 штампов -> бесплатный реролл и скидка
+	GameState.card_ready = false
+	GameState.card_stamps = 0
+	GameState.card_spend(Balance.CARD_STAMP_COINS * Balance.CARD_STAMPS)
+	_check(GameState.card_ready, "карта заполнилась")
+	_check(GameState.card_open_shop() and GameState.free_rerolls >= 1 and GameState.card_discount > 0.0, "полная карта даёт реролл и скидку")
 	print("ITEMS OK" if _fails == 0 else "ITEMS FAIL %d" % _fails)
 	get_tree().quit()

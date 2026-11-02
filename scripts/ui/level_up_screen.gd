@@ -279,7 +279,15 @@ func _on_wave_ended(_wave: int) -> void:
 		_root.get_parent().add_child(ev)
 		ev.setup(kind)
 		await ev.done
+	var card_fired: bool = GameState.card_open_shop()
+	if card_fired:
+		ShopLibrary.reprice(GameState.shop_offers, GameState.wave + 1)
+	var lottery: String = GameState.scratch_tickets()
 	_show_choices()
+	if lottery != "":
+		_toast(lottery)
+	elif card_fired:
+		_toast(tr("КАРТА «ПОМОЙКА+» ПОЛНАЯ: РЕРОЛЛ БЕСПЛАТНО, ВСЁ -10%"))
 	if GameState.last_bet_result != 0:
 		_toast("ПАРИ ВЫИГРАНО! +ГОВНО И ПРЕДМЕТ" if GameState.last_bet_result > 0 else "ПАРИ ПРОДУЛ. ТАК ТЕБЕ И НАДО")
 		GameState.last_bet_result = 0
@@ -336,13 +344,23 @@ func _visible_cards() -> Array[int]:
 	return result
 
 
+## Счётчик говна + штампы карты «Помойка+» (Н13).
+func _coins_text() -> String:
+	var text: String = "ГОВНА: %d" % GameState.coins
+	if not _start_mode:
+		text += "   " + tr("ПОМОЙКА+ %d/%d") % [GameState.card_stamps, Balance.CARD_STAMPS]
+	return text
+
+
 func _reroll_cost() -> int:
+	if GameState.free_rerolls > 0:
+		return 0   # Н13: бесплатный реролл с карты «Помойка+»
 	return Balance.REROLL_BASE_COST + int(GameState.wave * Balance.REROLL_WAVE_FACTOR) + GameState.reroll_count * Balance.REROLL_STEP_COST
 
 
 ## Заголовок, счётчики, кнопки и слоты оружия под текущий режим.
 func _refresh_shop() -> void:
-	_coins.text = "ГОВНА: %d" % GameState.coins
+	_coins.text = _coins_text()
 	_coins.visible = not _start_mode
 	_toast_label.text = ""
 	_counter.add_theme_color_override(&"font_color", COUNTER_COLOR)
@@ -479,7 +497,11 @@ func _on_reroll_pressed() -> void:
 		_shake_node(_reroll_button, 4.0)
 		_flash_coins()
 		return
-	GameState.coins -= _reroll_cost()
+	var cost: int = _reroll_cost()
+	GameState.coins -= cost
+	GameState.card_spend(cost)
+	if cost == 0:
+		GameState.free_rerolls -= 1
 	GameState.reroll_count += 1
 	if _shop_mode:
 		GameState.shop_offers = ShopLibrary.fill_offers(GameState.shop_offers, GameState.wave + 1)
@@ -543,7 +565,7 @@ func _toast(text: String) -> void:
 	var my_id: int = _toast_id
 	_counter.text = text
 	_counter.add_theme_color_override(&"font_color", Color(1.0, 0.1, 0.2))
-	_coins.text = "ГОВНА: %d" % GameState.coins
+	_coins.text = _coins_text()
 	await get_tree().create_timer(1.8, true).timeout
 	if my_id == _toast_id:
 		_counter.text = _counter_base
