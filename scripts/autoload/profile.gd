@@ -155,6 +155,8 @@ func is_unlocked(character_id: StringName) -> bool:
 	if sandbox:
 		return true
 	var data: Dictionary = Balance.CHARACTERS[character_id]
+	if data["unlock"] == &"ach":   # Н18: герой за достижение
+		return StringName(data["ach"]) in achievements
 	return data["unlock"] == &"open" or counter(data["unlock"]) >= data["need"]
 
 

@@ -21,6 +21,8 @@ const BOTTOM: Dictionary = {
 	&"dacha": [14, 14, 14],
 	&"skater": [14, 14, 14],
 	&"slime": [11, 11, 11],
+	&"gopnik_jock": [14, 14, 14],
+	&"cat": [14, 14, 14],
 }
 
 

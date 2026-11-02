@@ -34,6 +34,9 @@ static func locked() -> Array[Dictionary]:
 		if Profile.is_unlocked(hero_id):
 			continue
 		var data: Dictionary = Balance.CHARACTERS[hero_id]
+		if data["unlock"] == &"ach":
+			result.append({"title": CharacterLibrary.title(hero_id), "text": CharacterLibrary.unlock_text(hero_id), "fraction": 0.0, "weapon": false})
+			continue
 		var have_h: int = Profile.counter(data["unlock"])
 		result.append({
 			"title": CharacterLibrary.title(hero_id),

@@ -92,6 +92,7 @@ var regen_bonus: float = 0.0
 var post_bonus: float = 0.0
 var xp_bonus: float = 0.0
 var trick_bonus: float = 0.0
+var nine_lives: bool = false          # Н18 кот: 9 ХП, любой удар - ровно минус жизнь
 var trick_left: float = 0.0
 var slime_touch: float = 0.0
 var class_extra: Dictionary = {}     # +оружий класса в наборах от предметов (set_<класс>)
@@ -395,6 +396,7 @@ func _recompute_items() -> void:
 	post_bonus = fx.get(&"post", 0.0)
 	xp_bonus = fx.get(&"xp_bonus", 0.0)
 	trick_bonus = fx.get(&"trick", 0.0)
+	nine_lives = fx.get(&"nine_lives", 0.0) > 0.0
 	slime_touch = fx.get(&"slime_touch", 0.0)
 	enemy_haste = fx.get(&"enemy_haste", 0.0)
 	dash_hp_cost = fx.get(&"dash_cost", 0.0)

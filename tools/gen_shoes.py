@@ -11,7 +11,7 @@ from pix import *
 
 CW, CH = 8, 6
 HEROES = ["hobo", "squid", "clerk", "janitor", "uncle_vitya", "blogger", "granny", "courier", "pigeon", "punk",
-          "shawarma", "guard", "student", "plumber", "dacha", "skater", "slime"]
+          "shawarma", "guard", "student", "plumber", "dacha", "skater", "slime", "gopnik_jock", "cat"]
 SILVER = (200, 205, 215); LIME = (150, 255, 40); NAVY = (30, 40, 110); FELT = (150, 150, 150)
 SOCK = (235, 235, 225); TOE = (240, 160, 150); ARMY = (60, 80, 40); RUBBER = (40, 90, 200)
 
@@ -34,6 +34,8 @@ SPEC = {
     "dacha": ("galosh", DGREEN, BLACK, GREEN),       # калоши
     "skater": ("sneaker", CYAN, WHITE, BLUE),        # скейтерские кеды
     "slime": ("croc", LIME, (40, 140, 20), BLACK),   # кроксы
+    "gopnik_jock": ("sneaker", WHITE, BLACK, BLUE),  # кроссы с рынка, три полоски
+    "cat": ("boot", (120, 60, 25), BLACK, YELLOW),   # кот в сапогах
 }
 
 

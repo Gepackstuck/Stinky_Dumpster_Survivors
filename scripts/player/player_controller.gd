@@ -227,7 +227,7 @@ func _on_magnet_area_entered(area: Area2D) -> void:
 
 func _on_perk_chosen(_perk_id: StringName) -> void:
 	_update_magnet_radius()
-	_health.set_max(maxf(Balance.PLAYER_MAX_HP + GameState.bonus_max_hp, 10.0))
+	_health.set_max(9.0 if GameState.nine_lives else maxf(Balance.PLAYER_MAX_HP + GameState.bonus_max_hp, 10.0))
 
 
 ## Оружие игрока: каждое — отдельный узел-автоатака, пересобираем при любом изменении набора.
@@ -302,6 +302,9 @@ func _on_hurt(raw_damage: float) -> void:
 		return
 	var reduced: float = raw_damage * maxf(Balance.ARMOR_K / (Balance.ARMOR_K + GameState.armor), Balance.ARMOR_MIN_FACTOR)
 	var damage: float = maxf(minf(roundf(reduced), _health.max_health * Balance.PLAYER_MAX_HIT_FRACTION), 1.0)
+	if GameState.nine_lives:   # кот: удар - минус одна жизнь, сколько бы ни било
+		damage = 1.0
+		HitFx.popup(get_tree(), global_position + Vector2(0.0, -22.0), tr("МЯУ! ОСТАЛОСЬ %d") % maxi(int(_health.current_health) - 1, 0), Color(1.0, 0.8, 0.3), 14.0, 0.9)
 	EventBus.player_hit.emit(damage)
 	_flash.flash(Color(1.0, 0.0, 0.2))
 	if Settings.screen_shake:

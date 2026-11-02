@@ -8,11 +8,12 @@ const _NAMES: Dictionary[StringName, String] = {
 	&"granny": "БАБКА С ЛАВОЧКИ", &"courier": "КУРЬЕР-ПОПРЫГУН", &"pigeon": "ГОЛУБЬ-МУТАНТ", &"punk": "КРЫС-ПАНК",
 	&"shawarma": "ШАУРМИСТ ЭДИК", &"guard": "ОХРАННИК САНЫЧ", &"student": "СТУДЕНТ-ДОЛЖНИК",
 	&"plumber": "САНТЕХНИК ВАЛЕРА", &"dacha": "ТЁТЯ ЗИНА С ДАЧИ", &"skater": "СКЕЙТЕР-ВЕЧНИК", &"slime": "СЛИЗЕНЬ ГРИША",
+	&"gopnik_jock": "ГОПНИК-КАЧОК ЖОРА", &"cat": "КОТ-ПОМОЕЧНИК",
 }
 const _SHORT: Dictionary[StringName, String] = {
 	&"hobo": "ВАСЯ", &"squid": "КАЛЬМАР", &"clerk": "ПЛАНКТОН", &"janitor": "ПАЛЫЧ", &"uncle_vitya": "ДЯДЯ ВИТЯ", &"blogger": "БЛОГЕР",
 	&"granny": "БАБКА", &"courier": "КУРЬЕР", &"pigeon": "ГОЛУБЬ", &"punk": "ПАНК",
-	&"shawarma": "ЭДИК", &"guard": "САНЫЧ", &"student": "СТУДЕНТ", &"plumber": "ВАЛЕРА", &"dacha": "ТЁТЯ ЗИНА", &"skater": "СКЕЙТЕР", &"slime": "ГРИША",
+	&"shawarma": "ЭДИК", &"guard": "САНЫЧ", &"student": "СТУДЕНТ", &"plumber": "ВАЛЕРА", &"dacha": "ТЁТЯ ЗИНА", &"skater": "СКЕЙТЕР", &"gopnik_jock": "ЖОРА", &"cat": "КОТ", &"slime": "ГРИША",
 }
 const _TAGLINES: Dictionary[StringName, String] = {
 	&"hobo": "КЛАССИКА ПОМОЙКИ. ОРУЖИЕ ВЫБЕРЕШЬ САМ.",
@@ -32,6 +33,8 @@ const _TAGLINES: Dictionary[StringName, String] = {
 	&"dacha": "ВСЁ ТАЩИТ В ВЕДРО. ЖИВУЧАЯ, ПРИТЯГИВАЕТ ХЛАМ.",
 	&"skater": "ЕДЕТ, ПАДАЕТ, ВСТАЁТ. ОЧЕНЬ БЫСТРЫЙ.",
 	&"slime": "ИЗ КАНАЛИЗАЦИИ ЗА ШАУРМОЙ. НЕ ЧЕЛОВЕК, НЕ ЖАБА.",
+	&"gopnik_jock": "ТУРНИК, СЕМКИ, ЗАТОЧКА. ТАРАНОМ СКВОЗЬ ТОЛПУ.",
+	&"cat": "ДЕВЯТЬ ЖИЗНЕЙ, НО КАЖДЫЙ УДАР - МИНУС ЖИЗНЬ.",
 }
 
 
@@ -53,6 +56,8 @@ const _LORE: Dictionary[StringName, String] = {
 	&"plumber": "КРАСНАЯ КЕПКА, ОГРОМНЫЕ УСЫ, СИНИЙ КОМБИНЕЗОН НА ЖЁЛТОЙ ФУТБОЛКЕ И ГАЕЧНЫЙ КЛЮЧ. ЛЮБАЯ ТРУБА ЕМУ ЗНАКОМА.",
 	&"dacha": "СОЛОМЕННАЯ ШЛЯПА С ЦВЕТАМИ, РОЗОВОЕ ПЛАТЬЕ, БЕЛЫЙ ФАРТУК, РУМЯНЕЦ И ВЁДРО В РУКЕ. РАССАДА ВАЖНЕЕ ЖИЗНИ.",
 	&"skater": "КРАСНЫЙ КОЗЫРЁК, ЖЁЛТАЯ ФУТБОЛКА, НАУШНИКИ И ДОСКА ПОД МЫШКОЙ. КОЛЕНИ В ЗЕЛЁНКЕ, КАРМА В ПЛЮСЕ.",
+	&"gopnik_jock": "СИНЯЯ ОЛИМПИЙКА С ЛАМПАСАМИ, КЕПКА-ВОСЬМИКЛИНКА, ЗОЛОТАЯ ЦЕПЬ И ФИКСА. РУКИ ШИРЕ ПЛЕЧ, МОЗГ УЖЕ ПЛЕЧ.",
+	&"cat": "СЕРЫЙ ПОЛОСАТЫЙ КОТ С НАДОРВАННЫМ УХОМ, ШРАМОМ И РАЗНЫМИ ГЛАЗАМИ. В СТАРЫХ САПОГАХ. ВИДЕЛ ДЕВЯТЬ СМЕРТЕЙ И ЕЩЁ ХОЧЕТ.",
 	&"slime": "ЗЕЛЁНЫЙ КОМОК СЛИЗИ С ОГРОМНЫМИ ВЫПУЧЕННЫМИ ГЛАЗАМИ, ВЫСУНУТЫМ ЯЗЫКОМ И КОРИЧНЕВЫМИ НОЖКАМИ. ПАХНЕТ КАНАЛИЗАЦИЕЙ И ГОРДОСТЬЮ.",
 }
 
@@ -61,7 +66,7 @@ const _QUIPS: Dictionary[StringName, String] = {
 	&"hobo": "Я ТУТ ЖИВУ.", &"squid": "СЕМКИ ЕСТЬ?", &"clerk": "ЭТО НЕ В МОЕЙ ЗОНЕ.", &"janitor": "ЧИСТО НЕ БУДЕТ.",
 	&"uncle_vitya": "ПО ПЯТЬДЕСЯТ!", &"blogger": "ЛАЙК И ПОДПИСКА!", &"granny": "А ВОТ В МОЁ ВРЕМЯ...", &"courier": "ЗАКАЗ ЖДАТЬ НЕ БУДЕТ.",
 	&"pigeon": "КУРР-КУРР.", &"punk": "СИСТЕМА, ДЕРЖИСЬ.", &"shawarma": "С ОСТРЫМ ИЛИ С ОЧЕНЬ?", &"guard": "СТОЯТЬ. НЕ ДВИГАТЬСЯ.",
-	&"student": "ДО СЕССИИ УСПЕЮ.", &"plumber": "ТРУБА ВСЕГДА ВИНОВАТА.", &"dacha": "РАССАДА СГОРИТ!", &"skater": "ЕДУ-ЕДУ, ПАДАЮ.", &"slime": "ЧЛЮП. ЧЛЮП-ЧЛЮП.",
+	&"student": "ДО СЕССИИ УСПЕЮ.", &"plumber": "ТРУБА ВСЕГДА ВИНОВАТА.", &"dacha": "РАССАДА СГОРИТ!", &"skater": "ЕДУ-ЕДУ, ПАДАЮ.", &"gopnik_jock": "С КАКОГО РАЙОНА?", &"cat": "МЯУ. ДАЙ ПОЖРАТЬ.", &"slime": "ЧЛЮП. ЧЛЮП-ЧЛЮП.",
 }
 
 
@@ -141,6 +146,8 @@ static func unlock_text(id: StringName) -> String:
 	var kind: StringName = data["unlock"]
 	var need: int = data["need"]
 	match kind:
+		&"ach":
+			return TranslationServer.translate("ДОСТИЖЕНИЕ: %s") % Achievements.title_of(data["ach"])
 		&"kills":
 			return "УБЕЙ %d ВРАГОВ" % need
 		&"coins":
@@ -154,7 +161,7 @@ static func unlock_text(id: StringName) -> String:
 
 static func progress_text(id: StringName) -> String:
 	var data: Dictionary = Balance.CHARACTERS[id]
-	if data["unlock"] == &"open" or data["unlock"] == &"wins":
+	if data["unlock"] == &"open" or data["unlock"] == &"wins" or data["unlock"] == &"ach":
 		return ""
 	return "(%d/%d)" % [mini(Profile.counter(data["unlock"]), data["need"]), data["need"]]
 

@@ -327,6 +327,7 @@ const SHOES_NAMES: Dictionary = {        # как называется обув�
 	&"uncle_vitya": "ШЛЁПКИ+НОСКИ", &"blogger": "НЕОНОВЫЕ КРОССЫ", &"granny": "ВАЛЕНКИ", &"courier": "КРОССЫ КУРЬЕРА",
 	&"pigeon": "КЕДЫ НА ЛАПКИ", &"punk": "БЕРЦЫ", &"shawarma": "ТАПКИ ИЗ ФОЛЬГИ", &"guard": "КИРЗАЧИ",
 	&"student": "КЕДЫ ИЗ ПЕРЕХОДА", &"plumber": "РЕЗИНОВЫЕ САПОГИ", &"dacha": "КАЛОШИ", &"skater": "КЕДЫ СКЕЙТЕРА", &"slime": "КРОКСЫ",
+	&"gopnik_jock": "КРОССЫ С РЫНКА", &"cat": "САПОГИ КОТА",
 }
 const DASH_FX_RADIUS: float = 40.0
 const DASH_FX_SLOW: float = 0.4          # множитель скорости врага
@@ -360,6 +361,8 @@ const HERO_DASH: Dictionary = {
 	&"dacha": {"name": "ГРЯДКА ЛЕЧИТ", "dist": 26.0, "old": true, "fart": 0.3, "cd": 2.2, "fx": &"heal"},
 	&"skater": {"name": "ОЛЛИ", "dist": 100.0, "sec": 0.2, "cd": 1.6, "charges": 2},
 	&"slime": {"name": "ПОЛЗОК", "dist": 60.0, "cd": 1.5, "fx": &"trail"},
+	&"gopnik_jock": {"name": "ТАРАН", "dist": 70.0, "cd": 1.6, "fx": &"knock"},
+	&"cat": {"name": "ПРЫЖОК С БАКА", "dist": 90.0, "sec": 0.25, "cd": 1.0, "charges": 2, "fx": &"fly"},
 }
 
 # --- События между волнами (WaveEvent) и пари
@@ -406,6 +409,7 @@ const HERO_ULT: Dictionary = {
 	&"punk": ["ПАНК-РОК", &"rage"], &"shawarma": ["ДВОЙНАЯ ШАУРМА", &"heal"], &"guard": ["СТОЯТЬ, БОЯТЬСЯ", &"freeze"],
 	&"student": ["ТРИ ЭНЕРГЕТИКА", &"rage"], &"plumber": ["ПРОРЫВ ТРУБЫ", &"nuke"], &"dacha": ["УРОЖАЙ", &"heal"],
 	&"skater": ["КИКФЛИП", &"barrage"], &"slime": ["СЛИЗНЯК-БОМБА", &"nuke"],
+	&"gopnik_jock": ["НА РАЙОН!", &"rage"], &"cat": ["МАРТОВСКИЙ ОР", &"freeze"],
 }
 
 # --- Телеграфы атак (замах виден заранее: зона + наползающая заливка) ---
@@ -1025,7 +1029,7 @@ const SHOP_PRICES: Dictionary = {
 
 # --- Персонажи кладбища (Шаг 8). mods/fx - как у предметов; weapon - стартовое оружие (пусто - выбор в начале).
 # unlock: open | kills | coins | deaths | wins (накопительные счётчики профиля).
-const CHARACTER_ORDER: Array[StringName] = [&"hobo", &"squid", &"clerk", &"janitor", &"uncle_vitya", &"blogger", &"granny", &"courier", &"pigeon", &"punk", &"shawarma", &"guard", &"student", &"plumber", &"dacha", &"skater", &"slime"]
+const CHARACTER_ORDER: Array[StringName] = [&"hobo", &"squid", &"clerk", &"janitor", &"uncle_vitya", &"blogger", &"granny", &"courier", &"pigeon", &"punk", &"shawarma", &"guard", &"student", &"plumber", &"dacha", &"skater", &"slime", &"gopnik_jock", &"cat"]
 const CHARACTERS: Dictionary = {
 	&"hobo": {"weapon": &"", "mods": {&"max_hp": 4.0, &"pickup": 15.0}, "fx": {&"stash": 30.0}, "unlock": &"open", "need": 0, "tint": Color(1.0, 1.0, 1.0), "hat": &"ushanka"},
 	&"squid": {"weapon": &"mop", "mods": {&"damage": 15.0, &"speed": 8.0, &"max_hp": -3.0}, "fx": {&"ink": 12.0}, "unlock": &"open", "need": 0, "tint": Color(0.65, 0.85, 1.0), "hat": &"cigarette"},
@@ -1043,5 +1047,8 @@ const CHARACTERS: Dictionary = {
 	&"plumber": {"weapon": &"pipe_gun", "mods": {&"damage": 10.0, &"armor": 2.0}, "fx": {&"bash": 15.0}, "unlock": &"kills", "need": 3500, "tint": Color(1, 1, 1), "hat": &"pot"},
 	&"dacha": {"weapon": &"rotten_cheese", "mods": {&"max_hp": 10.0, &"speed": -12.0, &"pickup": 30.0}, "fx": {&"turrets": 1.0}, "unlock": &"coins", "need": 4000, "tint": Color(1, 1, 1), "hat": &"plastic_bag"},
 	&"skater": {"weapon": &"crossbow", "mods": {&"speed": 25.0, &"dodge": 10.0, &"max_hp": -5.0}, "fx": {&"trick": 25.0}, "unlock": &"deaths", "need": 15, "tint": Color(1, 1, 1), "hat": &"skateboard"},
+	# Н18: открываются достижениями (unlock = &"ach", ach = id достижения).
+	&"gopnik_jock": {"weapon": &"shiv", "mods": {&"damage": 18.0, &"max_hp": 6.0, &"speed": -6.0, &"attack_speed": -5.0}, "fx": {&"bash": 20.0}, "unlock": &"ach", "ach": &"bump_100", "need": 1, "tint": Color(1, 1, 1), "hat": &"nail_knuckles"},
+	&"cat": {"weapon": &"tin_bomb", "mods": {&"speed": 12.0, &"dodge": 8.0, &"pickup": 15.0}, "fx": {&"nine_lives": 9.0}, "unlock": &"ach", "ach": &"deaths_50", "need": 1, "tint": Color(1, 1, 1), "hat": &"old_milk"},
 	&"slime": {"weapon": &"plunger", "mods": {&"max_hp": 10.0, &"damage": 12.0, &"armor": 2.0, &"pickup": 10.0}, "fx": {&"slime_touch": 40.0, &"thorns": 2.0}, "unlock": &"kills", "need": 5000, "tint": Color(1, 1, 1), "hat": &"rubber_boot"},
 }
