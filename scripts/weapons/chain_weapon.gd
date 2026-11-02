@@ -21,7 +21,7 @@ func _fire(target: Node2D) -> void:
 	var hit: Array[Node2D] = []
 	var points: PackedVector2Array = PackedVector2Array([to_local(origin)])
 	var current: Node2D = target
-	for i: int in int(stats["chain_jumps"]) + 1:
+	for i: int in int(WeaponLibrary.stat(weapon_id, tier, "chain_jumps", 0)) + 1:
 		points.append(to_local(current.global_position))
 		var enemy: EnemyBase = current as EnemyBase
 		if enemy != null:

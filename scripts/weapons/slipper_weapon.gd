@@ -14,4 +14,4 @@ func _fire(target: Node2D) -> void:
 	var body: CharacterBody2D = target as CharacterBody2D
 	if body != null:
 		aim += body.velocity * float(stats["flight_sec"])   # упреждение: враг успеет сдвинуться за время полёта
-	shot.launch(_muzzle(target), aim, GameState.roll_damage(_damage), stats["aoe_radius"], stats["flight_sec"])
+	shot.launch(_muzzle(target), aim, GameState.roll_damage(_damage), WeaponLibrary.stat(weapon_id, tier, "aoe_radius"), stats["flight_sec"])

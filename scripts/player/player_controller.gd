@@ -209,12 +209,14 @@ func _sync_weapons() -> void:
 				weapon = mop
 		if weapon != null:
 			weapon.add_to_group(&"weapon_nodes")
+			weapon.set_meta(&"slot", slot)   # панель оружия в HUD сопоставляет узел со слотом
 			add_child(weapon)
 			var held: Node2D = HELD_WEAPON.new()   # оружие видно в руках героя
 			held.set(&"slot_index", slot)
 			held.set(&"slot_count", GameState.weapons.size())
 			weapon.add_child(held)
 			slot += 1
+	_on_perk_chosen(&"")   # бонус набора мог поменять макс. ХП
 
 
 func _on_hurt(raw_damage: float) -> void:

@@ -38,18 +38,18 @@ func _ready() -> void:
 	var stats: Dictionary = Balance.WEAPONS[weapon_id]
 	_damage = stats["damage"] * Balance.WEAPON_TIER_DAMAGE[tier - 1]
 	_cooldown_sec = stats["cooldown"] * Balance.WEAPON_TIER_COOLDOWN[tier - 1]
-	_ricochets = stats.get("ricochets", 0)
-	_ricochet_range = stats.get("ricochet_range", 0.0)
+	_ricochets = WeaponLibrary.stat(weapon_id, tier, "ricochets", 0)
+	_ricochet_range = WeaponLibrary.stat(weapon_id, tier, "ricochet_range", 0.0)
 	_burn_dps = stats.get("burn_dps", 0.0) * Balance.WEAPON_TIER_DAMAGE[tier - 1]
-	_burn_sec = stats.get("burn_duration", 0.0)
+	_burn_sec = WeaponLibrary.stat(weapon_id, tier, "burn_duration", 0.0)
 	_slow_factor = stats.get("slow_factor", 1.0)
-	_slow_sec = stats.get("slow_duration", 0.0)
-	_pellets = stats.get("pellets", 1)
+	_slow_sec = WeaponLibrary.stat(weapon_id, tier, "slow_duration", 0.0)
+	_pellets = WeaponLibrary.stat(weapon_id, tier, "pellets", 1)
 	_spread_deg = stats.get("spread_deg", 0.0)
 	_jitter_deg = stats.get("jitter_deg", 0.0)
 	_proj_speed = stats.get("proj_speed", Balance.PROJECTILE_SPEED)
-	_proj_life = stats.get("proj_life", Balance.PROJECTILE_LIFETIME_SEC)
-	_pierce = stats.get("pierce", 0)
+	_proj_life = WeaponLibrary.stat(weapon_id, tier, "proj_life", Balance.PROJECTILE_LIFETIME_SEC)
+	_pierce = WeaponLibrary.stat(weapon_id, tier, "pierce", 0)
 	if stats.has("projectile"):
 		_texture = TEX.load_tex(stats["projectile"])
 	var reach: float = stats.get("range", Balance.WEAPON_TARGET_RANGE)
@@ -59,6 +59,12 @@ func _ready() -> void:
 
 const CLAIM_MSEC: int = 350
 static var _claims: Dictionary = {}
+
+
+## 0 - только что выстрелил, 1 - готово (для полоски в HUD).
+func cooldown_ratio() -> float:
+	var full: float = GameState.cooldown_for(_cooldown_sec)
+	return 1.0 - clampf(_cooldown_left / maxf(full, 0.001), 0.0, 1.0)
 
 
 func _physics_process(delta: float) -> void:

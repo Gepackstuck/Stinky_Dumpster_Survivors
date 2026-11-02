@@ -69,6 +69,7 @@ func _ready() -> void:
 	EventBus.enemy_died.connect(_on_enemy_died)
 	EventBus.player_died.connect(_on_player_died)
 	EventBus.xp_collected.connect(_on_xp_collected)
+	EventBus.weapons_changed.connect(_recompute_perk_stats)   # бонусы наборов зависят от оружия в слотах
 
 
 ## Сбросить состояние перед новым забегом.
@@ -217,6 +218,13 @@ func _recompute_items() -> void:
 		_item_stats[stat_id] = _item_stats.get(stat_id, 0.0) + hero["mods"][stat_id]
 	for key: StringName in hero.get("fx", {}):
 		fx[key] = fx.get(key, 0.0) + hero["fx"][key]
+	var counts: Dictionary = WeaponLibrary.class_counts(weapons)   # бонусы наборов оружия по классам
+	for class_id: StringName in counts:
+		var bonus: Dictionary = WeaponLibrary.set_bonus(class_id, counts[class_id])
+		for stat_id: StringName in bonus.get("mods", {}):
+			_item_stats[stat_id] = _item_stats.get(stat_id, 0.0) + bonus["mods"][stat_id]
+		for key: StringName in bonus.get("fx", {}):
+			fx[key] = fx.get(key, 0.0) + bonus["fx"][key]
 	var crown: float = minf(fx.get(&"crown", 0.0), 60.0)
 	if crown > 0.0:
 		for stat_id: StringName in _item_stats.keys():

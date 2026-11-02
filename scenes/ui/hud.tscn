@@ -10,6 +10,7 @@
 [ext_resource type="Texture2D" path="res://assets/ui/xp_bar_fill.png" id="6_xpf"]
 
 [ext_resource type="Script" path="res://scripts/ui/enemy_pointer.gd" id="7_ptr"]
+[ext_resource type="PackedScene" path="res://scenes/ui/weapon_panel.tscn" id="11_wpanel"]
 
 [node name="Hud" type="CanvasLayer"]
 layer = 5
@@ -125,3 +126,9 @@ text = "ВОЛНА 1"
 horizontal_alignment = 1
 theme_override_colors/font_color = Color(0.968627, 1, 0, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+
+[node name="WeaponPanel" parent="Root" instance=ExtResource("11_wpanel")]
+offset_left = 350.0
+offset_top = 4.0
+offset_right = 475.0
+offset_bottom = 29.0

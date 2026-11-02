@@ -262,6 +262,50 @@ const WEAPON_UNLOCK: Dictionary = {
 const WEAPON_SLOTS: int = 6
 const WEAPON_TIER_DAMAGE: Array[float] = [1.0, 1.5, 2.0, 2.7]      # множитель урона по тирам I-IV
 const WEAPON_TIER_COOLDOWN: Array[float] = [1.0, 0.92, 0.85, 0.75]  # множитель паузы между атаками
+# Классы оружия (как в Brotato): у оружия 1-2 класса. За 2..6 оружий одного класса в слотах - бонус набора (копии считаются).
+const WEAPON_CLASSES: Dictionary = {
+	&"lighter": [&"fire"], &"sock": [&"stinky"], &"slingshot": [&"guns"], &"laser_pointer": [&"guns"],
+	&"mop": [&"household", &"stinky"], &"slipper": [&"fire"], &"condensed_milk": [&"kitchen"],
+	&"pipe_gun": [&"guns"], &"crossbow": [&"guns"], &"frying_pan": [&"kitchen"], &"rolling_pin": [&"kitchen"],
+	&"rotten_cheese": [&"stinky", &"kitchen"], &"spray_can": [&"fire", &"stinky"], &"bottle": [&"prison", &"guns"],
+	&"mosin": [&"guns"], &"plunger": [&"household", &"stinky"], &"shiv": [&"prison"], &"shovel": [&"household"],
+	&"blowtorch": [&"fire", &"household"], &"syringe": [&"prison"], &"tin_bomb": [&"fire", &"household"],
+	&"extension_cord": [&"household", &"fire"],
+}
+# Бонус набора: "mod" - стат (как у предметов) или "fx" - эффект; values - за 2, 3, 4, 5, 6 оружий класса.
+const WEAPON_CLASS_BONUS: Dictionary = {
+	&"kitchen": {"mod": &"max_hp", "values": [2.0, 4.0, 6.0, 9.0, 12.0]},
+	&"household": {"mod": &"armor", "values": [1.0, 2.0, 3.0, 4.0, 5.0]},
+	&"guns": {"mod": &"crit", "values": [3.0, 6.0, 9.0, 12.0, 15.0]},
+	&"fire": {"fx": &"burn", "values": [5.0, 10.0, 15.0, 20.0, 25.0]},
+	&"stinky": {"fx": &"repel", "values": [3.0, 6.0, 9.0, 12.0, 15.0]},
+	&"prison": {"fx": &"lifesteal", "values": [3.0, 6.0, 9.0, 12.0, 15.0]},
+}
+# Тир меняет не только урон и паузу: прибавка к свойству оружия на тирах I-IV (к значению из WEAPONS).
+const WEAPON_TIER_PROPS: Dictionary = {
+	&"lighter": {"burn_duration": [0.0, 0.5, 1.0, 1.5]},
+	&"sock": {"radius": [0.0, 8.0, 16.0, 26.0]},
+	&"slingshot": {"ricochets": [0, 1, 1, 2]},
+	&"laser_pointer": {"beam_half_width": [0.0, 1.0, 2.0, 3.0]},
+	&"mop": {"arc_deg": [0.0, 15.0, 30.0, 45.0], "reach": [0.0, 4.0, 8.0, 12.0]},
+	&"slipper": {"aoe_radius": [0.0, 6.0, 12.0, 20.0]},
+	&"condensed_milk": {"slow_duration": [0.0, 0.5, 1.0, 1.5], "pierce": [0, 0, 1, 1]},
+	&"pipe_gun": {"pellets": [0, 1, 2, 3]},
+	&"crossbow": {"pierce": [0, 1, 2, 3]},
+	&"frying_pan": {"knockback": [0.0, 60.0, 120.0, 200.0], "arc_deg": [0.0, 10.0, 20.0, 30.0]},
+	&"rolling_pin": {"reach": [0.0, 4.0, 8.0, 12.0]},
+	&"rotten_cheese": {"radius": [0.0, 8.0, 16.0, 26.0]},
+	&"spray_can": {"proj_life": [0.0, 0.04, 0.08, 0.12]},
+	&"bottle": {"ricochets": [0, 1, 2, 3]},
+	&"mosin": {"pierce": [0, 1, 2, 4]},
+	&"plunger": {"knockback": [0.0, 60.0, 120.0, 200.0]},
+	&"shiv": {"arc_deg": [0.0, 10.0, 20.0, 30.0]},
+	&"shovel": {"arc_deg": [0.0, 15.0, 30.0, 45.0]},
+	&"blowtorch": {"pierce": [0, 1, 1, 2]},
+	&"syringe": {"burn_duration": [0.0, 1.0, 2.0, 3.0], "pierce": [0, 0, 1, 1]},
+	&"tin_bomb": {"aoe_radius": [0.0, 6.0, 12.0, 20.0]},
+	&"extension_cord": {"chain_jumps": [0, 1, 2, 3]},
+}
 const WEAPON_PRICE: Dictionary = {&"lighter": 22, &"sock": 24, &"slingshot": 22, &"mop": 26, &"laser_pointer": 24, &"slipper": 30, &"condensed_milk": 22,
 		&"pipe_gun": 26, &"crossbow": 30, &"frying_pan": 24, &"rolling_pin": 20, &"rotten_cheese": 26, &"spray_can": 24, &"bottle": 22, &"mosin": 34,
 		&"plunger": 22, &"shiv": 18, &"shovel": 30, &"blowtorch": 28, &"syringe": 24, &"tin_bomb": 30, &"extension_cord": 28}

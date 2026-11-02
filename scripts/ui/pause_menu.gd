@@ -28,6 +28,7 @@ var _inventory: Control = null
 var _inventory_text: Label = null
 var _inventory_items: GridContainer = null
 var _inventory_weapons: HBoxContainer = null
+var _inventory_sets: GridContainer = null   # активные наборы оружия (классы) справа от оружия
 
 
 func _ready() -> void:
@@ -221,6 +222,12 @@ func _build_inventory() -> void:
 	_inventory_weapons = HBoxContainer.new()
 	_inventory_weapons.position = Vector2(12.0, 226.0)
 	_inventory.add_child(_inventory_weapons)
+	_inventory_sets = GridContainer.new()
+	_inventory_sets.columns = 1
+	_inventory_sets.position = Vector2(140.0, 196.0)
+	_inventory_sets.add_theme_constant_override(&"h_separation", 8)
+	_inventory_sets.add_theme_constant_override(&"v_separation", 0)
+	_inventory.add_child(_inventory_sets)
 	_inventory_items = GridContainer.new()
 	_inventory_items.columns = 2
 	_inventory_items.position = Vector2(170.0, 26.0)
@@ -282,4 +289,24 @@ func _open_inventory() -> void:
 		weapon_icon.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
 		weapon_icon.modulate = Color.WHITE.lerp(StatLibrary.tier_color(entry["tier"]), 0.4)
 		_inventory_weapons.add_child(weapon_icon)
+	for child: Node in _inventory_sets.get_children():
+		child.queue_free()
+	var counts: Dictionary = WeaponLibrary.class_counts(GameState.weapons)
+	for class_id: StringName in WeaponLibrary.CLASS_TITLES:
+		var count: int = counts.get(class_id, 0)
+		if count < WeaponLibrary.MIN_SET:
+			continue
+		var row: HBoxContainer = HBoxContainer.new()
+		row.add_theme_constant_override(&"separation", 2)
+		var icon: TextureRect = TextureRect.new()
+		icon.texture = WeaponLibrary.class_icon(class_id)
+		icon.custom_minimum_size = Vector2(16.0, 16.0)
+		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		icon.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
+		row.add_child(icon)
+		var label: Label = Label.new()
+		label.text = "%s %d: %s" % [WeaponLibrary.class_title(class_id), count, WeaponLibrary.set_bonus_text(class_id, count)]
+		label.add_theme_color_override(&"font_color", WeaponLibrary.CLASS_COLORS[class_id])
+		row.add_child(label)
+		_inventory_sets.add_child(row)
 	_inventory.show()

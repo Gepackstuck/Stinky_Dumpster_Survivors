@@ -340,13 +340,14 @@ func _refresh_shop() -> void:
 		_next_button.hide()
 		_reroll_button.hide()
 		_slots_box.hide()
-		_slot_info.text = ""
+		_slot_info.text = _sets_text()
 		return
 	_next_button.visible = _shop_mode
 	_reroll_button.show()
 	_reroll_button.text = "РЕРОЛЛ %d" % _reroll_cost()
 	_reroll_button.disabled = GameState.coins < _reroll_cost()
 	_slots_box.visible = _shop_mode
+	_slot_info.text = _sets_text()
 	var next_wave: int = GameState.wave + 1
 	var kind: StringName = GameState.special_waves.get(next_wave, &"normal")
 	var label: String = {&"elite": ": ЭЛИТА!", &"horde": ": ОРДА!", &"boss": ": БОССЫ!"}.get(kind, "")
@@ -405,7 +406,7 @@ func _focus_top() -> void:
 	if _reroll_button.visible and not _reroll_button.disabled:
 		_zone = 2
 		_reroll_button.grab_focus()
-		_slot_info.text = ""
+		_slot_info.text = _sets_text()
 	elif _reroll_button.visible:
 		_on_reroll_pressed()  # не хватает говна: тряска и сообщение
 
@@ -418,15 +419,26 @@ func _focus_bottom(index: int) -> void:
 	_bottom_index = posmod(index, items.size())
 	items[_bottom_index].grab_focus()
 	if not (items[_bottom_index] in _slot_buttons):
-		_slot_info.text = ""
+		_slot_info.text = _sets_text()
 
 
 func _update_slot_info(i: int) -> void:
 	if i >= GameState.weapons.size():
-		_slot_info.text = ""
+		_slot_info.text = _sets_text()
 		return
 	var entry: Dictionary = GameState.weapons[i]
-	_slot_info.text = "%s ТИР %s. E: МЕНЮ" % [PerkLibrary.title(ShopLibrary.perk_id_of(entry["id"])), StatLibrary.TIER_NAMES[entry["tier"] - 1]]
+	var class_names: Array[String] = []
+	for class_id: StringName in WeaponLibrary.classes(entry["id"]):
+		class_names.append(WeaponLibrary.class_title(class_id))
+	_slot_info.text = "%s ТИР %s (%s). E: МЕНЮ" % [PerkLibrary.title(ShopLibrary.perk_id_of(entry["id"])), StatLibrary.TIER_NAMES[entry["tier"] - 1], ", ".join(class_names)]
+
+
+## Активные наборы оружия (в Ларьке, когда фокус не на слоте).
+func _sets_text() -> String:
+	if not _shop_mode:
+		return ""
+	var lines: Array[String] = WeaponLibrary.active_sets_lines(true)
+	return "НАБОРЫ: " + "   ".join(lines) if not lines.is_empty() else "НАБОРОВ НЕТ. 2 ОРУЖИЯ ОДНОГО КЛАССА = БОНУС"
 
 
 func _on_next_pressed() -> void:

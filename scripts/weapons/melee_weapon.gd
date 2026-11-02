@@ -23,10 +23,15 @@ func _ready() -> void:
 	var stats: Dictionary = Balance.WEAPONS[weapon_id]
 	_damage = stats["damage"] * Balance.WEAPON_TIER_DAMAGE[tier - 1]
 	_cooldown_sec = stats["cooldown"] * Balance.WEAPON_TIER_COOLDOWN[tier - 1]
-	_knockback = stats["knockback"]
-	_reach = stats["reach"]
-	_half_arc = deg_to_rad(stats["arc_deg"]) * 0.5
+	_knockback = WeaponLibrary.stat(weapon_id, tier, "knockback")
+	_reach = WeaponLibrary.stat(weapon_id, tier, "reach")
+	_half_arc = deg_to_rad(WeaponLibrary.stat(weapon_id, tier, "arc_deg")) * 0.5
 	EventBus.player_died.connect(set_physics_process.bind(false))
+
+
+## 0 - только что ударил, 1 - готово (для полоски в HUD).
+func cooldown_ratio() -> float:
+	return 1.0 - clampf(_cooldown_left / maxf(GameState.cooldown_for(_cooldown_sec), 0.001), 0.0, 1.0)
 
 
 func _physics_process(delta: float) -> void:

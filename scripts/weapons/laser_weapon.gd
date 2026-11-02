@@ -18,7 +18,7 @@ func _physics_process(delta: float) -> void:
 func _fire(target: Node2D) -> void:
 	var origin: Vector2 = _muzzle(target)
 	var dir: Vector2 = origin.direction_to(target.global_position)
-	var half_width: float = Balance.WEAPONS[weapon_id]["beam_half_width"]
+	var half_width: float = WeaponLibrary.stat(weapon_id, tier, "beam_half_width")
 	var length: float = Balance.WEAPON_TARGET_RANGE
 	for group: StringName in [&"enemies", &"neutrals"]:
 		for node: Node in get_tree().get_nodes_in_group(group):
