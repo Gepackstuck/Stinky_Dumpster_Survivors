@@ -89,6 +89,7 @@ func _record_run(won: bool) -> void:
 		danger_unlocked = clampi(maxi(danger_unlocked, GameState.danger + 1), 0, Balance.DANGER_LEVELS.size() - 1)
 	else:
 		deaths += 1
+		stat_add(StringName("deaths_" + String(GameState.character)), 1)   # живое кладбище: грибы и мухи по смертям героя
 	save()
 
 

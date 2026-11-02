@@ -791,6 +791,11 @@ const SNOWDROP_PICK_RADIUS: float = 12.0
 const SEASON_FX_MAX: int = 55          # частиц погоды на экране одновременно (мало - чтобы не каша)
 const SEASON_FX_ALPHA: float = 0.75
 
+# --- Живое кладбище (идея 11): что вырастает на могиле героя по числу его смертей ---
+const GRAVE_MUSHROOM_DEATHS: Array[int] = [1, 3, 6, 10]   # по грибу за каждый порог
+const GRAVE_FLY_DEATHS: Array[int] = [5, 12, 25]           # по мухе
+const GRAVE_MONUMENT_MIN: int = 5                          # памятник из говна - самому дохлому, если сдох хотя бы столько
+
 # --- Хитрые враги ---
 const BLINKER_INTERVAL_SEC: float = 3.2      # как часто глючный бомж прыгает
 const BLINKER_WARN_SEC: float = 0.6          # метка на земле до прыжка (успеть отойти)

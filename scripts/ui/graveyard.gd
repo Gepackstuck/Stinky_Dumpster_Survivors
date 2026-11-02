@@ -11,6 +11,9 @@ const SCREEN: Vector2 = Vector2(480.0, 270.0)
 const GRID_TOP: float = 18.0   # сетка могил как в Brotato: все перед глазами
 const GRID_MAX_W: float = 450.0
 const GRID_MAX_H: float = 134.0
+const MUSHROOM: Texture2D = preload("res://assets/ui/grave_mushroom.png")
+const MONUMENT: Texture2D = preload("res://assets/ui/grave_monument.png")
+const FLY: Texture2D = preload("res://assets/sprites/fx_fly.png")
 const GRAVE_W: float = 48.0
 const GRAVE_H: float = 56.0
 const ARROW_H: float = 16.0   # место под подпись и стрелку между рядами
@@ -311,6 +314,8 @@ func _build_grave(i: int) -> void:
 	pic.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	pic.position = Vector2(0.0, 52.0 - pic.texture.get_height() + 4.0)
 	root.add_child(pic)
+	if unlocked:
+		_grave_life(root, id)
 	var sitter: Node2D = Node2D.new()
 	sitter.position = Vector2(GRAVE_W * 0.5, 30.0)
 	sitter.scale = Vector2.ONE * 1.25   # герой крупнее могилы: видно, кого выбираешь
@@ -374,6 +379,64 @@ func _build_grave(i: int) -> void:
 	click.pressed.connect(_on_grave_pressed.bind(i))
 	click.mouse_entered.connect(_select.bind(i))
 	root.add_child(click)
+
+
+## Живое кладбище: грибы и мухи по смертям героя, самому дохлому - памятник из говна.
+func _grave_life(root: Control, id: StringName) -> void:
+	var died: int = Profile.stat(StringName("deaths_" + String(id)))
+	var spots: Array[Vector2] = [Vector2(-1.0, 34.0), Vector2(41.0, 33.0), Vector2(4.0, 36.0), Vector2(36.0, 36.0)]   # по краям холмика, выше полоски медалей
+	for k: int in Balance.GRAVE_MUSHROOM_DEATHS.size():
+		if died < Balance.GRAVE_MUSHROOM_DEATHS[k]:
+			break
+		var m: Sprite2D = Sprite2D.new()
+		m.texture = MUSHROOM
+		m.hframes = 3
+		m.frame = (k + id.hash()) % 3
+		m.centered = false
+		m.position = spots[k]
+		m.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		m.z_index = 2
+		root.add_child(m)
+	for k: int in Balance.GRAVE_FLY_DEATHS.size():
+		if died < Balance.GRAVE_FLY_DEATHS[k]:
+			break
+		var fly: Sprite2D = Sprite2D.new()
+		fly.texture = FLY
+		fly.hframes = 2
+		fly.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		fly.modulate = Color(0.75, 1.0, 0.45)   # трупные мухи: зеленоватые, на тёмном кладбище видно
+		fly.z_index = 3
+		root.add_child(fly)
+		var center: Vector2 = Vector2(24.0 + (k - 1) * 12.0, 4.0 + k * 2.0)
+		fly.position = center
+		var tw: Tween = fly.create_tween().set_loops()
+		for j: int in 4:   # дёрганые восьмёрки над могилой
+			tw.tween_property(fly, ^"position", center + Vector2(randf_range(-9.0, 9.0), randf_range(-5.0, 5.0)), randf_range(0.2, 0.4))
+			tw.tween_callback(func() -> void: fly.frame = 1 - fly.frame)
+	if id == _most_dead() and died >= Balance.GRAVE_MONUMENT_MIN:
+		var mon: Sprite2D = Sprite2D.new()
+		mon.texture = MONUMENT
+		mon.hframes = 2
+		mon.centered = false
+		mon.position = Vector2(32.0, 14.0)
+		mon.z_index = 2
+		mon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		root.add_child(mon)
+		var tw2: Tween = mon.create_tween().set_loops()
+		tw2.tween_interval(0.4)
+		tw2.tween_callback(func() -> void: mon.frame = 1 - mon.frame)
+
+
+## Самый дохлый открытый герой (ему памятник).
+func _most_dead() -> StringName:
+	var best: StringName = &""
+	var best_n: int = 0
+	for id: StringName in _ids:
+		var n: int = Profile.stat(StringName("deaths_" + String(id)))
+		if n > best_n:
+			best_n = n
+			best = id
+	return best
 
 
 func _build_panel() -> void:
