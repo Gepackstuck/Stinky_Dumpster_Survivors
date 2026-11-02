@@ -8,6 +8,7 @@ func _shot(label: String) -> void:
 
 
 func _ready() -> void:
+	Profile.sandbox = true   # тесты не пишут в живой профиль
 	var saved: Dictionary = Profile.enemy_kills.duplicate()
 	for id: StringName in [&"squid_gopnik", &"chaser", &"spitter", &"charger", &"boss_zakhar", &"trash_bin", &"cockroach"]:
 		Profile.enemy_kills[id] = 37

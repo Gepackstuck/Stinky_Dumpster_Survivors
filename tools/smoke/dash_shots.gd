@@ -5,6 +5,7 @@ const MAIN: PackedScene = preload("res://scenes/levels/main.tscn")
 
 
 func _ready() -> void:
+	Profile.sandbox = true   # тесты не пишут в живой профиль
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_run.call_deferred()
 

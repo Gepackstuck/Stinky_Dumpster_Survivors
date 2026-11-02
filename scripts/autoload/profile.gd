@@ -12,6 +12,9 @@ var selected: StringName = &"hobo"
 var enemy_kills: Dictionary = {}   # id врага -> сколько убито за всё время (бестиарий)
 var weapons_announced: Array[StringName] = []   # оружие, про которое экран смерти уже объявил «открыто»
 var combos_found: Array[StringName] = []
+var achievements: Array[StringName] = []    # открытые достижения (Achievements)
+var mods_seen: Array[StringName] = []       # модификаторы волн, которые уже попадались
+var stats: Dictionary = {}                  # счётчики для достижений: рывки, упоры...
 var daily_best: Dictionary = {}            # ГГГГММДД -> лучшие очки ежедневки
 var endless_best: int = 0                    # самая дальняя волна в бесконечности
 var danger_unlocked: int = 0                 # максимальный открытый уровень опасности
@@ -137,6 +140,19 @@ func announce(ids: Array[StringName]) -> void:
 
 ## Следующий модификатор волны из мешка: перемешанный набор всех модификаторов, тянем по одному,
 ## пустой - перемешиваем заново (первым не ставим только что выпавший). Сохраняется в профиль.
+func stat(key: StringName) -> int:
+	return int(stats.get(key, 0))
+
+
+func stat_add(key: StringName, amount: int) -> void:
+	stats[key] = stat(key) + amount
+
+
+func mark_mod_seen(mod: StringName) -> void:
+	if mod not in mods_seen:
+		mods_seen.append(mod)
+
+
 func found_combo(combo_id: StringName) -> void:
 	if combo_id not in combos_found:
 		combos_found.append(combo_id)
@@ -185,6 +201,16 @@ func save() -> void:
 	cfg.set_value("run", "combos_found", combos)
 	cfg.set_value("danger", "unlocked", danger_unlocked)
 	cfg.set_value("modes", "endless_best", endless_best)
+	var ach: PackedStringArray = PackedStringArray()
+	for id: StringName in achievements:
+		ach.append(String(id))
+	cfg.set_value("achievements", "unlocked", ach)
+	var seen: PackedStringArray = PackedStringArray()
+	for id: StringName in mods_seen:
+		seen.append(String(id))
+	cfg.set_value("achievements", "mods_seen", seen)
+	for key: StringName in stats:
+		cfg.set_value("counters", String(key), stats[key])
 	for key: String in daily_best:
 		cfg.set_value("daily", key, daily_best[key])
 	cfg.set_value("danger", "last", last_danger)
@@ -221,6 +247,13 @@ func _load() -> bool:
 	_last_mod = StringName(str(cfg.get_value("run", "last_mod", "")))
 	danger_unlocked = int(cfg.get_value("danger", "unlocked", 0))
 	endless_best = int(cfg.get_value("modes", "endless_best", 0))
+	for entry_a: String in cfg.get_value("achievements", "unlocked", PackedStringArray()):
+		achievements.append(StringName(entry_a))
+	for entry_s: String in cfg.get_value("achievements", "mods_seen", PackedStringArray()):
+		mods_seen.append(StringName(entry_s))
+	if cfg.has_section("counters"):
+		for key: String in cfg.get_section_keys("counters"):
+			stats[StringName(key)] = int(cfg.get_value("counters", key, 0))
 	if cfg.has_section("daily"):
 		for key: String in cfg.get_section_keys("daily"):
 			daily_best[key] = int(cfg.get_value("daily", key, 0))

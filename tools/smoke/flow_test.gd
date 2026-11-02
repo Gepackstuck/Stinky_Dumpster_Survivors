@@ -3,6 +3,7 @@ extends Node
 
 
 func _ready() -> void:
+	Profile.sandbox = true   # тесты не пишут в живой профиль
 	var runner: Node = Node.new()
 	runner.set_script(load("res://tools/smoke/flow_runner.gd"))
 	get_tree().root.add_child.call_deferred(runner)

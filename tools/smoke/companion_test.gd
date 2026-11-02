@@ -6,6 +6,7 @@ const IDS: Array[StringName] = [&"stink_lamp", &"bottle_mine"]
 
 
 func _ready() -> void:
+	Profile.sandbox = true   # тесты не пишут в живой профиль
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	Engine.time_scale = 4.0
 	_run.call_deferred()

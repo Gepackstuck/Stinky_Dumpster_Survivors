@@ -3,6 +3,7 @@ extends Node
 
 
 func _ready() -> void:
+	Profile.sandbox = true   # тесты не пишут в живой профиль
 	_run.call_deferred()
 
 

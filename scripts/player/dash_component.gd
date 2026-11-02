@@ -139,6 +139,9 @@ func _blocked(at: Vector2, dir: Vector2) -> bool:
 ## Упёрся: рывок обрывается, неуязвимость снимается.
 func _bump() -> void:
 	_dash_left = 0.0
+	Profile.stat_add(&"bumps", 1)
+	if Profile.stat(&"bumps") >= 100:
+		Achievements.unlock(&"bump_100")
 	hurtbox.cancel_invulnerability()
 	HitFx.popup(get_tree(), body.global_position + Vector2(0.0, -12.0), "УПЁРСЯ!", Color(1.0, 0.3, 0.2), 12.0, 0.6)
 	_finish()

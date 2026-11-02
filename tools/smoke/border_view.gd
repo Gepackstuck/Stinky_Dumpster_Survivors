@@ -5,6 +5,7 @@ var _shots: int = 0
 
 
 func _ready() -> void:
+	Profile.sandbox = true   # тесты не пишут в живой профиль
 	var cam: Camera2D = Camera2D.new()
 	cam.position = Vector2(260.0, 260.0)
 	cam.zoom = Vector2.ONE * 0.42

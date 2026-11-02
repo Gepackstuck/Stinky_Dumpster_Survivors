@@ -9,6 +9,7 @@ const WEAPON_ORDER: Array[StringName] = [&"lighter", &"sock", &"slingshot", &"mo
 
 
 func _ready() -> void:
+	Profile.sandbox = true   # тесты не пишут в живой профиль
 	_run.call_deferred()
 
 

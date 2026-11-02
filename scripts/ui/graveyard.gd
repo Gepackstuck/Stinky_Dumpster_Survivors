@@ -74,6 +74,8 @@ var _speech_left: float = 0.0
 
 
 func _ready() -> void:
+	if Balance.CHARACTER_ORDER.all(func(h: StringName) -> bool: return Profile.is_unlocked(h)):
+		Achievements.unlock(&"heroes_all")
 	_ids = CharacterLibrary.ids().duplicate()
 	var base_count: int = _ids.size()
 	while _ids.size() < test_fill:

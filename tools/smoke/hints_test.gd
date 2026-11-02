@@ -3,6 +3,7 @@ extends Node
 
 
 func _ready() -> void:
+	Profile.sandbox = true   # тесты не пишут в живой профиль
 	var f: FileAccess = FileAccess.open(ProjectSettings.globalize_path("res://tools/_preview/hints.txt"), FileAccess.WRITE)
 	for entry: Dictionary in load("res://scripts/systems/unlock_hints.gd").call("locked"):
 		f.store_line("%s | %s | %.2f" % [entry["title"], entry["text"], entry["fraction"]])
