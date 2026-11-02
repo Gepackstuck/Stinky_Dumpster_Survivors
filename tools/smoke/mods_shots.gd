@@ -17,6 +17,7 @@ func _run() -> void:
 	get_tree().current_scene = level
 	await get_tree().create_timer(3.0).timeout
 	get_tree().paused = false
+	level.get_node(^"WaveManager").process_mode = Node.PROCESS_MODE_DISABLED   # волна не кончается сама
 	var hurtbox: HurtboxComponent = get_tree().get_first_node_in_group(&"player").get_node(^"Hurtbox")
 	var only: String = OS.get_environment("MOD_ONLY")
 	for mod: StringName in Balance.WAVE_MODS:
@@ -29,6 +30,7 @@ func _run() -> void:
 		for i: int in 50:
 			hurtbox.grant_invulnerability(1.0)
 			GameState.wave_time_left = 60.0
+			GameState.xp = 0   # без новых уровней: экран карточек ставит игру на паузу
 			await get_tree().create_timer(0.1).timeout
 			if not shot_taken and DisplayServer.get_name() != "headless" and level.find_children("*", "Node2D", true, false).any(func(n: Node) -> bool: return n is GarbageTruck):
 				shot_taken = true

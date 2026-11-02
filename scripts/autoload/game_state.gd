@@ -62,6 +62,7 @@ var ghost_drunk_count: int = 0
 var ghost_granny_count: int = 0
 var _item_stats: Dictionary[StringName, float] = {}
 var _coin_remainder: float = 0.0
+var wind: Vector2 = Vector2.ZERO     # снос героя ветром (модификатор волны)
 var wave_mod: StringName = &""      # модификатор текущей волны (Balance.WAVE_MODS) или пусто
 var wave_damage_taken: float = 0.0   # урон за текущую волну (чистая волна = 0)
 var last_clean_bonus: int = 0        # бонус за чистую прошлую волну (для Ларька)
@@ -273,7 +274,7 @@ func _recompute_items() -> void:
 
 ## Урон выстрела с учётом статов, перков и крита.
 func roll_damage(base: float) -> float:
-	var result: float = floorf(base * projectile_damage_mult * damage_mult * 100.0) / 100.0
+	var result: float = floorf(base * projectile_damage_mult * damage_mult * WaveRules.mod_f("player_damage", 1.0) * 100.0) / 100.0
 	if randf() * 100.0 < crit_percent:
 		result = floorf(result * Balance.CRIT_DAMAGE_MULT * 100.0) / 100.0 + CRIT_MARK
 		if randf() * 100.0 < crit_coin_percent:
@@ -291,7 +292,7 @@ static func is_crit_damage(damage: float) -> bool:
 
 
 func cooldown_for(base_sec: float) -> float:
-	return base_sec / (attack_speed_mult + temp_attack_bonus)
+	return base_sec / ((attack_speed_mult + temp_attack_bonus) * WaveRules.mod_f("attack_speed", 1.0))
 
 
 func _recompute_perk_stats() -> void:
@@ -364,7 +365,7 @@ func _on_xp_collected(amount: int) -> void:
 	if not run_active:
 		return
 	xp += amount
-	_coin_remainder += float(amount) * Balance.COIN_PER_XP * (1.0 + coin_bonus + streak_bonus()) * (Balance.PAYDAY_COIN_MULT if wave_mod == &"payday" else 1.0)  # деньги — доля от опыта, копить придётся
+	_coin_remainder += float(amount) * Balance.COIN_PER_XP * (1.0 + coin_bonus + streak_bonus()) * WaveRules.mod_f("coin", 1.0)  # деньги — доля от опыта, копить придётся
 	var whole: int = floori(_coin_remainder)
 	coins += whole
 	run_coins_earned += whole

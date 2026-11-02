@@ -19,6 +19,7 @@ static func group_count(wave: int, kind: StringName) -> int:
 	count = maxi(count, ceili(duration_sec(wave) / Balance.WAVE_MAX_GAP_SEC))  # поле не должно пустеть надолго
 	if kind == &"horde":
 		count = int(count * Balance.HORDE_GROUP_MULT)
+	count = maxi(roundi(count * mod_f("enemy_count", 1.0)), 1)
 	return count
 
 
@@ -33,25 +34,36 @@ static func _late(wave: int) -> float:
 
 static func hp_mult(wave: int) -> float:
 	var n: float = float(maxi(wave, 1) - 1)
-	return (1.0 + n * Balance.WAVE_HP_GROWTH + _late(wave) * _late(wave) * Balance.WAVE_HP_QUAD) * Balance.ENEMY_HP_MULT
+	return (1.0 + n * Balance.WAVE_HP_GROWTH + _late(wave) * _late(wave) * Balance.WAVE_HP_QUAD) * Balance.ENEMY_HP_MULT * mod_f("enemy_hp", 1.0)
 
 
 static func damage_mult(wave: int) -> float:
 	var n: float = float(maxi(wave, 1) - 1)
-	return (1.0 + n * Balance.WAVE_DAMAGE_GROWTH + _late(wave) * _late(wave) * Balance.WAVE_DAMAGE_QUAD) * Balance.ENEMY_DAMAGE_MULT
+	return (1.0 + n * Balance.WAVE_DAMAGE_GROWTH + _late(wave) * _late(wave) * Balance.WAVE_DAMAGE_QUAD) * Balance.ENEMY_DAMAGE_MULT * mod_f("enemy_damage", 1.0)
 
 
 static func speed_mult(wave: int) -> float:
 	var mult: float = minf(1.0 + (maxi(wave, 1) - 1) * Balance.WAVE_SPEED_GROWTH, Balance.WAVE_SPEED_MAX_MULT)
-	return mult * (Balance.PAYDAY_ENEMY_SPEED_MULT if GameState.wave_mod == &"payday" else 1.0)
+	return mult * mod_f("enemy_speed", 1.0)
 
 
-## Модификатор волны: только на обычных волнах с WAVE_MOD_FROM, не тот же, что в прошлый раз.
-static func roll_mod(wave: int, kind: StringName, last: StringName) -> StringName:
+## Модификатор волны: только на обычных волнах с WAVE_MOD_FROM. Берётся из «мешка» (Profile.mod_bag):
+## пока не выпали все, ни один не повторяется; мешок живёт между забегами.
+static func roll_mod(wave: int, kind: StringName, _last: StringName) -> StringName:
 	if kind != &"normal" or wave < Balance.WAVE_MOD_FROM or randf() >= Balance.WAVE_MOD_CHANCE:
 		return &""
-	var pool: Array[StringName] = Balance.WAVE_MODS.filter(func(m: StringName) -> bool: return m != last)
-	return pool[randi() % pool.size()]
+	return Profile.next_mod()
+
+
+## Эффект текущего модификатора волны (Balance.WAVE_MOD_DATA[mod]["fx"][key]) или default.
+static func mod_fx(key: String, default: Variant = null) -> Variant:
+	if GameState.wave_mod == &"":
+		return default
+	return Balance.WAVE_MOD_DATA[GameState.wave_mod]["fx"].get(key, default)
+
+
+static func mod_f(key: String, default: float) -> float:
+	return float(mod_fx(key, default))
 
 
 ## Сила урона модификаторов (лужи, мусоровоз): мягче, чем у врагов.

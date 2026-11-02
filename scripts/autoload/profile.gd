@@ -11,6 +11,8 @@ var wins: int = 0
 var selected: StringName = &"hobo"
 var enemy_kills: Dictionary = {}   # id врага -> сколько убито за всё время (бестиарий)
 var weapons_announced: Array[StringName] = []   # оружие, про которое экран смерти уже объявил «открыто»
+var mod_bag: Array[StringName] = []   # мешок модификаторов волн (без повторов, пока не выпадут все)
+var _last_mod: StringName = &""
 var sandbox: bool = false   # бот-ферма и тесты: всё открыто, на диск ничего не пишем (не портим живой профиль)
 var announced: Array[StringName] = []   # персонажи, про которых кладбище уже объявило «откопан»
 
@@ -115,6 +117,21 @@ func announce(ids: Array[StringName]) -> void:
 	save()
 
 
+## Следующий модификатор волны из мешка: перемешанный набор всех модификаторов, тянем по одному,
+## пустой - перемешиваем заново (первым не ставим только что выпавший). Сохраняется в профиль.
+func next_mod() -> StringName:
+	if mod_bag.is_empty():
+		var fresh: Array = Balance.WAVE_MODS.duplicate()
+		fresh.shuffle()
+		if not fresh.is_empty() and fresh[0] == _last_mod:
+			fresh.push_back(fresh.pop_front())
+		mod_bag.assign(fresh)
+	var mod: StringName = mod_bag.pop_front()
+	_last_mod = mod
+	save()
+	return mod
+
+
 func save() -> void:
 	if sandbox:
 		return
@@ -134,6 +151,11 @@ func save() -> void:
 	for id: StringName in weapons_announced:
 		wnames.append(String(id))
 	cfg.set_value("hero", "weapons_announced", wnames)
+	var bag: PackedStringArray = PackedStringArray()
+	for id: StringName in mod_bag:
+		bag.append(String(id))
+	cfg.set_value("run", "mod_bag", bag)
+	cfg.set_value("run", "last_mod", String(_last_mod))
 	cfg.save(PATH)
 
 
@@ -158,4 +180,8 @@ func _load() -> bool:
 			weapons_announced.append(StringName(entry_w))
 	else:
 		_announce_open_weapons()   # старый профиль: уже открытое новым не считаем
+	for entry_m: String in cfg.get_value("run", "mod_bag", PackedStringArray()):
+		if Balance.WAVE_MOD_DATA.has(StringName(entry_m)):
+			mod_bag.append(StringName(entry_m))
+	_last_mod = StringName(str(cfg.get_value("run", "last_mod", "")))
 	return true

@@ -28,4 +28,4 @@ func _refresh() -> void:
 	visible = mod != &""
 	if visible:
 		_icon.texture = load("res://assets/ui/mod_%s_s.png" % mod) as Texture2D
-		_label.text = Balance.WAVE_MOD_TITLES[mod]
+		_label.text = Balance.WAVE_MOD_DATA[mod]["title"]

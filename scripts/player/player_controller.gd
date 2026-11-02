@@ -50,6 +50,8 @@ func _ready() -> void:
 	EventBus.wave_started.connect(_on_wave_started_items)
 	EventBus.wave_ended.connect(_on_wave_ended_items)
 	EventBus.streak_changed.connect(_on_streak_changed)
+	EventBus.wave_started.connect(func(_w: int) -> void: _update_magnet_radius())
+	EventBus.wave_ended.connect(func(_w: int) -> void: _update_magnet_radius.call_deferred())
 	_update_magnet_radius()
 	_health.setup(Balance.PLAYER_MAX_HP)
 
@@ -60,13 +62,15 @@ func _physics_process(delta: float) -> void:
 		_facing = direction
 	if Input.is_action_just_pressed(&"dash"):
 		_dash.try_dash(direction, _facing)
-	var wanted: Vector2 = direction * Balance.PLAYER_MOVE_SPEED * GameState.move_speed_mult
+	var wanted: Vector2 = direction * Balance.PLAYER_MOVE_SPEED * GameState.move_speed_mult * WaveRules.mod_f("player_speed", 1.0)
 	if _dash.is_dashing():
 		velocity = _dash.dash_velocity()
-	elif GameState.wave_mod == &"ice":   # жирный пол: разгон и торможение с инерцией
+	elif WaveRules.mod_fx("ice", false):   # жирный пол: разгон и торможение с инерцией
 		velocity = velocity.lerp(wanted, clampf(Balance.ICE_ACCEL * delta, 0.0, 1.0))
 	else:
 		velocity = wanted
+	if not _dash.is_dashing():
+		velocity += GameState.wind   # ветер с помойки (модификатор волны)
 	if direction.x != 0.0:
 		_sprite.flip_h = direction.x > 0.0
 	_animator.active = direction != Vector2.ZERO
@@ -171,7 +175,7 @@ func _update_shake(delta: float) -> void:
 
 func _update_magnet_radius() -> void:
 	var shape: CircleShape2D = _magnet_collision.shape as CircleShape2D
-	shape.radius = Balance.PICKUP_RADIUS_BASE * GameState.pickup_radius_mult
+	shape.radius = Balance.PICKUP_RADIUS_BASE * GameState.pickup_radius_mult * WaveRules.mod_f("pickup", 1.0)
 
 
 func _on_magnet_area_entered(area: Area2D) -> void:

@@ -20,6 +20,10 @@ const _TITLES: Dictionary[StringName, String] = {
 	&"wire": "КОЛЮЧАЯ ПРОВОЛОКА",
 	&"garbage_truck": "МУСОРОВОЗ",
 	&"acid_rain": "КИСЛОТНЫЙ ДОЖДЬ",
+	&"thunder": "МОЛНИЯ",
+	&"slipper_storm": "ЛЕТАЮЩИЙ ТАПОК",
+	&"pigeon_raid": "ГОЛУБИНЫЙ ПОМЁТ",
+	&"airdrop": "ЯЩИК ГУМАНИТАРКИ",
 	&"trash_bin": "МУСОРНЫЙ БАК",
 }
 

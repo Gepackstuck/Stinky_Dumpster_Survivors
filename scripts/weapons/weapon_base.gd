@@ -132,6 +132,9 @@ func _fire(target: Node2D) -> void:
 	var root: Node = get_tree().current_scene
 	for i: int in count:
 		var angle: float = (i - (count - 1) * 0.5) * (spread if _pellets == 1 else deg_to_rad(_spread_deg))
+		var mod_spread: float = WaveRules.mod_f("spread", 0.0)   # модификатор «кривые руки»
+		if mod_spread > 0.0:
+			angle += deg_to_rad(randf_range(-mod_spread, mod_spread))
 		if _jitter_deg > 0.0:
 			angle += deg_to_rad(randf_range(-_jitter_deg, _jitter_deg))
 		var projectile: Projectile = PoolManager.acquire(PROJECTILE_SCENE) as Projectile

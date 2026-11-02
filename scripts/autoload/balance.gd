@@ -100,17 +100,72 @@ const ZAKHAR_CARROT_SPEED: float = 140.0
 const ZAKHAR_CARROT_FAN_DEG: float = 18.0       # в ярости — веер из трёх
 # --- Модификаторы волн (сюрприз в начале обычной волны) ---
 const WAVE_MOD_FROM: int = 3                 # не раньше этой волны
-const WAVE_MOD_CHANCE: float = 0.35          # шанс на обычную волну (элита/орда/боссы - без модификаторов)
-const WAVE_MODS: Array[StringName] = [&"acid_rain", &"darkness", &"garbage_truck", &"ice", &"payday"]
-const WAVE_MOD_TITLES: Dictionary = {&"acid_rain": "КИСЛОТНЫЙ ДОЖДЬ", &"darkness": "ОТРУБИЛИ СВЕТ", &"garbage_truck": "МУСОРОВОЗ",
-		&"ice": "ЖИРНЫЙ ПОЛ", &"payday": "ДЕНЬ ЗАРПЛАТЫ"}
-const WAVE_MOD_LINES: Dictionary = {
-	&"acid_rain": "С НЕБА ЛЬЁТ КИСЛОТА. СМОТРИ ПОД НОГИ, ЛОХ",
-	&"darkness": "СВЕТ ОТРУБИЛИ ЗА НЕУПЛАТУ. ТВОЮ",
-	&"garbage_truck": "МУСОРОВОЗ НЕ ТОРМОЗИТ. ТЫ ТОЖЕ МУСОР",
-	&"ice": "КТО-ТО РАЗЛИЛ ЖИР. СКОЛЬЗИ, ПОКА ЖИВ",
-	&"payday": "ГОВНА ВДВОЕ БОЛЬШЕ. ВРАГИ ТОЖЕ ЗЛЕЕ",
+const WAVE_MOD_CHANCE: float = 0.45          # шанс на обычную волну (элита/орда/боссы - без модификаторов)
+# Модификаторы: title/line - объявление; fx - эффекты (множители к врагам/игроку, спавнеры, фильтры экрана, эффекты при смерти).
+# Ключи fx: enemy_speed, enemy_hp, enemy_damage, enemy_size, enemy_count, coin, player_speed, player_damage, attack_speed,
+#   pickup, time_scale, spawn_near (множитель мин. дистанции спавна), spread (разброс выстрелов, град),
+#   spawner (acid|truck|lightning|slippers|pigeons|crates|roaches|smoke), overlay (darkness|disco|sewer|hangover),
+#   on_death (puddle|explode|revive|jackpot), ice, wind, bounce.
+const WAVE_MOD_DATA: Dictionary = {
+	&"acid_rain": {"title": "КИСЛОТНЫЙ ДОЖДЬ", "line": "С НЕБА ЛЬЁТ КИСЛОТА. СМОТРИ ПОД НОГИ, ЛОХ", "fx": {"spawner": &"acid"}},
+	&"darkness": {"title": "ОТРУБИЛИ СВЕТ", "line": "СВЕТ ОТРУБИЛИ ЗА НЕУПЛАТУ. ТВОЮ", "fx": {"overlay": &"darkness"}},
+	&"garbage_truck": {"title": "МУСОРОВОЗ", "line": "МУСОРОВОЗ НЕ ТОРМОЗИТ. ТЫ ТОЖЕ МУСОР", "fx": {"spawner": &"truck"}},
+	&"ice": {"title": "ЖИРНЫЙ ПОЛ", "line": "КТО-ТО РАЗЛИЛ ЖИР. СКОЛЬЗИ, ПОКА ЖИВ", "fx": {"ice": true}},
+	&"payday": {"title": "ДЕНЬ ЗАРПЛАТЫ", "line": "ГОВНА ВДВОЕ БОЛЬШЕ. ВРАГИ ТОЖЕ ЗЛЕЕ", "fx": {"coin": 2.0, "enemy_speed": 1.25}},
+	&"pigeon_raid": {"title": "ГОЛУБИНЫЙ НАЛЁТ", "line": "ГОЛУБИ ПРИЛЕТЕЛИ ОТОМСТИТЬ ЗА СЕМЕЧКИ", "fx": {"spawner": &"pigeons"}},
+	&"sewer_flood": {"title": "ПРОРВАЛО КАНАЛИЗАЦИЮ", "line": "ПО КОЛЕНО В ЖИЖЕ. ВСЕ. И ТЫ ТОЖЕ", "fx": {"overlay": &"sewer", "player_speed": 0.8, "enemy_speed": 0.8}},
+	&"wind": {"title": "ВЕТЕР С ПОМОЙКИ", "line": "СДУВАЕТ, КАК ПАКЕТ. ТЫ И ЕСТЬ ПАКЕТ", "fx": {"wind": true}},
+	&"hangover": {"title": "ПОХМЕЛЬЕ", "line": "ДВОИТСЯ В ГЛАЗАХ. ЗАТО ЗЛОЙ КАК СОБАКА", "fx": {"overlay": &"hangover", "player_damage": 1.25}},
+	&"giants": {"title": "ГИГАНТИЗМ", "line": "ВРАГИ ОТЪЕЛИСЬ НА ПОМОЙКЕ. ТЫ НЕТ", "fx": {"enemy_size": 1.5, "enemy_hp": 1.6, "enemy_speed": 0.8, "coin": 1.4}},
+	&"dwarfs": {"title": "КАРЛИКИ", "line": "МЕЛКИЕ, БЫСТРЫЕ И ИХ ДОФИГА", "fx": {"enemy_size": 0.6, "enemy_hp": 0.55, "enemy_speed": 1.35, "enemy_count": 1.5}},
+	&"poop_death": {"title": "ОБОСРАННЫЕ ВРАГИ", "line": "ДОХНУТ И ГАДЯТ НАПОСЛЕДОК", "fx": {"on_death": &"puddle"}},
+	&"disco": {"title": "ДИСКОТЕКА 90-Х", "line": "ВСЕ ТАНЦУЮТ. ТЫ ТОЖЕ, ИНАЧЕ СДОХНЕШЬ", "fx": {"overlay": &"disco", "bounce": true, "attack_speed": 1.25}},
+	&"airdrop": {"title": "ГУМАНИТАРКА", "line": "С НЕБА ПАДАЮТ ЯЩИКИ. ИНОГДА НА ГОЛОВУ", "fx": {"spawner": &"crates"}},
+	&"slipper_storm": {"title": "ТАПКОПАД", "line": "МАМКИ ВСЕГО РАЙОНА КИДАЮТ ТАПКИ", "fx": {"spawner": &"slippers"}},
+	&"magnet": {"title": "МАГНИТНАЯ БУРЯ", "line": "ГОВНО САМО ЛЕТИТ К ТЕБЕ. РОДСТВЕННОЕ", "fx": {"pickup": 4.0, "enemy_speed": 1.1}},
+	&"explosive": {"title": "ВЗРЫВООПАСНО", "line": "ВРАГИ НАЖРАЛИСЬ ГОРОХА. ДЕРЖИСЬ ПОДАЛЬШЕ", "fx": {"on_death": &"explode"}},
+	&"zombies": {"title": "ЗОМБИ-ВЫХОДНОЙ", "line": "ДОХЛЫЕ ВСТАЮТ. ОНИ ТОЖЕ НЕ ХОТЯТ НА РАБОТУ", "fx": {"on_death": &"revive"}},
+	&"smoke_break": {"title": "ПЕРЕКУР", "line": "ВСЯ ПОМОЙКА ВЫШЛА ПОКУРИТЬ", "fx": {"spawner": &"smoke"}},
+	&"slowmo": {"title": "ЗАМЕДЛЕННАЯ СЪЁМКА", "line": "КАК В КИНО. ТОЛЬКО ТЫ НЕ ГЕРОЙ", "fx": {"time_scale": 0.75}},
+	&"fast_forward": {"title": "ПЕРЕМОТКА", "line": "КТО-ТО НАЖАЛ x1.3. ГОВНА ТОЖЕ БОЛЬШЕ", "fx": {"time_scale": 1.3, "coin": 1.3}},
+	&"manholes": {"title": "ОТКРЫТЫЕ ЛЮКИ", "line": "ЛЕЗУТ ИЗ КАНАЛИЗАЦИИ ПРЯМО ПОД НОГАМИ", "fx": {"spawn_near": 0.5}},
+	&"lottery": {"title": "ЛОТЕРЕЯ", "line": "У КОГО-ТО ИЗ НИХ В КАРМАНЕ ДЖЕКПОТ", "fx": {"on_death": &"jackpot"}},
+	&"thunder": {"title": "ГРОЗА НАД СВАЛКОЙ", "line": "МОЛНИЯ БЬЁТ В САМОЕ ВЫСОКОЕ. ПРИГНИСЬ", "fx": {"spawner": &"lightning"}},
+	&"crooked": {"title": "КРИВЫЕ РУКИ", "line": "МАЖЕШЬ, НО ЕСЛИ ПОПАЛ - БОЛЬНО", "fx": {"spread": 18.0, "player_damage": 1.35}},
+	&"roach_exodus": {"title": "ТАРАКАНИЙ ИСХОД", "line": "ТАРАКАНЫ ПЕРЕЕЗЖАЮТ. ЧЕРЕЗ ТЕБЯ", "fx": {"spawner": &"roaches", "coin": 1.3}},
+	&"few_fat": {"title": "МАЛО, НО ЖИРНО", "line": "ИХ МЕНЬШЕ. ЗАТО КАЖДЫЙ - ШКАФ", "fx": {"enemy_count": 0.5, "enemy_hp": 2.2, "enemy_size": 1.25, "coin": 1.4}},
 }
+const WAVE_MODS: Array = [&"acid_rain", &"darkness", &"garbage_truck", &"ice", &"payday", &"pigeon_raid", &"sewer_flood", &"wind",
+		&"hangover", &"giants", &"dwarfs", &"poop_death", &"disco", &"airdrop", &"slipper_storm", &"magnet", &"explosive",
+		&"zombies", &"smoke_break", &"slowmo", &"fast_forward", &"manholes", &"lottery", &"thunder", &"crooked", &"roach_exodus", &"few_fat"]
+const LIGHTNING_INTERVAL_SEC: float = 0.9
+const LIGHTNING_WARN_SEC: float = 0.8
+const LIGHTNING_RADIUS: float = 14.0
+const LIGHTNING_DAMAGE: float = 5.0          # × сила волны^0.7; врагам - втрое больше
+const SLIPPER_INTERVAL_SEC: float = 0.8
+const SLIPPER_SPEED: float = 150.0
+const SLIPPER_DAMAGE: float = 2.0
+const PIGEON_RAID_INTERVAL_SEC: float = 5.0
+const PIGEON_RAID_SPEED: float = 150.0
+const PIGEON_RAID_DROP_EVERY_PX: float = 40.0
+const CRATE_INTERVAL_SEC: float = 3.0
+const CRATE_WARN_SEC: float = 1.2
+const CRATE_DAMAGE: float = 4.0
+const CRATE_XP_DROPS: int = 6
+const ROACH_INTERVAL_SEC: float = 4.0
+const ROACH_GROUP: int = 10
+const SMOKE_INTERVAL_SEC: float = 2.0
+const SMOKE_RADIUS: float = 34.0
+const SMOKE_SEC: float = 7.0
+const WIND_FORCE: float = 45.0              # px/с снос героя
+const WIND_CHANGE_SEC: float = 5.0
+const EXPLODE_ON_DEATH_RADIUS: float = 30.0
+const EXPLODE_ON_DEATH_DAMAGE: float = 3.0  # по герою, × сила волны^0.7; врагам - 20
+const REVIVE_CHANCE: float = 0.35
+const JACKPOT_CHANCE: float = 0.03
+const JACKPOT_DROPS: int = 12
+const DEATH_PUDDLE_CHANCE: float = 0.45
+const DEATH_PUDDLE_DAMAGE: float = 1.5      # × сила волны^0.7
 const ACID_DROP_INTERVAL_SEC: float = 1.0
 const ACID_DROP_WARN_SEC: float = 1.0
 const ACID_DROP_RADIUS: float = 16.0
@@ -124,8 +179,6 @@ const TRUCK_SPEED: float = 380.0
 const TRUCK_HALF_WIDTH: float = 24.0
 const TRUCK_DAMAGE: float = 6.0                # × сила волны^0.7
 const ICE_ACCEL: float = 3.0                   # чем меньше, тем дольше разгон и торможение
-const PAYDAY_COIN_MULT: float = 2.0
-const PAYDAY_ENEMY_SPEED_MULT: float = 1.25
 
 # --- Награда за скилл: чистая волна и серия без урона ---
 const CLEAN_WAVE_BONUS_BASE: int = 6          # говна за волну без единого попадания

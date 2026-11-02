@@ -83,6 +83,6 @@ func _random_arena_point() -> Vector2:
 	var point: Vector2 = Vector2.ZERO
 	for attempt: int in 20:
 		point = Vector2(randf_range(margin, _arena_max.x - margin), randf_range(margin, _arena_max.y - margin))
-		if not is_instance_valid(player) or point.distance_to(player.global_position) >= Balance.SPAWN_MIN_DISTANCE_FROM_PLAYER:
+		if not is_instance_valid(player) or point.distance_to(player.global_position) >= (Balance.SPAWN_MIN_DISTANCE_FROM_PLAYER * WaveRules.mod_f("spawn_near", 1.0)):
 			return point
 	return point

@@ -4,6 +4,7 @@ extends CharacterBody2D
 ## Создаётся через PoolManager; после add_child() нужно вызвать setup().
 
 const BASE_RADIUS: float = 6.0
+const PUDDLE_SCENE: PackedScene = preload("res://scenes/hazards/poop_puddle.tscn")
 static var _textures: Dictionary[StringName, Texture2D] = {}
 
 @export var enemy_id: StringName = &"squid_gopnik"
@@ -69,7 +70,12 @@ func setup(target: Node2D, spawn_position: Vector2, id: StringName = &"squid_gop
 		_sprite.texture = _texture_for(enemy_id)
 	_sprite.vframes = int(stats.get("anim_rows", 1))   # у боссов лист: ряд на каждое состояние (ходьба, замахи, ярость)
 	_anim.row = 0
-	_apply_size(stats.get("radius", BASE_RADIUS))
+	var mod_size: float = WaveRules.mod_f("enemy_size", 1.0) if not _neutral and not stats.has("anim_rows") else 1.0   # боссов не трогаем
+	_sprite.scale = Vector2.ONE * mod_size
+	_apply_size(float(stats.get("radius", BASE_RADIUS)) * mod_size)
+	_revived = false
+	modulate = Color.WHITE
+	_bounce_t = randf() * TAU
 	# летающие проходят сквозь наземных (и наоборот): тело на своём слое, сталкивается только со стеной
 	collision_layer = Balance.FLYER_BODY_LAYER if stats.get("flying", false) else Balance.GROUND_BODY_LAYER
 	collision_mask = Balance.FLYER_BODY_MASK if stats.get("flying", false) else Balance.GROUND_BODY_MASK
@@ -114,6 +120,11 @@ func _physics_process(delta: float) -> void:
 		_sprite.flip_h = velocity.x < 0.0
 	move_and_slide()
 	_keep_distance_from_target()
+	if WaveRules.mod_fx("bounce", false):   # дискотека: враги подпрыгивают в такт
+		_bounce_t += delta * 9.0
+		_sprite.position.y = -absf(sin(_bounce_t)) * 4.0
+	elif _sprite.position.y != 0.0:
+		_sprite.position.y = 0.0
 
 
 ## Мягкое расталкивание: враг не заходит внутрь игрока, а отъезжает — через толпу можно проломиться.
@@ -201,12 +212,13 @@ func hatch_into(id: StringName) -> void:
 
 
 ## Создать врага вне очереди спавна (вылупление, дети мамки).
-static func spawn_enemy(parent: Node, target: Node2D, id: StringName, at: Vector2, hp_mult: float) -> void:
+static func spawn_enemy(parent: Node, target: Node2D, id: StringName, at: Vector2, hp_mult: float) -> EnemyBase:
 	if not is_instance_valid(parent) or not is_instance_valid(target):
-		return
+		return null
 	var enemy: EnemyBase = PoolManager.acquire(load("res://scenes/enemies/enemy_base.tscn") as PackedScene) as EnemyBase
 	parent.add_child(enemy)
 	enemy.setup(target, at, id, hp_mult)
+	return enemy
 
 
 ## Ряд анимации (состояние босса); restart — начать ряд с первого кадра.
@@ -288,6 +300,56 @@ func _item_hit_effects() -> void:
 		_knockback = _target.global_position.direction_to(global_position) * Balance.ITEM_BASH_PUSH
 
 
+var _revived: bool = false
+var _bounce_t: float = 0.0
+
+
+## Эффект модификатора волны при смерти врага: лужа, взрыв, «зомби» встаёт, джекпот.
+func _mod_death_effect() -> void:
+	var stats: Dictionary = Balance.ENEMIES[enemy_id]
+	if stats.has("anim_rows"):
+		return   # элиты и боссы - без фокусов
+	var tree: SceneTree = get_tree()
+	var at: Vector2 = global_position
+	match WaveRules.mod_fx("on_death", &""):
+		&"puddle":
+			if randf() < Balance.DEATH_PUDDLE_CHANCE:
+				var puddle: TimedHazard = PUDDLE_SCENE.instantiate() as TimedHazard
+				tree.current_scene.add_child.call_deferred(puddle)
+				puddle.ready.connect(func() -> void:
+					puddle.source_id = enemy_id
+					puddle.setup(at, 14.0, Balance.DEATH_PUDDLE_DAMAGE * WaveRules.hazard_mult(GameState.wave), 3.0), CONNECT_ONE_SHOT)
+		&"explode":
+			HitFx.burst(tree, at, Color(1.0, 0.6, 0.0), 16, 90.0, 3.0, 0.4, true)
+			HitFx.burst(tree, at, Color(1.0, 1.0, 0.3), 8, 50.0, 4.0, 0.3, true)
+			var player: Node2D = tree.get_first_node_in_group(&"player") as Node2D
+			if player != null and player.global_position.distance_to(at) < Balance.EXPLODE_ON_DEATH_RADIUS:
+				var hb: HurtboxComponent = player.get_node_or_null(^"Hurtbox") as HurtboxComponent
+				if hb != null and hb.receive_hit(Balance.EXPLODE_ON_DEATH_DAMAGE * WaveRules.hazard_mult(GameState.wave)):
+					GameState.last_damage_source = enemy_id
+			for node: Node in tree.get_nodes_in_group(&"enemies"):
+				var other: EnemyBase = node as EnemyBase
+				if other != null and other != self and other.global_position.distance_to(at) < Balance.EXPLODE_ON_DEATH_RADIUS:
+					other.hit_by_weapon.call_deferred(20.0, at.direction_to(other.global_position) * 200.0)
+		&"revive":
+			if not _revived and randf() < Balance.REVIVE_CHANCE:
+				var parent: Node = get_parent()
+				var id: StringName = enemy_id
+				var target: Node2D = _target
+				HitFx.popup(tree, at + Vector2(0.0, -10.0), "ВСТАЁТ!", Color(0.6, 1.0, 0.3), 12.0, 0.8)
+				tree.create_timer(1.0, false).timeout.connect(func() -> void:
+					if is_instance_valid(parent) and is_instance_valid(target) and GameState.wave_mod == &"zombies":
+						var zombie: EnemyBase = EnemyBase.spawn_enemy(parent, target, id, at, WaveRules.hp_mult(GameState.wave) * 0.6)
+						if zombie != null:
+							zombie._revived = true
+							zombie.modulate = Color(0.6, 1.0, 0.5))
+		&"jackpot":
+			if randf() < Balance.JACKPOT_CHANCE:
+				HitFx.popup(tree, at + Vector2(0.0, -14.0), "ДЖЕКПОТ!", Color(1.0, 0.9, 0.0), 22.0, 1.2, true)
+				for i: int in Balance.JACKPOT_DROPS:
+					EventBus.xp_drop_requested.emit(at + Vector2.from_angle(randf() * TAU) * randf_range(4.0, 26.0), 3)
+
+
 func _on_died() -> void:
 	if _dead:
 		return
@@ -297,6 +359,8 @@ func _on_died() -> void:
 	else:
 		HitFx.burst(get_tree(), global_position, Color(1.0, 0.0625, 0.9412), 14, 110.0, 3.0, 0.5)
 		HitFx.burst(get_tree(), global_position, Color(0.2235, 1.0, 0.0784), 8, 80.0, 2.0, 0.5)
+	if not _neutral:
+		_mod_death_effect()
 	EventBus.enemy_died.emit(enemy_id, global_position)
 	if _brain != null:
 		_brain.on_death()
