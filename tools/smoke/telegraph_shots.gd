@@ -12,7 +12,7 @@ func _ready() -> void:
 
 
 func _run() -> void:
-	for set_ids: Array in [[&"boss_minion"], [&"charger", &"charger", &"spitter", &"spitter"], [&"boss_zakhar"]]:
+	for set_ids: Array in [[&"boss_rat_queen"], [&"boss_blue_whale"]]:
 		GameState.character = &"janitor"
 		var level: Node = MAIN.instantiate()
 		get_tree().root.add_child(level)

@@ -10,7 +10,7 @@ func _ready() -> void:
 
 
 func _run() -> void:
-	for id: StringName in [&"boss_mega_hamster", &"boss_zakhar", &"boss_minion"]:
+	for id: StringName in [&"boss_mega_hamster", &"boss_zakhar", &"boss_minion", &"boss_rat_queen", &"boss_blue_whale"]:
 		print("BOSS ", id)
 		GameState.character = &"hobo"
 		var level: Node = MAIN.instantiate()

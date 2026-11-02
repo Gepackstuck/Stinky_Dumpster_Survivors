@@ -115,7 +115,7 @@ func _physics_process(delta: float) -> void:
 		var enemy: EnemyBase = node as EnemyBase
 		if enemy == null or not enemy.is_alive():
 			continue
-		if enemy.enemy_id == Balance.ELITE_ID or Balance.FINAL_BOSS_POOL.has(enemy.enemy_id):
+		if Balance.ELITE_POOL.has(enemy.enemy_id) or Balance.FINAL_BOSS_POOL.has(enemy.enemy_id):
 			found.append(enemy)
 	for i: int in _boss_bars.size():
 		var bar: Dictionary = _boss_bars[i]

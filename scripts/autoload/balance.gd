@@ -85,13 +85,39 @@ const WAVE_ENEMY_WEIGHTS: Dictionary = {    # вес в взвешенном р�
 	&"looter": 1, &"cockroach": 4, &"bruiser": 4, &"wifi_ghost": 3,
 	&"healer": 3, &"glutton": 3, &"egg": 2, &"mamka": 2,
 }
-const FINAL_BOSS_POOL: Array[StringName] = [&"boss_zakhar", &"boss_minion"]  # боссы 20-й волны: один или оба
+const FINAL_BOSS_POOL: Array[StringName] = [&"boss_zakhar", &"boss_minion", &"boss_blue_whale"]
+const ELITE_POOL: Array[StringName] = [&"boss_mega_hamster", &"boss_rat_queen"]   # элита окна - одна из них
+const FINAL_BOSS_MAX: int = 2      # одновременно в финале не больше стольких боссов (на ТРУПНЯКЕ+ - всегда столько)  # боссы 20-й волны: один или оба
 const ELITE_ID: StringName = &"boss_mega_hamster"                           # элита на волнах 11–12, 14–15, 17–18
 const BOSS_NAMES: Dictionary = {
 	&"boss_mega_hamster": "МЕГА-ХОМЯК",
 	&"boss_zakhar": "ЗАХАР ИЗ МОРКОВСКА",
 	&"boss_minion": "МИНЬОН-ПСИХ",
+	&"boss_rat_queen": "КОРОЛЕВА КРЫС",
+	&"boss_blue_whale": "СИНИЙ КИТ",
 }
+# --- Королева крыс (элита) ---
+const RAT_QUEEN_ATTACK_INTERVAL_SEC: float = 2.4
+const RAT_QUEEN_CAST_SEC: float = 0.5
+const RAT_QUEEN_SUMMON: int = 5
+const RAT_QUEEN_CHARGE_SPEED: float = 240.0
+const RAT_QUEEN_CHARGE_SEC: float = 0.8
+const RAT_QUEEN_TAIL_RADIUS: float = 44.0
+const RAT_QUEEN_TAIL_DAMAGE: float = 5.0
+# --- Синий кит (финал) ---
+const WHALE_ATTACK_INTERVAL_SEC: float = 2.4
+const WHALE_CAST_SEC: float = 0.6
+const WHALE_TEAR_COUNT: int = 7
+const WHALE_TEAR_FAN_DEG: float = 30.0
+const WHALE_TEAR_SPEED: float = 120.0
+const WHALE_TEAR_DAMAGE: float = 7.0
+const WHALE_FLOP_SEC: float = 0.6
+const WHALE_FLOP_RADIUS: float = 36.0
+const WHALE_FLOP_DAMAGE: float = 14.0
+const WHALE_FLOP_RING: int = 12
+const WHALE_SPOUTS: int = 3
+const WHALE_SPOUT_RADIUS: float = 16.0
+const WHALE_SPOUT_DAMAGE: float = 10.0
 
 # --- Боссы: Захар из Морковска ---
 const ZAKHAR_ATTACK_INTERVAL_SEC: float = 2.2   # пауза между атаками (в ярости ×0.65 — на <50% HP)
@@ -560,6 +586,10 @@ const ENEMIES: Dictionary = {
 			"brain": "res://scripts/enemies/brains/boss_hamster_brain.gd"},
 	&"boss_zakhar": {"hp": 900.0, "damage": 4.0, "speed": 45.0, "xp": 40, "coins": 25, "radius": 30.0, "anim_rows": 6,
 			"brain": "res://scripts/enemies/brains/boss_zakhar_brain.gd"},
+	&"boss_rat_queen": {"hp": 650.0, "damage": 5.0, "speed": 45.0, "xp": 30, "coins": 20, "radius": 26.0, "anim_rows": 5,
+			"brain": "res://scripts/enemies/brains/boss_rat_queen_brain.gd"},
+	&"boss_blue_whale": {"hp": 1000.0, "damage": 5.0, "speed": 30.0, "xp": 40, "coins": 25, "radius": 34.0, "anim_rows": 5,
+			"brain": "res://scripts/enemies/brains/boss_whale_brain.gd"},
 	&"boss_minion": {"hp": 700.0, "damage": 3.0, "speed": 70.0, "xp": 40, "coins": 25, "radius": 22.0, "anim_rows": 5,
 			"brain": "res://scripts/enemies/brains/boss_minion_brain.gd"},
 }
