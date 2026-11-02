@@ -122,7 +122,7 @@ static func description(offer: Dictionary) -> String:
 	var text: String = ""
 	if offer["kind"] == &"item":
 		if ItemLibrary.is_cursed(offer["id"]):
-			text += "ПРОКЛЯТО!\n"
+			text += "ЗЛОВОННОЕ! С ПОМОЙКИ\n"
 		text += ItemLibrary.description(offer["id"])
 		var combo: StringName = ItemLibrary.combo_with_owned(offer["id"])
 		if combo != &"":
