@@ -165,11 +165,11 @@ func _input(event: InputEvent) -> void:
 
 func _label(text: String, pos: Vector2, width: float, color: Color, align: HorizontalAlignment) -> Label:
 	var label: Label = Label.new()
-	label.text = text
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	label.position = pos
 	label.size = Vector2(width, 10.0)
 	label.horizontal_alignment = align
-	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	label.text = text
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	label.add_theme_color_override(&"font_color", color)
 	label.add_theme_color_override(&"font_shadow_color", Color.BLACK)

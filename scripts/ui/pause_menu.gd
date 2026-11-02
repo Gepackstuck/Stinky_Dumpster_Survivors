@@ -281,7 +281,26 @@ func _open_inventory() -> void:
 	_inventory_text.text = "\n".join(lines)
 	for child: Node in _inventory_items.get_children():
 		child.queue_free()
+	var compact: bool = GameState.items.size() > 20   # много хлама: сетка значков с числом, а не список (иначе за экран)
+	_inventory_items.columns = 9 if compact else 2
 	for item_id: StringName in GameState.items:
+		if compact:
+			var cell: TextureRect = TextureRect.new()
+			cell.texture = ItemLibrary.icon_small(item_id)
+			cell.custom_minimum_size = Vector2(28.0, 18.0)
+			cell.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
+			cell.modulate = Color.WHITE.lerp(StatLibrary.tier_color(ItemLibrary.tier(item_id)), 0.25)
+			var count: int = GameState.items[item_id]
+			if count > 1:
+				var num: Label = Label.new()
+				num.text = str(count)
+				num.position = Vector2(18.0, 6.0)
+				num.add_theme_font_size_override(&"font_size", 6)
+				num.add_theme_color_override(&"font_color", Color(0.97, 1.0, 0.0))
+				num.add_theme_color_override(&"font_shadow_color", Color.BLACK)
+				cell.add_child(num)
+			_inventory_items.add_child(cell)
+			continue
 		var row: HBoxContainer = HBoxContainer.new()
 		row.custom_minimum_size = Vector2(148.0, 14.0)
 		var icon: TextureRect = TextureRect.new()

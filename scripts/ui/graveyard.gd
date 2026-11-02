@@ -197,7 +197,10 @@ func _to_menu() -> void:
 func _say(text: String) -> void:
 	if _speech != null:
 		_speech.queue_free()
-	var label: Label = _label(text, _rest_pos(_selected) + Vector2(-50.0, -34.0), 100.0, YELLOW, HORIZONTAL_ALIGNMENT_CENTER)
+	var at: Vector2 = _rest_pos(_selected) + Vector2(-50.0, -34.0)
+	at.x = clampf(at.x, 4.0, SCREEN.x - 104.0)   # реплика у края не вылезает за экран
+	at.y = maxf(at.y, 2.0)
+	var label: Label = _label(text, at, 100.0, YELLOW, HORIZONTAL_ALIGNMENT_CENTER)
 	label.z_index = 30
 	_speech = label
 	_speech_left = 1.4
@@ -243,12 +246,12 @@ func _build_background() -> void:
 
 func _label(text: String, pos: Vector2, width: float, color: Color, align: HorizontalAlignment = HORIZONTAL_ALIGNMENT_LEFT) -> Label:
 	var label: Label = Label.new()
-	label.text = text
-	label.position = pos
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART   # перенос ДО текста, иначе подпись растягивается под строку
 	label.custom_minimum_size = Vector2(width, 0.0)
+	label.position = pos
 	label.size = Vector2(width, 10.0)
 	label.horizontal_alignment = align
-	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	label.text = text
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	label.add_theme_color_override(&"font_color", color)
 	label.add_theme_color_override(&"font_shadow_color", Color(0.0, 0.0, 0.0))
@@ -324,8 +327,10 @@ func _build_grave(i: int) -> void:
 	if _scale >= 0.75:
 		var caption: Label = Label.new()
 		caption.text = CharacterLibrary.short_title(id) if unlocked else "???"
-		caption.position = (root.position + Vector2(-8.0, GRAVE_H * _scale - 3.0)).round()   # целые пиксели, иначе шрифт ломается
 		caption.size = Vector2(roundf(GRAVE_W * _scale + 16.0), 10.0)
+		var cap_pos: Vector2 = root.position + Vector2(-8.0, GRAVE_H * _scale - 3.0)
+		cap_pos.x = clampf(cap_pos.x, 2.0, SCREEN.x - caption.size.x - 2.0)   # крайние подписи не вылезают за экран
+		caption.position = cap_pos.round()   # целые пиксели, иначе шрифт ломается
 		caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		caption.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		caption.add_theme_font_size_override(&"font_size", 6)
