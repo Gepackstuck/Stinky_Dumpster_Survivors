@@ -356,6 +356,8 @@ func _refresh_shop() -> void:
 		_title.add_theme_color_override(&"font_color", Color(0.968627, 1.0, 0.0))
 		_backdrop.modulate = BACKDROP_SHOP
 		_counter_base = "ВОЛНА %d ПРОЙДЕНА. ТРАТЬ ГОВНО, ПОКА ЖИВОЙ" % GameState.wave
+		if GameState.last_clean_bonus > 0:
+			_counter_base = "ЧИСТАЯ ВОЛНА +%d ГОВНА. %s" % [GameState.last_clean_bonus, FlavorText.random_clean()]
 		_hint.text = HINT_SHOP
 		_next_button.text = "В БОЙ: ВОЛНА %d%s" % [next_wave, label]
 		_next_button.disabled = false

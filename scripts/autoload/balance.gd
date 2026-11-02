@@ -98,6 +98,11 @@ const ZAKHAR_ATTACK_INTERVAL_SEC: float = 2.2   # пауза между атак
 const ZAKHAR_CARROT_DAMAGE: float = 8.0
 const ZAKHAR_CARROT_SPEED: float = 140.0
 const ZAKHAR_CARROT_FAN_DEG: float = 18.0       # в ярости — веер из трёх
+# --- Награда за скилл: чистая волна и серия без урона ---
+const CLEAN_WAVE_BONUS_BASE: int = 6          # говна за волну без единого попадания
+const CLEAN_WAVE_BONUS_PER_WAVE: int = 3      # + за номер волны
+const NOHIT_STREAK_TIERS: Array = [[10.0, 0.10], [20.0, 0.25], [40.0, 0.50], [60.0, 0.80]]   # [сек без урона, + доля говна с дропа]
+
 # --- Рывок (у всех героев, у каждого свой): dist - px, sec - длительность, cd - перезарядка, charges - зарядов,
 # fx - фишка: knock (отпихнуть вокруг в конце), sweep (урон по пути), slow (тормозит врагов у старта), trail (тормозит по пути),
 # blink (телепорт), drunk (кривой, но дольше неуязвим), heal (+ХП), fly (неуязвим весь полёт и чуть дольше).

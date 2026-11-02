@@ -126,6 +126,31 @@ static func random_boss() -> String:
 const HIT_WORDS: Array[String] = ["ПУК!", "ПРДЖ!", "БРЫЗГ!", "ФРРР!", "ХЛЮП!", "БЛИН!"]  # пока не используется: надписи над игроком убраны
 
 
+const CLEAN_LINES: Array[String] = [
+	"ДАЖЕ НЕ ЗАДЕЛИ. СЛУЧАЙНОСТЬ, НЕ ОБОЛЬЩАЙСЯ",
+	"НИ ЦАРАПИНЫ. ВИДИМО, ВРАГИ ТОЖЕ ЛОХИ",
+	"ЦЕЛЁХОНЕК. ДАЖЕ ОБИДНО",
+	"ЧИСТАЯ ВОЛНА. ПОМОЙКА В ШОКЕ",
+	"ВЫЖИЛ БЕЗ ДЫРОК. ЗАВТРА НЕ ПОВЕЗЁТ",
+]
+const STREAK_BREAK_LINES: Array[String] = ["СЕРИЯ ВСЁ. ТЫ ВСЁ", "ДОИГРАЛСЯ, ЛОХ", "НУ ВОТ И ЦАРАПИНА", "ПРОЩАЙ, БОНУС"]
+const STREAK_UP_LINES: Array[String] = ["НЕ ЗАДЕЛИ? ПОВЕЗЛО", "ВСЁ ЕЩЁ ЖИВ. СТРАННО", "БЕГАЕШЬ КАК ТАРАКАН", "ПОМОЙКА ЗАМЕТИЛА"]
+static var _last_clean: int = -1
+
+
+static func random_clean() -> String:
+	_last_clean = _pick(CLEAN_LINES, _last_clean)
+	return CLEAN_LINES[_last_clean]
+
+
+static func random_streak_break() -> String:
+	return STREAK_BREAK_LINES[randi() % STREAK_BREAK_LINES.size()]
+
+
+static func random_streak_up() -> String:
+	return STREAK_UP_LINES[randi() % STREAK_UP_LINES.size()]
+
+
 static func random_hit_word() -> String:
 	return HIT_WORDS[randi() % HIT_WORDS.size()]
 

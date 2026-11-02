@@ -17,6 +17,8 @@ signal perk_chosen(perk_id: StringName)
 signal dash_state(charges: int, max_charges: int, recharge: float)   # рывок: заряды и прогресс перезарядки 0..1
 @warning_ignore("unused_signal")
 signal dash_used(at: Vector2)
+@warning_ignore("unused_signal")
+signal streak_changed(tier: int, bonus: float, broken: bool)   # серия без урона: ступень, + доля говна; broken - сбили
 
 # --- Враги ---
 @warning_ignore("unused_signal")

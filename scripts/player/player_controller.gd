@@ -49,6 +49,7 @@ func _ready() -> void:
 	EventBus.enemy_died.connect(_on_enemy_died_item_fx)
 	EventBus.wave_started.connect(_on_wave_started_items)
 	EventBus.wave_ended.connect(_on_wave_ended_items)
+	EventBus.streak_changed.connect(_on_streak_changed)
 	_update_magnet_radius()
 	_health.setup(Balance.PLAYER_MAX_HP)
 
@@ -73,6 +74,8 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 	global_position = global_position.clamp(Vector2.ZERO, _arena_max)
 	_update_shake(delta)
+	if GameState.run_active and GameState.wave_time_left > 0.0:
+		GameState.tick_streak(delta)
 	GameState.still_sec = GameState.still_sec + delta if direction == Vector2.ZERO else 0.0
 	_update_still_regen(delta, direction == Vector2.ZERO)
 	_update_item_timers(delta)
@@ -223,6 +226,14 @@ func _sync_weapons() -> void:
 			weapon.add_child(held)
 			slot += 1
 	_on_perk_chosen(&"")   # бонус набора мог поменять макс. ХП
+
+
+func _on_streak_changed(tier: int, bonus: float, broken: bool) -> void:
+	var at: Vector2 = global_position + Vector2(0.0, -18.0)
+	if broken:
+		HitFx.popup(get_tree(), at, FlavorText.random_streak_break(), Color(1.0, 0.1, 0.2), 16.0, 1.0)
+	elif tier > 0:
+		HitFx.popup(get_tree(), at, "СЕРИЯ +%d%% ГОВНА! %s" % [roundi(bonus * 100.0), FlavorText.random_streak_up()], Color(0.968627, 1.0, 0.0), 18.0, 1.2)
 
 
 func _on_hurt(raw_damage: float) -> void:

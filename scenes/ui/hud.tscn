@@ -12,6 +12,7 @@
 [ext_resource type="Script" path="res://scripts/ui/enemy_pointer.gd" id="7_ptr"]
 [ext_resource type="PackedScene" path="res://scenes/ui/weapon_panel.tscn" id="11_wpanel"]
 [ext_resource type="PackedScene" path="res://scenes/ui/dash_meter.tscn" id="12_dash"]
+[ext_resource type="Script" path="res://scripts/ui/streak_meter.gd" id="13_streak"]
 
 [node name="Hud" type="CanvasLayer"]
 layer = 5
@@ -139,3 +140,11 @@ offset_left = 154.0
 offset_top = 4.0
 offset_right = 184.0
 offset_bottom = 16.0
+
+[node name="StreakMeter" type="Label" parent="Root"]
+layout_mode = 0
+offset_left = 186.0
+offset_top = 5.0
+offset_right = 300.0
+offset_bottom = 15.0
+script = ExtResource("13_streak")

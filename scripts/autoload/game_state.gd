@@ -62,6 +62,12 @@ var ghost_drunk_count: int = 0
 var ghost_granny_count: int = 0
 var _item_stats: Dictionary[StringName, float] = {}
 var _coin_remainder: float = 0.0
+var wave_damage_taken: float = 0.0   # урон за текущую волну (чистая волна = 0)
+var last_clean_bonus: int = 0        # бонус за чистую прошлую волну (для Ларька)
+var clean_waves: int = 0             # чистых волн за забег (статистика, ачивки)
+var nohit_sec: float = 0.0           # серия без урона
+var streak_tier: int = 0
+var best_streak_sec: float = 0.0
 var shop_offers: Array[Dictionary] = []  # витрина Ларька (замороженные переходят на след. волну)
 
 
@@ -69,7 +75,10 @@ func _ready() -> void:
 	EventBus.enemy_died.connect(_on_enemy_died)
 	EventBus.player_died.connect(_on_player_died)
 	EventBus.xp_collected.connect(_on_xp_collected)
-	EventBus.weapons_changed.connect(_recompute_perk_stats)   # бонусы наборов зависят от оружия в слотах
+	EventBus.weapons_changed.connect(_recompute_perk_stats)
+	EventBus.player_hit.connect(_on_player_hit)
+	EventBus.wave_started.connect(func(_w: int) -> void: wave_damage_taken = 0.0)
+	EventBus.wave_ended.connect(_on_wave_ended_clean)   # бонусы наборов зависят от оружия в слотах
 
 
 ## Сбросить состояние перед новым забегом.
@@ -96,6 +105,12 @@ func reset_run() -> void:
 	temp_attack_bonus = 0.0
 	run_coins_earned = 0
 	_coin_remainder = 0.0
+	wave_damage_taken = 0.0
+	last_clean_bonus = 0
+	clean_waves = 0
+	nohit_sec = 0.0
+	streak_tier = 0
+	best_streak_sec = 0.0
 	weapons.clear()
 	shop_offers.clear()
 	reroll_count = 0
@@ -301,6 +316,43 @@ func _on_enemy_died(enemy_id: StringName, _position: Vector2) -> void:
 		kills += 1
 
 
+## Серия без урона: тикает из игрока (только в бою), ступени из Balance.NOHIT_STREAK_TIERS.
+func tick_streak(delta: float) -> void:
+	nohit_sec += delta
+	best_streak_sec = maxf(best_streak_sec, nohit_sec)
+	var tier: int = 0
+	for t: Array in Balance.NOHIT_STREAK_TIERS:
+		if nohit_sec >= float(t[0]):
+			tier += 1
+	if tier != streak_tier:
+		streak_tier = tier
+		EventBus.streak_changed.emit(tier, streak_bonus(), false)
+
+
+func streak_bonus() -> float:
+	return 0.0 if streak_tier == 0 else float(Balance.NOHIT_STREAK_TIERS[streak_tier - 1][1])
+
+
+func _on_player_hit(damage: float) -> void:
+	wave_damage_taken += damage
+	var had: int = streak_tier
+	nohit_sec = 0.0
+	streak_tier = 0
+	if had > 0:
+		EventBus.streak_changed.emit(0, 0.0, true)
+
+
+## Чистая волна: ни одного попадания - бонус говна (растёт с номером волны).
+func _on_wave_ended_clean(wave_number: int) -> void:
+	last_clean_bonus = 0
+	if not run_active or wave_damage_taken > 0.0:
+		return
+	last_clean_bonus = Balance.CLEAN_WAVE_BONUS_BASE + Balance.CLEAN_WAVE_BONUS_PER_WAVE * wave_number
+	coins += last_clean_bonus
+	run_coins_earned += last_clean_bonus
+	clean_waves += 1
+
+
 ## Сколько XP нужно, чтобы выйти с уровня `at_level` на следующий.
 static func xp_needed(at_level: int) -> int:
 	return ceili(Balance.XP_LEVEL_FACTOR * pow(at_level + 3, 2))
@@ -310,7 +362,7 @@ func _on_xp_collected(amount: int) -> void:
 	if not run_active:
 		return
 	xp += amount
-	_coin_remainder += float(amount) * Balance.COIN_PER_XP * (1.0 + coin_bonus)  # деньги — доля от опыта, копить придётся
+	_coin_remainder += float(amount) * Balance.COIN_PER_XP * (1.0 + coin_bonus + streak_bonus())  # деньги — доля от опыта, копить придётся
 	var whole: int = floori(_coin_remainder)
 	coins += whole
 	run_coins_earned += whole
