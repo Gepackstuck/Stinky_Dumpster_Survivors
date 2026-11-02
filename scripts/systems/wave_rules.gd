@@ -97,15 +97,22 @@ static func spawn_times(wave: int, kind: StringName) -> Array[float]:
 
 
 ## Взвешенный случайный тип среди открытых к этой волне.
+static func _weight(id: StringName, wave: int) -> float:
+	var w: float = Balance.WAVE_ENEMY_WEIGHTS[id]
+	if id == &"spitter" and wave > 5:   # к концу плевунов больше: уворот решает
+		w *= 1.0 + (wave - 5) * Balance.SPITTER_LATE_WEIGHT_PER_WAVE
+	return w
+
+
 static func pick_enemy_id(wave: int) -> StringName:
 	var total: float = 0.0
 	for id: StringName in Balance.WAVE_ENEMY_UNLOCK:
 		if wave >= Balance.WAVE_ENEMY_UNLOCK[id]:
-			total += Balance.WAVE_ENEMY_WEIGHTS[id]
+			total += _weight(id, wave)
 	var roll: float = randf() * total
 	for id: StringName in Balance.WAVE_ENEMY_UNLOCK:
 		if wave >= Balance.WAVE_ENEMY_UNLOCK[id]:
-			roll -= Balance.WAVE_ENEMY_WEIGHTS[id]
+			roll -= _weight(id, wave)
 			if roll <= 0.0:
 				return id
 	return &"squid_gopnik"

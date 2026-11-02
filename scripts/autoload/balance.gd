@@ -68,7 +68,7 @@ const ELITE_HP_MULT: float = 2.0
 const WAVE_HP_GROWTH: float = 0.6   # рост HP врагов за волну
 const PLAYER_MAX_HIT_FRACTION: float = 0.34   # один удар не снимает больше трети максимума HP (нет ваншотов)
 const WAVE_DAMAGE_GROWTH: float = 0.35   # рост урона врагов за волну
-const WAVE_SPEED_GROWTH: float = 0.05        # +3% скорости за волну
+const WAVE_SPEED_GROWTH: float = 0.055       # +3% скорости за волну
 const WAVE_SPEED_MAX_MULT: float = 1.6
 const GROUND_BODY_LAYER: int = 2                 # тела наземных врагов толкаются друг с другом и со стеной
 const GROUND_BODY_MASK: int = 34
@@ -103,14 +103,14 @@ const RAT_QUEEN_SUMMON: int = 5
 const RAT_QUEEN_CHARGE_SPEED: float = 240.0
 const RAT_QUEEN_CHARGE_SEC: float = 0.8
 const RAT_QUEEN_TAIL_RADIUS: float = 44.0
-const RAT_QUEEN_TAIL_DAMAGE: float = 5.0
+const RAT_QUEEN_TAIL_DAMAGE: float = 7.0
 # --- Синий кит (финал) ---
 const WHALE_ATTACK_INTERVAL_SEC: float = 2.4
 const WHALE_CAST_SEC: float = 0.6
 const WHALE_TEAR_COUNT: int = 7
 const WHALE_TEAR_FAN_DEG: float = 30.0
 const WHALE_TEAR_SPEED: float = 120.0
-const WHALE_TEAR_DAMAGE: float = 7.0
+const WHALE_TEAR_DAMAGE: float = 8.5
 const WHALE_FLOP_SEC: float = 0.6
 const WHALE_FLOP_RADIUS: float = 36.0
 const WHALE_FLOP_DAMAGE: float = 14.0
@@ -121,7 +121,7 @@ const WHALE_SPOUT_DAMAGE: float = 10.0
 
 # --- Боссы: Захар из Морковска ---
 const ZAKHAR_ATTACK_INTERVAL_SEC: float = 2.2   # пауза между атаками (в ярости ×0.65 — на <50% HP)
-const ZAKHAR_CARROT_DAMAGE: float = 8.0
+const ZAKHAR_CARROT_DAMAGE: float = 10.0
 const ZAKHAR_CARROT_SPEED: float = 140.0
 const ZAKHAR_CARROT_FAN_DEG: float = 18.0       # в ярости — веер из трёх
 # --- Уровни опасности (как в Brotato): открываются победой на предыдущем. Множители к врагам, шанс модификаторов,
@@ -289,6 +289,8 @@ const CHARGER_DASH_SEC: float = 0.55
 const CHARGER_DASH_SPEED: float = 260.0
 const SPITTER_WINDUP_SEC: float = 0.4       # плевун надувается и показывает линию плевка
 const SPITTER_AIM_LENGTH: float = 60.0
+const SPITTER_DAMAGE: float = 1.5           # плевок больнее касания: от него можно увернуться (скилл решает)
+const SPITTER_LATE_WEIGHT_PER_WAVE: float = 0.1   # с 6-й волны плевунов всё больше: +10% веса за волну
 const HAMSTER_SLAM_TELE_RADIUS: float = 60.0
 const MINION_WHIRL_TELE_RADIUS: float = 60.0
 const TELEGRAPH_SHOT_LENGTH: float = 110.0  # длина линии/конуса для бросков боссов
@@ -303,7 +305,7 @@ const ZAKHAR_KICK_DURATION_SEC: float = 0.25
 
 # --- Боссы: Миньон-псих ---
 const MINION_WRENCH_INTERVAL_SEC: float = 1.8
-const MINION_WRENCH_DAMAGE: float = 7.0
+const MINION_WRENCH_DAMAGE: float = 9.0
 const MINION_WRENCH_SPEED: float = 150.0
 const MINION_WRENCH_FAN_DEG: float = 14.0
 const MINION_WRENCH_SPIN: float = 14.0          # рад/с
@@ -584,18 +586,18 @@ const GLUTTON_MAX_SCALE: float = 1.9
 
 # --- Враги: hp, damage, speed, xp, coins (GDD) ---
 const ENEMIES: Dictionary = {
-	&"squid_gopnik": {"hp": 40.0, "damage": 2.5, "speed": 68.0, "xp": 2, "coins": 1},
-	&"microbe": {"hp": 60.0, "damage": 1.5, "speed": 40.0, "xp": 3, "coins": 1},
-	&"npc_bot": {"hp": 32.0, "damage": 2.0, "speed": 50.0, "xp": 2, "coins": 1},
-	&"cockroach": {"hp": 9.0, "damage": 1.5, "speed": 120.0, "xp": 1, "coins": 2},
-	&"wifi_ghost": {"hp": 50.0, "damage": 3.0, "speed": 70.0, "xp": 4, "coins": 2, "flying": true},
+	&"squid_gopnik": {"hp": 40.0, "damage": 2.0, "speed": 68.0, "xp": 2, "coins": 1},
+	&"microbe": {"hp": 60.0, "damage": 1.2, "speed": 40.0, "xp": 3, "coins": 1},
+	&"npc_bot": {"hp": 32.0, "damage": 1.6, "speed": 50.0, "xp": 2, "coins": 1},
+	&"cockroach": {"hp": 9.0, "damage": 1.2, "speed": 120.0, "xp": 1, "coins": 2},
+	&"wifi_ghost": {"hp": 50.0, "damage": 2.4, "speed": 70.0, "xp": 4, "coins": 2, "flying": true},
 	# Враги Шага 4 (поведение как в Brotato): group_mult — множитель размера группы.
-	&"chaser": {"hp": 10.0, "damage": 1.0, "speed": 90.0, "xp": 1, "coins": 1, "radius": 5.0, "group_mult": 1.4, "flying": true},
-	&"charger": {"hp": 50.0, "damage": 2.5, "speed": 70.0, "xp": 3, "coins": 1, "radius": 8.0, "group_mult": 0.7,
+	&"chaser": {"hp": 10.0, "damage": 0.8, "speed": 90.0, "xp": 1, "coins": 1, "radius": 5.0, "group_mult": 1.4, "flying": true},
+	&"charger": {"hp": 50.0, "damage": 2.0, "speed": 70.0, "xp": 3, "coins": 1, "radius": 8.0, "group_mult": 0.7,
 			"brain": "res://scripts/enemies/brains/charger_brain.gd"},
 	&"spitter": {"hp": 34.0, "damage": 2.0, "speed": 60.0, "xp": 3, "coins": 1, "radius": 7.0, "group_mult": 1.0,
 			"brain": "res://scripts/enemies/brains/spitter_brain.gd"},
-	&"bruiser": {"hp": 170.0, "damage": 3.0, "speed": 55.0, "xp": 8, "coins": 3, "radius": 13.0, "group_mult": 0.3},
+	&"bruiser": {"hp": 170.0, "damage": 2.5, "speed": 55.0, "xp": 8, "coins": 3, "radius": 13.0, "group_mult": 0.3},
 	&"looter": {"hp": 90.0, "damage": 1.0, "speed": 85.0, "xp": 25, "coins": 10, "radius": 7.0, "group_mult": 0.0,
 			"brain": "res://scripts/enemies/brains/looter_brain.gd"},
 	# Враги Шага 4б (Brotato: healer, slasher egg, spawner, gobbler, tree).
@@ -603,9 +605,9 @@ const ENEMIES: Dictionary = {
 			"brain": "res://scripts/enemies/brains/healer_brain.gd"},
 	&"egg": {"hp": 24.0, "damage": 0.0, "speed": 0.0, "xp": 2, "coins": 0, "radius": 6.0, "group_mult": 0.3, "contact": false,
 			"brain": "res://scripts/enemies/brains/egg_brain.gd"},
-	&"mamka": {"hp": 140.0, "damage": 2.0, "speed": 45.0, "xp": 6, "coins": 2, "radius": 12.0, "group_mult": 0.25,
+	&"mamka": {"hp": 140.0, "damage": 1.6, "speed": 45.0, "xp": 6, "coins": 2, "radius": 12.0, "group_mult": 0.25,
 			"brain": "res://scripts/enemies/brains/mamka_brain.gd"},
-	&"glutton": {"hp": 60.0, "damage": 2.0, "speed": 70.0, "xp": 5, "coins": 2, "radius": 8.0, "group_mult": 0.4,
+	&"glutton": {"hp": 60.0, "damage": 1.6, "speed": 70.0, "xp": 5, "coins": 2, "radius": 8.0, "group_mult": 0.4,
 			"brain": "res://scripts/enemies/brains/glutton_brain.gd"},
 	&"trash_bin": {"hp": 40.0, "damage": 0.0, "speed": 0.0, "xp": 6, "coins": 0, "radius": 12.0, "group_mult": 0.0,
 			"contact": false, "neutral": true, "brain": "res://scripts/enemies/brains/bin_brain.gd"},
@@ -627,7 +629,7 @@ const BOSS_MEGA_HAMSTER_SPAWN_SEC: float = 300.0
 const BOSS_MEGA_HAMSTER_SPLIT_COUNT: int = 8  # микробов при смерти
 const HAMSTER_ATTACK_INTERVAL_SEC: float = 2.6   # пауза между атаками (в ярости ×0.65 — на <50% HP)
 const HAMSTER_CAST_SEC: float = 0.5              # замах = один цикл анимации (4 кадра по 8 fps)
-const HAMSTER_SEED_DAMAGE: float = 6.0
+const HAMSTER_SEED_DAMAGE: float = 7.5
 const HAMSTER_SEED_SPEED: float = 130.0
 const HAMSTER_SEED_FAN_DEG: float = 20.0         # веер из пяти семечек
 const HAMSTER_SLAM_SEEDS: int = 12               # ударная волна: кольцо семечек

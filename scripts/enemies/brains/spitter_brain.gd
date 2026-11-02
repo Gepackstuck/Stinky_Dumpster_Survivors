@@ -6,7 +6,6 @@ const NEAR: float = 70.0
 const FAR: float = 110.0
 const SPIT_INTERVAL_SEC: float = 1.5
 const SPIT_SPEED: float = 90.0
-const SPIT_DAMAGE: float = 1.0
 
 var _spit_left: float = 1.0
 var _windup_left: float = 0.0
@@ -25,7 +24,7 @@ func physics_tick(delta: float) -> void:
 		boss.extra_velocity = Vector2.ZERO
 		boss.flash(Color(0.2235, 1.0, 0.0784))
 		if _windup_left <= 0.0:
-			shoot(SPIT, _aim, SPIT_DAMAGE * WaveRules.damage_mult(GameState.wave), SPIT_SPEED, 3.0, 4.0)
+			shoot(SPIT, _aim, Balance.SPITTER_DAMAGE * WaveRules.damage_mult(GameState.wave), SPIT_SPEED, 3.0, 4.0)
 		return
 	var dist: float = distance_to_target()
 	if dist > FAR:
