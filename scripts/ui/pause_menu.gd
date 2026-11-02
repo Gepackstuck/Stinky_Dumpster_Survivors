@@ -150,8 +150,7 @@ func _input(event: InputEvent) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	var key: InputEventKey = event as InputEventKey
-	if key == null or not key.pressed or key.echo or key.keycode != KEY_ESCAPE:
+	if not event.is_action_pressed(&"pause") and not (_root.visible and event.is_action_pressed(&"menu_back")):
 		return
 	get_viewport().set_input_as_handled()
 	if _bestiary != null:

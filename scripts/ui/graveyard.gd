@@ -407,23 +407,24 @@ func _build_panel() -> void:
 		_info_nodes.append(node)
 	_lore = _label("", Vector2(96.0, 170.0), 346.0, WHITE)
 	_lore.visible = false
-	_hint = _label("WASD - ВЫБОР   E - ДОСЬЕ\nПРОБЕЛ - ПОГНАЛИ", Vector2(8.0, 243.0), 200.0, GREY)
+	_hint = _label("", Vector2(8.0, 243.0), 200.0, GREY)
+	_update_hint()
+	InputMode.changed.connect(func(_pad: bool) -> void: _update_hint())
 
 
 func _input(event: InputEvent) -> void:
 	if _leaving:
 		return
-	var key: InputEventKey = event as InputEventKey
-	if key != null and key.pressed and not key.echo and key.keycode == KEY_TAB:
+	if event.is_action_pressed(&"open_book"):
 		get_viewport().set_input_as_handled()
 		_toggle_book()
 		return
-	if key != null and key.pressed and not key.echo and key.keycode == KEY_E and _book == null and _walker == null:
+	if event.is_action_pressed(&"dossier") and _book == null and _walker == null and _picker == null:
 		get_viewport().set_input_as_handled()
 		_dossier = not _dossier
 		_apply_dossier()
 		return
-	if key != null and key.pressed and not key.echo and key.keycode == KEY_ESCAPE:
+	if event.is_action_pressed(&"menu_back"):
 		get_viewport().set_input_as_handled()
 		if _book != null:
 			_toggle_book()
@@ -518,6 +519,10 @@ func _close_picker() -> void:
 	if _picker != null:
 		_picker.queue_free()
 		_picker = null
+
+
+func _update_hint() -> void:
+	_hint.text = InputMode.hint("WASD - ВЫБОР   E - ДОСЬЕ\nПРОБЕЛ - ПОГНАЛИ", "КРЕСТ - ВЫБОР   X - ДОСЬЕ\nA - ПОГНАЛИ   Y - ОРУЖИЕ")
 
 
 func _on_grave_pressed(i: int) -> void:

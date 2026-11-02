@@ -17,9 +17,12 @@ extends CanvasLayer
 @onready var _slot_info: Label = $Root/SlotInfo
 @onready var _backdrop: TextureRect = $Root/Backdrop
 
-const HINT_CARDS: String = "A/D - ВЫБОР   ПРОБЕЛ/E - ВЗЯТЬ   1-4 - БЫСТРО   W - РЕРОЛЛ"
+const HINT_CARDS: String = "A/D - ВЫБОР   ПРОБЕЛ/E - ВЗЯТЬ   1-4 - БЫСТРО   R - РЕРОЛЛ"
 const HINT_START: String = "A/D - ВЫБОР   ПРОБЕЛ/E - ВЗЯТЬ   1-4 - БЫСТРО"
-const HINT_SHOP: String = "A/D - ВЫБОР   ПРОБЕЛ/E - КУПИТЬ   F - ЗАМОРОЗИТЬ   W - РЕРОЛЛ   S - В БОЙ"
+const HINT_SHOP: String = "A/D - ВЫБОР   ПРОБЕЛ - КУПИТЬ   F - ЗАМОРОЗИТЬ   R - РЕРОЛЛ   S - СЛОТЫ/В БОЙ"
+const PAD_CARDS: String = "КРЕСТ - ВЫБОР   A - ВЗЯТЬ   Y - РЕРОЛЛ"
+const PAD_START: String = "КРЕСТ - ВЫБОР   A - ВЗЯТЬ"
+const PAD_SHOP: String = "КРЕСТ - ВЫБОР   A - КУПИТЬ   X - ЗАМОРОЗИТЬ   Y - РЕРОЛЛ   ВНИЗ - СЛОТЫ/В БОЙ"
 
 var _queue: Array[int] = []            # уровни, за которые ещё не выбран стат
 var _stat_offers: Array[Dictionary] = []
@@ -56,6 +59,9 @@ func _ready() -> void:
 	EventBus.wave_ended.connect(_on_wave_ended)
 	EventBus.run_won.connect(func() -> void: _root.hide())
 	EventBus.player_died.connect(_on_player_died)
+	InputMode.changed.connect(func(_pad: bool) -> void:
+		if _root.visible:
+			_refresh_shop())
 	EventBus.item_combo.connect(func(combo_id: StringName) -> void:
 		_refresh_items()
 		_toast("КОМБО! %s. %s" % [ItemLibrary.title(combo_id), ItemLibrary.description(combo_id).replace("\n", ", ")]))
@@ -175,14 +181,12 @@ func _input(event: InputEvent) -> void:
 			_select(_selected)
 		elif _zone == 1 or _zone == 0:
 			_focus_top()
-	elif event is InputEventKey and event.pressed and not event.echo:
-		var code: Key = (event as InputEventKey).physical_keycode
-		if code == KEY_R and not _start_mode:
-			get_viewport().set_input_as_handled()
-			_on_reroll_pressed()
-		elif code == KEY_F and _shop_mode and _zone == 0:
-			get_viewport().set_input_as_handled()
-			_toggle_lock()
+	elif event.is_action_pressed(&"shop_reroll") and not _start_mode:
+		get_viewport().set_input_as_handled()
+		_on_reroll_pressed()
+	elif event.is_action_pressed(&"shop_lock") and _shop_mode and _zone == 0:
+		get_viewport().set_input_as_handled()
+		_toggle_lock()
 	for i: int in _cards.size():
 		if event.is_action_pressed(StringName("pick_card_%d" % (i + 1))) and _cards[i].visible:
 			get_viewport().set_input_as_handled()
@@ -339,7 +343,7 @@ func _refresh_shop() -> void:
 		_backdrop.modulate = BACKDROP_SHOP
 		_counter_base = "ЭТИМ ТЫ БУДЕШЬ УБИВАТЬ"
 		_counter.text = _counter_base
-		_hint.text = HINT_START
+		_hint.text = InputMode.hint(HINT_START, PAD_START)
 		_next_button.hide()
 		_reroll_button.hide()
 		_slots_box.hide()
@@ -364,7 +368,7 @@ func _refresh_shop() -> void:
 			_counter_base = "СОВЕТ: " + advice
 		if GameState.last_clean_bonus > 0:
 			_counter_base = "ЧИСТАЯ ВОЛНА +%d ГОВНА. %s" % [GameState.last_clean_bonus, FlavorText.random_clean()]
-		_hint.text = HINT_SHOP
+		_hint.text = InputMode.hint(HINT_SHOP, PAD_SHOP)
 		_next_button.text = "В БОЙ: ВОЛНА %d%s" % [next_wave, label]
 		_next_button.disabled = false
 	else:
@@ -372,7 +376,7 @@ func _refresh_shop() -> void:
 		_title.add_theme_color_override(&"font_color", Color(1.0, 0.0627, 0.94))
 		_backdrop.modulate = BACKDROP_LEVEL
 		_counter_base = "ВЫБЕРИ УЛУЧШЕНИЕ. ВСЕГО ВЫБОРОВ: %d" % _queue.size()
-		_hint.text = HINT_CARDS
+		_hint.text = InputMode.hint(HINT_CARDS, PAD_CARDS)
 		_next_button.text = "ВОЛНА %d%s" % [next_wave, label]
 		_next_button.disabled = true
 	_counter.text = _counter_base
