@@ -70,3 +70,15 @@ SET_HINT,W/S - СТРОКА   A/D - МЕНЯТЬ   ESC - НАЗАД,W/S - ROW   
 "Выпил «телепортину» и теперь глючит. Прыгает к тебе через фиолетовую дыру. Увидел дыру под ногами - беги, тормоз.","Выпил «телепортину» и теперь глючит. Прыгает к тебе через фиолетовую дыру. Увидел дыру под ногами - беги, тормоз.","Drank ""teleportine"" and now he glitches. Jumps at you through a purple hole. See a hole under your feet - run, dummy."
 "Прикрывается крышкой от бака и лузгает семки. Спереди не пробить, а поворачивается он медленно. Зайди сбоку, если ноги не из задницы.","Прикрывается крышкой от бака и лузгает семки. Спереди не пробить, а поворачивается он медленно. Зайди сбоку, если ноги не из задницы.","Hides behind a trash can lid, cracking seeds. Can't hit him from the front, but he turns slowly. Flank him, if your legs work."
 "Трюмо из бабкиной квартиры, отрастило щупальца. Когда блестит - бить бесполезно, швыряет осколки обратно. Жди, пока помутнеет.","Трюмо из бабкиной квартиры, отрастило щупальца. Когда блестит - бить бесполезно, швыряет осколки обратно. Жди, пока помутнеет.","Granny's old vanity mirror grew tentacles. While it shines, hitting is useless - it throws shards back. Wait till it fogs up."
+ОРУЖИЕ,ОРУЖИЕ,WEAPONS
+ХЛАМ,ХЛАМ,JUNK
+ЗЛОВОННОЕ,ЗЛОВОННОЕ,STINKY
+КОМБО,КОМБО,COMBOS
+МОДИФИКАТОРЫ,МОДИФИКАТОРЫ,MODIFIERS
+Q / E - ВКЛАДКИ   СТРЕЛКИ - ЛИСТАТЬ   TAB / ESC - НАЗАД,Q / E - ВКЛАДКИ   СТРЕЛКИ - ЛИСТАТЬ   TAB / ESC - НАЗАД,Q / E - TABS   ARROWS - BROWSE   TAB / ESC - BACK
+LB / RB - ВКЛАДКИ   B - НАЗАД,LB / RB - ВКЛАДКИ   B - НАЗАД,LB / RB - TABS   B - BACK
+ОТКРЫТО %d / %d,ОТКРЫТО %d / %d,FOUND %d / %d
+КУПИ В ЛАРЬКЕ ИЛИ НАЙДИ В ЗАНАЧКЕ,КУПИ В ЛАРЬКЕ ИЛИ НАЙДИ В ЗАНАЧКЕ,BUY IT AT THE STALL OR FIND IT IN A STASH
+"БЕРИ ЗЛОВОННОЕ В ЛАРЬКЕ, ЕСЛИ НЕ ТРУС","БЕРИ ЗЛОВОННОЕ В ЛАРЬКЕ, ЕСЛИ НЕ ССЫШЬ","BUY STINKY STUFF AT THE STALL, IF YOU DARE"
+"СОБЕРИ ДВА ПРЕДМЕТА, КОТОРЫЕ СЛИПНУТСЯ","СОБЕРИ ДВА ПРЕДМЕТА, КОТОРЫЕ СЛИПНУТСЯ",GET TWO ITEMS THAT STICK TOGETHER
+НАСТУПИ В СВЕТЯЩУЮСЯ КУЧУ,НАСТУПИ В СВЕТЯЩУЮСЯ КУЧУ,STEP INTO THE GLOWING PILE

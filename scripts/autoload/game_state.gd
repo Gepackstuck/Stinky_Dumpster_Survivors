@@ -286,6 +286,7 @@ func item_count(item_id: StringName) -> int:
 ## Положить предмет в рюкзак (+1 штука) и пересчитать статы.
 func add_item(item_id: StringName) -> void:
 	items[item_id] = item_count(item_id) + 1
+	Profile.stat_add(StringName("found_" + String(item_id)), 1)   # книга-коллекция на кладбище
 	var combo: StringName = _try_combo(item_id)
 	if combo != &"":
 		EventBus.item_combo.emit(combo)

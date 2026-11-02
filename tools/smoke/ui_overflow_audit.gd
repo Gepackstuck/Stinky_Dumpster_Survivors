@@ -75,6 +75,16 @@ func _run() -> void:
 	yard.call("_toggle_book")
 	await get_tree().process_frame
 	_check("книга оружия", yard)
+	var book: Node = yard.get("_book")
+	for tab: int in range(1, 5):   # вкладки коллекции, курсор по всем клеткам
+		book.call("_show_tab", tab)
+		await get_tree().process_frame
+		var n: int = (book.get("_grid_ids") as Array).size()
+		for k: int in n:
+			book.set("_cursor", k)
+			book.call("_update_cursor")
+			_check("книга/%d/%d" % [tab, k], book)
+		await get_tree().process_frame
 	yard.call("_toggle_book")
 	await get_tree().process_frame
 	Profile.danger_unlocked = 5
