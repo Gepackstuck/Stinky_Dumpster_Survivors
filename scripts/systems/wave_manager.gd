@@ -189,6 +189,9 @@ func _end_wave() -> void:
 		if pickup != null:
 			pickup.attract(player)
 	await get_tree().create_timer(Balance.WAVE_END_COLLECT_SEC, false).timeout
+	if GameState.run_active and GameState.mode == &"duel" and GameState.wave >= Balance.DUEL_WAVES:
+		EventBus.duel_round_over.emit()   # Н31: раунд пройден
+		return
 	if GameState.run_active:
 		var bonus: int = Balance.WAVE_END_BONUS_XP_BASE + Balance.WAVE_END_BONUS_XP_PER_WAVE * GameState.wave
 		EventBus.xp_collected.emit(bonus)

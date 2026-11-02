@@ -81,3 +81,4 @@ signal roulette_done(mod: StringName)      # рулетка остановила
 signal run_started
 @warning_ignore("unused_signal")
 signal run_ended
+signal duel_round_over                       # Н31: игрок прошёл все волны раунда битвы героев

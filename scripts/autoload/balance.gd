@@ -843,6 +843,7 @@ const GRAFFITI_KEEP: int = 20      # сколько хранится в проф
 const MODE_ENDLESS_ELITE_FROM: int = 6       # бесконечная помойка: элита каждую 3-ю волну с этой
 const CLOSED_WEAPON_EVERY: int = 3           # ларёк закрыт: каждая 3-я волна - оружие в подарок
 const CLOSED_STASH_MULT: float = 3.0         # ларёк закрыт: заначек втрое больше
+const DUEL_WAVES: int = 5                    # битва героев: столько волн в раунде у каждого игрока
 
 # --- Хитрые враги ---
 const BLINKER_INTERVAL_SEC: float = 3.2      # как часто глючный бомж прыгает

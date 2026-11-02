@@ -7,12 +7,13 @@ signal closed
 signal chosen(mode: StringName)
 
 const UI_BUTTONS: GDScript = preload("res://scripts/ui/ui_buttons.gd")
-const MODES: Array[StringName] = [&"seed", &"endless", &"closed"]
-const TITLES: Dictionary = {&"seed": "ШИЗОСИД", &"endless": "БЕСКОНЕЧНАЯ ПОМОЙКА", &"closed": "ЛАРЁК ЗАКРЫТ"}
+const MODES: Array[StringName] = [&"seed", &"endless", &"closed", &"duel"]
+const TITLES: Dictionary = {&"seed": "ШИЗОСИД", &"endless": "БЕСКОНЕЧНАЯ ПОМОЙКА", &"closed": "ЛАРЁК ЗАКРЫТ", &"duel": "БИТВА ГЕРОЕВ"}
 const LINES: Dictionary = {
 	&"seed": "ОДНО СЛОВО - ОДИН И ТОТ ЖЕ ЗАБЕГ. ГОНЯЙСЯ С ДРУГОМ.",
 	&"endless": "БЕЗ КОНЦА. БОСС КАЖДЫЕ 5 ВОЛН. СКОЛЬКО ПРОТЯНЕШЬ, ЛОХ?",
 	&"closed": "ЛАРЬКА НЕТ. ВСЁ ИЗ ЗАНАЧЕК И НАХОДОК ПОСЛЕ ВОЛНЫ.",
+	&"duel": "ДВОЕ ПО ОЧЕРЕДИ, ОДИН СИД, 5 ВОЛН. У КОГО БОЛЬШЕ ТРУПОВ - ТОТ НЕ ЛОХ.",
 }
 
 var _buttons: Array[Button] = []
@@ -29,14 +30,14 @@ func _ready() -> void:
 	box.border_color = Color(0.2235, 1.0, 0.0784)
 	box.set_border_width_all(2)
 	back.add_theme_stylebox_override(&"panel", box)
-	back.position = Vector2(100.0, 64.0)
-	back.size = Vector2(280.0, 150.0)
+	back.position = Vector2(100.0, 56.0)
+	back.size = Vector2(280.0, 170.0)
 	add_child(back)
-	_label(tr("РЕЖИМЫ"), Vector2(100.0, 70.0), Color(0.97, 1.0, 0.0))
+	_label(tr("РЕЖИМЫ"), Vector2(100.0, 62.0), Color(0.97, 1.0, 0.0))
 	for i: int in MODES.size():
 		var b: Button = Button.new()
 		b.text = tr(TITLES[MODES[i]]) + _best(MODES[i])
-		b.position = Vector2(140.0, 86.0 + i * 24.0)
+		b.position = Vector2(140.0, 76.0 + i * 22.0)
 		b.size = Vector2(200.0, 20.0)
 		UI_BUTTONS.skin(b, i + 1)
 		b.pressed.connect(func() -> void: chosen.emit(MODES[i]))
@@ -44,10 +45,10 @@ func _ready() -> void:
 		add_child(b)
 		_buttons.append(b)
 	UI_BUTTONS.add_focus_arrows(_buttons)
-	_line = _label("", Vector2(110.0, 166.0), Color(0.9, 0.9, 0.9))
+	_line = _label("", Vector2(110.0, 168.0), Color(0.9, 0.9, 0.9))
 	_line.size = Vector2(260.0, 10.0)
 	_line.autowrap_mode = TextServer.AUTOWRAP_WORD
-	_label(InputMode.hint(tr("W/S - ВЫБОР   ПРОБЕЛ - ОК   ESC - НАЗАД"), tr("СТРЕЛКИ - ВЫБОР   A - ОК   B - НАЗАД")), Vector2(100.0, 200.0), Color(0.55, 0.55, 0.6))
+	_label(InputMode.hint(tr("W/S - ВЫБОР   ПРОБЕЛ - ОК   ESC - НАЗАД"), tr("СТРЕЛКИ - ВЫБОР   A - ОК   B - НАЗАД")), Vector2(100.0, 210.0), Color(0.55, 0.55, 0.6))
 	_buttons[0].grab_focus()
 
 

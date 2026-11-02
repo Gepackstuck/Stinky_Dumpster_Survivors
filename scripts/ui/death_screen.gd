@@ -167,6 +167,8 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _on_player_died() -> void:
+	if GameState.mode == &"duel":
+		return   # Н31: итог раунда показывает DuelScreen
 	_show_result(FlavorText.random_death(), true)
 
 

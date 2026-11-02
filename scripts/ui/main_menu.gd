@@ -133,6 +133,9 @@ func _open_modes() -> void:
 		GameState.daily = false
 		GameState.seed_word = ""
 		GameState.mode = mode   # героя и опасность - на кладбище, режим включится в reset_run
+		if mode == &"duel":   # Н31: общий сид на оба раунда
+			GameState.duel_scores = []
+			GameState.seed_word = SeedPanel.RANDOM_WORDS[randi() % SeedPanel.RANDOM_WORDS.size()] + str(randi() % 100)
 		SceneFlow.go(GRAVEYARD_SCENE, Vector2.DOWN))
 	add_child(_modes_panel)
 

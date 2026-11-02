@@ -72,6 +72,8 @@ func killed(enemy_id: StringName) -> int:
 
 
 func _record_run(won: bool) -> void:
+	if GameState.mode == &"duel":
+		return   # битва героев - не в статистику
 	if GameState.daily:
 		var key: String = str(GameState.daily_seed)
 		daily_best[key] = maxi(int(daily_best.get(key, 0)), GameState.run_score(won))

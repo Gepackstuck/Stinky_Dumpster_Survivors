@@ -120,3 +120,10 @@ SET_VICTORY,РОЛИК ПОБЕДЫ,VICTORY CUTSCENE
 W/S - ВЫБОР   ПРОБЕЛ - ОК   ESC - НАЗАД,W/S - ВЫБОР   ПРОБЕЛ - ОК   ESC - НАЗАД,W/S - SELECT   SPACE - OK   ESC - BACK
 СТРЕЛКИ - ВЫБОР   A - ОК   B - НАЗАД,СТРЕЛКИ - ВЫБОР   A - ОК   B - НАЗАД,ARROWS - SELECT   A - OK   B - BACK
 НАХОДКА: %s,НАХОДКА: %s,FOUND: %s
+БИТВА ГЕРОЕВ,БИТВА ГЕРОЕВ,HERO BATTLE
+"ИГРОК %d (%s): %d УБИЙСТВ, ВОЛНА %d","ИГРОК %d (%s): %d УБИЙСТВ, ВОЛНА %d","PLAYER %d (%s): %d KILLS, WAVE %d"
+"ИГРОК 2, ТВОЯ ОЧЕРЕДЬ. ТОТ ЖЕ СИД, ВЫБЕРИ СВОЕГО ГЕРОЯ.","ИГРОК 2, ТВОЯ ОЧЕРЕДЬ. ТОТ ЖЕ СИД, ВЫБЕРИ СВОЕГО ГЕРОЯ.","PLAYER 2, YOUR TURN. SAME SEED, PICK YOUR HERO."
+ИГРОК 2 - НА КЛАДБИЩЕ,ИГРОК 2 - НА КЛАДБИЩЕ,PLAYER 2 - TO THE GRAVEYARD
+ПОБЕДИЛ ИГРОК %d. ИГРОК %d - ЛОХ.,ПОБЕДИЛ ИГРОК %d. ИГРОК %d - ЛОХ.,PLAYER %d WINS. PLAYER %d IS A LOSER.
+В МЕНЮ,В МЕНЮ,TO MENU
+"ДВОЕ ПО ОЧЕРЕДИ, ОДИН СИД, 5 ВОЛН. У КОГО БОЛЬШЕ ТРУПОВ - ТОТ НЕ ЛОХ.","ДВОЕ ПО ОЧЕРЕДИ, ОДИН СИД, 5 ВОЛН. У КОГО БОЛЬШЕ ТРУПОВ - ТОТ НЕ ЛОХ.","TWO PLAYERS TAKE TURNS, ONE SEED, 5 WAVES. MOST CORPSES IS NOT THE LOSER."

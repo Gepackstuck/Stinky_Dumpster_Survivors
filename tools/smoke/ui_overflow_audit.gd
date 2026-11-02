@@ -144,6 +144,20 @@ func _run() -> void:
 	for i: int in GameState.weapons.size():
 		lu.call("_update_slot_info", i)
 		_check("ларёк/слот", lu)
+	GameState.mode = &"duel"   # Н31: экраны раундов битвы героев (длинные имена героев)
+	GameState.duel_scores = []
+	for r: int in 2:
+		var ds: DuelScreen = DuelScreen.new()
+		level.add_child(ds)
+		GameState.character = &"uncle_vitya"
+		GameState.kills = 1234
+		GameState.wave = 5
+		ds.call("_on_round_over", true)
+		await get_tree().process_frame
+		_check("битва/%d" % r, ds)
+		ds.queue_free()
+	GameState.mode = &""
+	get_tree().paused = false
 	for kind: StringName in WaveEvent.KINDS:
 		var ev: WaveEvent = WaveEvent.new()
 		lu.add_child(ev)
