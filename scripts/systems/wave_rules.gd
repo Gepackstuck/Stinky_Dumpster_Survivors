@@ -5,6 +5,8 @@ extends RefCounted
 
 
 static func duration_sec(wave: int) -> float:
+	if wave > Balance.WAVE_COUNT:   # бесконечность
+		return Balance.WAVE_DURATION_FINAL_SEC if wave % Balance.ENDLESS_BOSS_EVERY == 0 else Balance.WAVE_DURATION_MAX_SEC
 	if wave >= Balance.WAVE_COUNT:
 		return Balance.WAVE_DURATION_FINAL_SEC
 	return minf(Balance.WAVE_DURATION_FIRST_SEC + (wave - 1) * Balance.WAVE_DURATION_STEP_SEC, Balance.WAVE_DURATION_MAX_SEC)

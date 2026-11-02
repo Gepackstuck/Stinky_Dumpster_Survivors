@@ -42,6 +42,7 @@ var _graph: HpGraph = null
 var _graph_label: Label = null
 var _damage_box: VBoxContainer = null
 var _won: bool = false
+var _endless_button: Button = null
 
 
 func _ready() -> void:
@@ -57,6 +58,17 @@ func _ready() -> void:
 	_graph.position = Vector2(76.0, 151.0)
 	_graph.size = Vector2(158.0, 28.0)
 	_root.add_child(_graph)
+	_endless_button = Button.new()
+	_endless_button.text = "БЕСКОНЕЧНО"
+	_endless_button.position = Vector2(300.0, 184.0)
+	_endless_button.size = Vector2(100.0, 22.0)
+	preload("res://scripts/ui/ui_buttons.gd").skin(_endless_button, 4)
+	_endless_button.visible = false
+	_endless_button.pressed.connect(func() -> void:
+		_won = false
+		_root.hide()
+		EventBus.endless_requested.emit())
+	_root.add_child(_endless_button)
 	_damage_box = VBoxContainer.new()
 	_damage_box.position = Vector2(246.0, 110.0)
 	_damage_box.add_theme_constant_override(&"separation", 1)
@@ -157,6 +169,10 @@ func _show_result(title: String, died: bool = false) -> void:
 	_graph.queue_redraw()
 	_fill_damage()
 	_retry.text = "К ВОРОТАМ" if _won else "ЕЩЁ РАЗ"
+	_endless_button.visible = _won and not GameState.endless
+	if GameState.daily or GameState.endless:
+		var best: int = int(Profile.daily_best.get(str(GameState.daily_seed), 0)) if GameState.daily else Profile.endless_best
+		_stats.text += "   ОЧКИ %d (РЕКОРД %d)" % [GameState.run_score(_won), maxi(best, GameState.run_score(_won))] if GameState.daily else "   РЕКОРД ВОЛНЫ %d" % maxi(best, GameState.wave)
 	_killer_id = &""
 	_killer_sprite.hide()
 	_killer_label.hide()

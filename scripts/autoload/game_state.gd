@@ -35,6 +35,9 @@ var crit_percent: float = 0.0
 var bonus_max_hp: float = 0.0
 var reroll_count: int = 0
 var weapons: Array[Dictionary] = []    # оружие игрока: {id, tier}, до WEAPON_SLOTS штук
+var endless: bool = false            # бесконечный режим после победы
+var daily: bool = false              # ежедневный забег (один сид на всех в этот день)
+var daily_seed: int = 0
 var danger: int = 0                  # уровень опасности забега (Balance.DANGER_LEVELS)
 var character: StringName = &"hobo"   # выбранный на кладбище персонаж (живёт между забегами)
 var run_coins_earned: int = 0
@@ -134,6 +137,9 @@ func reset_run() -> void:
 	_coin_remainder = 0.0
 	wave_damage_taken = 0.0
 	wave_mod = &""
+	endless = false
+	if daily:
+		seed(daily_seed)
 	damage_by_source = {}
 	hp_history.clear()
 	hp_wave_marks.clear()
@@ -399,6 +405,17 @@ func _recompute_perk_stats() -> void:
 func _on_enemy_died(enemy_id: StringName, _position: Vector2) -> void:
 	if not Balance.ENEMIES.get(enemy_id, {}).get("neutral", false):
 		kills += 1
+
+
+## Очки забега (ежедневка, бесконечность): убийства + волны + чистые волны + победа.
+func run_score(won: bool) -> int:
+	return kills + wave * Balance.SCORE_PER_WAVE + clean_waves * Balance.SCORE_PER_CLEAN_WAVE + (Balance.SCORE_WIN if won or endless else 0)
+
+
+## Номер дня для ежедневки (ГГГГММДД).
+static func today_seed() -> int:
+	var d: Dictionary = Time.get_date_dict_from_system()
+	return int(d["year"]) * 10000 + int(d["month"]) * 100 + int(d["day"])
 
 
 ## Урон врагу засчитываем источнику (выставляется прямо перед ударом).

@@ -62,6 +62,8 @@ signal next_wave_requested                 # игрок нажал «Дальш�
 @warning_ignore("unused_signal")
 signal run_won                             # убиты боссы 20-й волны
 @warning_ignore("unused_signal")
+signal endless_requested                   # после победы игрок выбрал «бесконечно»
+@warning_ignore("unused_signal")
 signal run_started
 @warning_ignore("unused_signal")
 signal run_ended

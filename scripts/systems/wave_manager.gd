@@ -24,6 +24,7 @@ var _last_mod: StringName = &""
 
 
 func _ready() -> void:
+	EventBus.endless_requested.connect(_on_endless_requested)
 	_special = WaveRules.roll_special_waves()
 	GameState.special_waves = _special
 	EventBus.next_wave_requested.connect(_on_next_wave_requested)
@@ -35,6 +36,10 @@ func _ready() -> void:
 
 ## Вид волны (normal/elite/horde/boss) — нужен экрану между волнами для превью следующей.
 func wave_kind(wave: int) -> StringName:
+	if wave > Balance.WAVE_COUNT:
+		if wave % Balance.ENDLESS_BOSS_EVERY == 0:
+			return &"boss"
+		return &"elite" if wave % Balance.ENDLESS_ELITE_EVERY == 0 else &"normal"
 	if int(WaveRules.danger_v("early_elite")) == wave:
 		return &"elite"
 	return _special.get(wave, &"normal")
@@ -144,7 +149,10 @@ func _on_enemy_died(enemy_id: StringName, at: Vector2) -> void:
 	if GameState.wave_kind == &"boss" and Balance.FINAL_BOSS_POOL.has(enemy_id):
 		_bosses_alive -= 1
 		if _bosses_alive <= 0 and _bosses_spawned:
-			_win()
+			if GameState.endless:
+				_end_wave()   # в бесконечности боссы - просто веха, идём дальше
+			else:
+				_win()
 
 
 ## Награда за убитую элиту: куча говна и бесплатный предмет (тир растёт с волной).
@@ -183,6 +191,14 @@ func _win() -> void:
 	spawner.clear_all()
 	GameState.run_active = false
 	EventBus.run_won.emit()
+
+
+## Бесконечный режим: после победы продолжаем - сначала Ларёк, потом 16-я волна и дальше.
+func _on_endless_requested() -> void:
+	GameState.endless = true
+	GameState.run_active = true
+	get_tree().paused = false
+	EventBus.wave_ended.emit(GameState.wave)
 
 
 func _on_next_wave_requested() -> void:

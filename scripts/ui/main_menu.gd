@@ -22,6 +22,7 @@ var _bestiary: Control = null
 
 
 var _settings_button: Button = null
+var _daily_button: Button = null
 var _settings: SettingsPanel = null
 
 
@@ -52,19 +53,28 @@ func _ready() -> void:
 	_hero.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	_hero.position = Vector2(SCREEN.x * 0.5, 112.0)
 	add_child(_hero)
-	_start = _button("ПОГНАЛИ", 130.0)
-	_bestiary_button = _button("БЕСТИАРИЙ", 158.0)
-	_settings_button = _button("НАСТРОЙКИ", 186.0)
-	_quit = _button("Я ЛИВАЮ", 214.0)
+	_start = _button("ПОГНАЛИ", 126.0)
+	_daily_button = _button("ЕЖЕДНЕВКА", 150.0)
+	_bestiary_button = _button("БЕСТИАРИЙ", 174.0)
+	_settings_button = _button("НАСТРОЙКИ", 198.0)
+	_quit = _button("Я ЛИВАЮ", 222.0)
+	for b: Button in [_start, _daily_button, _bestiary_button, _settings_button, _quit]:
+		b.size.y = 22.0
+	UI_BUTTONS.skin(_daily_button, 1)
+	_daily_button.pressed.connect(_start_daily)
+	var best: int = int(Profile.daily_best.get(str(GameState.today_seed()), 0))
+	_daily_button.text = "ЕЖЕДНЕВКА" + (" (РЕКОРД %d)" % best if best > 0 else "")
 	UI_BUTTONS.skin(_start, 0)
 	UI_BUTTONS.skin(_bestiary_button, 2)
 	UI_BUTTONS.skin(_settings_button, 3)
 	UI_BUTTONS.skin(_quit, 4)
 	_settings_button.pressed.connect(_open_settings)
 	_bestiary_button.pressed.connect(_open_bestiary)
-	_start.pressed.connect(func() -> void: SceneFlow.go(GRAVEYARD_SCENE, Vector2.DOWN))
+	_start.pressed.connect(func() -> void:
+		GameState.daily = false
+		SceneFlow.go(GRAVEYARD_SCENE, Vector2.DOWN))
 	_quit.pressed.connect(func() -> void: get_tree().quit())
-	UI_BUTTONS.add_focus_arrows([_start, _bestiary_button, _settings_button, _quit])
+	UI_BUTTONS.add_focus_arrows([_start, _daily_button, _bestiary_button, _settings_button, _quit])
 	_start.grab_focus()
 	_title("A/D, W/S - ВЫБОР     ПРОБЕЛ - ОК", 246.0, GREY, Color.BLACK)
 
@@ -91,6 +101,15 @@ func _button(text: String, y: float) -> Button:
 	button.size = Vector2(180.0, 28.0)
 	add_child(button)
 	return button
+
+
+## Ежедневка: герой дня, опасность ГНИЛЬ, один сид на всех - сразу на арену.
+func _start_daily() -> void:
+	GameState.daily = true
+	GameState.daily_seed = GameState.today_seed()
+	GameState.character = Balance.CHARACTER_ORDER[GameState.daily_seed % Balance.CHARACTER_ORDER.size()]
+	GameState.danger = Balance.DAILY_DANGER
+	SceneFlow.go("res://scenes/levels/main.tscn", Vector2.DOWN)
 
 
 func _open_settings() -> void:
@@ -121,7 +140,7 @@ func _input(event: InputEvent) -> void:
 		step = 1
 	if step != 0:
 		get_viewport().set_input_as_handled()
-		var order: Array[Button] = [_start, _bestiary_button, _settings_button, _quit]
+		var order: Array[Button] = [_start, _daily_button, _bestiary_button, _settings_button, _quit]
 		var at: int = 0
 		for i: int in order.size():
 			if order[i].has_focus():

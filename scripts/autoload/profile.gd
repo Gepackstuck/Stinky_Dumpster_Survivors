@@ -12,6 +12,8 @@ var selected: StringName = &"hobo"
 var enemy_kills: Dictionary = {}   # id врага -> сколько убито за всё время (бестиарий)
 var weapons_announced: Array[StringName] = []   # оружие, про которое экран смерти уже объявил «открыто»
 var combos_found: Array[StringName] = []
+var daily_best: Dictionary = {}            # ГГГГММДД -> лучшие очки ежедневки
+var endless_best: int = 0                    # самая дальняя волна в бесконечности
 var danger_unlocked: int = 0                 # максимальный открытый уровень опасности
 var last_danger: int = 0
 var hero_wins: Dictionary = {}               # герой -> Array[int] уровней опасности, на которых он победил (отметки на могиле)   # открытые комбо предметов
@@ -66,6 +68,13 @@ func killed(enemy_id: StringName) -> int:
 
 
 func _record_run(won: bool) -> void:
+	if GameState.daily:
+		var key: String = str(GameState.daily_seed)
+		daily_best[key] = maxi(int(daily_best.get(key, 0)), GameState.run_score(won))
+	if GameState.endless:
+		endless_best = maxi(endless_best, GameState.wave)
+		save()
+		return   # победа уже засчитана, смерть в бесконечности - не смерть забега
 	total_kills += GameState.kills
 	total_coins += GameState.run_coins_earned
 	if won:
@@ -175,6 +184,9 @@ func save() -> void:
 		combos.append(String(id))
 	cfg.set_value("run", "combos_found", combos)
 	cfg.set_value("danger", "unlocked", danger_unlocked)
+	cfg.set_value("modes", "endless_best", endless_best)
+	for key: String in daily_best:
+		cfg.set_value("daily", key, daily_best[key])
 	cfg.set_value("danger", "last", last_danger)
 	for hero: StringName in hero_wins:
 		cfg.set_value("danger_wins", String(hero), hero_wins[hero])
@@ -208,6 +220,10 @@ func _load() -> bool:
 			mod_bag.append(StringName(entry_m))
 	_last_mod = StringName(str(cfg.get_value("run", "last_mod", "")))
 	danger_unlocked = int(cfg.get_value("danger", "unlocked", 0))
+	endless_best = int(cfg.get_value("modes", "endless_best", 0))
+	if cfg.has_section("daily"):
+		for key: String in cfg.get_section_keys("daily"):
+			daily_best[key] = int(cfg.get_value("daily", key, 0))
 	last_danger = int(cfg.get_value("danger", "last", 0))
 	if cfg.has_section("danger_wins"):
 		for key: String in cfg.get_section_keys("danger_wins"):

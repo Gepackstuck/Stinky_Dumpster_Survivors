@@ -223,6 +223,14 @@ const TRUCK_HALF_WIDTH: float = 24.0
 const TRUCK_DAMAGE: float = 6.0                # × сила волны^0.7
 const ICE_ACCEL: float = 3.0                   # чем меньше, тем дольше разгон и торможение
 
+# --- Режимы: бесконечный (после победы) и ежедневка
+const ENDLESS_ELITE_EVERY: int = 3      # после 15-й: каждая 3-я волна - элита
+const ENDLESS_BOSS_EVERY: int = 5       # каждая 5-я - боссы
+const DAILY_DANGER: int = 2
+const SCORE_PER_WAVE: int = 500
+const SCORE_PER_CLEAN_WAVE: int = 300
+const SCORE_WIN: int = 10000
+
 # --- Советчик за хреновый билд (BuildAdvisor)
 const ADVISOR_SLOTS_WAVE: int = 5       # с этой волны пустые слоты - позор
 const ADVISOR_LOW_HP: float = 25.0

@@ -551,6 +551,7 @@ func _choose() -> void:
 	Profile.save()
 	GameState.character = id
 	GameState.danger = _pick_danger if Profile.danger_unlocked > 0 else 0
+	GameState.daily = false
 	Profile.last_danger = GameState.danger
 	_close_picker()
 	_leaving = true
