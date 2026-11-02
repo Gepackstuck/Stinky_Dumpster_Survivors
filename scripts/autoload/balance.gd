@@ -333,6 +333,19 @@ const HERO_DASH: Dictionary = {
 	&"slime": {"name": "ПОЛЗОК", "dist": 60.0, "cd": 1.5, "fx": &"trail"},
 }
 
+# --- Заначка-контейнер: постой рядом STASH_OPEN_SEC под огнём - откроется (предмет или говно)
+const STASH_FROM_WAVE: int = 2
+const STASH_CHANCE: float = 0.3
+const STASH_OPEN_SEC: float = 2.0
+const STASH_RADIUS: float = 20.0
+const STASH_COINS: int = 25                 # если предмета не выпало: + это x номер волны / 3
+# --- Пол пачкается: пятна не исчезают полностью
+const SPLAT_KEEP_ALPHA: float = 0.35
+const SPLAT_KEEP_MAX: int = 140
+# --- Комментатор-бомж
+const COMMENT_GAP_SEC: float = 12.0
+const COMMENT_SHOW_SEC: float = 2.6
+
 # --- Парирование: рывок, когда вражеский снаряд вот-вот попадёт, отбивает его обратно
 const PARRY_RADIUS: float = 24.0
 const PARRY_DAMAGE_MULT: float = 3.0       # отбитый снаряд бьёт втрое сильнее (минимум PARRY_MIN_DAMAGE)

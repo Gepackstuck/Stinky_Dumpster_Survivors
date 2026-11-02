@@ -16,6 +16,7 @@
 [ext_resource type="Script" path="res://scripts/ui/wave_mod_badge.gd" id="14_mod"]
 [ext_resource type="Script" path="res://scripts/ui/pile_pointer.gd" id="15_pile"]
 [ext_resource type="Script" path="res://scripts/ui/ult_meter.gd" id="16_ult"]
+[ext_resource type="Script" path="res://scripts/ui/commentator.gd" id="17_com"]
 
 [node name="Hud" type="CanvasLayer"]
 layer = 5
@@ -170,3 +171,7 @@ offset_top = 18.0
 offset_right = 167.0
 offset_bottom = 29.0
 script = ExtResource("16_ult")
+
+[node name="Commentator" type="Control" parent="Root"]
+layout_mode = 0
+script = ExtResource("17_com")

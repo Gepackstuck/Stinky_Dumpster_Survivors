@@ -64,12 +64,25 @@ func _overlay_rect(shader: Shader, layer: CanvasLayer) -> ColorRect:
 func _on_wave_started(wave: int) -> void:
 	_timer = 1.5
 	_maybe_spawn_pile(wave)
+	_maybe_spawn_stash(wave)
 	var ts: float = WaveRules.mod_f("time_scale", 1.0)
 	if ts != 1.0 and not _scaled:
 		_base_time_scale = Engine.time_scale
 		Engine.time_scale = _base_time_scale * ts
 		_scaled = true
 	_wind_left = 0.0
+
+
+## Заначка-контейнер: иногда посреди волны (Balance.STASH_*).
+func _maybe_spawn_stash(wave: int) -> void:
+	if wave < Balance.STASH_FROM_WAVE or GameState.wave_kind == &"boss" or randf() >= Balance.STASH_CHANCE:
+		return
+	await get_tree().create_timer(WaveRules.duration_sec(wave) * randf_range(0.1, 0.5), false).timeout
+	if not is_inside_tree() or GameState.wave != wave or GameState.wave_time_left <= 0.0:
+		return
+	var stash: StashDumpster = StashDumpster.new()
+	get_tree().current_scene.add_child(stash)
+	stash.global_position = Vector2(randf_range(50.0, Balance.ARENA_SIZE - 50.0), randf_range(50.0, Balance.ARENA_SIZE - 50.0))
 
 
 ## Куча-лотерея: редкая (Balance.PILE_*), не больше 3 за забег, не на боссах; появляется посреди волны вдали от героя.

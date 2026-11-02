@@ -329,7 +329,7 @@ func _leave_splat() -> void:
 	if ground == null:
 		return
 	var splats: Array[Node] = tree.get_nodes_in_group(&"splats")
-	if splats.size() >= Balance.SPLAT_MAX:
+	if splats.size() >= Balance.SPLAT_KEEP_MAX:
 		splats[0].queue_free()
 	var splat: Sprite2D = Sprite2D.new()
 	splat.texture = SPLAT
@@ -343,8 +343,7 @@ func _leave_splat() -> void:
 	splat.global_position = global_position + Vector2(0.0, 4.0)
 	var tw: Tween = splat.create_tween()
 	tw.tween_interval(Balance.SPLAT_FADE_SEC * 0.6)
-	tw.tween_property(splat, "modulate:a", 0.0, Balance.SPLAT_FADE_SEC * 0.4)
-	tw.tween_callback(splat.queue_free)
+	tw.tween_property(splat, "modulate:a", Balance.SPLAT_KEEP_ALPHA, Balance.SPLAT_FADE_SEC * 0.4)   # блёклый след остаётся: арена пачкается за забег
 var _bounce_t: float = 0.0
 
 
