@@ -84,6 +84,25 @@ const LIST: Dictionary = {
 	&"daily_week": ["НЕДЕЛЯ ПОМОЙКИ", "Сыграй ежедневку 7 дней подряд"],
 	&"daily_top": ["ТОП ДНЯ", "Набери 50000 очков в ежедневке"],
 	&"cursed_all": ["ЗЛОВОННЫЙ ДО КОСТЕЙ", "Собери все зловонные предметы за забег"],
+	# шуточные - по одной на героя
+	&"joke_hobo": ["БЕСПЛАТНЫЙ СЫР", "Победи Васей, потратив меньше 100 говна"],
+	&"joke_squid": ["ЧЕРНИЛЬНЫЙ ДЕНЬ", "Убей 500 врагов за забег Кальмаром"],
+	&"joke_clerk": ["ПЕРЕРАБОТКА", "Дойди Планктоном до 15-й волны с 6 оружиями"],
+	&"joke_janitor": ["ЧИСТЮЛЯ", "10 чистых волн за забег Палычем"],
+	&"joke_uncle_vitya": ["ПЕРЕБРАЛ", "Сдохни дядей Витей ровно на 5-й волне"],
+	&"joke_blogger": ["МИЛЛИОН ПРОСМОТРОВ", "Держи 500 говна Блогером"],
+	&"joke_granny": ["А ВОТ В МОЁ ВРЕМЯ", "Победи Бабкой на опасности ТРУПНЯК или выше"],
+	&"joke_courier": ["ДОСТАВКА БЕЗ ЦАРАПИН", "5 чистых волн за забег Курьером"],
+	&"joke_punk": ["СИСТЕМА ПАЛА", "Победи Панком"],
+	&"joke_shawarma": ["С ОСТРЫМ", "Убей 400 врагов за забег Эдиком"],
+	&"joke_guard": ["ЗАСНУЛ НА ПОСТУ", "Сдохни Санычем, простояв перед этим 10 секунд"],
+	&"joke_student": ["ОТЧИСЛЕН", "Сдохни Студентом на первой волне"],
+	&"joke_plumber": ["ПРОЧИСТИЛ", "Победи Валерой"],
+	&"joke_dacha": ["УРОЖАЙ", "Набери 15 предметов тётей Зиной"],
+	&"joke_skater": ["ВЕЧНЫЙ ПАДАЛЬЩИК", "100 рывков за забег Скейтером"],
+	&"joke_slime": ["ЧЛЮП-ЧЛЮП", "Победи Гришей"],
+	&"joke_gopnik_jock": ["С РАЙОНА", "Убей 600 врагов за забег Жорой"],
+	&"joke_cat": ["ДЕВЯТАЯ ЖИЗНЬ", "Победи Котом с последней жизнью"],
 	&"medals_hero": ["ЗОЛОТОЙ УНИТАЗ", "Собери все 6 медалей одного героя, до золотого унитаза"],
 }
 
@@ -92,6 +111,7 @@ var _layer: CanvasLayer = null
 var _toast: Control = null
 var _toast_label: Label = null
 var _dashes: int = 0
+var _run_dashes: int = 0   # рывков за этот забег (шуточная ачивка скейтера)
 var _boss_hit: Dictionary = {}     # босс -> бил ли он героя (ачивки «без урона»)
 var _wave_mod: StringName = &""
 var _bumps: int = 0
@@ -125,7 +145,10 @@ func _ready() -> void:
 		_wave_mod = GameState.wave_mod
 		if _wave_mod == &"pigeon_raid" and GameState.character == &"pigeon":
 			unlock(&"pigeon_vs_pigeons"))
-	EventBus.run_started.connect(func() -> void: _boss_hit.clear())
+	EventBus.run_started.connect(func() -> void:
+		_boss_hit.clear()
+		_run_dashes = 0)
+	EventBus.dash_used.connect(func(_at: Vector2) -> void: _run_dashes += 1)
 	EventBus.dash_used.connect(func(_at: Vector2) -> void:
 		Profile.stat_add(&"dashes", 1)
 		if Profile.stat(&"dashes") >= 1000:
@@ -251,7 +274,35 @@ func _check_weapons() -> void:
 			unlock(&"set_6")
 
 
+## Шуточные ачивки героев: проверка в конце забега.
+func _hero_jokes(won: bool) -> void:
+	var h: StringName = GameState.character
+	var items_n: int = 0
+	for id: StringName in GameState.items:
+		items_n += GameState.items[id]
+	match h:
+		&"hobo": if won and GameState.run_spent < 100: unlock(&"joke_hobo")
+		&"squid": if GameState.kills >= 500: unlock(&"joke_squid")
+		&"clerk": if GameState.wave >= 15 and GameState.weapons.size() >= 6: unlock(&"joke_clerk")
+		&"janitor": if GameState.clean_waves >= 10: unlock(&"joke_janitor")
+		&"uncle_vitya": if not won and GameState.wave == 5: unlock(&"joke_uncle_vitya")
+		&"blogger": if GameState.coins >= 500: unlock(&"joke_blogger")
+		&"granny": if won and GameState.danger >= 3: unlock(&"joke_granny")
+		&"courier": if GameState.clean_waves >= 5: unlock(&"joke_courier")
+		&"punk": if won: unlock(&"joke_punk")
+		&"shawarma": if GameState.kills >= 400: unlock(&"joke_shawarma")
+		&"guard": if not won and GameState.still_sec >= 10.0: unlock(&"joke_guard")
+		&"student": if not won and GameState.wave <= 1: unlock(&"joke_student")
+		&"plumber": if won: unlock(&"joke_plumber")
+		&"dacha": if items_n >= 15: unlock(&"joke_dacha")
+		&"skater": if _run_dashes >= 100: unlock(&"joke_skater")
+		&"slime": if won: unlock(&"joke_slime")
+		&"gopnik_jock": if GameState.kills >= 600: unlock(&"joke_gopnik_jock")
+		&"cat": if won and GameState.hp <= 1.0: unlock(&"joke_cat")
+
+
 func _on_run_end(won: bool) -> void:
+	_hero_jokes(won)
 	if GameState.endless:
 		return
 	var p: Node = Profile
