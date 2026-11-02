@@ -26,23 +26,23 @@ func _ready() -> void:
 	back.size = Vector2(260.0, 170.0)
 	add_child(back)
 	var title: Label = Label.new()
-	title.text = "НАСТРОЙКИ"
+	title.text = tr("SET_TITLE")
 	title.position = Vector2(110.0, 58.0)
 	title.size = Vector2(260.0, 12.0)
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.add_theme_color_override(&"font_color", YELLOW)
 	add_child(title)
-	for i: int in 5:
+	for i: int in 6:
 		var b: Button = Button.new()
-		b.position = Vector2(140.0, 80.0 + i * 24.0)
-		b.size = Vector2(200.0, 20.0)
+		b.position = Vector2(140.0, 76.0 + i * 21.0)
+		b.size = Vector2(200.0, 18.0)
 		UI_BUTTONS.skin(b, i)
 		b.pressed.connect(_on_press.bind(i))
 		add_child(b)
 		_rows.append(b)
 	UI_BUTTONS.add_focus_arrows(_rows)
 	var hint: Label = Label.new()
-	hint.text = InputMode.hint("W/S - СТРОКА   A/D - МЕНЯТЬ   ESC - НАЗАД", "КРЕСТ - СТРОКА/МЕНЯТЬ   B - НАЗАД")
+	hint.text = InputMode.hint(tr("SET_HINT"), "D-PAD / B")
 	hint.position = Vector2(110.0, 204.0)
 	hint.size = Vector2(260.0, 10.0)
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -53,11 +53,12 @@ func _ready() -> void:
 
 
 func _refresh() -> void:
-	_rows[0].text = "ЗВУКИ:  -  %d%%  +" % roundi(Settings.sfx_volume * 100.0)
-	_rows[1].text = "МУЗЫКА:  -  %d%%  +" % roundi(Settings.music_volume * 100.0)
-	_rows[2].text = "ПОЛНЫЙ ЭКРАН: %s" % ("ДА" if Settings.fullscreen else "НЕТ")
-	_rows[3].text = "ТРЯСКА ЭКРАНА: %s" % ("ДА" if Settings.screen_shake else "НЕТ")
-	_rows[4].text = "НАЗАД"
+	_rows[0].text = "%s:  -  %d%%  +" % [tr("SET_SFX"), roundi(Settings.sfx_volume * 100.0)]
+	_rows[1].text = "%s:  -  %d%%  +" % [tr("SET_MUSIC"), roundi(Settings.music_volume * 100.0)]
+	_rows[2].text = "%s: %s" % [tr("SET_FULLSCREEN"), tr("SET_YES") if Settings.fullscreen else tr("SET_NO")]
+	_rows[3].text = "%s: %s" % [tr("SET_SHAKE"), tr("SET_YES") if Settings.screen_shake else tr("SET_NO")]
+	_rows[4].text = "%s: %s" % [tr("SET_LANGUAGE"), Settings.language.to_upper()]
+	_rows[5].text = tr("SET_BACK")
 
 
 func _focused() -> int:
@@ -78,12 +79,15 @@ func _change(row: int, dir: int) -> void:
 			Settings.fullscreen = not Settings.fullscreen
 		3:
 			Settings.screen_shake = not Settings.screen_shake
+		4:
+			var at: int = Settings.LANGUAGES.find(Settings.language)
+			Settings.language = Settings.LANGUAGES[posmod(at + (dir if dir != 0 else 1), Settings.LANGUAGES.size())]
 	Settings.save()
 	_refresh()
 
 
 func _on_press(row: int) -> void:
-	if row == 4:
+	if row == 5:
 		closed.emit()
 	else:
 		_change(row, 1 if row < 2 else 0)
@@ -100,9 +104,9 @@ func _input(event: InputEvent) -> void:
 	elif event.is_action_pressed(&"move_down") or event.is_action_pressed(&"ui_down"):
 		get_viewport().set_input_as_handled()
 		_rows[posmod(row + 1, _rows.size())].grab_focus()
-	elif (event.is_action_pressed(&"move_left") or event.is_action_pressed(&"ui_left")) and row < 4:
+	elif (event.is_action_pressed(&"move_left") or event.is_action_pressed(&"ui_left")) and row < 5:
 		get_viewport().set_input_as_handled()
 		_change(row, -1)
-	elif (event.is_action_pressed(&"move_right") or event.is_action_pressed(&"ui_right")) and row < 4:
+	elif (event.is_action_pressed(&"move_right") or event.is_action_pressed(&"ui_right")) and row < 5:
 		get_viewport().set_input_as_handled()
 		_change(row, 1)

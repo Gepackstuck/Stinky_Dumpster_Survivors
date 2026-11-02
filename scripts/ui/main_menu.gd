@@ -43,7 +43,7 @@ func _ready() -> void:
 	add_child(ground)
 	_title("ПОМОЙКА", 26.0, YELLOW, PINK)
 	_title("SURVIVORS", 44.0, GREEN, Color.BLACK)
-	_title("ВЫЖИВАЙ. ВОНЯЙ. ПОВТОРЯЙ.", 66.0, GREY, Color.BLACK)
+	_title(tr("MENU_TAGLINE"), 66.0, GREY, Color.BLACK)
 	_hero = Sprite2D.new()
 	_hero.texture = PLAYER_TEX
 	_hero.hframes = 4
@@ -53,17 +53,17 @@ func _ready() -> void:
 	_hero.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	_hero.position = Vector2(SCREEN.x * 0.5, 112.0)
 	add_child(_hero)
-	_start = _button("ПОГНАЛИ", 126.0)
-	_daily_button = _button("ЕЖЕДНЕВКА", 150.0)
-	_bestiary_button = _button("БЕСТИАРИЙ", 174.0)
-	_settings_button = _button("НАСТРОЙКИ", 198.0)
-	_quit = _button("Я ЛИВАЮ", 222.0)
+	_start = _button(tr("MENU_PLAY"), 126.0)
+	_daily_button = _button(tr("MENU_DAILY"), 150.0)
+	_bestiary_button = _button(tr("MENU_BESTIARY"), 174.0)
+	_settings_button = _button(tr("MENU_SETTINGS"), 198.0)
+	_quit = _button(tr("MENU_QUIT"), 222.0)
 	for b: Button in [_start, _daily_button, _bestiary_button, _settings_button, _quit]:
 		b.size.y = 22.0
 	UI_BUTTONS.skin(_daily_button, 1)
 	_daily_button.pressed.connect(_start_daily)
 	var best: int = int(Profile.daily_best.get(str(GameState.today_seed()), 0))
-	_daily_button.text = "ЕЖЕДНЕВКА" + (" (РЕКОРД %d)" % best if best > 0 else "")
+	_daily_button.text = tr("MENU_DAILY") + (" (%d)" % best if best > 0 else "")
 	UI_BUTTONS.skin(_start, 0)
 	UI_BUTTONS.skin(_bestiary_button, 2)
 	UI_BUTTONS.skin(_settings_button, 3)
@@ -76,7 +76,7 @@ func _ready() -> void:
 	_quit.pressed.connect(func() -> void: get_tree().quit())
 	UI_BUTTONS.add_focus_arrows([_start, _daily_button, _bestiary_button, _settings_button, _quit])
 	_start.grab_focus()
-	_title("A/D, W/S - ВЫБОР     ПРОБЕЛ - ОК", 246.0, GREY, Color.BLACK)
+	_title(tr("MENU_HINT"), 246.0, GREY, Color.BLACK)
 
 
 func _title(text: String, y: float, color: Color, shadow: Color) -> Label:

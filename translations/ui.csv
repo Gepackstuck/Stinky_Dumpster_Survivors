@@ -1,0 +1,23 @@
+keys,ru,en
+MENU_PLAY,ПОГНАЛИ,LET'S GO
+MENU_DAILY,ЕЖЕДНЕВКА,DAILY DUMP
+MENU_BESTIARY,БЕСТИАРИЙ,BESTIARY
+MENU_SETTINGS,НАСТРОЙКИ,SETTINGS
+MENU_QUIT,Я ЛИВАЮ,I'M OUT
+MENU_TAGLINE,ВЫЖИВАЙ. ВОНЯЙ. ПОВТОРЯЙ.,SURVIVE. STINK. REPEAT.
+MENU_HINT,"A/D, W/S - ВЫБОР     ПРОБЕЛ - ОК","A/D, W/S - SELECT     SPACE - OK"
+PAUSE_RESUME,ПРОДОЛЖИТЬ,KEEP ROTTING
+PAUSE_INVENTORY,ХЛАМ И СТАТЫ,JUNK & STATS
+PAUSE_RESTART,НАЧАТЬ ЗАНОВО,START OVER
+PAUSE_TO_MENU,В ГЛАВНОЕ МЕНЮ,MAIN MENU
+PAUSE_QUIT,! ВАЛИТЬ ОТСЮДА !,! GET ME OUT !
+SET_TITLE,НАСТРОЙКИ,SETTINGS
+SET_SFX,ЗВУКИ,SOUNDS
+SET_MUSIC,МУЗЫКА,MUSIC
+SET_FULLSCREEN,ПОЛНЫЙ ЭКРАН,FULLSCREEN
+SET_SHAKE,ТРЯСКА ЭКРАНА,SCREEN SHAKE
+SET_LANGUAGE,ЯЗЫК,LANGUAGE
+SET_BACK,НАЗАД,BACK
+SET_YES,ДА,YEP
+SET_NO,НЕТ,NOPE
+SET_HINT,W/S - СТРОКА   A/D - МЕНЯТЬ   ESC - НАЗАД,W/S - ROW   A/D - CHANGE   ESC - BACK

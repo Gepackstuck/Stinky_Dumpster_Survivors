@@ -54,7 +54,7 @@ func _build_menu_button() -> void:
 	_bestiary_button.pressed.connect(_open_bestiary)
 	var order: Array[Button] = [_resume, _inventory_button, _bestiary_button, _restart, null, _quit]
 	_menu_button = Button.new()
-	_menu_button.text = "В ГЛАВНОЕ МЕНЮ"
+	_menu_button.text = tr("PAUSE_TO_MENU")
 	_menu_button.size = _quit.size
 	var skinned: Array[Button] = [_resume, _inventory_button, _bestiary_button, _restart, _menu_button, _quit]
 	for i: int in skinned.size():
@@ -65,13 +65,16 @@ func _build_menu_button() -> void:
 		order[i].position = Vector2(order[i].position.x if i != 4 and i != 2 else _quit.position.x, ys[i])
 		order[i].size.y = 16.0
 	_menu_button.pressed.connect(func() -> void: _ask("ТОЧНО В МЕНЮ?\nВЕСЬ ПРОГРЕСС ЗАБЕГА\nПРОПАДЁТ.", "ДА, ПРОПАДАЙ", func() -> void: SceneFlow.go("res://scenes/ui/main_menu.tscn", Vector2.UP)))
-	_quit.text = "! ВАЛИТЬ ОТСЮДА !"
+	_quit.text = tr("PAUSE_QUIT")
+	_resume.text = tr("PAUSE_RESUME")
+	_inventory_button.text = tr("PAUSE_INVENTORY")
+	_restart.text = tr("PAUSE_RESTART")
 	_quit.add_theme_color_override(&"font_color", Color(1.0, 0.1, 0.2))
 	_quit.add_theme_color_override(&"font_hover_color", Color(1.0, 0.1, 0.2))
 	_quit.add_theme_color_override(&"font_focus_color", Color(1.0, 1.0, 1.0))
 	UI_BUTTONS.skin_danger(_quit)
 	_settings_button = Button.new()
-	_settings_button.text = "НАСТРОЙКИ"
+	_settings_button.text = tr("MENU_SETTINGS")
 	_settings_button.size = Vector2(_quit.size.x, 16.0)
 	_settings_button.position = Vector2(_quit.position.x, 175.0)
 	UI_BUTTONS.skin(_settings_button, 3)

@@ -175,3 +175,8 @@ rendering_device/driver.windows="d3d12"
 environment/defaults/default_clear_color=Color(0.0392157, 0.0392157, 0.0392157, 1)
 2d/snap/snap_2d_transforms_to_pixel=true
 2d/snap/snap_2d_vertices_to_pixel=true
+
+[internationalization]
+
+locale/translations=PackedStringArray("res://translations/ui.ru.translation", "res://translations/ui.en.translation")
+locale/fallback="ru"
