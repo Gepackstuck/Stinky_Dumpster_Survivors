@@ -333,6 +333,15 @@ const HERO_DASH: Dictionary = {
 	&"slime": {"name": "ПОЛЗОК", "dist": 60.0, "cd": 1.5, "fx": &"trail"},
 }
 
+# --- События между волнами (WaveEvent) и пари
+const EVENT_FROM_WAVE: int = 3
+const EVENT_CHANCE: float = 0.25
+const EVENT_FORTUNE_PRICE: int = 15
+const EVENT_BRIBE_FRACTION: float = 0.15
+const EVENT_COP_TAKE: float = 0.3
+const EVENT_BET_STAKE: int = 15
+const BET_WIN_MULT: int = 3
+
 # --- Заначка-контейнер: постой рядом STASH_OPEN_SEC под огнём - откроется (предмет или говно)
 const STASH_FROM_WAVE: int = 2
 const STASH_CHANCE: float = 0.3

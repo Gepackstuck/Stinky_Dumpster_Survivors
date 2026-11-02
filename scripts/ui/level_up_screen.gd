@@ -271,7 +271,18 @@ func _on_leveled_up(new_level: int) -> void:
 func _on_wave_ended(_wave: int) -> void:
 	GameState.reroll_count = 0
 	GameState.shop_offers = ShopLibrary.fill_offers(GameState.shop_offers, GameState.wave + 1)
+	var kind: StringName = WaveEvent.roll()
+	if kind != &"":   # событие между волнами: сначала выбор, потом Ларёк
+		get_tree().paused = true
+		var ev: WaveEvent = WaveEvent.new()
+		ev.process_mode = Node.PROCESS_MODE_ALWAYS
+		_root.get_parent().add_child(ev)
+		ev.setup(kind)
+		await ev.done
 	_show_choices()
+	if GameState.last_bet_result != 0:
+		_toast("ПАРИ ВЫИГРАНО! +ГОВНО И ПРЕДМЕТ" if GameState.last_bet_result > 0 else "ПАРИ ПРОДУЛ. ТАК ТЕБЕ И НАДО")
+		GameState.last_bet_result = 0
 
 
 ## В начале забега: выбор стартового оружия из 4.

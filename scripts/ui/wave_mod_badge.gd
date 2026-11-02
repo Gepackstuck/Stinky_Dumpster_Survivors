@@ -25,7 +25,19 @@ func _ready() -> void:
 
 func _refresh() -> void:
 	var mod: StringName = GameState.wave_mod
-	visible = mod != &""
-	if visible:
+	var bet: String = _bet_text()
+	visible = mod != &"" or bet != ""
+	_icon.visible = mod != &""
+	if mod != &"":
 		_icon.texture = load("res://assets/ui/mod_%s_s.png" % mod) as Texture2D
-		_label.text = Balance.WAVE_MOD_DATA[mod]["title"]
+	_label.text = (Balance.WAVE_MOD_DATA[mod]["title"] if mod != &"" else "") + ("   " if mod != &"" and bet != "" else "") + bet
+
+
+func _bet_text() -> String:
+	if GameState.active_bet.is_empty():
+		return ""
+	match StringName(GameState.active_bet["kind"]):
+		&"no_dash": return "ПАРИ: БЕЗ РЫВКОВ"
+		&"kills": return "ПАРИ: %d УБИЙСТВ" % int(GameState.active_bet["kills"])
+		&"few_hits": return "ПАРИ: <= 3 УДАРОВ"
+		_: return "ПАРИ: ПОЛОВИНА ХП"

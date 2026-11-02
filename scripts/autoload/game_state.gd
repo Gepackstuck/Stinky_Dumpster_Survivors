@@ -89,6 +89,9 @@ var damage_by_source: Dictionary = {}  # источник -> нанесённы�
 var hp_history: Array[float] = []     # доля ХП раз в секунду боя (график на экране итога)
 var hp_wave_marks: Array[int] = []    # индексы hp_history, где началась волна
 var wind: Vector2 = Vector2.ZERO     # снос героя ветром (модификатор волны)
+var forced_pile: bool = false
+var last_bet_result: int = 0          # 1 выиграл пари, -1 проиграл, 0 не спорил (для Ларька)        # гадалка: на следующей волне куча точно будет
+var active_bet: Dictionary = {}       # пари на текущую волну (WaveEvent): kind, stake, ...
 var piles_this_run: int = 0          # сколько куч-лотерей появилось за забег (макс Balance.PILE_MAX_PER_RUN)
 var roulette_pending: bool = false   # вступил в кучу: перед следующей волной крутим рулетку
 var pending_mod: StringName = &""     # что выпало на рулетке (станет wave_mod следующей волны)
@@ -108,6 +111,10 @@ func _ready() -> void:
 	EventBus.xp_collected.connect(_on_xp_collected)
 	EventBus.weapons_changed.connect(_recompute_perk_stats)
 	EventBus.player_hit.connect(_on_player_hit)
+	EventBus.dash_used.connect(func(_at: Vector2) -> void:
+		if not active_bet.is_empty():
+			active_bet["dashes"] = int(active_bet["dashes"]) + 1)
+	EventBus.wave_ended.connect(_settle_bet)
 	EventBus.wave_started.connect(func(_w: int) -> void:
 		wave_damage_taken = 0.0
 		hp_wave_marks.append(hp_history.size()))
@@ -141,6 +148,8 @@ func reset_run() -> void:
 	wave_damage_taken = 0.0
 	wave_mod = &""
 	piles_this_run = 0
+	forced_pile = false
+	active_bet = {}
 	roulette_pending = false
 	pending_mod = &""
 	endless = false
@@ -448,7 +457,28 @@ func streak_bonus() -> float:
 	return 0.0 if streak_tier == 0 else float(Balance.NOHIT_STREAK_TIERS[streak_tier - 1][1])
 
 
+## Пари: проверяем в конце волны, на которую спорили.
+func _settle_bet(_w: int) -> void:
+	if active_bet.is_empty() or not run_active:
+		return
+	var won: bool = false
+	match StringName(active_bet["kind"]):
+		&"no_dash": won = int(active_bet["dashes"]) == 0
+		&"kills": won = kills - int(active_bet["kills0"]) >= int(active_bet["kills"])
+		&"few_hits": won = int(active_bet["hits"]) <= 3
+		&"half_hp": won = hp >= max_hp * 0.5
+	if won:
+		coins += int(active_bet["stake"]) * Balance.BET_WIN_MULT
+		var item: StringName = ItemLibrary.roll_free_item(wave)
+		if item != &"":
+			add_item(item)
+	last_bet_result = 1 if won else -1
+	active_bet = {}
+
+
 func _on_player_hit(damage: float) -> void:
+	if not active_bet.is_empty():
+		active_bet["hits"] = int(active_bet["hits"]) + 1
 	wave_damage_taken += damage
 	var had: int = streak_tier
 	nohit_sec = 0.0

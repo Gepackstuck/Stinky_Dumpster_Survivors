@@ -89,8 +89,9 @@ func _maybe_spawn_stash(wave: int) -> void:
 func _maybe_spawn_pile(wave: int) -> void:
 	if wave < Balance.PILE_FROM_WAVE or GameState.wave_kind == &"boss" or GameState.piles_this_run >= Balance.PILE_MAX_PER_RUN:
 		return
-	if randf() >= Balance.PILE_CHANCE:
+	if randf() >= Balance.PILE_CHANCE and not GameState.forced_pile:
 		return
+	GameState.forced_pile = false
 	GameState.piles_this_run += 1
 	var delay: float = WaveRules.duration_sec(wave) * randf_range(Balance.PILE_APPEAR_FRACTION.x, Balance.PILE_APPEAR_FRACTION.y)
 	await get_tree().create_timer(delay, false).timeout

@@ -28,3 +28,5 @@ _proj_src.tar
 
 # Бот-ферма: результаты прогонов
 tools/_bot_runs/
+tools/_wt/
+tools/_venv/

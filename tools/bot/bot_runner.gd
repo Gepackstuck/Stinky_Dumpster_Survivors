@@ -610,6 +610,10 @@ func _want_range() -> float:
 func _process(_delta: float) -> void:
 	if not _running or _ui == null or not is_instance_valid(_ui):
 		return
+	var ev: Node = get_tree().get_first_node_in_group(&"wave_event")
+	if ev != null and is_instance_valid(ev) and not ev.is_queued_for_deletion():
+		ev.call(&"choose", 0 if randf() < 0.5 else 1)   # события: пока наугад
+		return
 	var root: Control = _ui.get("_root")
 	if not root.visible:
 		_shop_actions = 0
