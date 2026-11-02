@@ -13,6 +13,8 @@ const HELD_WEAPON: GDScript = preload("res://scripts/weapons/held_weapon.gd")
 @onready var _hurtbox: HurtboxComponent = $Hurtbox
 @onready var _magnet: Area2D = $Magnet
 @onready var _magnet_collision: CollisionShape2D = $Magnet/CollisionShape2D
+@onready var _dash: DashComponent = $Dash
+var _facing: Vector2 = Vector2.RIGHT
 
 var _arena_max: Vector2 = Vector2.ZERO
 var _regen_timer: float = 0.0
@@ -53,7 +55,11 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	var direction: Vector2 = Input.get_vector(&"move_left", &"move_right", &"move_up", &"move_down")
-	velocity = direction * Balance.PLAYER_MOVE_SPEED * GameState.move_speed_mult
+	if direction != Vector2.ZERO:
+		_facing = direction
+	if Input.is_action_just_pressed(&"dash"):
+		_dash.try_dash(direction, _facing)
+	velocity = _dash.dash_velocity() if _dash.is_dashing() else direction * Balance.PLAYER_MOVE_SPEED * GameState.move_speed_mult
 	if direction.x != 0.0:
 		_sprite.flip_h = direction.x > 0.0
 	_animator.active = direction != Vector2.ZERO

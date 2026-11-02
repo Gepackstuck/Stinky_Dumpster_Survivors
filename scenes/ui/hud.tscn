@@ -11,6 +11,7 @@
 
 [ext_resource type="Script" path="res://scripts/ui/enemy_pointer.gd" id="7_ptr"]
 [ext_resource type="PackedScene" path="res://scenes/ui/weapon_panel.tscn" id="11_wpanel"]
+[ext_resource type="PackedScene" path="res://scenes/ui/dash_meter.tscn" id="12_dash"]
 
 [node name="Hud" type="CanvasLayer"]
 layer = 5
@@ -132,3 +133,9 @@ offset_left = 350.0
 offset_top = 4.0
 offset_right = 475.0
 offset_bottom = 29.0
+
+[node name="DashMeter" parent="Root" instance=ExtResource("12_dash")]
+offset_left = 154.0
+offset_top = 4.0
+offset_right = 184.0
+offset_bottom = 16.0

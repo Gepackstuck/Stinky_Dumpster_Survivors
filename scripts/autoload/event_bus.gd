@@ -13,6 +13,11 @@ signal player_leveled_up(new_level: int)
 @warning_ignore("unused_signal")
 signal perk_chosen(perk_id: StringName)
 
+@warning_ignore("unused_signal")
+signal dash_state(charges: int, max_charges: int, recharge: float)   # рывок: заряды и прогресс перезарядки 0..1
+@warning_ignore("unused_signal")
+signal dash_used(at: Vector2)
+
 # --- Враги ---
 @warning_ignore("unused_signal")
 signal enemy_died(enemy_id: StringName, position: Vector2)

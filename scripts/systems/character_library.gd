@@ -96,6 +96,32 @@ static func weapon_line(id: StringName) -> String:
 	return "СТАРТ: %s" % PerkLibrary.title(StringName("w_" + String(weapon)))
 
 
+const _DASH_FX_TEXT: Dictionary = {
+	&"slow": "ТОРМОЗИТ ВРАГОВ РЯДОМ", &"sweep": "БЬЁТ ВСЕХ ПО ПУТИ", &"knock": "РАСПИХИВАЕТ ВСЕХ ВОКРУГ",
+	&"trail": "СКОЛЬЗКИЙ СЛЕД ТОРМОЗИТ", &"blink": "ТЕЛЕПОРТ", &"drunk": "КРИВОЙ, НО ДОЛЬШЕ НЕУЯЗВИМ",
+	&"heal": "+1 ХП ЗА РЫВОК", &"fly": "ПЕРЕЛЁТ, НЕУЯЗВИМ В ВОЗДУХЕ",
+}
+
+
+## Рывок героя одной строкой: «РЫВОК: ОЛЛИ, 2 ЗАРЯДА, ДАЛЕКО».
+static func dash_line(id: StringName) -> String:
+	var p: Dictionary = DashComponent.profile(id)
+	var parts: Array[String] = ["РЫВОК: " + String(p.get("name", "РЫВОК"))]
+	if int(p["charges"]) > 1:
+		parts.append("%d ЗАРЯДА" % int(p["charges"]))
+	if float(p["dist"]) >= 85.0:
+		parts.append("ДАЛЕКО")
+	elif float(p["dist"]) <= 50.0:
+		parts.append("КОРОТКИЙ")
+	if float(p["cd"]) <= 1.2:
+		parts.append("ЧАСТО")
+	elif float(p["cd"]) >= 2.2:
+		parts.append("РЕДКО")
+	if _DASH_FX_TEXT.has(p["fx"]):
+		parts.append(_DASH_FX_TEXT[p["fx"]])
+	return ", ".join(parts)
+
+
 ## Плюсы и минусы построчно (как у предметов).
 static func stat_lines(id: StringName) -> PackedStringArray:
 	return ItemLibrary.describe(Balance.CHARACTERS[id]).split("\n", false)

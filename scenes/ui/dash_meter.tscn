@@ -1,0 +1,11 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/dash_meter.gd" id="1_dash"]
+
+[node name="DashMeter" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 30.0
+offset_bottom = 12.0
+mouse_filter = 2
+script = ExtResource("1_dash")

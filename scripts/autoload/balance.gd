@@ -98,6 +98,39 @@ const ZAKHAR_ATTACK_INTERVAL_SEC: float = 2.2   # пауза между атак
 const ZAKHAR_CARROT_DAMAGE: float = 8.0
 const ZAKHAR_CARROT_SPEED: float = 140.0
 const ZAKHAR_CARROT_FAN_DEG: float = 18.0       # в ярости — веер из трёх
+# --- Рывок (у всех героев, у каждого свой): dist - px, sec - длительность, cd - перезарядка, charges - зарядов,
+# fx - фишка: knock (отпихнуть вокруг в конце), sweep (урон по пути), slow (тормозит врагов у старта), trail (тормозит по пути),
+# blink (телепорт), drunk (кривой, но дольше неуязвим), heal (+ХП), fly (неуязвим весь полёт и чуть дольше).
+const DASH_BASE: Dictionary = {"dist": 70.0, "sec": 0.16, "cd": 1.5, "charges": 1, "iframe_extra": 0.08, "fx": &""}
+const DASH_FX_RADIUS: float = 40.0
+const DASH_FX_SLOW: float = 0.4          # множитель скорости врага
+const DASH_FX_SLOW_SEC: float = 2.0
+const DASH_FX_KNOCK: float = 300.0
+const DASH_FX_DAMAGE: float = 12.0       # урон рывка по пути (растёт с уроном героя)
+const DASH_FX_HEAL: float = 1.0
+const DASH_DRUNK_DEG: float = 30.0
+const DASH_BLOCK_PAD: float = 5.0        # рывок упирается во врага, если тот ближе (его радиус + это) прямо по курсу
+const DASH_BLOCK_DOT: float = 0.45       # «по курсу»: косинус угла между рывком и направлением на врага
+const HERO_DASH: Dictionary = {
+	&"hobo": {"name": "ПЕРЕКАТ ПО ЛУЖЕ", "dist": 55.0, "cd": 2.0, "fx": &"slow"},
+	&"squid": {"name": "ЧЕРНИЛЬНЫЙ ПСИХ", "dist": 75.0, "cd": 1.4, "fx": &"slow"},
+	&"clerk": {"name": "НА ПЛАНЁРКУ", "dist": 62.0, "cd": 2.2, "charges": 2},
+	&"janitor": {"name": "РАЗМАХ МЕТЛОЙ", "dist": 50.0, "cd": 2.0, "fx": &"sweep"},
+	&"uncle_vitya": {"name": "ПЬЯНЫЙ КУВЫРОК", "dist": 62.0, "cd": 1.8, "fx": &"drunk"},
+	&"blogger": {"name": "ДЛЯ КОНТЕНТА", "dist": 80.0, "cd": 1.3},
+	&"granny": {"name": "КЛЮКОЙ ПО ХРЕБТУ", "dist": 40.0, "cd": 2.4, "fx": &"knock"},
+	&"courier": {"name": "ОПАЗДЫВАЮ", "dist": 92.0, "cd": 1.1},
+	&"pigeon": {"name": "ВСПОРХ", "dist": 95.0, "sec": 0.3, "cd": 2.0, "fx": &"fly"},
+	&"punk": {"name": "ШМЫГ", "dist": 52.0, "cd": 0.9, "charges": 2},
+	&"shawarma": {"name": "ЖИРНЫЙ СКОЛЬЗ", "dist": 60.0, "cd": 1.7, "fx": &"trail"},
+	&"guard": {"name": "ТАРАН", "dist": 50.0, "cd": 2.0, "fx": &"sweep"},
+	&"student": {"name": "ПРОГУЛ", "dist": 82.0, "cd": 1.2},
+	&"plumber": {"name": "ПО ТРУБАМ", "dist": 75.0, "cd": 2.2, "fx": &"blink"},
+	&"dacha": {"name": "ГРЯДКА ЛЕЧИТ", "dist": 45.0, "cd": 2.2, "fx": &"heal"},
+	&"skater": {"name": "ОЛЛИ", "dist": 100.0, "sec": 0.2, "cd": 1.6, "charges": 2},
+	&"slime": {"name": "ПОЛЗОК", "dist": 60.0, "cd": 1.5, "fx": &"trail"},
+}
+
 # --- Телеграфы атак (замах виден заранее: зона + наползающая заливка) ---
 const CHARGER_WINDUP_SEC: float = 0.6       # тележка стоит и показывает путь рывка
 const CHARGER_DASH_SEC: float = 0.55

@@ -46,6 +46,7 @@ var _arrow: TextureRect
 var _preview: Sprite2D
 var _title: Label
 var _tagline: Label
+var _dash_label: Label   # рывок героя
 var _plus: Label
 var _minus: Label
 var _weapon: Label
@@ -371,9 +372,10 @@ func _build_panel() -> void:
 	_tagline = _label("", Vector2(96.0, 168.0), 350.0, WHITE)
 	_plus = _label("", Vector2(96.0, 180.0), 210.0, GREEN)
 	_minus = _label("", Vector2(316.0, 180.0), 130.0, RED)
-	_weapon = _label("", Vector2(96.0, 217.0), 350.0, YELLOW)
-	_status = _label("", Vector2(96.0, 228.0), 350.0, GREEN)
-	for node: Label in [_title, _tagline, _plus, _minus, _weapon, _status]:
+	_weapon = _label("", Vector2(96.0, 213.0), 350.0, YELLOW)
+	_dash_label = _label("", Vector2(96.0, 222.0), 350.0, Color(0.0, 0.94, 1.0))
+	_status = _label("", Vector2(96.0, 231.0), 350.0, GREEN)
+	for node: Label in [_title, _tagline, _plus, _minus, _weapon, _dash_label, _status]:
 		_info_nodes.append(node)
 	_lore = _label("", Vector2(96.0, 170.0), 346.0, WHITE)
 	_lore.visible = false
@@ -467,6 +469,7 @@ func _refresh() -> void:
 	_plus.text = "\n".join(plus)
 	_minus.text = "\n".join(minus)
 	_weapon.text = CharacterLibrary.weapon_line(id)
+	_dash_label.text = CharacterLibrary.dash_line(id)
 	if unlocked:
 		_status.text = "ОТКОПАН. ЖМИ ПРОБЕЛ."
 		_status.add_theme_color_override(&"font_color", GREEN)

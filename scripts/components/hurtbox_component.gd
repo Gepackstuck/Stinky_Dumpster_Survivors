@@ -25,6 +25,21 @@ func receive_hit(damage: float) -> bool:
 	return true
 
 
+## Неуязвимость на время (рывок): не короче уже идущей.
+func grant_invulnerability(sec: float) -> void:
+	_invulnerable_left = maxf(_invulnerable_left, sec)
+	set_physics_process(true)
+
+
+## Снять неуязвимость (рывок упёрся во врага: бонус только за чистый рывок).
+func cancel_invulnerability() -> void:
+	_invulnerable_left = 0.0
+
+
+func is_invulnerable() -> bool:
+	return _invulnerable_left > 0.0
+
+
 func _physics_process(delta: float) -> void:
 	_invulnerable_left -= delta
 	if _invulnerable_left <= 0.0:

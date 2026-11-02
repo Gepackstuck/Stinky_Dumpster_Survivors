@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://scripts/components/frame_animator_component.gd" id="5_anim"]
 [ext_resource type="Texture2D" path="res://assets/sprites/player.png" id="6_tex"]
 [ext_resource type="Script" path="res://scripts/player/player_items_visual.gd" id="10_items"]
+[ext_resource type="Script" path="res://scripts/player/dash_component.gd" id="11_dash"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
 size = Vector2(14, 14)
@@ -64,3 +65,8 @@ monitorable = false
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Magnet"]
 shape = SubResource("CircleShape2D_magnet")
 
+[node name="Dash" type="Node" parent="." node_paths=PackedStringArray("body", "sprite", "hurtbox")]
+script = ExtResource("11_dash")
+body = NodePath("..")
+sprite = NodePath("../Sprite2D")
+hurtbox = NodePath("../Hurtbox")

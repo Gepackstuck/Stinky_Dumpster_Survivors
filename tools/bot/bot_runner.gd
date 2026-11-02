@@ -13,9 +13,9 @@ const SKILLS: Dictionary = {
 	# react - как часто бот пересматривает направление (с); noise - ошибка оценки позиции врагов (px);
 	# mistake - шанс дёрнуться не туда при решении; look - насколько вперёд предсказывает (с);
 	# see_proj - видит ли вражеские снаряды; shop/cards - как закупается и выбирает карточки.
-	&"noob": {"react": 0.30, "dirs": 8, "noise": 22.0, "mistake": 0.12, "look": [0.3], "see_proj": false, "shop": &"random", "cards": &"random"},
-	&"mid": {"react": 0.12, "dirs": 12, "noise": 7.0, "mistake": 0.03, "look": [0.2, 0.5], "see_proj": true, "shop": &"greedy", "cards": &"weighted"},
-	&"pro": {"react": 0.0, "dirs": 24, "noise": 0.0, "mistake": 0.0, "look": [0.15, 0.4, 0.8], "see_proj": true, "shop": &"sets", "cards": &"weighted"},
+	&"noob": {"dash": &"random", "react": 0.30, "dirs": 8, "noise": 22.0, "mistake": 0.12, "look": [0.3], "see_proj": false, "shop": &"random", "cards": &"random"},
+	&"mid": {"dash": &"smart", "react": 0.12, "dirs": 12, "noise": 7.0, "mistake": 0.03, "look": [0.2, 0.5], "see_proj": true, "shop": &"greedy", "cards": &"weighted"},
+	&"pro": {"dash": &"smart", "react": 0.0, "dirs": 24, "noise": 0.0, "mistake": 0.0, "look": [0.15, 0.4, 0.8], "see_proj": true, "shop": &"sets", "cards": &"weighted"},
 }
 # «Мозг» бота: веса манёвров. Подбираются обучением (tools/bot/train.py) и лежат в tools/bot/brain.json.
 # Скилл (SKILLS) - это помехи поверх мозга: реакция, шум, ошибки, закупка. Мозг у всех уровней общий.
@@ -23,6 +23,7 @@ const BRAIN_DEFAULT: Dictionary = {
 	"danger_w": 90.0, "danger_pad": 32.0, "proj_w": 10.0, "hazard_w": 30.0, "edge_w": 60.0, "wall_w": 200.0, "space_w": 0.12,
 	"pickup_w": 0.25, "range_w": 0.08, "inertia_w": 4.0, "goal_w": 9.0, "orbit_w": 6.0, "orbit_flip_sec": 2.5,
 	"gap_w": 40.0, "surround_at": 0.45, "surround_r": 90.0, "hp_caution": 1.0, "melee_bold": 0.3,
+	"dash_surround": 0.6, "dash_proj_dist": 28.0, "dash_melee_dist": 16.0,
 }
 const BRAIN_PATH: String = "res://tools/bot/brain.json"
 const SECTORS: int = 24   # круг вокруг героя для поиска дыр в окружении
@@ -67,6 +68,8 @@ var _escape_left: float = 0.0
 var _goal: Vector2 = Vector2.ZERO
 var _goal_left: float = 0.0
 var _last_coverage: float = 0.0
+var _dash_release: bool = false
+var _dashes: int = 0
 
 
 func _ready() -> void:
@@ -128,6 +131,7 @@ func _next_run() -> void:
 	_running = true
 	_finished = false
 	_game_time = 0.0
+	_dashes = 0
 	_shop_visits = 0
 	_waves.clear()
 	_wave = {}
@@ -195,7 +199,7 @@ func _end_run(result: String) -> void:
 	var record: Dictionary = {
 		"hero": String(_hero), "skill": String(_skill_id), "seed": _seed, "run": _run_index, "result": result,
 		"wave": GameState.wave, "waves_total": Balance.WAVE_COUNT, "game_sec": snappedf(_game_time, 0.1),
-		"shop_visits": _shop_visits, "killer": String(GameState.last_damage_source) if result == "death" else "",
+		"shop_visits": _shop_visits, "dashes": _dashes, "killer": String(GameState.last_damage_source) if result == "death" else "",
 		"surrounded_at_end": snappedf(_last_coverage, 0.01), "hp_end_ratio": snappedf(GameState.hp / maxf(GameState.max_hp, 1.0), 0.01), "level": GameState.level,
 		"kills": GameState.kills, "weapons": weapons, "sets": sets, "items": items, "waves": _waves.duplicate(true),
 		"real_sec": snappedf((Time.get_ticks_msec() - _real_start) / 1000.0, 0.1),
@@ -223,6 +227,9 @@ func _physics_process(delta: float) -> void:
 		_release_keys()
 		return
 	_game_time += delta
+	if _dash_release:
+		_dash_release = false
+		Input.action_release(&"dash")
 	if not _wave.is_empty():
 		if GameState.hp < _last_hp:
 			_wave["dmg"] = float(_wave["dmg"]) + _last_hp - GameState.hp
@@ -379,6 +386,7 @@ func _steer(delta: float) -> void:
 			best_dir = dir
 	if randf() < float(_skill["mistake"]):
 		best_dir = Vector2.from_angle(randf() * TAU)   # дёрнулся не туда
+	_maybe_dash(pos, near, coverage, gap_dir, best_dir, hp_ratio)
 	_last_dir = best_dir
 	_drive(best_dir)
 
@@ -404,6 +412,40 @@ func _hazard_radius(hz: Node2D) -> float:
 	if shape_node is CollisionShape2D and (shape_node as CollisionShape2D).shape is CircleShape2D:
 		return ((shape_node as CollisionShape2D).shape as CircleShape2D).radius
 	return 16.0
+
+
+## Рывок: задрот рвётся в дыру, когда кольцо смыкается, и уходит из-под снаряда/удара; рукожоп жмёт наугад.
+func _maybe_dash(pos: Vector2, near: Array, coverage: float, gap_dir: Vector2, best_dir: Vector2, hp_ratio: float) -> void:
+	var mode: StringName = _skill["dash"]
+	var dir: Vector2 = Vector2.ZERO
+	if mode == &"random":
+		if randf() < 0.02:
+			dir = best_dir if best_dir != Vector2.ZERO else Vector2.from_angle(randf() * TAU)
+	else:
+		var b: Dictionary = _brain
+		if coverage >= float(b["dash_surround"]) and gap_dir != Vector2.ZERO:
+			dir = gap_dir
+		else:
+			for node: Node in _projectiles:
+				if not is_instance_valid(node):
+					continue
+				var proj: Node2D = node as Node2D
+				var heading: Vector2 = proj.get("_direction")
+				var to_me: Vector2 = pos - proj.global_position
+				if to_me.length() < float(b["dash_proj_dist"]) and heading.dot(to_me.normalized()) > 0.8:
+					dir = heading.orthogonal() if heading.orthogonal().dot(best_dir) >= 0.0 else -heading.orthogonal()
+					break
+			if dir == Vector2.ZERO and hp_ratio < 0.4:
+				for e: Array in near:
+					if pos.distance_to(e[0]) < float(b["dash_melee_dist"]):
+						dir = best_dir
+						break
+	if dir == Vector2.ZERO:
+		return
+	_drive(dir)
+	Input.action_press(&"dash")
+	_dash_release = true
+	_dashes += 1
 
 
 ## Окружённость: [доля секторов круга радиуса r, занятых врагами; направление в центр самой широкой дыры].

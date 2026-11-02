@@ -17,10 +17,12 @@ RANGES = {
     "space_w": (0.0, 0.5), "pickup_w": (0.0, 0.8), "range_w": (0.0, 0.4), "inertia_w": (0, 15), "goal_w": (0, 25),
     "orbit_w": (0, 25), "orbit_flip_sec": (0.8, 6.0), "gap_w": (0, 120), "surround_at": (0.25, 0.8),
     "surround_r": (50, 140), "hp_caution": (0, 3), "melee_bold": (0.1, 1.0),
+    "dash_surround": (0.3, 0.9), "dash_proj_dist": (10, 60), "dash_melee_dist": (8, 40),
 }
 DEFAULT = {"danger_w": 90, "danger_pad": 32, "proj_w": 10, "hazard_w": 30, "edge_w": 60, "wall_w": 200, "space_w": 0.12, "pickup_w": 0.25,
            "range_w": 0.08, "inertia_w": 4, "goal_w": 9, "orbit_w": 6, "orbit_flip_sec": 2.5, "gap_w": 40,
-           "surround_at": 0.45, "surround_r": 90, "hp_caution": 1.0, "melee_bold": 0.3}
+           "surround_at": 0.45, "surround_r": 90, "hp_caution": 1.0, "melee_bold": 0.3,
+           "dash_surround": 0.6, "dash_proj_dist": 28, "dash_melee_dist": 16}
 
 
 def mutate(b, rate, rng):
