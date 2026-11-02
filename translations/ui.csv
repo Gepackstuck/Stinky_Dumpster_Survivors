@@ -104,3 +104,9 @@ SET_VICTORY,РОЛИК ПОБЕДЫ,VICTORY CUTSCENE
 БИЛЕТЫ: %s,БИЛЕТЫ: %s,TICKETS: %s
 "КАРТА «ПОМОЙКА+» ПОЛНАЯ: РЕРОЛЛ БЕСПЛАТНО, ВСЁ -10%","КАРТА «ПОМОЙКА+» ПОЛНАЯ: РЕРОЛЛ БЕСПЛАТНО, ВСЁ -10%","DUMP+ CARD FULL: FREE REROLL, EVERYTHING -10%"
 ПОМОЙКА+ %d/%d,ПОМОЙКА+ %d/%d,DUMP+ %d/%d
+СВАЛИВАЮ!,СВАЛИВАЮ!,OUTTA HERE!
+УНЁС %d!,УНЁС %d!,STOLE %d!
+СТЫРИЛ!,СТЫРИЛ!,SNATCHED!
+МЕШОК ЛОПНУЛ! x2,МЕШОК ЛОПНУЛ! x2,BAG BURST! x2
+ЩИПАЧ,ЩИПАЧ,PICKPOCKET
+"Не дерётся, а тырит упавшее говно прямо у тебя из-под носа и сваливает к краю. Догони и прибей - мешок лопнет вдвое жирнее.","Не дерётся, а тырит упавшее говно прямо у тебя из-под носа и сваливает к краю. Догони и прибей - мешок лопнет вдвое жирнее.",Doesn't fight - snatches your dropped crap right under your nose and runs for the edge. Catch and smack him - the bag bursts twice as fat.

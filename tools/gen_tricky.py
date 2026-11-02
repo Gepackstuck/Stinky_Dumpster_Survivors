@@ -70,6 +70,23 @@ def shield_bearer(t):
     return c.finish(BLUE, WHITE, lim=0.05)
 
 
+def thief(t):
+    """Н21: щипач в капюшоне с огромным мешком краденого говна, крадётся на цыпочках."""
+    c = Canvas(30, 32)
+    lg = [-1, 1, -1, 1][t]; b = [0, 1, 0, 1][t]
+    c.line(11, 24, 10 + lg, 31, BLACK, 2); c.line(17, 24, 18 - lg, 31, BLACK, 2)
+    c.ell(14, 18 + b, 6, 7, (60, 60, 70), dither=DGREY)                 # худи
+    c.ell(14, 9 + b, 5, 5, (60, 60, 70)); c.ell(15, 10 + b, 3, 3, SKIN)  # капюшон, лицо
+    c.eye(14, 10 + b, 1, (1, 0), blood=False); c.eye(17, 10 + b, 1, (1, 0), blood=False)
+    c.line(14, 13 + b, 17, 12 + b, BLACK)                                # ухмылка
+    c.ell(5, 13 + b, 6, 7, BROWN, dither=(130, 90, 40))                  # мешок за спиной
+    c.rect(3, 5 + b, 7, 7 + b, BROWN); c.pts([(4, 13 + b), (5, 12 + b), (6, 13 + b)], YELLOW)   # «$»
+    c.line(9, 15 + b, 4, 8 + b, (60, 60, 70), 2)                          # рука держит мешок
+    c.line(19, 16 + b, 24, 14 - b, (60, 60, 70), 2); c.px(25, 13 - b, SKIN)   # тянет лапу к добру
+    if t % 2: c.pts([(26, 9), (27, 11)], GREEN)                          # капля слизи-опыта в руке
+    return c.finish(PURPLE, WHITE, lim=0.05)
+
+
 def lid():
     """Крышка от мусорного бака: щит, выпуклая сторона вправо (к игроку)."""
     c = Canvas(10, 22)
@@ -117,7 +134,7 @@ def glass(t):
 if __name__ == "__main__":
     out = {}
     out["proj_glass"] = Image.fromarray(glass(0))
-    for name, fn in (("blinker", blinker), ("mirror", mirror), ("shield_bearer", shield_bearer)):
+    for name, fn in (("blinker", blinker), ("mirror", mirror), ("shield_bearer", shield_bearer), ("thief", thief)):
         out[f"enemy_{name}"] = sheet([fn(t) for t in range(4)])
     out["fx_blink_mark"] = sheet([blink_mark(t) for t in range(4)])
     out["fx_mirror_glow"] = sheet([mirror_glow(t) for t in range(4)])

@@ -57,5 +57,22 @@ func _run() -> void:
 	await get_tree().create_timer(Balance.BLINKER_INTERVAL_SEC + Balance.BLINKER_WARN_SEC + 0.5).timeout
 	await _shot("2")
 	_check(blinker.global_position.distance_to(p) < 70.0 and blinker.global_position.distance_to(start) > 40.0, "бомж телепортнулся к игроку")
+	# Н21 щипач: тырит лежащую слизь, после смерти роняет вдвое
+	for k: int in 3:
+		EventBus.xp_drop_requested.emit(p + Vector2(-80.0, 60.0 + k * 4.0), 3)
+	await get_tree().process_frame
+	var thief: EnemyBase = EnemyBase.spawn_enemy(level, player, &"thief", p + Vector2(-110.0, 60.0), 1.0)
+	await get_tree().create_timer(2.5).timeout
+	var tb: Node = null
+	for c: Node in thief.get_children():
+		if c is BossBrain:
+			tb = c
+	_check(int(tb.get(&"_stolen")) > 0, "щипач стырил слизь")
+	await _shot("3")
+	var before: int = get_tree().get_nodes_in_group(&"pickups").filter(func(n: Node) -> bool: return n.is_inside_tree()).size()
+	thief.hit_by_weapon(9999.0)
+	await get_tree().create_timer(0.3).timeout
+	var after: int = get_tree().get_nodes_in_group(&"pickups").filter(func(n: Node) -> bool: return n.is_inside_tree()).size()
+	_check(after > before, "мешок щипача лопнул")
 	print("TRICKY OK" if _fails == 0 else "TRICKY FAIL %d" % _fails)
 	get_tree().quit()

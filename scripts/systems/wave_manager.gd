@@ -13,6 +13,7 @@ var _wave_elapsed: float = 0.0
 var _special: Dictionary = {}
 var _bosses_alive: int = 0
 var _elite_spawned: bool = false
+var _thief_at: float = -1.0   # Н21: секунда волны, когда придёт щипач (-1 - не придёт)
 var _bosses_spawned: bool = false
 
 
@@ -52,6 +53,9 @@ func _process(delta: float) -> void:
 	GameState.time += delta
 	GameState.wave_time_left = maxf(WaveRules.duration_sec(GameState.wave) - _wave_elapsed, 0.0)
 	_spawn_due_groups()
+	if _thief_at >= 0.0 and _wave_elapsed >= _thief_at:
+		_thief_at = -1.0
+		spawner.spawn_single(&"thief", WaveRules.hp_mult(GameState.wave))
 	_spawn_special_units()
 	_camp_raid(delta)
 	if GameState.wave_kind != &"boss" and GameState.wave_time_left <= 0.0:
@@ -92,6 +96,7 @@ func _start_wave(wave: int) -> void:
 	GameState.wave_time_left = WaveRules.duration_sec(wave)
 	_spawn_times = WaveRules.spawn_times(wave, GameState.wave_kind)
 	_elite_spawned = false
+	_thief_at = randf_range(Balance.THIEF_SPAWN_AT.x, Balance.THIEF_SPAWN_AT.y) if GameState.wave_kind == &"normal" and wave >= Balance.THIEF_FROM_WAVE and randf() < Balance.THIEF_CHANCE else -1.0
 	_bosses_spawned = false
 	_bosses_alive = 0
 	_fighting = true

@@ -735,6 +735,8 @@ const ENEMIES: Dictionary = {
 			"brain": "res://scripts/enemies/brains/shield_brain.gd"},
 	&"mirror": {"hp": 55.0, "damage": 1.6, "speed": 45.0, "xp": 5, "coins": 2, "radius": 9.0, "group_mult": 0.2,
 			"brain": "res://scripts/enemies/brains/mirror_brain.gd"},
+	&"thief": {"hp": 26.0, "damage": 0.0, "speed": 78.0, "xp": 2, "coins": 1, "radius": 7.0, "group_mult": 0.0, "contact": false,
+			"brain": "res://scripts/enemies/brains/thief_brain.gd"},
 	&"trash_bin": {"hp": 40.0, "damage": 0.0, "speed": 0.0, "xp": 6, "coins": 0, "radius": 12.0, "group_mult": 0.0,
 			"contact": false, "neutral": true, "brain": "res://scripts/enemies/brains/bin_brain.gd"},
 	# Босс-заглушка Шага 3 (особое поведение — позже); radius — размер тела в px.
@@ -824,6 +826,14 @@ const TICKET_JACKPOT: int = 100
 const CARD_STAMP_COINS: int = 40
 const CARD_STAMPS: int = 5
 const CARD_DISCOUNT: float = 10.0
+
+# --- Н21: щипач (в меру: не больше одного за волну) ---
+const THIEF_FROM_WAVE: int = 4
+const THIEF_CHANCE: float = 0.35         # шанс, что в обычной волне придёт щипач
+const THIEF_SPAWN_AT: Vector2 = Vector2(8.0, 20.0)   # секунда волны, когда появится
+const THIEF_STEAL_SEC: float = 12.0       # сколько ворует, потом удирает
+const THIEF_MAX_STEAL: int = 15           # полный мешок - удирает раньше
+const THIEF_SEE_RADIUS: float = 220.0
 
 # --- Хитрые враги ---
 const BLINKER_INTERVAL_SEC: float = 3.2      # как часто глючный бомж прыгает
