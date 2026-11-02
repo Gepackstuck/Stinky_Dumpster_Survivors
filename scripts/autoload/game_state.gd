@@ -95,6 +95,8 @@ var active_bet: Dictionary = {}       # пари на текущую волну 
 var piles_this_run: int = 0          # сколько куч-лотерей появилось за забег (макс Balance.PILE_MAX_PER_RUN)
 var roulette_pending: bool = false   # вступил в кучу: перед следующей волной крутим рулетку
 var pending_mod: StringName = &""     # что выпало на рулетке (станет wave_mod следующей волны)
+var season: StringName = &""   # погода текущей волны (Balance.SEASONS) или пусто
+var last_season: StringName = &""
 var wave_mod: StringName = &""      # модификатор текущей волны (Balance.WAVE_MODS) или пусто
 var wave_damage_taken: float = 0.0   # урон за текущую волну (чистая волна = 0)
 var last_clean_bonus: int = 0        # бонус за чистую прошлую волну (для Ларька)
@@ -157,6 +159,7 @@ func reset_run() -> void:
 	endless = false
 	if daily:
 		seed(daily_seed)
+	season = &""
 	damage_by_source = {}
 	hp_history.clear()
 	hp_wave_marks.clear()
@@ -406,7 +409,7 @@ func _recompute_perk_stats() -> void:
 	var goblin: int = get_perk_stacks(PerkLibrary.LOOT_GOBLIN)
 	var shots: int = get_perk_stacks(PerkLibrary.DOUBLE_SHOT)
 	var regen: int = get_perk_stacks(PerkLibrary.REGEN)
-	move_speed_mult = (1.0 + Balance.PERK_SPEED_BONUS * speed + stat_total(&"speed") / 100.0) * pow(Balance.PERK_LOOT_GOBLIN_MOVE_SPEED_MULT, goblin)
+	move_speed_mult = (1.0 + Balance.PERK_SPEED_BONUS * speed + stat_total(&"speed") / 100.0) * pow(Balance.PERK_LOOT_GOBLIN_MOVE_SPEED_MULT, goblin) * WaveRules.season_f("player_speed")
 	pickup_radius_mult = 1.0 + (Balance.PERK_LOOT_GOBLIN_PICKUP_RADIUS_MULT - 1.0) * goblin + stat_total(&"pickup") / 100.0
 	damage_mult = 1.0 + stat_total(&"damage") / 100.0
 	attack_speed_mult = 1.0 + stat_total(&"attack_speed") / 100.0
@@ -523,8 +526,9 @@ func _on_xp_collected(amount: int) -> void:
 	if not run_active:
 		return
 	amount = roundi(amount * (1.0 + xp_bonus / 100.0)) if xp_bonus > 0.0 else amount
+	amount = roundi(amount * WaveRules.season_f("xp"))
 	xp += amount
-	_coin_remainder += float(amount) * Balance.COIN_PER_XP * (1.0 + coin_bonus + streak_bonus()) * WaveRules.mod_f("coin", 1.0)  # деньги — доля от опыта, копить придётся
+	_coin_remainder += float(amount) * Balance.COIN_PER_XP * (1.0 + coin_bonus + streak_bonus()) * WaveRules.mod_f("coin", 1.0) * WaveRules.season_f("coin")  # деньги — доля от опыта, копить придётся
 	var whole: int = floori(_coin_remainder)
 	coins += whole
 	run_coins_earned += whole

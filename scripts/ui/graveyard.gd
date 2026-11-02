@@ -333,7 +333,6 @@ func _build_grave(i: int) -> void:
 		caption.position = cap_pos.round()   # целые пиксели, иначе шрифт ломается
 		caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		caption.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		caption.add_theme_font_size_override(&"font_size", 6)
 		caption.add_theme_color_override(&"font_shadow_color", Color(0.0, 0.0, 0.0))
 		caption.add_theme_constant_override(&"shadow_offset_x", 1)
 		caption.add_theme_constant_override(&"shadow_offset_y", 1)

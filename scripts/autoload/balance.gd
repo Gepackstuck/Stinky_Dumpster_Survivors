@@ -744,6 +744,43 @@ const ENEMIES: Dictionary = {
 			"brain": "res://scripts/enemies/brains/boss_minion_brain.gd"},
 }
 
+# --- Погода волны (идея 6): модификатор, который выпадает сам (без кучи и рулетки) и уходит в конце волны ---
+# tint - цвет пола; fx - частицы; остальное - множители (1.0 = как обычно). Всё в меру: погода про настроение, не про смерть.
+const SEASON_ORDER: Array[StringName] = [&"summer", &"autumn", &"winter", &"spring"]
+const SEASONS: Dictionary = {
+	&"summer": {"name": "ЛЕТО: ЖАРИЩА", "line": "ВСЕ ПЛАВЯТСЯ И ТЕРЯЮТ ХП. ТЫ ТОЖЕ, ЛОХ",
+			"tint": Color(1.14, 0.95, 0.74), "fx": "heat", "world": Color(1.0, 0.92, 0.78), "enemy_speed": 0.93, "player_speed": 0.94},
+	&"autumn": {"name": "ОСЕНЬ: СЛЯКОТЬ", "line": "ЛЬЁТ ДОЖДЬ, В ЛУЖАХ ВСЕ ВЯЗНУТ",
+			"tint": Color(1.0, 0.84, 0.66), "fx": "rain", "world": Color(0.9, 0.9, 0.92)},
+	&"winter": {"name": "ЗИМА: ДУБАК", "line": "СНЕГ И СУГРОБЫ. ВРАГИ В ШУБАХ - ТОЛЩЕ",
+			"tint": Color(0.78, 0.9, 1.18), "fx": "snow", "world": Color(0.82, 0.9, 1.0), "enemy_hp": 1.06},
+	&"spring": {"name": "ВЕСНА: ВСЁ ТАЕТ", "line": "ВЫТАЯЛИ ПОДСНЕЖНИКИ. ВРАГИ ОТ ГОРМОНОВ ЗЛЕЕ",
+			"tint": Color(0.84, 1.0, 0.88), "fx": "petal", "world": Color(0.9, 0.98, 0.9), "enemy_damage": 1.08},
+}
+const SEASON_WAVE_CHANCE: float = 0.22   # шанс погоды на обычной волне
+const SEASON_FROM_WAVE: int = 2           # с какой волны может выпасть
+# Помехи погоды на поле (WeatherHazards)
+const PUDDLE_EVERY_SEC: float = 2.2      # осень: новая лужа
+const PUDDLE_MAX: int = 14
+const PUDDLE_RADIUS: float = 14.0
+const PUDDLE_SLOW: float = 0.7           # множитель скорости в луже (герой и враги)
+const DRIFT_EVERY_SEC: float = 2.6       # зима: новый сугроб (растёт 3 с)
+const DRIFT_MAX: int = 12
+const DRIFT_RADIUS: float = 13.0
+const DRIFT_SLOW: float = 0.45           # в сугробе еле ползёшь
+const DRIFT_GROW_SEC: float = 3.0
+const HEAT_TICK_SEC: float = 5.0         # лето: раз в столько жара кусает
+const HEAT_PLAYER_DAMAGE: float = 1.0    # героя - на 1 ХП, но не ниже HEAT_PLAYER_MIN_HP
+const HEAT_PLAYER_MIN_HP: float = 5.0
+const HEAT_ENEMY_FRACTION: float = 0.04  # врагов - долю макс. ХП (не добивает)
+const SNOWDROP_EVERY_SEC: float = 6.0    # весна: вытаял подснежник
+const SNOWDROP_MAX: int = 4
+const SNOWDROP_COINS: int = 4
+const SNOWDROP_HEAL: float = 3.0
+const SNOWDROP_PICK_RADIUS: float = 12.0
+const SEASON_FX_MAX: int = 55          # частиц погоды на экране одновременно (мало - чтобы не каша)
+const SEASON_FX_ALPHA: float = 0.75
+
 # --- Хитрые враги ---
 const BLINKER_INTERVAL_SEC: float = 3.2      # как часто глючный бомж прыгает
 const BLINKER_WARN_SEC: float = 0.6          # метка на земле до прыжка (успеть отойти)

@@ -294,8 +294,7 @@ func _open_inventory() -> void:
 			if count > 1:
 				var num: Label = Label.new()
 				num.text = str(count)
-				num.position = Vector2(18.0, 6.0)
-				num.add_theme_font_size_override(&"font_size", 6)
+				num.position = Vector2(18.0, 4.0)
 				num.add_theme_color_override(&"font_color", Color(0.97, 1.0, 0.0))
 				num.add_theme_color_override(&"font_shadow_color", Color.BLACK)
 				cell.add_child(num)

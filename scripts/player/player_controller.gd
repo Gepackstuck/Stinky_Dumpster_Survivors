@@ -29,6 +29,7 @@ var _drunk_left: float = 0.0
 var _combo_stacks: int = 0
 var _combo_left: float = 0.0
 var _slow_tick: float = 0.0
+var terrain_mult: float = 1.0   # лужи, сугробы (погода волны) - ставит WeatherHazards каждый тик
 
 
 func _ready() -> void:
@@ -79,7 +80,7 @@ func _physics_process(delta: float) -> void:
 		_facing = direction
 	if Input.is_action_just_pressed(&"dash"):
 		_dash.try_dash(direction, _facing)
-	var wanted: Vector2 = direction * Balance.PLAYER_MOVE_SPEED * GameState.move_speed_mult * WaveRules.mod_f("player_speed", 1.0) * _rush_mult()
+	var wanted: Vector2 = direction * Balance.PLAYER_MOVE_SPEED * GameState.move_speed_mult * WaveRules.mod_f("player_speed", 1.0) * _rush_mult() * terrain_mult
 	if _dash.is_dashing():
 		velocity = _dash.dash_velocity()
 	elif WaveRules.mod_fx("ice", false):   # жирный пол: разгон и торможение с инерцией

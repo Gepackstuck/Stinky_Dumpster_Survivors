@@ -272,6 +272,16 @@ func hit_by_weapon(damage: float, push: Vector2 = Vector2.ZERO, source: StringNa
 		_knockback = push
 
 
+## Жара (погода волны): отъедает долю макс. ХП, но не добивает. Без цифр - иначе каша.
+func weather_damage(fraction: float) -> void:
+	if _dead or _neutral:
+		return
+	var take: float = minf(_health.max_health * fraction, _health.current_health - 1.0)
+	if take > 0.0:
+		_health.take_damage(take)
+		_flash.flash(Color(1.0, 0.55, 0.1))
+
+
 ## Толчок без урона (вонь портков).
 func shove(push: Vector2) -> void:
 	if not _dead and not _neutral:

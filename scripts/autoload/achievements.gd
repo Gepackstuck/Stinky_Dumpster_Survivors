@@ -235,7 +235,6 @@ func _build_toast() -> void:
 	head.text = "ДОСТИЖЕНИЕ!"
 	head.position = Vector2(26.0, 1.0)
 	head.add_theme_color_override(&"font_color", Color(1.0, 0.84, 0.0))
-	head.add_theme_font_size_override(&"font_size", 6)
 	_toast.add_child(head)
 	_toast_label = Label.new()
 	_toast_label.position = Vector2(26.0, 11.0)

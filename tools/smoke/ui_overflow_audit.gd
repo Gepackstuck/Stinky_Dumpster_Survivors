@@ -88,6 +88,14 @@ func _run() -> void:
 	get_tree().current_scene = level
 	await get_tree().create_timer(0.6).timeout
 	_check("бой/HUD", level)
+	var banner: Node = level.find_children("*", "", true, false).filter(func(n: Node) -> bool: return n.has_method(&"_on_wave_started") and n.get_script() != null and String(n.get_script().resource_path).ends_with("wave_banner.gd")).front()
+	GameState.wave_kind = &"normal"
+	GameState.wave_mod = &""
+	for s: StringName in Balance.SEASON_ORDER:
+		GameState.season = s
+		banner.call("_on_wave_started", 3)
+		await get_tree().create_timer(0.45).timeout
+		_check("баннер/" + String(s), banner)
 	var lu: Node = level.get_node(^"LevelUpScreen")
 	GameState.coins = 999
 	GameState.wave = 8

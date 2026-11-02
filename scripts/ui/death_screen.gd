@@ -162,6 +162,7 @@ func _on_run_won() -> void:
 
 func _show_result(title: String, died: bool = false) -> void:
 	_title.text = title
+	_fit_title()
 	var secs: int = GameState.hp_history.size()
 	_stats.text = "УБИТО %d   УР. %d   ВОЛНА %d/%d   %d:%02d   %s" % [GameState.kills, GameState.level, GameState.wave, Balance.WAVE_COUNT,
 			secs / 60, secs % 60, WaveRules.danger_v("name")]
@@ -224,7 +225,6 @@ func _fill_damage() -> void:
 		var num: Label = Label.new()
 		num.text = "%d %s" % [roundi(src[key]), _source_title(key)]
 		num.add_theme_color_override(&"font_color", Color(0.95, 0.95, 0.95))
-		num.add_theme_font_size_override(&"font_size", 6)
 		row.add_child(num)
 		_damage_box.add_child(row)
 
@@ -295,3 +295,16 @@ func _add_sprite(texture: Texture2D, region: Rect2, pos: Vector2, scale_factor: 
 	sprite.scale = Vector2.ONE * scale_factor  # целый масштаб — пиксели остаются квадратными
 	sprite.position = pos
 	_decor.add_child(sprite)
+
+
+## Заголовок крупно и только целым масштабом (x2), иначе пиксельный шрифт рвётся; длинная фраза - x1.
+func _fit_title() -> void:
+	var panel_left: float = 66.0
+	var panel_right: float = 414.0
+	var font: Font = _title.get_theme_font(&"font")
+	var width: float = font.get_string_size(_title.text, HORIZONTAL_ALIGNMENT_LEFT, -1, _title.get_theme_font_size(&"font_size")).x
+	var k: float = 2.0 if width * 2.0 <= panel_right - panel_left else 1.0
+	_title.scale = Vector2(k, k)
+	_title.clip_text = false
+	_title.size = Vector2((panel_right - panel_left) / k, 11.0)
+	_title.position = Vector2(panel_left, 74.0 - 5.5 * k).round()

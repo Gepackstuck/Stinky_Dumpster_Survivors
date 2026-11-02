@@ -17,7 +17,6 @@ func _ready() -> void:
 	_label.position = Vector2(15.0, 0.0)
 	_label.add_theme_color_override(&"font_color", Color(0.97, 1.0, 0.0))
 	_label.add_theme_color_override(&"font_shadow_color", Color.BLACK)
-	_label.add_theme_font_size_override(&"font_size", 6)
 	add_child(_label)
 	EventBus.ult_state.connect(func(c: float) -> void: value = c)
 

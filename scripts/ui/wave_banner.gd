@@ -48,7 +48,7 @@ func _ready_extra() -> void:
 	_mini.add_theme_color_override(&"font_outline_color", Color.BLACK)
 	_mini.add_theme_constant_override(&"outline_size", 3)
 	_mini.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_mini.position = Vector2(0.0, 34.0)
+	_mini.position = Vector2(0.0, 54.0)   # ниже плашки модификатора под счётчиком волны
 	_mini.size = Vector2(480.0, 12.0)
 	_mini.modulate.a = 0.0
 	_mini.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -60,7 +60,7 @@ func _ready_extra() -> void:
 	_mini_sub.add_theme_color_override(&"font_outline_color", Color.BLACK)
 	_mini_sub.add_theme_constant_override(&"outline_size", 2)
 	_mini_sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_mini_sub.position = Vector2(0.0, 54.0)
+	_mini_sub.position = Vector2(0.0, 74.0)
 	_mini_sub.size = Vector2(480.0, 10.0)
 	_mini_sub.modulate.a = 0.0
 	_mini_sub.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -75,6 +75,9 @@ func _on_wave_started(wave: int) -> void:
 			_show_small("ВОЛНА %d: ОРДА!" % wave, FlavorText.random_horde(), Color(1, 0.0627451, 0.2, 1))
 		&"boss":
 			_show_small("ВОЛНА %d: БОССЫ!" % wave, "", Color(1, 0.0627451, 0.2, 1))
+		_ when GameState.wave_mod == &"" and GameState.season != &"":
+			var weather: Dictionary = Balance.SEASONS[GameState.season]
+			_show_small("ВОЛНА %d - %s!" % [wave, weather["name"]], weather["line"], Color(0.55, 0.85, 1.0))
 		_ when GameState.wave_mod != &"":
 			_show_small("ВОЛНА %d: %s!" % [wave, Balance.WAVE_MOD_DATA[GameState.wave_mod]["title"]], Balance.WAVE_MOD_DATA[GameState.wave_mod]["line"], Color(0.2235, 1.0, 0.0784))
 		_:
@@ -93,9 +96,9 @@ func _show_small(title: String, subtitle: String, color: Color) -> void:
 		_small_tween.kill()
 	_mini.modulate.a = 1.0
 	_mini_sub.modulate.a = 1.0 if subtitle != "" else 0.0
-	_mini.position.y = 24.0
+	_mini.position.y = 44.0
 	_small_tween = create_tween()
-	_small_tween.tween_property(_mini, "position:y", 34.0, 0.18)
+	_small_tween.tween_property(_mini, "position:y", 54.0, 0.18)
 	_small_tween.tween_interval(1.1)
 	_small_tween.set_parallel(true)
 	_small_tween.tween_property(_mini, "modulate:a", 0.0, 0.4)
@@ -124,7 +127,7 @@ func _show(variant: int, title: String, subtitle: String, color: Color, preview:
 	_preview.texture = preview
 	if preview != null:
 		_title.offset_left = 56.0
-		_title.offset_right = 172.0
+		_title.offset_right = 182.0   # подпись x2: до правого края рамки
 		_subtitle.offset_left = 56.0
 	else:
 		_title.offset_left = 10.0

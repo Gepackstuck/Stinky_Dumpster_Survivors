@@ -12,6 +12,8 @@ func _ready() -> void:
 	var arena: float = Balance.ARENA_SIZE
 	region_rect = Rect2(Vector2.ZERO, Vector2(arena, arena))
 	EventBus.bin_destroyed.connect(_on_bin_destroyed)
+	EventBus.wave_started.connect(func(_w: int) -> void: _apply_season())
+	EventBus.wave_ended.connect(func(_w: int) -> void: _apply_season.call_deferred())
 	var kinds: int = int(DECALS.get_width() / CELL)
 	var count: int = int(arena * arena / Balance.GROUND_DECAL_AREA_PX2)
 	for i: int in count:
@@ -27,6 +29,12 @@ func _ready() -> void:
 		decal.modulate = Color(DECAL_TINT, DECAL_ALPHA)
 		decal.position = Vector2(randf_range(0.0, arena), randf_range(0.0, arena)).round()
 		add_child(decal)
+
+
+## Пол красится погодой волны (лето - выжженный, зима - синюшный); плавно, за секунду.
+func _apply_season() -> void:
+	var tint: Color = Balance.SEASONS.get(GameState.season, {}).get("tint", Color.WHITE)
+	create_tween().tween_property(self, ^"modulate", tint, 1.0)
 
 
 ## На месте разбитого бака остаётся случайный мусор (декаль пола) — до конца забега, ярче обычных.

@@ -87,7 +87,7 @@ static func popup(tree: SceneTree, at: Vector2, text: String, color: Color, rise
 	if big:
 		label.add_theme_color_override(&"font_outline_color", Color(0.7, 0.0, 0.0))
 		label.add_theme_constant_override(&"outline_size", 3)
-		label.scale = Vector2(1.5, 1.5)
+		label.scale = Vector2(2.0, 2.0)   # только целый масштаб: x1.5 рвёт пиксельный шрифт
 		label.pivot_offset = label.size * 0.5
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	tree.current_scene.add_child(label)

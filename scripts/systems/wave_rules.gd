@@ -36,17 +36,32 @@ static func _late(wave: int) -> float:
 
 static func hp_mult(wave: int) -> float:
 	var n: float = float(maxi(wave, 1) - 1)
-	return (1.0 + n * Balance.WAVE_HP_GROWTH + _late(wave) * _late(wave) * Balance.WAVE_HP_QUAD) * Balance.ENEMY_HP_MULT * mod_f("enemy_hp", 1.0) * danger_f("hp")
+	return (1.0 + n * Balance.WAVE_HP_GROWTH + _late(wave) * _late(wave) * Balance.WAVE_HP_QUAD) * Balance.ENEMY_HP_MULT * mod_f("enemy_hp", 1.0) * danger_f("hp") * season_f("enemy_hp")
 
 
 static func damage_mult(wave: int) -> float:
 	var n: float = float(maxi(wave, 1) - 1)
-	return (1.0 + n * Balance.WAVE_DAMAGE_GROWTH + _late(wave) * _late(wave) * Balance.WAVE_DAMAGE_QUAD) * Balance.ENEMY_DAMAGE_MULT * mod_f("enemy_damage", 1.0) * danger_f("dmg")
+	return (1.0 + n * Balance.WAVE_DAMAGE_GROWTH + _late(wave) * _late(wave) * Balance.WAVE_DAMAGE_QUAD) * Balance.ENEMY_DAMAGE_MULT * mod_f("enemy_damage", 1.0) * danger_f("dmg") * season_f("enemy_damage")
+
+
+## Множитель погоды забега (Balance.SEASONS); нет ключа - 1.0.
+static func season_f(key: String) -> float:
+	return float(Balance.SEASONS.get(GameState.season, {}).get(key, 1.0))
+
+
+## Погода волны: сама, без рулетки, только на обычных волнах; не повторяет прошлую подряд.
+static func roll_season(wave: int, kind: StringName) -> StringName:
+	if kind != &"normal" or wave < Balance.SEASON_FROM_WAVE or randf() >= Balance.SEASON_WAVE_CHANCE:
+		return &""
+	var pool: Array[StringName] = Balance.SEASON_ORDER.duplicate()
+	pool.erase(GameState.last_season)
+	GameState.last_season = pool[randi() % pool.size()]
+	return GameState.last_season
 
 
 static func speed_mult(wave: int) -> float:
 	var mult: float = minf(1.0 + (maxi(wave, 1) - 1) * Balance.WAVE_SPEED_GROWTH, Balance.WAVE_SPEED_MAX_MULT)
-	return mult * mod_f("enemy_speed", 1.0) * (1.0 + GameState.enemy_haste / 100.0) * danger_f("speed")
+	return mult * season_f("enemy_speed") * mod_f("enemy_speed", 1.0) * (1.0 + GameState.enemy_haste / 100.0) * danger_f("speed")
 
 
 ## Модификатор волны: только на обычных волнах с WAVE_MOD_FROM. Берётся из «мешка» (Profile.mod_bag):

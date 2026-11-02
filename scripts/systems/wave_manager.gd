@@ -85,6 +85,7 @@ func _start_wave(wave: int) -> void:
 	GameState.wave_kind = wave_kind(wave)
 	GameState.wave_mod = GameState.pending_mod   # модификатор - только с рулетки (куча-лотерея)
 	GameState.pending_mod = &""
+	GameState.season = WaveRules.roll_season(wave, GameState.wave_kind)
 	GameState.wave_note = ""
 	_wave_elapsed = 0.0
 	_camp_warned = false
@@ -171,6 +172,7 @@ func _end_wave() -> void:
 	if GameState.wave_mod != &"":
 		_last_mod = GameState.wave_mod
 	GameState.wave_mod = &""
+	GameState.season = &""
 	_fighting = false
 	spawner.clear_all()
 	for node: Node in get_tree().get_nodes_in_group(&"pickups"):
