@@ -20,9 +20,9 @@ extends CanvasLayer
 const HINT_CARDS: String = "A/D - ВЫБОР   ПРОБЕЛ/E - ВЗЯТЬ   1-4 - БЫСТРО   R - РЕРОЛЛ"
 const HINT_START: String = "A/D - ВЫБОР   ПРОБЕЛ/E - ВЗЯТЬ   1-4 - БЫСТРО"
 const HINT_SHOP: String = "A/D - ВЫБОР   ПРОБЕЛ - КУПИТЬ   F - ЗАМОРОЗИТЬ   R - РЕРОЛЛ   S - СЛОТЫ/В БОЙ"
-const PAD_CARDS: String = "КРЕСТ - ВЫБОР   A - ВЗЯТЬ   Y - РЕРОЛЛ"
-const PAD_START: String = "КРЕСТ - ВЫБОР   A - ВЗЯТЬ"
-const PAD_SHOP: String = "КРЕСТ - ВЫБОР   A - КУПИТЬ   X - ЗАМОРОЗИТЬ   Y - РЕРОЛЛ   ВНИЗ - СЛОТЫ/В БОЙ"
+const PAD_CARDS: String = "СТРЕЛКИ - ВЫБОР   A - ВЗЯТЬ   Y - РЕРОЛЛ"
+const PAD_START: String = "СТРЕЛКИ - ВЫБОР   A - ВЗЯТЬ"
+const PAD_SHOP: String = "СТРЕЛКИ - ВЫБОР   A - КУПИТЬ   X - ЗАМОРОЗИТЬ   Y - РЕРОЛЛ   ВНИЗ - СЛОТЫ/В БОЙ"
 
 var _queue: Array[int] = []            # уровни, за которые ещё не выбран стат
 var _stat_offers: Array[Dictionary] = []

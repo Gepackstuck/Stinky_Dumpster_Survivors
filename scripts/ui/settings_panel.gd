@@ -42,7 +42,7 @@ func _ready() -> void:
 		_rows.append(b)
 	UI_BUTTONS.add_focus_arrows(_rows)
 	var hint: Label = Label.new()
-	hint.text = InputMode.hint(tr("SET_HINT"), "D-PAD / B")
+	hint.text = InputMode.hint(tr("SET_HINT"), "СТРЕЛКИ - СТРОКА/МЕНЯТЬ   B - НАЗАД")
 	hint.position = Vector2(110.0, 204.0)
 	hint.size = Vector2(260.0, 10.0)
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER

@@ -524,7 +524,7 @@ func _close_picker() -> void:
 
 
 func _update_hint() -> void:
-	_hint.text = InputMode.hint("WASD - ВЫБОР   E - ДОСЬЕ\nПРОБЕЛ - ПОГНАЛИ", "КРЕСТ - ВЫБОР   X - ДОСЬЕ\nA - ПОГНАЛИ   Y - ОРУЖИЕ")
+	_hint.text = InputMode.hint("WASD - ВЫБОР   E - ДОСЬЕ\nПРОБЕЛ - ПОГНАЛИ", "СТРЕЛКИ - ВЫБОР   X - ДОСЬЕ\nA - ПОГНАЛИ   Y - ОРУЖИЕ")
 
 
 func _on_grave_pressed(i: int) -> void:
