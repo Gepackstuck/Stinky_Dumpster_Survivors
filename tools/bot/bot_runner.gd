@@ -20,7 +20,7 @@ const SKILLS: Dictionary = {
 # «Мозг» бота: веса манёвров. Подбираются обучением (tools/bot/train.py) и лежат в tools/bot/brain.json.
 # Скилл (SKILLS) - это помехи поверх мозга: реакция, шум, ошибки, закупка. Мозг у всех уровней общий.
 const BRAIN_DEFAULT: Dictionary = {
-	"danger_w": 90.0, "danger_pad": 32.0, "proj_w": 6.0, "edge_w": 60.0, "wall_w": 200.0, "space_w": 0.12,
+	"danger_w": 90.0, "danger_pad": 32.0, "proj_w": 10.0, "hazard_w": 30.0, "edge_w": 60.0, "wall_w": 200.0, "space_w": 0.12,
 	"pickup_w": 0.25, "range_w": 0.08, "inertia_w": 4.0, "goal_w": 9.0, "orbit_w": 6.0, "orbit_flip_sec": 2.5,
 	"gap_w": 40.0, "surround_at": 0.45, "surround_r": 90.0, "hp_caution": 1.0, "melee_bold": 0.3,
 }
@@ -57,6 +57,7 @@ var _rerolls: int = 0
 var _real_start: int = 0
 # управление
 var _projectiles: Array[Node] = []
+var _hazards: Array[Node] = []   # лужи говна, облака вони: [узел], радиус берём из формы
 var _frame: int = 0
 var _last_dir: Vector2 = Vector2.ZERO
 var _decide_left: float = 0.0
@@ -251,10 +252,11 @@ func _steer(delta: float) -> void:
 		return
 	_decide_left = float(_skill["react"])
 	var enemies: Array[Node] = get_tree().get_nodes_in_group(&"enemies")
-	if _skill["see_proj"] and _frame % 3 == 0:
-		_projectiles = _level.find_children("*", "EnemyProjectile", true, false)
-	elif not _skill["see_proj"]:
+	if _skill["see_proj"]:
+		_scan_threats()
+	else:
 		_projectiles = []
+		_hazards = []
 	var noise: float = float(_skill["noise"])
 	var speed: float = Balance.PLAYER_MOVE_SPEED * GameState.move_speed_mult
 	var near: Array = []   # [pos, vel, danger]
@@ -342,6 +344,14 @@ func _steer(delta: float) -> void:
 				var dd: float = me.distance_to(pp)
 				if dd < 22.0:
 					score -= w * (22.0 - dd) * float(b["proj_w"])
+			for node: Node in _hazards:
+				if not is_instance_valid(node):
+					continue
+				var hz: Node2D = node as Node2D
+				var hr: float = _hazard_radius(hz) + 6.0
+				var hd: float = me.distance_to(hz.global_position)
+				if hd < hr:
+					score -= w * (hr - hd) / hr * float(b["hazard_w"])
 			var edge: float = minf(minf(me.x, arena - me.x), minf(me.y, arena - me.y))
 			if edge < 70.0:
 				score -= w * pow((70.0 - edge) / 70.0, 2.0) * float(b["edge_w"])
@@ -371,6 +381,29 @@ func _steer(delta: float) -> void:
 		best_dir = Vector2.from_angle(randf() * TAU)   # дёрнулся не туда
 	_last_dir = best_dir
 	_drive(best_dir)
+
+
+## Вражеские снаряды и лужи/облака: игра кладёт их в корень текущей сцены (у бота это сам бот), не в уровень.
+func _scan_threats() -> void:
+	if _frame % 2 != 0:
+		return
+	_projectiles = []
+	_hazards = []
+	for holder: Node in [get_tree().current_scene, _level]:
+		if holder == null:
+			continue
+		for child: Node in holder.get_children():
+			if child is EnemyProjectile and child.get("_active"):
+				_projectiles.append(child)
+			elif child is TimedHazard:
+				_hazards.append(child)
+
+
+func _hazard_radius(hz: Node2D) -> float:
+	var shape_node: Variant = hz.get("_shape")
+	if shape_node is CollisionShape2D and (shape_node as CollisionShape2D).shape is CircleShape2D:
+		return ((shape_node as CollisionShape2D).shape as CircleShape2D).radius
+	return 16.0
 
 
 ## Окружённость: [доля секторов круга радиуса r, занятых врагами; направление в центр самой широкой дыры].

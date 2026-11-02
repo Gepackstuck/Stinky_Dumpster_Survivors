@@ -1,0 +1,20 @@
+{
+ "danger_w": 90,
+ "danger_pad": 32,
+ "proj_w": 10,
+ "hazard_w": 30,
+ "edge_w": 60,
+ "wall_w": 200,
+ "space_w": 0.12,
+ "pickup_w": 0.25,
+ "range_w": 0.08,
+ "inertia_w": 4,
+ "goal_w": 9,
+ "orbit_w": 6,
+ "orbit_flip_sec": 2.5,
+ "gap_w": 40,
+ "surround_at": 0.45,
+ "surround_r": 90,
+ "hp_caution": 1.0,
+ "melee_bold": 0.3
+}
