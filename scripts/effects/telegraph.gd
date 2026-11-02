@@ -47,6 +47,7 @@ static func _spawn(tree: SceneTree, shape: Shape, at: Vector2, dir: Vector2, len
 	var ground: Node = tree.current_scene.get_node_or_null(^"Ground")   # ребёнок пола: над полом, под телами и пикапами
 	(ground if ground != null else tree.current_scene).add_child(t)
 	t.global_position = at
+	EventBus.telegraph_shown.emit()
 	return t
 
 

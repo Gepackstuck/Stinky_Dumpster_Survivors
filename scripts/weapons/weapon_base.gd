@@ -80,6 +80,7 @@ func _physics_process(delta: float) -> void:
 	var fire_dir: Vector2 = global_position.direction_to(target.global_position)
 	HitFx.muzzle(get_tree(), _muzzle(target), fire_dir, Color(1.0, 0.5, 0.05) if _burn_dps > 0.0 else Color(1.0, 0.92, 0.25))
 	fired.emit(global_position.direction_to(target.global_position))
+	EventBus.weapon_fired.emit(&"shoot")
 	_cooldown_left = GameState.cooldown_for(_cooldown_sec)
 
 

@@ -189,6 +189,7 @@ func _truck() -> void:
 	await get_tree().create_timer(Balance.TRUCK_WARN_SEC, false).timeout
 	if not _still_on(&"truck"):
 		return
+	AudioManager.play_sfx(&"truck_horn")
 	var truck: GarbageTruck = TRUCK_SCENE.instantiate() as GarbageTruck
 	get_tree().current_scene.add_child(truck)
 	truck.launch(from, to)
@@ -231,6 +232,7 @@ func _bolt(at: Vector2) -> void:
 	glow.z_index = 14
 	get_tree().current_scene.add_child(glow)
 	HitFx.burst(get_tree(), at, Color(1.0, 1.0, 0.4), 12, 80.0, 3.0, 0.3, true)
+	AudioManager.play_sfx(&"lightning")
 	for node: Line2D in [line, glow]:
 		var tw: Tween = node.create_tween()
 		tw.tween_property(node, "modulate:a", 0.0, 0.15)

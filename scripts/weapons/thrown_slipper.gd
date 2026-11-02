@@ -56,6 +56,7 @@ func _physics_process(delta: float) -> void:
 
 func _land() -> void:
 	_landed = true
+	EventBus.weapon_fired.emit(&"explosion")
 	_sprite.position = Vector2.ZERO
 	_sprite.hide()
 	var radius_sq: float = _radius * _radius
