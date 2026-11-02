@@ -86,6 +86,16 @@ func _run() -> void:
 		yard.call("_select", i)
 		await get_tree().process_frame
 		_check("кладбище/" + String(Balance.CHARACTER_ORDER[i]), yard)
+	Profile.dog_owned = true   # Н16: будка пса со всеми шмотками
+	Profile.dog_name = "ГОВНОХВОСТ"
+	Profile.dog_wardrobe = Balance.DOG_WEAR.duplicate()
+	for w: String in [""] + Balance.DOG_WEAR:
+		Profile.dog_wear = w
+		var kp: KennelPanel = KennelPanel.new()
+		yard.add_child(kp)
+		await get_tree().process_frame
+		_check("будка/" + w, kp)
+		kp.queue_free()
 	yard.call("_toggle_book")
 	await get_tree().process_frame
 	_check("книга оружия", yard)

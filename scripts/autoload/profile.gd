@@ -12,7 +12,16 @@ var selected: StringName = &"hobo"
 var enemy_kills: Dictionary = {}   # id врага -> сколько убито за всё время (бестиарий)
 var weapons_announced: Array[StringName] = []   # оружие, про которое экран смерти уже объявил «открыто»
 var combos_found: Array[StringName] = []
-var graffiti: Array = []   # Н30: последние смерти [{hero, wave}] - граффити на краю арены
+var graffiti: Array = []
+# Н16: пёс-спутник. Находишь в забеге, называешь, кормишь костями, одеваешь в шмотки с побед.
+var dog_owned: bool = false
+var dog_pending_name: bool = false   # подобрал - на кладбище спросят кличку
+var dog_name: String = ""
+var dog_level: int = 1
+var bones: int = 0
+var dog_enabled: bool = true
+var dog_wear: String = ""
+var dog_wardrobe: Array = []   # Н30: последние смерти [{hero, wave}] - граффити на краю арены
 var achievements: Array[StringName] = []    # открытые достижения (Achievements)
 var mods_seen: Array[StringName] = []       # модификаторы волн, которые уже попадались
 var stats: Dictionary = {}                  # счётчики для достижений: рывки, упоры...
@@ -72,7 +81,18 @@ func killed(enemy_id: StringName) -> int:
 
 
 func _record_run(won: bool) -> void:
+	if GameState.dog_found_run and not dog_owned:   # Н16: подобрал пса - на кладбище спросят кличку
+		dog_owned = true
+		dog_pending_name = true
+		Achievements.unlock(&"dog_found")
+	if dog_owned and won and randf() < Balance.DOG_WEAR_DROP_CHANCE:   # шмотка для пса с победы
+		var left: Array = Balance.DOG_WEAR.filter(func(w: String) -> bool: return w not in dog_wardrobe)
+		if not left.is_empty():
+			dog_wardrobe.append(left[randi() % left.size()])
+			if dog_wardrobe.size() >= Balance.DOG_WEAR.size():
+				Achievements.unlock(&"dog_fashion")
 	if GameState.mode == &"duel":
+		save()
 		return   # битва героев - не в статистику
 	if GameState.daily:
 		var key: String = str(GameState.daily_seed)
@@ -221,6 +241,14 @@ func save() -> void:
 		combos.append(String(id))
 	cfg.set_value("run", "combos_found", combos)
 	cfg.set_value("run", "graffiti", graffiti)
+	cfg.set_value("dog", "owned", dog_owned)
+	cfg.set_value("dog", "pending_name", dog_pending_name)
+	cfg.set_value("dog", "name", dog_name)
+	cfg.set_value("dog", "level", dog_level)
+	cfg.set_value("dog", "bones", bones)
+	cfg.set_value("dog", "enabled", dog_enabled)
+	cfg.set_value("dog", "wear", dog_wear)
+	cfg.set_value("dog", "wardrobe", dog_wardrobe)
 	cfg.set_value("danger", "unlocked", danger_unlocked)
 	cfg.set_value("modes", "endless_best", endless_best)
 	var ach: PackedStringArray = PackedStringArray()
@@ -284,7 +312,35 @@ func _load() -> bool:
 		for key: String in cfg.get_section_keys("danger_wins"):
 			hero_wins[StringName(key)] = cfg.get_value("danger_wins", key, [])
 	graffiti = cfg.get_value("run", "graffiti", [])
+	dog_owned = bool(cfg.get_value("dog", "owned", false))
+	dog_pending_name = bool(cfg.get_value("dog", "pending_name", false))
+	dog_name = str(cfg.get_value("dog", "name", ""))
+	dog_level = int(cfg.get_value("dog", "level", 1))
+	bones = int(cfg.get_value("dog", "bones", 0))
+	dog_enabled = bool(cfg.get_value("dog", "enabled", true))
+	dog_wear = str(cfg.get_value("dog", "wear", ""))
+	dog_wardrobe = cfg.get_value("dog", "wardrobe", [])
 	for entry_c: String in cfg.get_value("run", "combos_found", PackedStringArray()):
 		if Balance.ITEM_COMBOS.has(StringName(entry_c)):
 			combos_found.append(StringName(entry_c))
+	return true
+
+
+## Н16: цена следующего уровня пса в костях (0 - максимум).
+func dog_feed_cost() -> int:
+	if dog_level >= Balance.DOG_MAX_LEVEL:
+		return 0
+	return Balance.DOG_FEED_BASE + dog_level * Balance.DOG_FEED_STEP
+
+
+## Покормить пса костями: +1 уровень. true - покормил.
+func feed_dog() -> bool:
+	var cost: int = dog_feed_cost()
+	if cost == 0 or bones < cost:
+		return false
+	bones -= cost
+	dog_level += 1
+	if dog_level >= Balance.DOG_MAX_LEVEL:
+		Achievements.unlock(&"dog_level_10")
+	save()
 	return true

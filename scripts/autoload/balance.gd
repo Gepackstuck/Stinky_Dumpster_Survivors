@@ -869,6 +869,22 @@ const CLOSED_WEAPON_EVERY: int = 3           # ларёк закрыт: кажд
 const CLOSED_STASH_MULT: float = 3.0         # ларёк закрыт: заначек втрое больше
 const DUEL_WAVES: int = 5                    # битва героев: столько волн в раунде у каждого игрока
 
+# --- Н16: пёс-спутник ---
+const STRAY_FROM_WAVE: int = 5
+const STRAY_CHANCE: float = 0.05         # шанс встретить бездомного пса за волну (пока пса нет)
+const STRAY_ADOPT_SEC: float = 3.0       # постой рядом - пойдёт за тобой
+const DOG_MAX_LEVEL: int = 10
+const DOG_FEED_BASE: int = 3             # цена уровня в костях: BASE + уровень * STEP
+const DOG_FEED_STEP: int = 2
+const DOG_LEVEL_DAMAGE: float = 0.15     # +15% укуса за уровень
+const DOG_LEVEL_SPEED: float = 0.04
+const DOG_BONE_SEC: float = 24.0         # раз в столько (минус 5% за уровень) пёс приносит кость
+const DOG_WEAR_DROP_CHANCE: float = 0.4  # шанс шмотки для пса после победы
+const DOG_WEAR: Array[String] = ["collar", "bandana", "cap", "cloak", "glasses", "bow"]
+const DOG_WEAR_NAMES: Dictionary = {"collar": "ОШЕЙНИК С ШИПАМИ", "bandana": "БАНДАНА", "cap": "КЕПКА НАЗАД",
+		"cloak": "ПЛАЩ СУПЕРПСА", "glasses": "ТЁМНЫЕ ОЧКИ", "bow": "БАНТИК"}
+const DOG_NAMES: Array[String] = ["ШАРИК", "БУБЛИК", "ГОВНОХВОСТ", "ТУЗИК", "ПОМОЕЧНИК", "БОБИК", "ЖУЧКА", "КОТЛЕТА", "ДРУЖОК", "ВОНЮЧКА"]
+
 # --- Хитрые враги ---
 const BLINKER_INTERVAL_SEC: float = 3.2      # как часто глючный бомж прыгает
 const BLINKER_WARN_SEC: float = 0.6          # метка на земле до прыжка (успеть отойти)

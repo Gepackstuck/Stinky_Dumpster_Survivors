@@ -64,6 +64,7 @@ var _status: Label
 var _hint: Label
 var _leaving: bool = false
 var _book: Control = null
+var _kennel: KennelPanel = null      # Н16: будка пса
 var _walker: Node2D = null
 var _dossier: bool = false
 var _lore: Label = null
@@ -179,6 +180,27 @@ func _build_menu_button() -> void:
 	book.pressed.connect(_toggle_book)
 	UI_BUTTONS.skin(book, 5)
 	add_child(book)
+	if Profile.dog_owned:   # Н16: будка пса
+		var dog: Button = Button.new()
+		dog.text = tr("ПЁС (P)")
+		dog.position = Vector2(SCREEN.x - 152.0, 4.0)
+		dog.size = Vector2(62.0, 16.0)
+		dog.focus_mode = Control.FOCUS_NONE
+		dog.pressed.connect(_toggle_kennel)
+		UI_BUTTONS.skin(dog, 2)
+		add_child(dog)
+		if Profile.dog_pending_name:
+			_toggle_kennel.call_deferred()   # подобрал пса - сразу спросим кличку
+
+
+func _toggle_kennel() -> void:
+	if _kennel != null:
+		_kennel.queue_free()
+		_kennel = null
+		return
+	_kennel = KennelPanel.new()
+	_kennel.closed.connect(_toggle_kennel)
+	add_child(_kennel)
 
 
 func _toggle_book() -> void:
@@ -490,6 +512,12 @@ func _build_panel() -> void:
 
 func _input(event: InputEvent) -> void:
 	if _leaving:
+		return
+	if _kennel != null:
+		return   # будка пса сама разбирает клавиши
+	if event is InputEventKey and event.pressed and not event.echo and (event as InputEventKey).physical_keycode == KEY_P and Profile.dog_owned and _book == null and _picker == null:
+		get_viewport().set_input_as_handled()
+		_toggle_kennel()
 		return
 	if event.is_action_pressed(&"open_book"):
 		get_viewport().set_input_as_handled()

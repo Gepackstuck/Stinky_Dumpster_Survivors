@@ -18,6 +18,7 @@ func _ready() -> void:
 	add_child(BottleGrenades.new())   # Н7: бутылки-гранаты
 	add_child(Graffiti.new())         # Н30: граффити о прошлых смертях
 	add_child(DuelScreen.new())       # Н31: экран раунда битвы героев
+	add_child(BuddyKeeper.new())      # Н16: пёс-спутник и бездомный пёс
 	EventBus.run_won.connect(_open_gate)
 	if not GameState.weapons.is_empty():
 		# у персонажа своё стартовое оружие: выдаём его и запускаем 1-ю волну без выбора

@@ -51,7 +51,8 @@ var free_rerolls: int = 0
 var run_spent: int = 0                # ачивки: потрачено говна за забег
 var shop_spent: int = 0               # потрачено в текущем Ларьке
 var max_shop_spent: int = 0           # больше всего за один Ларёк (ачивка «ЖМОТ»)
-var truck_kills: int = 0              # мусоровоз задавил врагов за волну            # «Шизосид»: слово -> один и тот же забег (пусто - обычный рандом)
+var truck_kills: int = 0
+var dog_found_run: bool = false        # Н16: в этом забеге подобрал пса              # мусоровоз задавил врагов за волну            # «Шизосид»: слово -> один и тот же забег (пусто - обычный рандом)
 var danger: int = 0                  # уровень опасности забега (Balance.DANGER_LEVELS)
 var character: StringName = &"hobo"   # выбранный на кладбище персонаж (живёт между забегами)
 var run_coins_earned: int = 0
@@ -183,6 +184,7 @@ func reset_run() -> void:
 	shop_spent = 0
 	max_shop_spent = 0
 	truck_kills = 0
+	dog_found_run = false
 	endless = mode == &"endless"   # Н32: бесконечная помойка с самого начала
 	if daily:
 		seed(daily_seed)
