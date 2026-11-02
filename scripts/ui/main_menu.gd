@@ -21,6 +21,10 @@ var _bestiary_button: Button
 var _bestiary: Control = null
 
 
+var _settings_button: Button = null
+var _settings: SettingsPanel = null
+
+
 func _ready() -> void:
 	AudioManager.play_music(&"shop")
 	var back: ColorRect = ColorRect.new()
@@ -48,16 +52,19 @@ func _ready() -> void:
 	_hero.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	_hero.position = Vector2(SCREEN.x * 0.5, 112.0)
 	add_child(_hero)
-	_start = _button("ПОГНАЛИ", 132.0)
-	_bestiary_button = _button("БЕСТИАРИЙ", 164.0)
-	_quit = _button("Я ЛИВАЮ", 196.0)
+	_start = _button("ПОГНАЛИ", 130.0)
+	_bestiary_button = _button("БЕСТИАРИЙ", 158.0)
+	_settings_button = _button("НАСТРОЙКИ", 186.0)
+	_quit = _button("Я ЛИВАЮ", 214.0)
 	UI_BUTTONS.skin(_start, 0)
 	UI_BUTTONS.skin(_bestiary_button, 2)
+	UI_BUTTONS.skin(_settings_button, 3)
 	UI_BUTTONS.skin(_quit, 4)
+	_settings_button.pressed.connect(_open_settings)
 	_bestiary_button.pressed.connect(_open_bestiary)
 	_start.pressed.connect(func() -> void: SceneFlow.go(GRAVEYARD_SCENE, Vector2.DOWN))
 	_quit.pressed.connect(func() -> void: get_tree().quit())
-	UI_BUTTONS.add_focus_arrows([_start, _bestiary_button, _quit])
+	UI_BUTTONS.add_focus_arrows([_start, _bestiary_button, _settings_button, _quit])
 	_start.grab_focus()
 	_title("A/D, W/S - ВЫБОР     ПРОБЕЛ - ОК", 246.0, GREY, Color.BLACK)
 
@@ -86,6 +93,15 @@ func _button(text: String, y: float) -> Button:
 	return button
 
 
+func _open_settings() -> void:
+	_settings = SettingsPanel.new()
+	_settings.closed.connect(func() -> void:
+		_settings.queue_free()
+		_settings = null
+		_settings_button.grab_focus())
+	add_child(_settings)
+
+
 func _open_bestiary() -> void:
 	_bestiary = BESTIARY.new()
 	_bestiary.closed.connect(func() -> void:
@@ -96,7 +112,7 @@ func _open_bestiary() -> void:
 
 
 func _input(event: InputEvent) -> void:
-	if _bestiary != null:
+	if _bestiary != null or _settings != null:
 		return
 	var step: int = 0
 	if event.is_action_pressed(&"move_up") or event.is_action_pressed(&"ui_up"):
@@ -105,7 +121,7 @@ func _input(event: InputEvent) -> void:
 		step = 1
 	if step != 0:
 		get_viewport().set_input_as_handled()
-		var order: Array[Button] = [_start, _bestiary_button, _quit]
+		var order: Array[Button] = [_start, _bestiary_button, _settings_button, _quit]
 		var at: int = 0
 		for i: int in order.size():
 			if order[i].has_focus():

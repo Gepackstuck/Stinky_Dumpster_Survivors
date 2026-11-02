@@ -40,6 +40,11 @@ func _run() -> void:
 	await _shot("1_main_menu")
 	await _press(&"move_down")
 	await _shot("1b_main_menu_focus2")
+	menu.call("_open_settings")
+	await get_tree().create_timer(0.3).timeout
+	await _shot("1c_settings")
+	menu.get("_settings").emit_signal("closed")
+	await get_tree().process_frame
 	menu.call("_open_bestiary")
 	await get_tree().create_timer(0.4).timeout
 	await _shot("2_bestiary")
