@@ -87,7 +87,7 @@ const WAVE_ENEMY_WEIGHTS: Dictionary = {    # вес в взвешенном р�
 	&"healer": 3, &"glutton": 3, &"egg": 2, &"mamka": 2,
 	&"blinker": 3, &"shield_bearer": 3, &"mirror": 2,
 }
-const FINAL_BOSS_POOL: Array[StringName] = [&"boss_zakhar", &"boss_minion", &"boss_blue_whale", &"boss_trash_golem", &"boss_pigeon_papa", &"boss_mother_in_law"]
+const FINAL_BOSS_POOL: Array[StringName] = [&"boss_zakhar", &"boss_minion", &"boss_blue_whale", &"boss_trash_golem", &"boss_pigeon_papa", &"boss_mother_in_law", &"boss_uk"]
 const ELITE_POOL: Array[StringName] = [&"boss_mega_hamster", &"boss_rat_queen", &"boss_roach_king"]   # элита окна - одна из них
 const FINAL_BOSS_MAX: int = 2      # одновременно в финале не больше стольких боссов (на ТРУПНЯКЕ+ - всегда столько)  # боссы 20-й волны: один или оба
 const ELITE_ID: StringName = &"boss_mega_hamster"                           # элита на волнах 11–12, 14–15, 17–18
@@ -101,6 +101,7 @@ const BOSS_NAMES: Dictionary = {
 	&"boss_trash_golem": "МУСОРНЫЙ ГОЛЕМ",
 	&"boss_pigeon_papa": "ГОЛУБИНЫЙ ПАПА",
 	&"boss_mother_in_law": "ТЁЩА",
+	&"boss_uk": "УПРАВЛЯЮЩАЯ КОМПАНИЯ",
 }
 # --- Таракан-качок (элита) ---
 const ROACH_KING_ATTACK_INTERVAL_SEC: float = 2.4
@@ -124,6 +125,17 @@ const GOLEM_DEBRIS_SPEED: float = 110.0
 const GOLEM_DEBRIS_DAMAGE: float = 7.0
 const GOLEM_SUMMON: int = 3
 # --- Голубиный папа (финал) ---
+const UK_ATTACK_INTERVAL_SEC: float = 2.5    # Н25 управляющая компания
+const UK_MINES: int = 5
+const UK_MINE_RADIUS: float = 14.0
+const UK_MINE_DELAY: float = 1.3
+const UK_MINE_DAMAGE: float = 8.0
+const UK_CALL_COUNT: int = 3
+const UK_BILLS: int = 7
+const UK_BILL_SPEED: float = 120.0
+const UK_BILL_DAMAGE: float = 5.0
+const UK_LUNCH_EVERY_SEC: float = 11.0
+const UK_LUNCH_SEC: float = 2.5
 const MIL_ATTACK_INTERVAL_SEC: float = 2.4   # Н24 тёща
 const MIL_CAST_SEC: float = 0.6
 const MIL_WORD_SPEED: float = 95.0           # слово летит медленно - читаешь и уворачиваешься
@@ -762,6 +774,8 @@ const ENEMIES: Dictionary = {
 			"brain": "res://scripts/enemies/brains/boss_pigeon_brain.gd"},
 	&"boss_mother_in_law": {"hp": 900.0, "damage": 5.0, "speed": 40.0, "xp": 40, "coins": 25, "radius": 26.0, "anim_rows": 5,
 			"brain": "res://scripts/enemies/brains/boss_mil_brain.gd"},
+	&"boss_uk": {"hp": 950.0, "damage": 4.0, "speed": 34.0, "xp": 40, "coins": 25, "radius": 28.0, "anim_rows": 5,
+			"brain": "res://scripts/enemies/brains/boss_uk_brain.gd"},
 	&"boss_blue_whale": {"hp": 1000.0, "damage": 5.0, "speed": 30.0, "xp": 40, "coins": 25, "radius": 34.0, "anim_rows": 5,
 			"brain": "res://scripts/enemies/brains/boss_whale_brain.gd"},
 	&"boss_minion": {"hp": 700.0, "damage": 3.0, "speed": 70.0, "xp": 40, "coins": 25, "radius": 22.0, "anim_rows": 5,

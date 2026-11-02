@@ -31,6 +31,7 @@ const LIST: Dictionary = {
 	&"boss_golem": ["ВЫНЕС МУСОР", "Убей Мусорного голема"],
 	&"boss_pigeon_papa": ["ОСИРОТИЛ ГОЛУБЕЙ", "Убей Голубиного папу"],
 	&"boss_mother_in_law": ["ЗЯТЬ ГОДА", "Убей Тёщу"],
+	&"boss_uk": ["КВИТАНЦИЯ ОПЛАЧЕНА", "Убей Управляющую компанию"],
 	&"clean_wave": ["НИ ЦАРАПИНЫ", "Пройди волну без урона"],
 	&"clean_5": ["СКОЛЬЗКИЙ ТИП", "5 чистых волн за забег"],
 	&"clean_all": ["НЕУЛОВИМЫЙ ГОВНЮК", "Победи, не получив урона ни в одной волне"],
@@ -150,6 +151,7 @@ func _on_enemy_died(id: StringName, _at: Vector2) -> void:
 		&"boss_trash_golem": unlock(&"boss_golem")
 		&"boss_pigeon_papa": unlock(&"boss_pigeon_papa")
 		&"boss_mother_in_law": unlock(&"boss_mother_in_law")
+		&"boss_uk": unlock(&"boss_uk")
 	if GameState.coins >= 999:
 		unlock(&"coins_hoard_999")
 

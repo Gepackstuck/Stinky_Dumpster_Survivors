@@ -55,6 +55,7 @@ const _DESCRIPTIONS: Dictionary[StringName, String] = {
 	&"trash_bin": "Не враг, а копилка. Бей, и из него вывалится что-нибудь полезное, а может, тухлое. Лотерея для нищих.",
 	&"boss_roach_king": "Таракан-качок. Жрал протеин из помойки, носит пояс чемпиона. Три рывка подряд и кладка яиц.",
 	&"boss_trash_golem": "Мусорный голем. Ожил из мешков, которые никто не вынес. Кидается мешками и долбит землю.",
+	&"boss_uk": "Управляющая компания. Будка на курьих ножках. Штампует квитанции-мины, вызывает аварийку, швыряет счета. В обед окошко закрыто - бить бесполезно.",
 	&"boss_mother_in_law": "Тёща. Халат в цветочек, бигуди, скалка. Орёт так, что слова летят и бьют. Читай, что летит, и уворачивайся.",
 	&"boss_pigeon_papa": "Голубиный папа. В котелке, с переливчатой шеей. Пикирует, бомбит, кидается перьями.",
 	&"boss_rat_queen": "Королева крыс. Корона из пивных крышек, мантия из мусорного пакета. Свистнет - и сбежится вся помойка.",
@@ -72,7 +73,7 @@ static func description(enemy_id: StringName) -> String:
 ## Серьёзность врага для цвета имени: 0 обычный, 1 опасный, 2 элита, 3 босс.
 const _THREAT: Dictionary[StringName, int] = {
 	&"charger": 1, &"bruiser": 1, &"mamka": 1, &"glutton": 1, &"spitter": 1, &"healer": 1, &"blinker": 1, &"shield_bearer": 1, &"mirror": 1,
-	&"boss_mega_hamster": 2, &"boss_zakhar": 3, &"boss_minion": 3, &"boss_rat_queen": 2, &"boss_blue_whale": 3, &"boss_roach_king": 2, &"boss_trash_golem": 3, &"boss_pigeon_papa": 3, &"boss_mother_in_law": 3,
+	&"boss_mega_hamster": 2, &"boss_zakhar": 3, &"boss_minion": 3, &"boss_rat_queen": 2, &"boss_blue_whale": 3, &"boss_roach_king": 2, &"boss_trash_golem": 3, &"boss_pigeon_papa": 3, &"boss_mother_in_law": 3, &"boss_uk": 3,
 }
 const THREAT_COLORS: Array[Color] = [
 	Color(0.91, 0.91, 0.91), Color(1.0, 0.6, 0.1), Color(1.0, 0.1, 0.25), Color(1.0, 0.0627, 0.94)]

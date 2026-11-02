@@ -18,7 +18,7 @@ func _run() -> void:
 	get_tree().paused = false
 	var player: Node2D = get_tree().get_first_node_in_group(&"player") as Node2D
 	(player.get(&"_health") as HealthComponent).setup(99999.0)
-	var boss: EnemyBase = EnemyBase.spawn_enemy(level, player, &"boss_mother_in_law", player.global_position + Vector2(0.0, -80.0), 1.0)
+	var boss: EnemyBase = EnemyBase.spawn_enemy(level, player, &"boss_uk", player.global_position + Vector2(0.0, -80.0), 1.0)
 	var brain: Node = null
 	for c: Node in boss.get_children():
 		if c is BossBrain:
@@ -27,7 +27,7 @@ func _run() -> void:
 	for k: int in 3:   # заставим проорать слово и снять кадр, пока буквы летят
 		brain.set(&"_cooldown", 0.0)
 		seed(k * 3 + 1)
-		await get_tree().create_timer(1.2).timeout
+		await get_tree().create_timer(0.9).timeout
 		rows.append(boss.get_node("FrameAnimator").row)
 		if DisplayServer.get_name() != "headless":
 			await RenderingServer.frame_post_draw

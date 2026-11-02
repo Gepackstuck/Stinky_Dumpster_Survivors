@@ -11,7 +11,7 @@ func _ready() -> void:
 
 
 func _run() -> void:
-	for id: StringName in [&"boss_mega_hamster", &"boss_zakhar", &"boss_minion", &"boss_rat_queen", &"boss_blue_whale", &"boss_roach_king", &"boss_trash_golem", &"boss_pigeon_papa", &"boss_mother_in_law"]:
+	for id: StringName in [&"boss_mega_hamster", &"boss_zakhar", &"boss_minion", &"boss_rat_queen", &"boss_blue_whale", &"boss_roach_king", &"boss_trash_golem", &"boss_pigeon_papa", &"boss_mother_in_law", &"boss_uk"]:
 		print("BOSS ", id)
 		GameState.character = &"hobo"
 		var level: Node = MAIN.instantiate()
