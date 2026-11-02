@@ -76,6 +76,7 @@ var xp_bonus: float = 0.0
 var trick_bonus: float = 0.0
 var trick_left: float = 0.0
 var slime_touch: float = 0.0
+var class_extra: Dictionary = {}     # +оружий класса в наборах от предметов (set_<класс>)
 var hp_drain: float = 0.0            # проклятье: ХП утекает (раз в Balance.CURSED_HP_DRAIN_SEC)
 var enemy_haste: float = 0.0         # проклятье: враги быстрее, %
 var dash_hp_cost: float = 0.0        # проклятье: рывок стоит ХП
@@ -273,6 +274,13 @@ func _recompute_items() -> void:
 	for key: StringName in hero.get("fx", {}):
 		fx[key] = fx.get(key, 0.0) + hero["fx"][key]
 	var counts: Dictionary = WeaponLibrary.class_counts(weapons)   # бонусы наборов оружия по классам
+	class_extra = {}
+	for key: StringName in fx:   # предметы-синергии: «+1 к набору»
+		if String(key).begins_with("set_"):
+			var cls: StringName = StringName(String(key).trim_prefix("set_"))
+			class_extra[cls] = roundi(fx[key])
+			if counts.has(cls) or fx[key] > 0.0:
+				counts[cls] = counts.get(cls, 0) + roundi(fx[key])
 	for class_id: StringName in counts:
 		var bonus: Dictionary = WeaponLibrary.set_bonus(class_id, counts[class_id])
 		for stat_id: StringName in bonus.get("mods", {}):

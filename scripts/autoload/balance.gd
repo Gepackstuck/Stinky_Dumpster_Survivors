@@ -408,6 +408,15 @@ const ITEMS: Dictionary = {
 	&"bottle_mine": {"tier": 1, "price": 20, "limit": 4, "fx": {&"mines": 2.0}},
 	&"stink_lamp": {"tier": 3, "price": 42, "limit": 2, "fx": {&"lamps": 1.0}},
 	&"cart_mortar": {"tier": 3, "price": 46, "limit": 2, "fx": {&"mortars": 1.0}},
+	# --- Партия 3: синергии с классами оружия (set_<класс> - считается как ещё одно оружие класса в наборе) и компаньоны.
+	&"chef_apron": {"tier": 2, "price": 28, "limit": 2, "mods": {&"max_hp": 3.0}, "fx": {&"set_kitchen": 1.0}},
+	&"work_gloves": {"tier": 2, "price": 28, "limit": 2, "mods": {&"armor": 1.0}, "fx": {&"set_household": 1.0}},
+	&"bottle_silencer": {"tier": 2, "price": 28, "limit": 2, "mods": {&"crit": 3.0}, "fx": {&"set_guns": 1.0}},
+	&"gas_can": {"tier": 2, "price": 28, "limit": 2, "fx": {&"set_fire": 1.0, &"burn": 5.0}},
+	&"week_socks": {"tier": 2, "price": 28, "limit": 2, "fx": {&"set_stinky": 1.0, &"repel": 3.0}},
+	&"prison_tattoo": {"tier": 2, "price": 28, "limit": 2, "fx": {&"set_prison": 1.0, &"lifesteal": 2.0}},
+	&"pigeon_loft": {"tier": 3, "price": 48, "limit": 1, "fx": {&"pigeons": 2.0}},
+	&"dog_house": {"tier": 3, "price": 48, "limit": 1, "fx": {&"dogs": 2.0}},
 	# --- Проклятые: огромный плюс и мерзкий минус. В Ларьке отдельным шансом с CURSED_FROM_WAVE.
 	&"cursed_cigcase": {"tier": 3, "price": 40, "limit": 1, "cursed": true, "mods": {&"damage": 40.0}, "fx": {&"hp_drain": 1.0}},
 	&"cursed_teeth": {"tier": 3, "price": 40, "limit": 1, "cursed": true, "mods": {&"attack_speed": 35.0}, "fx": {&"enemy_haste": 15.0}},

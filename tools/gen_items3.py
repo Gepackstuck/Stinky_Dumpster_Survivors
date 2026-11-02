@@ -87,13 +87,51 @@ def combo_friendship(c):
     c.ell(8, 16, 6, 6, (170, 120, 70), dither=BROWN); c.ell(6, 14, 1, 1, BLACK); c.ell(10, 14, 1, 1, BLACK); c.ell(8, 18, 2, 1, BLACK)
     c.ell(20, 17, 5, 4, GREY, dither=DGREY); c.px(18, 15, RED); c.px(22, 15, RED); c.ell(14, 9, 3, 2.5, RED); c.ell(12, 8, 1.5, 1.5, RED); c.ell(16, 8, 1.5, 1.5, RED); sparks(c)
 
+@ic(DBROWN, YELLOW, 0.45)
+def chef_apron(c):   # фартук в пятнах, половник в кармане
+    poly(c, [(8, 3), (20, 3), (24, 26), (4, 26)], WHITE, dither=LG); c.rect(6, 12, 22, 13, RED); c.line(8, 3, 4, 0, BLACK) if False else None
+    c.ell(10, 18, 2, 2, (150, 90, 40)); c.ell(17, 21, 3, 2, RED); c.ell(14, 8, 1.5, 1.5, (120, 160, 40)); c.rect(17, 14, 18, 22, GREY); c.ell(17, 13, 2, 1.5, GREY)
+@ic(DBROWN, YELLOW, 0.45)
+def work_gloves(c):   # грязные рабочие перчатки с гаечным ключом
+    c.rect(3, 10, 12, 24, (230, 200, 60), dither=(190, 160, 40)); for_x = [c.rect(3 + k * 2, 4, 4 + k * 2, 10, (230, 200, 60)) for k in range(5)]
+    c.rect(15, 12, 24, 25, (230, 200, 60), dither=(190, 160, 40)); [c.rect(15 + k * 2, 6, 16 + k * 2, 12, (230, 200, 60)) for k in range(5)]
+    c.line(6, 26, 22, 2, STEEL, th=2); c.ell(22, 2, 2.5, 2.5, STEEL); c.pts([(6, 15), (19, 18)], BROWN)
+@ic(DGREY, CYAN, 0.45)
+def bottle_silencer(c):   # бутылка, надетая на ствол
+    c.rect(2, 12, 12, 16, GREY, dither=DGREY); poly(c, [(12, 9), (24, 9), (26, 14), (24, 19), (12, 19)], (100, 200, 120), dither=GREEN)
+    c.rect(24, 12, 27, 16, (100, 200, 120)); c.rect(16, 11, 20, 17, WHITE); c.pts([(14, 10), (14, 18)], WHITE); c.rect(4, 16, 7, 23, WOOD)
+@ic(DRED, YELLOW, 0.5)
+def gas_can(c):   # красная канистра, пары
+    c.rect(4, 8, 22, 26, RED, dither=DRED); c.rect(6, 4, 14, 8, RED); c.rect(16, 3, 19, 8, GREY); c.line(6, 12, 20, 22, DRED); c.line(20, 12, 6, 22, DRED)
+    c.pts([(20, 1), (23, 0), (25, 2)], ORANGE); c.ell(9, 19, 2, 2, YELLOW)
+@ic(DGREEN, YELLOW, 0.45)
+def week_socks(c):   # два носка стоят сами, вонь
+    for x0 in (3, 14):
+        poly(c, [(x0, 4), (x0 + 8, 4), (x0 + 8, 20), (x0 + 11, 24), (x0 + 1, 25), (x0, 20)], (210, 200, 150), dither=(170, 160, 100)); c.rect(x0, 4, x0 + 8, 6, RED)
+        c.ell(x0 + 4, 14, 2, 2, BROWN)
+    c.pts([(5, 1), (13, 0), (22, 1), (26, 8)], GREEN)
+@ic(BLUE, CYAN, 0.45)
+def prison_tattoo(c):   # рука с наколкой-куполами
+    c.rect(4, 6, 23, 24, SKINC, dither=(220, 170, 130))
+    for x in (8, 14, 20):
+        c.ell(x, 16, 3, 3, (40, 60, 160)); c.rect(x - 3, 16, x + 3, 21, (40, 60, 160)); c.px(x, 11, (40, 60, 160)); c.px(x, 12, (40, 60, 160))
+    c.line(5, 23, 22, 23, (40, 60, 160))
+@ic(PURPLE, WHITE, 0.45)
+def pigeon_loft(c):   # голубятня из ящиков, голуби торчат
+    c.rect(4, 10, 23, 26, WOOD, dither=DBROWN); poly(c, [(2, 11), (14, 2), (26, 11)], (150, 90, 40)); c.rect(9, 15, 18, 21, BLACK)
+    for (x, y) in [(8, 7), (19, 8), (13, 17)]: c.ell(x, y, 2.5, 2, GREY); c.px(x + 1, y - 1, RED)
+@ic(DBROWN, YELLOW, 0.45)
+def dog_house(c):   # будка, из неё два злых пса
+    poly(c, [(3, 10), (14, 2), (25, 10)], RED); c.rect(5, 10, 23, 26, WOOD, dither=DBROWN); c.ell(14, 20, 5, 6, BLACK)
+    c.eye(12, 19, 1.5, (0, 0), iris=RED); c.eye(16, 19, 1.5, (0, 0), iris=RED); c.teeth(11, 17, 23, WHITE, BLACK, 1)
+
 def render(n):
     f, sh, hi, lim = I[n]; c = new(); f(c); return fin(c, sh, hi, lim)
 
 if __name__ == "__main__":
     apply = "--apply" in sys.argv
     k = 4; cols = 8
-    prev = Image.new("RGBA", (cols * 34 * k, 2 * (34 * k + 30)), (45, 30, 20, 255))
+    prev = Image.new("RGBA", (cols * 34 * k, ((len(I) + cols - 1) // cols) * (34 * k + 30)), (45, 30, 20, 255))
     for i, n in enumerate(I):
         a = render(n); im = Image.fromarray(a); sm = Image.fromarray(small(a))
         if apply: im.save("assets/ui/item_%s.png" % n); sm.save("assets/ui/item_%s_s.png" % n)

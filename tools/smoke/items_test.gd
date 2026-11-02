@@ -37,5 +37,11 @@ func _run() -> void:
 	GameState.add_item(&"cursed_teeth")
 	_check(GameState.enemy_haste == 15.0, "чужие зубы ускоряют врагов")
 	_check(ItemLibrary.pool(3).all(func(id: StringName) -> bool: return not ItemLibrary.is_cursed(id) and not ItemLibrary.is_combo(id)), "в обычном пуле нет проклятых и комбо")
+	GameState.weapons.clear()
+	GameState.add_weapon(&"frying_pan", 1)
+	var hp0: float = GameState.bonus_max_hp
+	GameState.add_item(&"chef_apron")
+	_check(WeaponLibrary.class_counts(GameState.weapons, true).get(&"kitchen", 0) == 2, "фартук: +1 к набору КУХНЯ")
+	_check(GameState.bonus_max_hp >= hp0 + 3.0 + 2.0, "фартук: +3 ХП и бонус набора кухни 2")
 	print("ITEMS OK" if _fails == 0 else "ITEMS FAIL %d" % _fails)
 	get_tree().quit()

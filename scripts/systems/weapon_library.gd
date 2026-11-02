@@ -47,11 +47,14 @@ static func class_icon(class_id: StringName) -> Texture2D:
 
 
 ## Сколько оружий каждого класса в слотах: {class_id: count}.
-static func class_counts(weapons: Array[Dictionary]) -> Dictionary:
+static func class_counts(weapons: Array[Dictionary], with_items: bool = false) -> Dictionary:
 	var counts: Dictionary = {}
 	for entry: Dictionary in weapons:
 		for class_id: StringName in classes(entry["id"]):
 			counts[class_id] = counts.get(class_id, 0) + 1
+	if with_items:
+		for cls: StringName in GameState.class_extra:
+			counts[cls] = counts.get(cls, 0) + int(GameState.class_extra[cls])
 	return counts
 
 
@@ -81,7 +84,7 @@ static func set_bonus_text(class_id: StringName, count: int) -> String:
 
 ## Строка про классы для карточки оружия: что даст покупка этого оружия к твоим наборам.
 static func classes_line(weapon_id: StringName) -> String:
-	var counts: Dictionary = class_counts(GameState.weapons)
+	var counts: Dictionary = class_counts(GameState.weapons, true)
 	var parts: Array[String] = []
 	for class_id: StringName in classes(weapon_id):
 		parts.append("%s %d" % [CLASS_SHORT[class_id], counts.get(class_id, 0) + 1])
@@ -105,7 +108,7 @@ static func tier_props_lines(weapon_id: StringName, tier: int) -> Array[String]:
 
 ## Активные наборы для экранов: «ВОНЮЧЕЕ 3: 6% ВРАГ ОТВАЛИВАЕТ ОТ ВОНИ».
 static func active_sets_lines(short: bool = false) -> Array[String]:
-	var counts: Dictionary = class_counts(GameState.weapons)
+	var counts: Dictionary = class_counts(GameState.weapons, true)
 	var lines: Array[String] = []
 	for class_id: StringName in CLASS_TITLES:
 		var count: int = counts.get(class_id, 0)

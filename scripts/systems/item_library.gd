@@ -4,6 +4,9 @@ extends RefCounted
 
 const TEX: GDScript = preload("res://scripts/systems/tex.gd")
 const _TITLES: Dictionary[StringName, String] = {
+	&"chef_apron": "ФАРТУК ПОВАРА", &"work_gloves": "РАБОЧИЕ ПЕРЧАТКИ", &"bottle_silencer": "ГЛУШИТЕЛЬ ИЗ БУТЫЛКИ",
+	&"gas_can": "КАНИСТРА", &"week_socks": "НЕДЕЛЬНЫЕ НОСКИ", &"prison_tattoo": "НАКОЛКА «НЕ ЗАБУДУ»",
+	&"pigeon_loft": "ГОЛУБЯТНЯ", &"dog_house": "СОБАЧЬЯ БУДКА",
 	&"cursed_cigcase": "ПОРТСИГАР МЕРТВЕЦА", &"cursed_teeth": "ЧУЖИЕ ЗУБЫ", &"cursed_chain": "ЦЕПЬ АЛКАША",
 	&"cursed_wallet": "КОШЕЛЁК С КЛАДБИЩА", &"cursed_voodoo": "КУКЛА ВУДУ", &"cursed_shawarma": "ШАУРМА ИЗ МУСОРКИ",
 	&"cursed_mirror": "ОСКОЛОК ЗЕРКАЛА", &"cursed_rat_crown": "КОРОНА КРЫСИНОГО КОРОЛЯ",
@@ -59,6 +62,7 @@ const _TITLES: Dictionary[StringName, String] = {
 	&"cart_mortar": "ТЕЛЕЖКА-МИНОМЁТ",
 }
 const _SLOTS: Dictionary[StringName, StringName] = {
+	&"chef_apron": &"chest", &"work_gloves": &"chest", &"week_socks": &"back", &"prison_tattoo": &"chest", &"gas_can": &"back",
 	&"combo_double_head": &"head", &"combo_russian_winter": &"head", &"cursed_rat_crown": &"head",
 	&"cursed_mirror": &"face", &"combo_smoke": &"face", &"cursed_chain": &"chest", &"cursed_voodoo": &"chest",
 	&"combo_stink_set": &"back", &"cursed_cigcase": &"chest",
@@ -282,6 +286,8 @@ static func describe(data: Dictionary) -> String:
 				lines.append("КАЖДЫЙ РЫВОК СТОИТ %d ХП" % v)
 			&"no_regen":
 				lines.append("РЕГЕН НЕ РАБОТАЕТ ВООБЩЕ")
+			&"set_kitchen", &"set_household", &"set_guns", &"set_fire", &"set_stinky", &"set_prison":
+				lines.append("+%d К НАБОРУ %s" % [v, WeaponLibrary.class_title(StringName(String(key).trim_prefix("set_")))])
 			&"ink":
 				lines.append("%d%% ЗАЛИТЬ ВРАГА ЧЕРНИЛАМИ (ТОРМОЗИТ)" % v)
 			&"steal":

@@ -291,7 +291,7 @@ func _open_inventory() -> void:
 		_inventory_weapons.add_child(weapon_icon)
 	for child: Node in _inventory_sets.get_children():
 		child.queue_free()
-	var counts: Dictionary = WeaponLibrary.class_counts(GameState.weapons)
+	var counts: Dictionary = WeaponLibrary.class_counts(GameState.weapons, true)
 	for class_id: StringName in WeaponLibrary.CLASS_TITLES:
 		var count: int = counts.get(class_id, 0)
 		if count < WeaponLibrary.MIN_SET:
