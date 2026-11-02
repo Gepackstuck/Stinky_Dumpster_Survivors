@@ -416,6 +416,10 @@ func _on_died() -> void:
 	else:
 		HitFx.burst(get_tree(), global_position, Color(1.0, 0.0625, 0.9412), 14, 110.0, 3.0, 0.5)
 		HitFx.burst(get_tree(), global_position, Color(0.2235, 1.0, 0.0784), 8, 80.0, 2.0, 0.5)
+	if _revived:   # ачивка «ЗОМБИ-ОХОТНИК»
+		Profile.stat_add(&"zombie_kills", 1)
+		if Profile.stat(&"zombie_kills") >= 100:
+			Achievements.unlock(&"zombie_100")
 	if not _neutral:
 		_mod_death_effect()
 	if not _neutral:

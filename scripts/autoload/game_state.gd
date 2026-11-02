@@ -47,7 +47,11 @@ var card_spent: int = 0               # Н13: говно, потраченное
 var card_stamps: int = 0
 var card_ready: bool = false          # карта заполнена: следующий Ларёк со скидкой и бесплатным рероллом
 var card_discount: float = 0.0        # скидка карты, действует в текущем Ларьке
-var free_rerolls: int = 0            # «Шизосид»: слово -> один и тот же забег (пусто - обычный рандом)
+var free_rerolls: int = 0
+var run_spent: int = 0                # ачивки: потрачено говна за забег
+var shop_spent: int = 0               # потрачено в текущем Ларьке
+var max_shop_spent: int = 0           # больше всего за один Ларёк (ачивка «ЖМОТ»)
+var truck_kills: int = 0              # мусоровоз задавил врагов за волну            # «Шизосид»: слово -> один и тот же забег (пусто - обычный рандом)
 var danger: int = 0                  # уровень опасности забега (Balance.DANGER_LEVELS)
 var character: StringName = &"hobo"   # выбранный на кладбище персонаж (живёт между забегами)
 var run_coins_earned: int = 0
@@ -131,6 +135,8 @@ func _ready() -> void:
 	EventBus.wave_ended.connect(_settle_bet)
 	EventBus.wave_started.connect(func(_w: int) -> void:
 		card_discount = 0.0   # скидка карты - только на один Ларёк
+		shop_spent = 0
+		truck_kills = 0
 		wave_damage_taken = 0.0
 		hp_wave_marks.append(hp_history.size()))
 	EventBus.wave_ended.connect(_on_wave_ended_clean)   # бонусы наборов зависят от оружия в слотах
@@ -173,6 +179,10 @@ func reset_run() -> void:
 	card_ready = false
 	card_discount = 0.0
 	free_rerolls = 0
+	run_spent = 0
+	shop_spent = 0
+	max_shop_spent = 0
+	truck_kills = 0
 	endless = mode == &"endless"   # Н32: бесконечная помойка с самого начала
 	if daily:
 		seed(daily_seed)
@@ -569,6 +579,11 @@ func _on_player_died() -> void:
 
 ## Н13: говно потрачено в Ларьке (покупка/реролл) - копим штампы карты «Помойка+».
 func card_spend(amount: int) -> void:
+	run_spent += amount
+	shop_spent += amount
+	max_shop_spent = maxi(max_shop_spent, shop_spent)
+	if run_spent >= 1000:
+		Achievements.unlock(&"spend_1000")
 	if card_ready:
 		return
 	card_spent += amount

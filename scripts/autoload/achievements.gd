@@ -71,6 +71,14 @@ const LIST: Dictionary = {
 	&"endless_30": ["БЕСКОНЕЧНО ВОНЮЧИЙ", "Доживи до 30-й волны в бесконечности"],
 	&"no_items_win": ["АСКЕТ", "Победи без единого предмета"],
 	&"heroes_all": ["ВСЕХ ОТКОПАЛ", "Открой всех героев"],
+	&"spend_1000": ["ПОКУПАТЕЛЬ ГОДА", "Потрать 1000 говна за забег"],
+	&"stingy_win": ["ЖМОТ", "Победи, ни разу не потратив больше 50 говна за один Ларёк"],
+	&"zombie_100": ["ЗОМБИ-ОХОТНИК", "Убей 100 вставших зомби"],
+	&"pigeon_vs_pigeons": ["ГОЛУБЬ ПРОТИВ ГОЛУБЕЙ", "Сыграй голубем в Голубиный налёт"],
+	&"truck_50": ["САМ СЕБЕ МУСОРОВОЗ", "Мусоровоз задавил 50 врагов за волну"],
+	&"daily_week": ["НЕДЕЛЯ ПОМОЙКИ", "Сыграй ежедневку 7 дней подряд"],
+	&"daily_top": ["ТОП ДНЯ", "Набери 50000 очков в ежедневке"],
+	&"cursed_all": ["ЗЛОВОННЫЙ ДО КОСТЕЙ", "Собери все зловонные предметы за забег"],
 	&"medals_hero": ["ЗОЛОТОЙ УНИТАЗ", "Собери все 6 медалей одного героя, до золотого унитаза"],
 }
 
@@ -79,6 +87,8 @@ var _layer: CanvasLayer = null
 var _toast: Control = null
 var _toast_label: Label = null
 var _dashes: int = 0
+var _boss_hit: Dictionary = {}     # босс -> бил ли он героя (ачивки «без урона»)
+var _wave_mod: StringName = &""
 var _bumps: int = 0
 
 
@@ -104,6 +114,13 @@ func _ready() -> void:
 		if all_done:
 			unlock(&"evolution_all"))
 	EventBus.weapons_changed.connect(_check_weapons)
+	EventBus.boss_spawned.connect(func(id: StringName) -> void: _boss_hit[id] = false)
+	EventBus.player_hit.connect(func(_d: float) -> void: _note_boss_hit.call_deferred())
+	EventBus.wave_started.connect(func(_w: int) -> void:
+		_wave_mod = GameState.wave_mod
+		if _wave_mod == &"pigeon_raid" and GameState.character == &"pigeon":
+			unlock(&"pigeon_vs_pigeons"))
+	EventBus.run_started.connect(func() -> void: _boss_hit.clear())
 	EventBus.dash_used.connect(func(_at: Vector2) -> void:
 		Profile.stat_add(&"dashes", 1)
 		if Profile.stat(&"dashes") >= 1000:
@@ -125,7 +142,23 @@ static func hero_id(hero: StringName, danger: int) -> StringName:
 
 static func title_of(id: StringName) -> String:
 	if LIST.has(id):
-		return LIST[id][0]
+		return TranslationServer.translate(LIST[id][0])
+	var s: String = String(id)
+	if s.begins_with("nohit_"):
+		return TranslationServer.translate("БЕЗ ЦАРАПИН: %s") % EnemyNames.title(StringName(s.trim_prefix("nohit_")))
+	if s.begins_with("kill500_"):
+		return TranslationServer.translate("ГРОЗА: %s") % EnemyNames.title(StringName(s.trim_prefix("kill500_")))
+	if s.begins_with("tier4_"):
+		return TranslationServer.translate("IV ТИР: %s") % PerkLibrary.title(StringName("w_" + s.trim_prefix("tier4_")))
+	if s.begins_with("set_win_"):
+		return TranslationServer.translate("НАБОР: %s") % WeaponLibrary.class_title(StringName(s.trim_prefix("set_win_")))
+	if s.begins_with("hero_") and s.contains("_d"):
+		var hero: StringName = StringName(s.trim_prefix("hero_").get_slice("_d", 0))
+		var d: int = int(s.get_slice("_d", s.count("_d")))
+		if Balance.CHARACTERS.has(hero) and d < Balance.DANGER_LEVELS.size():
+			return TranslationServer.translate("ПОБЕДА ЗА %s: %s") % [CharacterLibrary.title(hero), Balance.DANGER_LEVELS[d]["name"]]
+	if s.begins_with("mod_clean_"):
+		return TranslationServer.translate("ПЕРЕЖИЛ ЧИСТО: %s") % TranslationServer.translate(Balance.WAVE_MOD_DATA.get(StringName(s.trim_prefix("mod_clean_")), {}).get("title", "?"))
 	return "ПОБЕДА: %s" % String(id)
 
 
@@ -139,8 +172,19 @@ func unlock(id: StringName, title: String = "") -> void:
 		_show_next()
 
 
+## Источник урона выставляется после удара - смотрим отложенно, кто из боссов попал.
+func _note_boss_hit() -> void:
+	var src: StringName = GameState.last_damage_source
+	if _boss_hit.has(src):
+		_boss_hit[src] = true
+
+
 func _on_enemy_died(id: StringName, _at: Vector2) -> void:
 	unlock(&"first_blood")
+	if _boss_hit.has(id) and not _boss_hit[id]:
+		unlock(StringName("nohit_" + String(id)))
+	if not String(id).begins_with("boss_") and Profile.killed(id) >= 500:
+		unlock(StringName("kill500_" + String(id)))
 	match id:
 		&"boss_mega_hamster": unlock(&"boss_hamster")
 		&"boss_rat_queen": unlock(&"boss_rat_queen")
@@ -157,6 +201,8 @@ func _on_enemy_died(id: StringName, _at: Vector2) -> void:
 
 
 func _on_wave_ended(_w: int) -> void:
+	if _wave_mod != &"" and GameState.wave_damage_taken <= 0.0:
+		unlock(StringName("mod_clean_" + String(_wave_mod)))
 	if GameState.last_clean_bonus > 0:
 		unlock(&"clean_wave")
 	if GameState.clean_waves >= 5:
@@ -174,6 +220,14 @@ func _check_items() -> void:
 			cursed += GameState.items[id]
 	if cursed >= 3:
 		unlock(&"cursed_3")
+	var have: int = 0
+	var total: int = 0
+	for id: StringName in Balance.ITEMS:
+		if ItemLibrary.is_cursed(id):
+			total += 1
+			have += 1 if GameState.item_count(id) > 0 else 0
+	if total > 0 and have >= total:
+		unlock(&"cursed_all")
 
 
 func _check_weapons() -> void:
@@ -181,6 +235,7 @@ func _check_weapons() -> void:
 	for w: Dictionary in GameState.weapons:
 		if w["tier"] >= 4:
 			unlock(&"tier4")
+			unlock(StringName("tier4_" + String(w["id"])))
 		ids[w["id"]] = ids.get(w["id"], 0) + 1
 	for id: StringName in ids:
 		if ids[id] >= 6:
@@ -200,13 +255,19 @@ func _on_run_end(won: bool) -> void:
 	if p.total_coins + GameState.run_coins_earned >= 10000: unlock(&"coins_10000")
 	if GameState.daily:
 		unlock(&"daily_1")
+		if GameState.run_score(won) >= 50000: unlock(&"daily_top")
+		if _daily_streak() >= 7: unlock(&"daily_week")
 		if p.daily_best.size() >= 10: unlock(&"daily_10")
 	if won:
 		unlock(&"first_win")
 		unlock(hero_id(GameState.character, GameState.danger), "ПОБЕДА ЗА %s: %s" % [CharacterLibrary.title(GameState.character), Balance.DANGER_LEVELS[GameState.danger]["name"]])
 		if GameState.danger >= 5: unlock(&"win_danger5")
 		if GameState.clean_waves >= Balance.WAVE_COUNT: unlock(&"clean_all")
-		if GameState.items.is_empty(): unlock(&"no_items_win")
+		if GameState.items.keys().all(func(k: StringName) -> bool: return k == ItemLibrary.SHOES): unlock(&"no_items_win")   # обувь не считается
+		if GameState.max_shop_spent <= 50: unlock(&"stingy_win")
+		var counts: Dictionary = WeaponLibrary.class_counts(GameState.weapons)
+		for c: StringName in counts:
+			if counts[c] >= 6: unlock(StringName("set_win_" + String(c)))
 		var cursed: int = 0
 		for id: StringName in GameState.items:
 			if ItemLibrary.is_cursed(id): cursed += 1
@@ -272,3 +333,41 @@ func _show_next() -> void:
 	tw.tween_interval(TOAST_SEC)
 	tw.tween_property(_toast, "position:y", -30.0, 0.2)
 	tw.tween_callback(_show_next)
+
+
+## Сколько дней подряд (до сегодня) сыграна ежедневка.
+func _daily_streak() -> int:
+	var days: Dictionary = {}
+	for key: String in Profile.daily_best:
+		var v: int = int(key)
+		var unix: int = Time.get_unix_time_from_datetime_dict({"year": v / 10000, "month": (v / 100) % 100, "day": v % 100})
+		days[unix / 86400] = true
+	var today: int = Time.get_unix_time_from_datetime_dict(Time.get_date_dict_from_system()) / 86400
+	var streak: int = 0
+	while days.has(today - streak):
+		streak += 1
+	return streak
+
+
+## Все id достижений (для Steam и документа): общие, «без царапин» на боссах, гроза каждого врага,
+## IV тир каждого оружия, набор каждого класса, каждый модификатор без урона, победы героев на каждой опасности.
+static func all_ids() -> Array[StringName]:
+	var out: Array[StringName] = []
+	for id: StringName in LIST:
+		out.append(id)
+	for b: StringName in Balance.ELITE_POOL + Balance.FINAL_BOSS_POOL:
+		out.append(StringName("nohit_" + String(b)))
+	for e: StringName in Balance.ENEMIES:
+		if not String(e).begins_with("boss_") and not Balance.ENEMIES[e].get("neutral", false):
+			out.append(StringName("kill500_" + String(e)))
+	for w: StringName in Balance.WEAPONS:
+		if not Balance.WEAPONS[w].get("structure", false):
+			out.append(StringName("tier4_" + String(w)))
+	for c: StringName in Balance.WEAPON_CLASSES:
+		out.append(StringName("set_win_" + String(c)))
+	for m: StringName in Balance.WAVE_MODS:
+		out.append(StringName("mod_clean_" + String(m)))
+	for h: StringName in Balance.CHARACTER_ORDER:
+		for d: int in Balance.DANGER_LEVELS.size():
+			out.append(hero_id(h, d))
+	return out

@@ -35,6 +35,9 @@ func _physics_process(delta: float) -> void:
 		var enemy: EnemyBase = node as EnemyBase
 		if enemy != null and enemy.is_alive() and _inside(enemy.global_position):
 			enemy.hit_by_weapon(99999.0, _dir.orthogonal() * 200.0)
+			GameState.truck_kills += 1
+			if GameState.truck_kills >= 50:
+				Achievements.unlock(&"truck_50")
 	if global_position.distance_to(_end) < Balance.TRUCK_SPEED * delta * 1.5 or global_position.dot(_dir) > _end.dot(_dir) + 1.0:
 		queue_free()
 
