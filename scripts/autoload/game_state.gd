@@ -39,6 +39,7 @@ var endless: bool = false            # бесконечный режим пос�
 var daily: bool = false              # ежедневный забег (один сид на всех в этот день)
 var daily_seed: int = 0
 var seed_word: String = ""
+var death_position: Vector2 = Vector2.ZERO   # Н30: где сдох герой (граффити ставится на это место)
 var lottery_tickets: int = 0          # Н12: куплено билетов, сотрутся в следующем Ларьке
 var card_spent: int = 0               # Н13: говно, потраченное в Ларьке (идёт в штампы карты «Помойка+»)
 var card_stamps: int = 0

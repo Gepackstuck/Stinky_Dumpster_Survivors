@@ -1,40 +1,35 @@
 class_name Graffiti
 extends Node2D
-## Н30: граффити на краю арены - память о прошлых смертях: «ТУТ СДОХ ДЯДЯ ВИТЯ. ВОЛНА 7».
-## Берёт последние смерти из Profile.graffiti; мазок баллончиком под надписью, кислотные цвета.
+## Н30: одно граффити на арене - там, где герой сдох в прошлый раз: «ТУТ СДОХ ДЯДЯ ВИТЯ. ВОЛНА 7».
+## Бледное, на полу под всеми: память, а не помеха. Данные - последняя запись Profile.graffiti.
 
 const SPLAT: Texture2D = preload("res://assets/sprites/graffiti_splat.png")
 const COLORS: Array[Color] = [Color(1.0, 0.06, 0.94), Color(0.22, 1.0, 0.08), Color(0.97, 1.0, 0.0), Color(0.0, 0.94, 1.0), Color(1.0, 0.4, 0.1)]
 
 
 func _ready() -> void:
-	z_index = 2
-	var list: Array = Profile.graffiti.slice(maxi(Profile.graffiti.size() - Balance.GRAFFITI_MAX, 0))
-	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
-	rng.seed = list.size() * 7919 + Profile.deaths
+	z_index = -1   # на асфальте, под врагами и пикапами
+	if Profile.graffiti.is_empty():
+		return
+	var e: Dictionary = Profile.graffiti.back()
 	var a: float = Balance.ARENA_SIZE
-	for i: int in list.size():
-		var e: Dictionary = list[i]
-		var top: bool = i % 2 == 0   # сверху и снизу арены, вперемешку
-		var x: float = 30.0 + (a - 120.0) * (float(i / 2) + 0.5) / maxf(ceilf(list.size() / 2.0), 1.0) + rng.randf_range(-12.0, 12.0)
-		var y: float = 8.0 if top else a - 18.0   # на асфальте у самой колючки: не под HUD и не в декорациях
-		var color: Color = COLORS[rng.randi() % COLORS.size()]
-		var splat: Sprite2D = Sprite2D.new()
-		splat.texture = SPLAT
-		splat.hframes = 3
-		splat.frame = rng.randi() % 3
-		splat.centered = false
-		splat.position = Vector2(x - 6.0, y - 1.0).round()
-		splat.scale = Vector2(2.0, 1.0)   # мазок шире надписи
-		splat.modulate = color.darkened(0.35)
-		add_child(splat)
-		var label: Label = Label.new()
-		var hero: String = CharacterLibrary.short_title(StringName(e.get("hero", "hobo")))
-		label.text = tr("ТУТ СДОХ %s. ВОЛНА %d") % [hero, int(e.get("wave", 1))]
-		label.position = Vector2(x, y - 1.0).round()
-		label.add_theme_color_override(&"font_color", color)
-		label.add_theme_color_override(&"font_shadow_color", Color.BLACK)
-		label.add_theme_constant_override(&"shadow_offset_x", 1)
-		label.add_theme_constant_override(&"shadow_offset_y", 1)
-		label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		add_child(label)
+	var at: Vector2 = Vector2(float(e.get("x", a * 0.5)), float(e.get("y", a * 0.5)))
+	at = at.clamp(Vector2(10.0, 10.0), Vector2(a - 150.0, a - 20.0))   # надпись целиком на арене
+	var color: Color = COLORS[int(e.get("wave", 1)) % COLORS.size()]
+	modulate.a = Balance.GRAFFITI_ALPHA
+	var splat: Sprite2D = Sprite2D.new()
+	splat.texture = SPLAT
+	splat.hframes = 3
+	splat.frame = int(e.get("wave", 1)) % 3
+	splat.centered = false
+	splat.position = (at + Vector2(-6.0, -1.0)).round()
+	splat.scale = Vector2(2.0, 1.0)
+	splat.modulate = color.darkened(0.45)
+	add_child(splat)
+	var label: Label = Label.new()
+	var hero: String = CharacterLibrary.short_title(StringName(e.get("hero", "hobo")))
+	label.text = tr("ТУТ СДОХ %s. ВОЛНА %d") % [hero, int(e.get("wave", 1))]
+	label.position = (at + Vector2(0.0, -1.0)).round()
+	label.add_theme_color_override(&"font_color", color)
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(label)

@@ -411,4 +411,5 @@ func _on_died() -> void:
 	set_physics_process(false)
 	hide()
 	_hurtbox.set_deferred(&"monitorable", false)
+	GameState.death_position = global_position   # Н30: тут в следующий раз будет граффити
 	EventBus.player_died.emit()

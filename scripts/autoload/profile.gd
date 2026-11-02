@@ -93,7 +93,8 @@ func _record_run(won: bool) -> void:
 		stat_add(StringName("deaths_" + String(GameState.character)), 1)
 		if not graffiti.is_empty() and int(graffiti.back().get("wave", -1)) == GameState.wave and StringName(graffiti.back().get("hero", "")) == GameState.character:
 			Achievements.unlock(&"deja_vu")   # сдох тем же героем на той же волне, что и в прошлый раз
-		graffiti.append({"hero": String(GameState.character), "wave": GameState.wave})
+		var at: Vector2 = GameState.death_position
+		graffiti.append({"hero": String(GameState.character), "wave": GameState.wave, "x": at.x, "y": at.y})
 		if graffiti.size() > Balance.GRAFFITI_KEEP:
 			graffiti = graffiti.slice(graffiti.size() - Balance.GRAFFITI_KEEP)   # живое кладбище: грибы и мухи по смертям героя
 	save()
