@@ -8,6 +8,7 @@
 [ext_resource type="Texture2D" path="res://assets/sprites/player.png" id="6_tex"]
 [ext_resource type="Script" path="res://scripts/player/player_items_visual.gd" id="10_items"]
 [ext_resource type="Script" path="res://scripts/player/dash_component.gd" id="11_dash"]
+[ext_resource type="Script" path="res://scripts/player/ultimate_component.gd" id="12_ult"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
 size = Vector2(14, 14)
@@ -69,4 +70,9 @@ shape = SubResource("CircleShape2D_magnet")
 script = ExtResource("11_dash")
 body = NodePath("..")
 sprite = NodePath("../Sprite2D")
+hurtbox = NodePath("../Hurtbox")
+
+[node name="Ultimate" type="Node" parent="." node_paths=PackedStringArray("body", "hurtbox")]
+script = ExtResource("12_ult")
+body = NodePath("..")
 hurtbox = NodePath("../Hurtbox")

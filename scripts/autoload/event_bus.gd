@@ -18,6 +18,12 @@ signal dash_state(charges: int, max_charges: int, recharge: float)   # рыво�
 @warning_ignore("unused_signal")
 signal dash_used(at: Vector2)
 @warning_ignore("unused_signal")
+signal ult_state(charge: float)              # ульта: заряд 0..1
+@warning_ignore("unused_signal")
+signal ult_used(kind: StringName)
+@warning_ignore("unused_signal")
+signal parried(at: Vector2)
+@warning_ignore("unused_signal")
 signal streak_changed(tier: int, bonus: float, broken: bool)   # серия без урона: ступень, + доля говна; broken - сбили
 
 @warning_ignore("unused_signal")

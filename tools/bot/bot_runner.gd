@@ -72,6 +72,7 @@ var _goal_left: float = 0.0
 var _last_coverage: float = 0.0
 var _dash_release: bool = false
 var _dashes: int = 0
+var _ults: int = 0
 
 
 func _ready() -> void:
@@ -135,6 +136,7 @@ func _next_run() -> void:
 	_finished = false
 	_game_time = 0.0
 	_dashes = 0
+	_ults = 0
 	_shop_visits = 0
 	_waves.clear()
 	_wave = {}
@@ -202,7 +204,7 @@ func _end_run(result: String) -> void:
 	var record: Dictionary = {
 		"hero": String(_hero), "skill": String(_skill_id), "danger": GameState.danger, "seed": _seed, "run": _run_index, "result": result,
 		"wave": GameState.wave, "waves_total": Balance.WAVE_COUNT, "game_sec": snappedf(_game_time, 0.1),
-		"piles": GameState.piles_this_run, "shop_visits": _shop_visits, "dashes": _dashes, "clean_waves": GameState.clean_waves, "best_streak": snappedf(GameState.best_streak_sec, 0.1), "killer": String(GameState.last_damage_source) if result == "death" else "",
+		"piles": GameState.piles_this_run, "ults": _ults, "shop_visits": _shop_visits, "dashes": _dashes, "clean_waves": GameState.clean_waves, "best_streak": snappedf(GameState.best_streak_sec, 0.1), "killer": String(GameState.last_damage_source) if result == "death" else "",
 		"surrounded_at_end": snappedf(_last_coverage, 0.01), "hp_end_ratio": snappedf(GameState.hp / maxf(GameState.max_hp, 1.0), 0.01), "level": GameState.level,
 		"kills": GameState.kills, "weapons": weapons, "sets": sets, "items": items, "waves": _waves.duplicate(true),
 		"real_sec": snappedf((Time.get_ticks_msec() - _real_start) / 1000.0, 0.1),
@@ -394,6 +396,7 @@ func _steer(delta: float) -> void:
 	if randf() < float(_skill["mistake"]):
 		best_dir = Vector2.from_angle(randf() * TAU)   # дёрнулся не туда
 	_maybe_dash(pos, near, coverage, gap_dir, best_dir, hp_ratio)
+	_maybe_ult(near, hp_ratio)
 	_last_dir = best_dir
 	_drive(best_dir)
 
@@ -425,6 +428,18 @@ func _hazard_radius(hz: Node2D) -> float:
 	if shape_node is CollisionShape2D and (shape_node as CollisionShape2D).shape is CircleShape2D:
 		return ((shape_node as CollisionShape2D).shape as CircleShape2D).radius
 	return 16.0
+
+
+## Ульта: когда полная и вокруг толпа (или мало ХП). Рукожоп - когда попало.
+func _maybe_ult(near: Array, hp_ratio: float) -> void:
+	var ult: Node = _player.get_node_or_null(^"Ultimate")
+	if ult == null or not ult.call(&"ready_to_fire"):
+		return
+	if _skill_id == &"noob" and randf() > 0.01:
+		return
+	if near.size() >= 10 or hp_ratio < 0.4 or _skill_id == &"noob":
+		ult.call(&"fire")
+		_ults += 1
 
 
 ## Рывок: задрот рвётся в дыру, когда кольцо смыкается, и уходит из-под снаряда/удара; рукожоп жмёт наугад.

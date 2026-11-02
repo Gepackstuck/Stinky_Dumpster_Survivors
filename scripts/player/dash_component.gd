@@ -52,6 +52,7 @@ func try_dash(move_dir: Vector2, facing: Vector2) -> bool:
 	_charges -= 1
 	if _recharge <= 0.0:
 		_recharge = float(_p["cd"])
+	_try_parry()
 	if _p.get("old", false) and randf() < float(_p.get("fart", 0.0)):
 		_fart()
 		return true
@@ -108,6 +109,47 @@ func _physics_process(delta: float) -> void:
 	if state != _last_sent:
 		_last_sent = state
 		EventBus.dash_state.emit(_charges, int(_p["charges"]), state.z)
+
+
+## Парирование: рывок, когда вражеский снаряд вот-вот попадёт, отбивает его во врагов (втрое сильнее).
+func _try_parry() -> void:
+	var at: Vector2 = body.global_position
+	for holder: Node in [get_tree().current_scene]:
+		for child: Node in holder.get_children():
+			var proj: EnemyProjectile = child as EnemyProjectile
+			if proj == null or not proj.get("_active"):
+				continue
+			var to_me: Vector2 = at - proj.global_position
+			var heading: Vector2 = proj.get("_direction")
+			if to_me.length() > Balance.PARRY_RADIUS or heading.dot(to_me.normalized()) < 0.3:
+				continue
+			var damage: float = maxf(float(proj.get("_damage")) * Balance.PARRY_DAMAGE_MULT, Balance.PARRY_MIN_DAMAGE) * GameState.damage_mult
+			var back: Vector2 = -heading
+			var target: Node2D = _nearest_enemy(proj.global_position)
+			if target != null:
+				back = proj.global_position.direction_to(target.global_position)
+			var shot: Projectile = PoolManager.acquire(preload("res://scenes/weapons/projectile.tscn")) as Projectile
+			get_tree().current_scene.add_child(shot)
+			shot.launch(proj.global_position, back, damage, Balance.PARRY_SPEED, 1.5)
+			shot.source_weapon = &"parry"
+			shot.pierce = 3
+			proj.call(&"_finish", false)
+			HitFx.burst(get_tree(), proj.global_position, Color(1.0, 1.0, 0.6), 12, 80.0, 3.0, 0.3, true)
+			HitFx.popup(get_tree(), at + Vector2(0.0, -16.0), "ОТБИЛ!", Color(1.0, 1.0, 0.4), 14.0, 0.7)
+			EventBus.parried.emit(at)
+			AudioManager.play_sfx(&"buy", 0.0)
+
+
+func _nearest_enemy(at: Vector2) -> Node2D:
+	var best: Node2D = null
+	var best_d: float = 220.0
+	for node: Node in get_tree().get_nodes_in_group(&"enemies"):
+		var e: Node2D = node as Node2D
+		var d: float = e.global_position.distance_to(at)
+		if d < best_d:
+			best_d = d
+			best = e
+	return best
 
 
 ## Старик надорвался: вместо рывка - пердёж. Бьёт и расталкивает всех вокруг, перезарядка дольше.

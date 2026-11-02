@@ -25,7 +25,7 @@ const PANEL_RECT: Rect2 = Rect2(60.0, 55.0, 360.0, 160.0)
 const KILLER_POS: Vector2 = Vector2(92.0, 126.0)
 const SOURCE_ICONS: Dictionary = {&"pets": "item_dead_rat", &"structures": "item_bucket_turret", &"thorns": "item_barbed_wire",
 		&"items": "item_diarrhea", &"turret": "item_bucket_turret", &"stink_lamp": "item_stink_lamp", &"cart_mortar": "item_cart_mortar"}
-const SOURCE_TITLES: Dictionary = {&"pets": "ПИТОМЦЫ", &"structures": "ПОСТРОЙКИ", &"thorns": "ШИПЫ", &"items": "ПРЕДМЕТЫ", &"dash": "РЫВОК", &"other": "ПРОЧЕЕ"}
+const SOURCE_TITLES: Dictionary = {&"ult": "УЛЬТА", &"parry": "ОТБИТОЕ", &"pets": "ПИТОМЦЫ", &"structures": "ПОСТРОЙКИ", &"thorns": "ШИПЫ", &"items": "ПРЕДМЕТЫ", &"dash": "РЫВОК", &"other": "ПРОЧЕЕ"}
 const BAR_UNDER: Texture2D = preload("res://assets/ui/hp_bar_under.png")
 const BAR_FILL: Texture2D = preload("res://assets/ui/hp_bar_fill.png")
 const DASH_ICON: Texture2D = preload("res://assets/ui/hud_dash_full.png")
@@ -230,8 +230,10 @@ func _fill_damage() -> void:
 
 
 func _source_icon(key: StringName) -> Texture2D:
-	if key == &"dash":
+	if key == &"dash" or key == &"parry":
 		return DASH_ICON
+	if key == &"ult":
+		return preload("res://assets/ui/hud_ult_full.png")
 	if SOURCE_ICONS.has(key):
 		return load("res://assets/ui/%s_s.png" % SOURCE_ICONS[key]) as Texture2D
 	if Balance.WEAPONS.has(key):

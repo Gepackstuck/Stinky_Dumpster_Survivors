@@ -333,6 +333,30 @@ const HERO_DASH: Dictionary = {
 	&"slime": {"name": "ПОЛЗОК", "dist": 60.0, "cd": 1.5, "fx": &"trail"},
 }
 
+# --- Парирование: рывок, когда вражеский снаряд вот-вот попадёт, отбивает его обратно
+const PARRY_RADIUS: float = 24.0
+const PARRY_DAMAGE_MULT: float = 3.0       # отбитый снаряд бьёт втрое сильнее (минимум PARRY_MIN_DAMAGE)
+const PARRY_MIN_DAMAGE: float = 15.0
+const PARRY_SPEED: float = 260.0
+# --- Ульта героя: копится от убийств (ULT_KILLS на полную), кнопка Q / геймпад Y
+const ULT_KILLS: float = 70.0
+const ULT_NUKE_RADIUS: float = 95.0
+const ULT_NUKE_DAMAGE: float = 40.0         # x (1 + 0.3 x волна) x урон героя
+const ULT_FREEZE_SEC: float = 2.5
+const ULT_BARRAGE_COUNT: int = 18
+const ULT_BARRAGE_DAMAGE: float = 18.0      # x (1 + 0.3 x волна)
+const ULT_HEAL_FRACTION: float = 0.5
+const ULT_RAGE_SEC: float = 5.0
+const ULT_RAGE_BONUS: float = 1.0           # +100% скорости атаки
+const HERO_ULT: Dictionary = {
+	&"hobo": ["БУТЫЛКА В ТОЛПУ", &"nuke"], &"squid": ["ЧЕРНИЛЬНАЯ ТУЧА", &"freeze"], &"clerk": ["СОВЕЩАНИЕ", &"freeze"],
+	&"janitor": ["ГЕНЕРАЛЬНАЯ УБОРКА", &"nuke"], &"uncle_vitya": ["ПЕРЕГАР", &"nuke"], &"blogger": ["СТРИМ НА МИЛЛИОН", &"rage"],
+	&"granny": ["ТАПКОПАД", &"barrage"], &"courier": ["ДЕДЛАЙН", &"rage"], &"pigeon": ["ПОМЁТНАЯ БУРЯ", &"barrage"],
+	&"punk": ["ПАНК-РОК", &"rage"], &"shawarma": ["ДВОЙНАЯ ШАУРМА", &"heal"], &"guard": ["СТОЯТЬ, БОЯТЬСЯ", &"freeze"],
+	&"student": ["ТРИ ЭНЕРГЕТИКА", &"rage"], &"plumber": ["ПРОРЫВ ТРУБЫ", &"nuke"], &"dacha": ["УРОЖАЙ", &"heal"],
+	&"skater": ["КИКФЛИП", &"barrage"], &"slime": ["СЛИЗНЯК-БОМБА", &"nuke"],
+}
+
 # --- Телеграфы атак (замах виден заранее: зона + наползающая заливка) ---
 const CHARGER_WINDUP_SEC: float = 0.6       # тележка стоит и показывает путь рывка
 const CHARGER_DASH_SEC: float = 0.55

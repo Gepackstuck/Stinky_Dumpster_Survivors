@@ -15,6 +15,7 @@
 [ext_resource type="Script" path="res://scripts/ui/streak_meter.gd" id="13_streak"]
 [ext_resource type="Script" path="res://scripts/ui/wave_mod_badge.gd" id="14_mod"]
 [ext_resource type="Script" path="res://scripts/ui/pile_pointer.gd" id="15_pile"]
+[ext_resource type="Script" path="res://scripts/ui/ult_meter.gd" id="16_ult"]
 
 [node name="Hud" type="CanvasLayer"]
 layer = 5
@@ -161,3 +162,11 @@ script = ExtResource("14_mod")
 
 [node name="PilePointer" type="Sprite2D" parent="Root"]
 script = ExtResource("15_pile")
+
+[node name="UltMeter" type="TextureProgressBar" parent="Root"]
+layout_mode = 0
+offset_left = 154.0
+offset_top = 18.0
+offset_right = 167.0
+offset_bottom = 29.0
+script = ExtResource("16_ult")

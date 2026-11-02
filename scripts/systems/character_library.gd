@@ -115,7 +115,8 @@ static func dash_line(id: StringName) -> String:
 		parts.append("%d ЗАРЯДА" % int(p["charges"]))
 	if parts.is_empty():
 		parts.append("ДАЛЕКО И ЧАСТО" if float(p["dist"]) >= 85.0 else ("ЧАСТО" if float(p["cd"]) <= 1.3 else "ОБЫЧНЫЙ"))
-	return "РЫВОК: %s (%s)" % [String(p.get("name", "РЫВОК")), ", ".join(parts)]
+	var ult: Array = Balance.HERO_ULT.get(id, ["?", &""])
+	return "РЫВОК: %s (%s)   УЛЬТА: %s" % [String(p.get("name", "РЫВОК")), ", ".join(parts), ult[0]]
 
 
 ## Плюсы и минусы построчно (как у предметов).
