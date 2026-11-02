@@ -453,7 +453,7 @@ func _update_slot_info(i: int) -> void:
 	var class_names: Array[String] = []
 	for class_id: StringName in WeaponLibrary.classes(entry["id"]):
 		class_names.append(WeaponLibrary.class_title(class_id))
-	_slot_info.text = "%s ТИР %s (%s). E: МЕНЮ" % [PerkLibrary.title(ShopLibrary.perk_id_of(entry["id"])), StatLibrary.TIER_NAMES[entry["tier"] - 1], ", ".join(class_names)]
+	_slot_info.text = "%s ТИР %s (%s). E: МЕНЮ" % [WeaponLibrary.display_name(entry["id"], entry["tier"]), StatLibrary.TIER_NAMES[entry["tier"] - 1], ", ".join(class_names)]
 
 
 ## Активные наборы оружия (в Ларьке, когда фокус не на слоте).

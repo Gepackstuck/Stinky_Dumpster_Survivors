@@ -39,6 +39,8 @@ const LIST: Dictionary = {
 	&"cursed_3": ["ВОНЮЧКА СО СТАЖЕМ", "Держи 3 зловонных предмета с помойки одновременно"],
 	&"cursed_win": ["ПОБЕДИЛ, ВОНЯЯ", "Победи с 3 зловонными предметами"],
 	&"tier4": ["ЛЕГЕНДАРНЫЙ ХЛАМ", "Собери оружие IV тира"],
+	&"evolution": ["ЭВОЛЮЦИЯ ГОВНА", "Эволюционируй любое оружие"],
+	&"evolution_all": ["ДАРВИН С ПОМОЙКИ", "Открой все эволюции оружия"],
 	&"six_same": ["ОДНООБРАЗИЕ", "6 одинаковых оружий в слотах"],
 	&"set_6": ["ПОЛНЫЙ КОМПЛЕКТ", "Набор из 6 оружий одного класса"],
 	&"dash_1000": ["ПРЫГУН", "1000 рывков за всё время"],
@@ -78,6 +80,15 @@ func _ready() -> void:
 		if Profile.combos_found.size() >= Balance.ITEM_COMBOS.size():
 			unlock(&"combo_all"))
 	EventBus.items_changed.connect(_check_items)
+	EventBus.weapon_evolved.connect(func(id: StringName) -> void:
+		unlock(&"evolution")
+		Profile.stat_add(StringName("evo_" + String(id)), 1)
+		var all_done: bool = true
+		for w: StringName in Balance.WEAPON_EVOLUTIONS:
+			if Profile.stat(StringName("evo_" + String(w))) == 0:
+				all_done = false
+		if all_done:
+			unlock(&"evolution_all"))
 	EventBus.weapons_changed.connect(_check_weapons)
 	EventBus.dash_used.connect(func(_at: Vector2) -> void:
 		Profile.stat_add(&"dashes", 1)

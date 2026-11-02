@@ -124,6 +124,9 @@ static func description(offer: Dictionary) -> String:
 		if ItemLibrary.is_cursed(offer["id"]):
 			text += "ЗЛОВОННОЕ! С ПОМОЙКИ\n"
 		text += ItemLibrary.description(offer["id"])
+		var evo_name: String = WeaponLibrary.evolution_by_item(offer["id"])
+		if evo_name != "":
+			text += "\nЭВОЛЮЦИЯ: %s!" % evo_name
 		var combo: StringName = ItemLibrary.combo_with_owned(offer["id"])
 		if combo != &"":
 			text += "\nКОМБО: %s!" % ItemLibrary.title(combo) if combo in Profile.combos_found else "\nЧТО-ТО ЗАШЕВЕЛИЛОСЬ..."

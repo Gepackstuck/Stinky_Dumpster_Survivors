@@ -3,9 +3,9 @@ extends RefCounted
 ## Каталог статов для карточек повышения уровня (как в Brotato): название, иконка, описание, тиры I-IV.
 
 const IDS: Array[StringName] = [&"max_hp", &"regen", &"damage", &"attack_speed", &"speed", &"armor", &"dodge", &"pickup", &"crit"]
-const TIER_NAMES: Array[String] = ["I", "II", "III", "IV"]
+const TIER_NAMES: Array[String] = ["I", "II", "III", "IV", "ЭВО"]
 const TIER_COLORS: Array[Color] = [
-	Color(0.91, 0.91, 0.91), Color(0.0, 0.94, 1.0), Color(1.0, 0.063, 0.94), Color(1.0, 0.2, 0.15)]
+	Color(0.91, 0.91, 0.91), Color(0.0, 0.94, 1.0), Color(1.0, 0.063, 0.94), Color(1.0, 0.2, 0.15), Color(1.0, 0.84, 0.0)]
 
 const _TITLES: Dictionary[StringName, String] = {
 	&"max_hp": "ЖИВУЧЕСТЬ",

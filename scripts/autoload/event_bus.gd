@@ -47,6 +47,8 @@ signal bin_destroyed(at: Vector2)                   # бак разбит: на 
 signal item_combo(combo_id: StringName)              # два предмета слились в комбо
 @warning_ignore("unused_signal")
 signal items_changed                               # рюкзак предметов поменялся
+signal weapon_evolved(weapon_id: StringName)       # оружие IV тира эволюционировало
+@warning_ignore("unused_signal")
 signal weapons_changed                              # набор оружия игрока поменялся (купил, скрестил, переработал)
 
 # --- Подбираемое ---

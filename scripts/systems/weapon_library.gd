@@ -29,9 +29,28 @@ const _PROP_LABELS: Dictionary[String, String] = {
 static func stat(weapon_id: StringName, tier: int, key: String, default: Variant = 0.0) -> Variant:
 	var base: Variant = Balance.WEAPONS[weapon_id].get(key, default)
 	var bonus: Array = Balance.WEAPON_TIER_PROPS.get(weapon_id, {}).get(key, [])
+	var evo: Variant = 0
+	if tier >= 5:   # эволюция: прибавка поверх IV тира
+		evo = Balance.WEAPON_EVOLUTIONS.get(weapon_id, {}).get("props", {}).get(key, 0)
 	if bonus.is_empty() or tier < 1:
-		return base
-	return base + bonus[clampi(tier, 1, 4) - 1]
+		return base + evo if evo is float or evo is int else base
+	return base + bonus[clampi(tier, 1, 4) - 1] + evo
+
+
+## Имя оружия с учётом эволюции (тир 5).
+static func display_name(weapon_id: StringName, tier: int) -> String:
+	if tier >= 5 and Balance.WEAPON_EVOLUTIONS.has(weapon_id):
+		return Balance.WEAPON_EVOLUTIONS[weapon_id]["name"]
+	return PerkLibrary.title(StringName("w_" + String(weapon_id)))
+
+
+## Какую эволюцию даст предмет, если у героя есть подходящее оружие IV тира (пусто - никакую).
+static func evolution_by_item(item_id: StringName) -> String:
+	for w: Dictionary in GameState.weapons:
+		var evo: Dictionary = Balance.WEAPON_EVOLUTIONS.get(w["id"], {})
+		if not evo.is_empty() and evo["item"] == item_id and w["tier"] == 4:
+			return evo["name"]
+	return ""
 
 
 static func classes(weapon_id: StringName) -> Array:

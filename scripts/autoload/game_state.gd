@@ -110,6 +110,8 @@ func _ready() -> void:
 	EventBus.player_died.connect(_on_player_died)
 	EventBus.xp_collected.connect(_on_xp_collected)
 	EventBus.weapons_changed.connect(_recompute_perk_stats)
+	EventBus.weapons_changed.connect(_check_evolutions)
+	EventBus.items_changed.connect(_check_evolutions)
 	EventBus.player_hit.connect(_on_player_hit)
 	EventBus.dash_used.connect(func(_at: Vector2) -> void:
 		if not active_bet.is_empty():
@@ -455,6 +457,16 @@ func tick_streak(delta: float) -> void:
 
 func streak_bonus() -> float:
 	return 0.0 if streak_tier == 0 else float(Balance.NOHIT_STREAK_TIERS[streak_tier - 1][1])
+
+
+## Эволюции: оружие IV тира + нужный предмет в рюкзаке -> тир 5 (Balance.WEAPON_EVOLUTIONS).
+func _check_evolutions() -> void:
+	for w: Dictionary in weapons:
+		var evo: Dictionary = Balance.WEAPON_EVOLUTIONS.get(w["id"], {})
+		if w["tier"] == 4 and not evo.is_empty() and item_count(evo["item"]) > 0:
+			w["tier"] = 5
+			EventBus.weapon_evolved.emit(w["id"])
+			EventBus.weapons_changed.emit.call_deferred()
 
 
 ## Пари: проверяем в конце волны, на которую спорили.

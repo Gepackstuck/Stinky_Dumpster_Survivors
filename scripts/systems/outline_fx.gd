@@ -3,7 +3,7 @@ extends RefCounted
 ## Цветная обводка по тиру, как в Brotato: оружие и шмотки на герое светятся цветом уровня.
 ## Тир I - без обводки, II - синяя, III - фиолетовая, IV - красная.
 
-const TIER_COLORS: Array[Color] = [Color(0, 0, 0, 0), Color(0.25, 0.6, 1.0), Color(0.78, 0.3, 1.0), Color(1.0, 0.2, 0.2)]
+const TIER_COLORS: Array[Color] = [Color(0, 0, 0, 0), Color(0.25, 0.6, 1.0), Color(0.78, 0.3, 1.0), Color(1.0, 0.2, 0.2), Color(1.0, 0.84, 0.0)]
 
 static var _cache: Dictionary = {}
 

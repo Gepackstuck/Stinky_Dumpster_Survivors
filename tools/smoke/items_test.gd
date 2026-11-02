@@ -43,5 +43,11 @@ func _run() -> void:
 	GameState.add_item(&"chef_apron")
 	_check(WeaponLibrary.class_counts(GameState.weapons, true).get(&"kitchen", 0) == 2, "фартук: +1 к набору КУХНЯ")
 	_check(GameState.bonus_max_hp >= hp0 + 3.0 + 2.0, "фартук: +3 ХП и бонус набора кухни 2")
+	GameState.weapons.clear()
+	GameState.add_weapon(&"mop", 4)
+	GameState.add_item(&"week_socks")
+	await get_tree().process_frame
+	_check(GameState.weapons[0]["tier"] == 5, "швабра IV + недельные носки = эволюция")
+	_check(WeaponLibrary.stat(&"mop", 5, "arc_deg") >= 300.0, "тайфун машет почти по кругу")
 	print("ITEMS OK" if _fails == 0 else "ITEMS FAIL %d" % _fails)
 	get_tree().quit()

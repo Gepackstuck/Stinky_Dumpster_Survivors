@@ -599,8 +599,17 @@ const WEAPON_UNLOCK: Dictionary = {
 	&"extension_cord": {"kind": &"kills", "need": 3000},
 }
 const WEAPON_SLOTS: int = 6
-const WEAPON_TIER_DAMAGE: Array[float] = [1.0, 1.5, 2.0, 2.7]      # множитель урона по тирам I-IV
-const WEAPON_TIER_COOLDOWN: Array[float] = [1.0, 0.92, 0.85, 0.75]  # множитель паузы между атаками
+const WEAPON_TIER_DAMAGE: Array[float] = [1.0, 1.5, 2.0, 2.7, 3.6]      # множитель урона по тирам I-IV, 5 = ЭВОЛЮЦИЯ
+const WEAPON_TIER_COOLDOWN: Array[float] = [1.0, 0.92, 0.85, 0.75, 0.65]  # множитель паузы между атаками
+# Эволюции: оружие IV тира + предмет в рюкзаке = эволюция (тир 5, золото, своё имя, прибавки к свойствам поверх IV).
+const WEAPON_EVOLUTIONS: Dictionary = {
+	&"mop": {"item": &"week_socks", "name": "ВОНЮЧИЙ ТАЙФУН", "props": {"arc_deg": 175.0, "reach": 10.0}},
+	&"slingshot": {"item": &"bottle_cap", "name": "ПУЛЕМЁТ КРЫШЕК", "props": {"ricochets": 2}},
+	&"lighter": {"item": &"gas_can", "name": "ОГНЕМЁТ ИЗ ЗАЖИГАЛКИ", "props": {"burn_duration": 3.0, "pellets": 2}},
+	&"sock": {"item": &"holey_sock", "name": "НОСОК СМЕРТИ", "props": {"radius": 40.0}},
+	&"mosin": {"item": &"binoculars", "name": "СНАЙПЕР С ПОМОЙКИ", "props": {"pierce": 5}},
+	&"extension_cord": {"item": &"battery", "name": "ЛЭП", "props": {"chain_jumps": 6}},
+}
 # Классы оружия (как в Brotato): у оружия 1-2 класса. За 2..6 оружий одного класса в слотах - бонус набора (копии считаются).
 const WEAPON_CLASSES: Dictionary = {
 	&"lighter": [&"fire"], &"sock": [&"stinky"], &"slingshot": [&"guns"], &"laser_pointer": [&"guns"],
@@ -650,7 +659,7 @@ const WEAPON_PRICE: Dictionary = {&"lighter": 22, &"sock": 24, &"slingshot": 22,
 		&"plunger": 22, &"shiv": 18, &"shovel": 30, &"blowtorch": 28, &"syringe": 24, &"tin_bomb": 30, &"extension_cord": 28}
 const PERK_PRICE: Dictionary = {&"speed": 14, &"regen": 16, &"double_shot": 30, &"loot_goblin": 12}
 const SHOP_SLOTS: int = 4
-const SHOP_PRICE_TIER_MULT: Array[float] = [1.0, 2.0, 3.5, 6.0]
+const SHOP_PRICE_TIER_MULT: Array[float] = [1.0, 2.0, 3.5, 6.0, 9.0]
 const COIN_PER_XP: float = 1.3   # сколько говна даёт 1 XP
 const SHOP_PRICE_WAVE_GROWTH: float = 0.15          # цена *(1 + это * волна)
 const SHOP_WEAPON_CHANCE: float = 0.45              # шанс, что слот — оружие (предмет — SHOP_ITEM_CHANCE, иначе перк)

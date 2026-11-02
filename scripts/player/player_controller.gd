@@ -54,6 +54,10 @@ func _ready() -> void:
 	EventBus.wave_started.connect(_on_wave_started_items)
 	EventBus.wave_ended.connect(_on_wave_ended_items)
 	EventBus.streak_changed.connect(_on_streak_changed)
+	EventBus.weapon_evolved.connect(func(id: StringName) -> void:
+		HitFx.popup(get_tree(), global_position + Vector2(0.0, -26.0), "ЭВОЛЮЦИЯ: %s!" % WeaponLibrary.display_name(id, 5), Color(1.0, 0.84, 0.0), 26.0, 2.0, true)
+		HitFx.burst(get_tree(), global_position, Color(1.0, 0.84, 0.0), 30, 140.0, 3.0, 0.8, true)
+		AudioManager.play_sfx(&"combo"))
 	EventBus.shake_requested.connect(func(amount: float) -> void:
 		if Settings.screen_shake:
 			_shake = maxf(_shake, amount))
