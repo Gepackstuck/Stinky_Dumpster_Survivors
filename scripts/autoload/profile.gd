@@ -75,6 +75,17 @@ func _record_run(won: bool) -> void:
 	if GameState.daily:
 		var key: String = str(GameState.daily_seed)
 		daily_best[key] = maxi(int(daily_best.get(key, 0)), GameState.run_score(won))
+	if GameState.mode == &"endless":   # Н32: своя таблица режима
+		stats[&"mode_endless_best"] = maxi(stat(&"mode_endless_best"), GameState.wave)
+		if GameState.wave >= 25:
+			Achievements.unlock(&"mode_endless_25")
+		if GameState.wave >= 40:
+			Achievements.unlock(&"mode_endless_40")
+	if GameState.mode == &"closed":    # Н33
+		if GameState.wave >= 10:
+			Achievements.unlock(&"closed_10")
+		if won:
+			Achievements.unlock(&"closed_win")
 	if GameState.endless:
 		endless_best = maxi(endless_best, GameState.wave)
 		save()

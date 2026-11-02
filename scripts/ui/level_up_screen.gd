@@ -305,6 +305,11 @@ func _show_choices() -> void:
 	_zone = 0
 	_stat_offers.clear()
 	_shop_mode = not _start_mode and _queue.is_empty()
+	if _shop_mode and GameState.mode == &"closed":   # Н33: Ларёк закрыт - сразу в бой
+		_root.hide()
+		get_tree().paused = false
+		EventBus.next_wave_requested.emit.call_deferred()
+		return
 	var frames: Array[int] = []
 	for v: int in PerkCard.FRAME_VARIANTS:
 		frames.append(v)

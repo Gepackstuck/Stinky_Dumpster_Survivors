@@ -30,6 +30,7 @@ const BAR_UNDER: Texture2D = preload("res://assets/ui/hp_bar_under.png")
 const BAR_FILL: Texture2D = preload("res://assets/ui/hp_bar_fill.png")
 const DASH_ICON: Texture2D = preload("res://assets/ui/hud_dash_full.png")
 const KILLER_MAX_SIZE: float = 30.0
+var _extra_label: Label = null
 const KILLER_FRAME_SEC: float = 0.25
 const WIRE_TEXTURE: Texture2D = preload("res://assets/sprites/arena_wire.png")
 
@@ -75,6 +76,15 @@ func _ready() -> void:
 	_root.add_child(_damage_box)
 	_hint_label = Label.new()
 	_hint_label.position = Vector2(20.0, 220.0)
+	_extra_label = Label.new()
+	_extra_label.position = Vector2(292.0, 190.0)   # справа от кнопки «ЕЩЁ РАЗ», внутри панели
+	_extra_label.size = Vector2(112.0, 9.0)
+	_extra_label.autowrap_mode = TextServer.AUTOWRAP_WORD
+	_extra_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	_extra_label.add_theme_color_override(&"font_color", Color(0.75, 0.75, 0.8))
+	_extra_label.add_theme_color_override(&"font_shadow_color", Color.BLACK)
+	_extra_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_root.add_child(_extra_label)
 	_hint_label.size = Vector2(440.0, 40.0)
 	_hint_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_hint_label.add_theme_color_override(&"font_color", Color(0.2235, 1.0, 0.0784))
@@ -171,8 +181,12 @@ func _show_result(title: String, died: bool = false) -> void:
 	var secs: int = GameState.hp_history.size()
 	_stats.text = "УБИТО %d   УР. %d   ВОЛНА %d/%d   %d:%02d   %s" % [GameState.kills, GameState.level, GameState.wave, Balance.WAVE_COUNT,
 			secs / 60, secs % 60, WaveRules.danger_v("name")]
+	var extra: PackedStringArray = []   # режим и сид - отдельной строкой внизу панели (в строку итогов не влезают)
+	if GameState.mode != &"":
+		extra.append(tr({&"endless": "БЕСКОНЕЧНАЯ ПОМОЙКА", &"closed": "ЛАРЁК ЗАКРЫТ"}.get(GameState.mode, "")))
 	if GameState.seed_word != "":
-		_stats.text += "   " + tr("СИД: %s") % GameState.seed_word
+		extra.append(tr("СИД: %s") % GameState.seed_word)
+	_extra_label.text = "   ".join(extra)
 	_graph.died = died
 	_graph.queue_redraw()
 	_fill_damage()

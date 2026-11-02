@@ -37,6 +37,10 @@ func _ready() -> void:
 
 ## Вид волны (normal/elite/horde/boss) — нужен экрану между волнами для превью следующей.
 func wave_kind(wave: int) -> StringName:
+	if GameState.mode == &"endless":   # Н32: босс-рандом каждые 5 волн, элита каждую 3-ю
+		if wave % Balance.ENDLESS_BOSS_EVERY == 0:
+			return &"boss"
+		return &"elite" if wave >= Balance.MODE_ENDLESS_ELITE_FROM and wave % Balance.ENDLESS_ELITE_EVERY == 0 else &"normal"
 	if wave > Balance.WAVE_COUNT:
 		if wave % Balance.ENDLESS_BOSS_EVERY == 0:
 			return &"boss"
@@ -191,6 +195,9 @@ func _end_wave() -> void:
 		HitFx.popup(get_tree(), player.global_position + Vector2(0.0, -16.0), "+%d XP: ПОКОПАЛСЯ В ПОМОЙКЕ" % bonus, Color(0.968627, 1, 0, 1), 18.0, 1.4)
 		if player.has_method(&"heal_full"):
 			player.call(&"heal_full")
+		var gift: String = GameState.closed_gift()   # Н33: без Ларька - находка после волны
+		if gift != "":
+			HitFx.popup(get_tree(), player.global_position + Vector2(0.0, -30.0), gift, Color(0.22, 1.0, 0.08), 18.0, 2.2, true)
 		EventBus.wave_ended.emit(GameState.wave)
 
 

@@ -31,6 +31,17 @@ func _run() -> void:
 	_check(a == b, "одно слово - один и тот же забег")
 	_check(a[0] != c[0], "другое слово - другой забег")
 	GameState.seed_word = ""
+	# Н33 ларёк закрыт: обувь сразу, находки после волны
+	GameState.mode = &"closed"
+	GameState.character = &"skater"
+	GameState.reset_run()
+	_check(GameState.item_count(ItemLibrary.SHOES) == 2, "без Ларька обувь выдана сразу")
+	GameState.wave = 4
+	_check(GameState.closed_gift() != "", "находка после обычной волны")
+	GameState.wave = 6
+	var w0: int = GameState.weapons.size()
+	_check(GameState.closed_gift() != "" and (GameState.weapons.size() > w0 or w0 >= Balance.WEAPON_SLOTS), "каждая 3-я волна - оружие")
+	GameState.mode = &""
 	GameState.character = &"janitor"
 	var level: Node = MAIN.instantiate()
 	get_tree().root.add_child(level)
@@ -48,6 +59,9 @@ func _run() -> void:
 	await get_tree().process_frame
 	_check(GameState.wave == Balance.WAVE_COUNT + 1 and GameState.wave_kind == &"normal", "16-я волна обычная (есть %d %s)" % [GameState.wave, GameState.wave_kind])
 	_check(wm.call("wave_kind", 18) == &"elite" and wm.call("wave_kind", 20) == &"boss", "18-я элита, 20-я боссы")
+	GameState.mode = &"endless"
+	_check(wm.call("wave_kind", 5) == &"boss" and wm.call("wave_kind", 6) == &"elite" and wm.call("wave_kind", 7) == &"normal", "Н32: босс каждые 5, элита каждая 3-я")
+	GameState.mode = &""
 	GameState.kills = 100
 	GameState.clean_waves = 2
 	_check(GameState.run_score(false) == 100 + 16 * Balance.SCORE_PER_WAVE + 2 * Balance.SCORE_PER_CLEAN_WAVE + Balance.SCORE_WIN, "очки бесконечности")

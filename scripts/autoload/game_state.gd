@@ -39,6 +39,7 @@ var endless: bool = false            # бесконечный режим пос�
 var daily: bool = false              # ежедневный забег (один сид на всех в этот день)
 var daily_seed: int = 0
 var seed_word: String = ""
+var mode: StringName = &""                   # режим из меню РЕЖИМЫ: endless (Н32), closed (Н33), "" - обычный
 var death_position: Vector2 = Vector2.ZERO   # Н30: где сдох герой (граффити ставится на это место)
 var lottery_tickets: int = 0          # Н12: куплено билетов, сотрутся в следующем Ларьке
 var card_spent: int = 0               # Н13: говно, потраченное в Ларьке (идёт в штампы карты «Помойка+»)
@@ -171,7 +172,7 @@ func reset_run() -> void:
 	card_ready = false
 	card_discount = 0.0
 	free_rerolls = 0
-	endless = false
+	endless = mode == &"endless"   # Н32: бесконечная помойка с самого начала
 	if daily:
 		seed(daily_seed)
 	elif seed_word != "":
@@ -192,6 +193,8 @@ func reset_run() -> void:
 	var start_weapon: StringName = Balance.CHARACTERS[character]["weapon"]
 	if start_weapon != &"":
 		weapons.append({"id": start_weapon, "tier": 1})
+	if mode == &"closed":   # Н33: Ларька нет - обувь (рывок) выдают сразу
+		items[ItemLibrary.SHOES] = ItemLibrary.shoes_max()
 	_recompute_perk_stats()
 	EventBus.run_started.emit()
 
@@ -628,3 +631,27 @@ func scratch_tickets() -> String:
 		parts.append("+%d" % won_coins)
 	parts.append_array(won_items)
 	return TranslationServer.translate("БИЛЕТЫ: %s") % ", ".join(parts)
+
+
+## Н33 «Ларёк закрыт»: подарок после волны (предмет, каждая 3-я - оружие). Возвращает подпись или "".
+func closed_gift() -> String:
+	if mode != &"closed":
+		return ""
+	if wave % Balance.CLOSED_WEAPON_EVERY == 0:
+		var pool: Array[StringName] = []
+		for perk_id: StringName in PerkLibrary.WEAPON_PERKS:
+			pool.append(StringName(String(perk_id).trim_prefix("w_")))
+		var id: StringName = pool[randi() % pool.size()]
+		var tier: int = ShopLibrary.roll_tier(wave)
+		if not add_weapon(id, tier):
+			var same: int = find_weapon(id, tier)
+			if same < 0:
+				return ""
+			weapons[same]["tier"] = mini(int(weapons[same]["tier"]) + 1, 4)
+			EventBus.weapons_changed.emit()
+		return TranslationServer.translate("НАХОДКА: %s") % PerkLibrary.title(StringName("w_" + String(id)))
+	var item: StringName = ItemLibrary.roll_free_item(wave)
+	if item == &"":
+		return ""
+	add_item(item)
+	return TranslationServer.translate("НАХОДКА: %s") % ItemLibrary.title(item)

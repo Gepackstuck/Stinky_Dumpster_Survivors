@@ -839,6 +839,11 @@ const THIEF_SEE_RADIUS: float = 220.0
 const GRAFFITI_ALPHA: float = 0.45  # одно бледное граффити на месте прошлой смерти
 const GRAFFITI_KEEP: int = 20      # сколько хранится в профиле
 
+# --- Режимы (Н32, Н33) ---
+const MODE_ENDLESS_ELITE_FROM: int = 6       # бесконечная помойка: элита каждую 3-ю волну с этой
+const CLOSED_WEAPON_EVERY: int = 3           # ларёк закрыт: каждая 3-я волна - оружие в подарок
+const CLOSED_STASH_MULT: float = 3.0         # ларёк закрыт: заначек втрое больше
+
 # --- Хитрые враги ---
 const BLINKER_INTERVAL_SEC: float = 3.2      # как часто глючный бомж прыгает
 const BLINKER_WARN_SEC: float = 0.6          # метка на земле до прыжка (успеть отойти)

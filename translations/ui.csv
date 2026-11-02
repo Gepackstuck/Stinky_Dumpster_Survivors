@@ -111,3 +111,12 @@ SET_VICTORY,РОЛИК ПОБЕДЫ,VICTORY CUTSCENE
 ЩИПАЧ,ЩИПАЧ,PICKPOCKET
 "Не дерётся, а тырит упавшее говно прямо у тебя из-под носа и сваливает к краю. Догони и прибей - мешок лопнет вдвое жирнее.","Не дерётся, а тырит упавшее говно прямо у тебя из-под носа и сваливает к краю. Догони и прибей - мешок лопнет вдвое жирнее.",Doesn't fight - snatches your dropped crap right under your nose and runs for the edge. Catch and smack him - the bag bursts twice as fat.
 ТУТ СДОХ %s. ВОЛНА %d,ТУТ СДОХ %s. ВОЛНА %d,%s DIED HERE. WAVE %d
+РЕЖИМЫ,РЕЖИМЫ,MODES
+БЕСКОНЕЧНАЯ ПОМОЙКА,БЕСКОНЕЧНАЯ ПОМОЙКА,ENDLESS DUMP
+ЛАРЁК ЗАКРЫТ,ЛАРЁК ЗАКРЫТ,STALL CLOSED
+ОДНО СЛОВО - ОДИН И ТОТ ЖЕ ЗАБЕГ. ГОНЯЙСЯ С ДРУГОМ.,ОДНО СЛОВО - ОДИН И ТОТ ЖЕ ЗАБЕГ. ГОНЯЙСЯ С ДРУГОМ.,ONE WORD - THE SAME RUN. RACE A FRIEND.
+"БЕЗ КОНЦА. БОСС КАЖДЫЕ 5 ВОЛН. СКОЛЬКО ПРОТЯНЕШЬ, ЛОХ?","БЕЗ КОНЦА. БОСС КАЖДЫЕ 5 ВОЛН. СКОЛЬКО ПРОТЯНЕШЬ, ЛОХ?","NO END. A BOSS EVERY 5 WAVES. HOW LONG WILL YOU LAST, LOSER?"
+ЛАРЬКА НЕТ. ВСЁ ИЗ ЗАНАЧЕК И НАХОДОК ПОСЛЕ ВОЛНЫ.,ЛАРЬКА НЕТ. ВСЁ ИЗ ЗАНАЧЕК И НАХОДОК ПОСЛЕ ВОЛНЫ.,NO STALL. EVERYTHING FROM STASHES AND FINDS AFTER WAVES.
+W/S - ВЫБОР   ПРОБЕЛ - ОК   ESC - НАЗАД,W/S - ВЫБОР   ПРОБЕЛ - ОК   ESC - НАЗАД,W/S - SELECT   SPACE - OK   ESC - BACK
+СТРЕЛКИ - ВЫБОР   A - ОК   B - НАЗАД,СТРЕЛКИ - ВЫБОР   A - ОК   B - НАЗАД,ARROWS - SELECT   A - OK   B - BACK
+НАХОДКА: %s,НАХОДКА: %s,FOUND: %s

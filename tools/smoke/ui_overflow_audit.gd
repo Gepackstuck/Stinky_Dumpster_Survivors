@@ -48,6 +48,15 @@ func _run() -> void:
 	get_tree().root.add_child(menu)
 	await get_tree().create_timer(0.3).timeout
 	_check("меню", menu)
+	menu.call("_open_modes")
+	await get_tree().process_frame
+	var mp: Node = menu.get("_modes_panel")
+	for b: Button in mp.get("_buttons"):
+		b.grab_focus()
+		await get_tree().process_frame
+		_check("режимы", menu)
+	menu.call("_close_modes")
+	await get_tree().process_frame
 	menu.call("_open_seed")
 	await get_tree().process_frame
 	_check("шизосид", menu)
@@ -156,7 +165,8 @@ func _run() -> void:
 	GameState.damage_by_source = {&"extension_cord": 9999.0, &"rotten_cheese": 5000.0, &"pets": 300.0, &"structures": 100.0, &"ult": 50.0}
 	for killer: StringName in [&"boss_trash_golem", &"garbage_truck", &"wire", &"squid_gopnik"]:
 		GameState.last_damage_source = killer
-		GameState.seed_word = "МОРКОВСКВАСЯШАУР"   # самый длинный сид - строка итогов не должна вылезти
+		GameState.seed_word = "МОРКОВСКВАСЯШАУР"
+		GameState.mode = &"endless"   # самый длинный сид - строка итогов не должна вылезти
 		ds.call("_show_result", FlavorText.random_death(), true)
 		await get_tree().process_frame
 		_check("итоги/" + String(killer), ds)

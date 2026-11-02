@@ -16,6 +16,10 @@ func _run() -> void:
 	get_tree().root.add_child(menu)
 	await get_tree().create_timer(0.5).timeout
 	await _shot("1_menu")
+	menu.call("_open_modes")
+	await get_tree().create_timer(0.2).timeout
+	await _shot("3_modes")
+	menu.call("_close_modes")
 	menu.call("_open_seed")
 	await get_tree().create_timer(0.2).timeout
 	(menu.get("_seed_panel").get("_edit") as LineEdit).text = "ВАСЯ"

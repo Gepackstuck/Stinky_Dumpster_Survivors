@@ -75,7 +75,7 @@ func _on_wave_started(wave: int) -> void:
 
 ## Заначка-контейнер: иногда посреди волны (Balance.STASH_*).
 func _maybe_spawn_stash(wave: int) -> void:
-	if wave < Balance.STASH_FROM_WAVE or GameState.wave_kind == &"boss" or randf() >= Balance.STASH_CHANCE:
+	if wave < Balance.STASH_FROM_WAVE or GameState.wave_kind == &"boss" or randf() >= Balance.STASH_CHANCE * (Balance.CLOSED_STASH_MULT if GameState.mode == &"closed" else 1.0):
 		return
 	await get_tree().create_timer(WaveRules.duration_sec(wave) * randf_range(0.1, 0.5), false).timeout
 	if not is_inside_tree() or GameState.wave != wave or GameState.wave_time_left <= 0.0:

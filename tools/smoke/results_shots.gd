@@ -23,6 +23,7 @@ func _fake() -> void:
 			GameState.hp_wave_marks.append(i)
 		GameState.hp_history.append(clampf(0.75 + 0.25 * sin(i * 0.05) - i * 0.0015, 0.05, 1.0))
 	GameState.last_damage_source = &"spitter"
+	GameState.seed_word = "ВАСЯ"   # строка режима и сида внизу панели
 
 
 func _run() -> void:
