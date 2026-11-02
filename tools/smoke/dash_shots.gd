@@ -13,7 +13,9 @@ func _ready() -> void:
 func _shot(n: int) -> void:
 	await RenderingServer.frame_post_draw
 	var img: Image = get_viewport().get_texture().get_image()
-	var c: Vector2 = img.get_size() * 0.5
+	var pl: Node2D = get_tree().get_first_node_in_group(&"player") as Node2D
+	var c: Vector2 = (get_viewport().get_canvas_transform() * pl.global_position) * (Vector2(img.get_size()) / get_viewport().get_visible_rect().size)
+	c = c.clamp(Vector2(120, 70), Vector2(img.get_size()) - Vector2(120, 70))
 	var crop: Image = img.get_region(Rect2i(int(c.x) - 120, int(c.y) - 70, 240, 140))
 	crop.resize(480, 280, Image.INTERPOLATE_NEAREST)
 	crop.save_png(ProjectSettings.globalize_path("res://tools/_preview/dash_%d.png" % n))
@@ -28,6 +30,7 @@ func _run() -> void:
 	await get_tree().create_timer(3.5).timeout
 	get_tree().paused = false
 	var player: Node2D = get_tree().get_first_node_in_group(&"player") as Node2D
+	(player.get(&"_health") as HealthComponent).setup(99999.0)   # рывок снимает неуязвимость - просто много ХП
 	Input.action_press(&"move_right")
 	await get_tree().create_timer(0.3).timeout
 	Input.action_press(&"dash")
@@ -47,5 +50,17 @@ func _run() -> void:
 	await get_tree().create_timer(0.12).timeout
 	await _shot(3)
 	Input.action_release(&"move_right")
+	for i: int in 4:   # выжать все заряды и ткнуть ещё - кеды краснеют
+		Input.action_press(&"dash")
+		await get_tree().physics_frame
+		Input.action_release(&"dash")
+		await get_tree().create_timer(0.3).timeout
+	Input.action_press(&"dash")
+	await get_tree().physics_frame
+	Input.action_release(&"dash")
+	await get_tree().create_timer(0.05).timeout
+	await _shot(4)
+	await get_tree().create_timer(0.8).timeout
+	await _shot(5)
 	print("DASH SHOTS DONE")
 	get_tree().quit()
