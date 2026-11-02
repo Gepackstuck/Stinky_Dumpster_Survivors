@@ -49,5 +49,16 @@ func _run() -> void:
 	await get_tree().process_frame
 	_check(GameState.weapons[0]["tier"] == 5, "швабра IV + недельные носки = эволюция")
 	_check(WeaponLibrary.stat(&"mop", 5, "arc_deg") >= 300.0, "тайфун машет почти по кругу")
+	GameState.character = &"hobo"
+	GameState.items.erase(ItemLibrary.SHOES)
+	_check(ItemLibrary.shoes_max() == 1, "бомж: одна пара обуви")
+	var shelf: Array[Dictionary] = ShopLibrary.fill_offers([], 2)
+	_check(shelf.any(func(o: Dictionary) -> bool: return o["id"] == ItemLibrary.SHOES), "босому обувь лежит в Ларьке")
+	_check(not ItemLibrary.pool(1).has(ItemLibrary.SHOES), "обуви нет в общем пуле")
+	GameState.add_item(ItemLibrary.SHOES)
+	_check(ItemLibrary.at_limit(ItemLibrary.SHOES), "бомжу вторая пара не положена")
+	GameState.character = &"skater"
+	_check(ItemLibrary.shoes_max() == 2 and not ItemLibrary.at_limit(ItemLibrary.SHOES), "скейтеру можно вторую пару")
+	_check(ItemLibrary.title(ItemLibrary.SHOES) == "КЕДЫ СКЕЙТЕРА", "в Ларьке обувь своего героя")
 	print("ITEMS OK" if _fails == 0 else "ITEMS FAIL %d" % _fails)
 	get_tree().quit()

@@ -25,7 +25,24 @@ func _ready() -> void:
 	var hero: Dictionary = Balance.HERO_DASH.get(GameState.character, {})
 	for key: String in hero:
 		_p[key] = hero[key]
+	_p["max_charges"] = int(_p["charges"])
+	_p["charges"] = _owned_charges()
 	_charges = int(_p["charges"])
+	EventBus.items_changed.connect(_on_items_changed)
+
+
+## Рывок - это обувь из Ларька: зарядов столько, сколько пар куплено (не больше, чем умеет герой).
+func _owned_charges() -> int:
+	return mini(GameState.item_count(ItemLibrary.SHOES), int(_p["max_charges"]))
+
+
+func _on_items_changed() -> void:
+	var owned: int = _owned_charges()
+	if owned > int(_p["charges"]):
+		_charges += owned - int(_p["charges"])   # купил пару - заряд сразу готов
+	_p["charges"] = owned
+	_charges = mini(_charges, owned)
+	_last_sent = Vector3(-1, -1, -1)
 
 
 ## Параметры рывка героя (для досье на кладбище).

@@ -92,6 +92,7 @@ static func new_offer(wave: int) -> Dictionary:
 ## Заполнить витрину: замороженные и непроданные остаются, остальное — новое (реролл и новая волна).
 static func fill_offers(existing: Array[Dictionary], wave: int, keep_unlocked: bool = false) -> Array[Dictionary]:
 	var result: Array[Dictionary] = []
+	var fresh: Array[int] = []
 	for i: int in Balance.SHOP_SLOTS:
 		if i < existing.size() and existing[i]["locked"] and not existing[i]["sold"]:
 			result.append(existing[i])
@@ -99,7 +100,23 @@ static func fill_offers(existing: Array[Dictionary], wave: int, keep_unlocked: b
 			result.append(existing[i])
 		else:
 			result.append(new_offer(wave))
+			fresh.append(i)
+	_place_shoes(result, fresh, wave)
 	return result
+
+
+## Обувь героя (= рывок): пока босой - пара лежит на витрине всегда; вторая пара - с шансом.
+static func _place_shoes(offers: Array[Dictionary], fresh: Array[int], wave: int) -> void:
+	if fresh.is_empty() or not ItemLibrary.shoes_wanted():
+		return
+	for offer: Dictionary in offers:
+		if offer.get("id", &"") == ItemLibrary.SHOES and not offer["sold"]:
+			return
+	if GameState.item_count(ItemLibrary.SHOES) > 0 and randf() >= Balance.SHOES_SHOP_CHANCE:
+		return
+	var slot: int = fresh[0]
+	offers[slot] = {"locked": false, "sold": false, "kind": &"item", "id": ItemLibrary.SHOES, "tier": 1,
+			"price": price(&"item", ItemLibrary.SHOES, 1, wave)}
 
 
 static func title(offer: Dictionary) -> String:

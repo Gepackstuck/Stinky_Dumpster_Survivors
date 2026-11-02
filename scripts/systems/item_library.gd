@@ -120,7 +120,23 @@ static func ids() -> Array[StringName]:
 
 
 static func title(item_id: StringName) -> String:
+	if item_id == SHOES:
+		return Balance.SHOES_NAMES.get(GameState.character, "ОБУВЬ")
 	return _TITLES[item_id]
+
+
+## Обувь героя = рывок (см. Balance.ITEMS dash_shoes).
+const SHOES: StringName = &"dash_shoes"
+
+
+## Сколько пар обуви (зарядов рывка) может купить текущий герой.
+static func shoes_max() -> int:
+	return int(DashComponent.profile(GameState.character)["charges"])
+
+
+## Ещё можно купить обувь (герой босой или есть место под вторую пару).
+static func shoes_wanted() -> bool:
+	return GameState.item_count(SHOES) < shoes_max()
 
 
 static func is_cursed(item_id: StringName) -> bool:
@@ -166,15 +182,21 @@ static func tier(item_id: StringName) -> int:
 
 
 static func icon(item_id: StringName) -> Texture2D:
+	if item_id == SHOES:
+		return TEX.load_tex("res://assets/ui/item_shoes_%s.png" % GameState.character)
 	return TEX.load_tex("res://assets/ui/item_%s.png" % item_id)
 
 
 ## Мелкая версия (16 px) для сеток, паузы и надетых на героя предметов.
 static func icon_small(item_id: StringName) -> Texture2D:
+	if item_id == SHOES:
+		return TEX.load_tex("res://assets/ui/item_shoes_%s_s.png" % GameState.character)
 	return TEX.load_tex("res://assets/ui/item_%s_s.png" % item_id)
 
 
 static func max_count(item_id: StringName) -> int:
+	if item_id == SHOES:
+		return shoes_max()
 	return Balance.ITEMS[item_id]["limit"]
 
 
@@ -187,6 +209,8 @@ static func at_limit(item_id: StringName) -> bool:
 static func pool(tier_value: int) -> Array[StringName]:
 	var result: Array[StringName] = []
 	for id: StringName in Balance.ITEMS:
+		if id == SHOES:
+			continue   # обувь выкладывает Ларёк отдельно (ShopLibrary.fill_offers)
 		if Balance.ITEMS[id]["tier"] == tier_value and not at_limit(id) and not is_cursed(id) and not is_combo(id):
 			var weight: int = Balance.SHOP_COMPANION_WEIGHT if is_companion(id) else 1
 			for i: int in weight:
@@ -228,6 +252,9 @@ static func describe(data: Dictionary) -> String:
 	for key: StringName in fx:
 		var v: int = roundi(fx[key])
 		match key:
+			&"dash":
+				lines.append("+1 РЫВОК")
+				lines.append("БОСИКОМ НЕ РВАНЁШЬ" if GameState.item_count(SHOES) == 0 else "ВТОРОЙ ЗАРЯД")
 			&"coin_bonus":
 				lines.append("+%d%% ГОВНА С ДРОПА" % v)
 			&"repel":

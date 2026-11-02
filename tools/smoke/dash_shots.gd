@@ -29,6 +29,8 @@ func _run() -> void:
 	get_tree().current_scene = level
 	await get_tree().create_timer(3.5).timeout
 	get_tree().paused = false
+	for k: int in 2:   # рывок - обувь из Ларька: обуваем героя
+		GameState.add_item(ItemLibrary.SHOES)
 	var player: Node2D = get_tree().get_first_node_in_group(&"player") as Node2D
 	(player.get(&"_health") as HealthComponent).setup(99999.0)   # рывок снимает неуязвимость - просто много ХП
 	Input.action_press(&"move_right")

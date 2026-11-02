@@ -301,6 +301,13 @@ const NOHIT_STREAK_TIERS: Array = [[10.0, 0.10], [20.0, 0.25], [40.0, 0.50], [60
 # fx - фишка: knock (отпихнуть вокруг в конце), sweep (урон по пути), slow (тормозит врагов у старта), trail (тормозит по пути),
 # blink (телепорт), drunk (кривой, но дольше неуязвим), heal (+ХП), fly (неуязвим весь полёт и чуть дольше).
 const DASH_BASE: Dictionary = {"dist": 70.0, "sec": 0.16, "cd": 1.5, "charges": 1, "iframe_extra": 0.08, "fx": &""}
+const SHOES_SHOP_CHANCE: float = 0.3     # шанс второй пары на витрине (первая лежит всегда, пока герой босой)
+const SHOES_NAMES: Dictionary = {        # как называется обувь героя в Ларьке
+	&"hobo": "РВАНЫЕ БОТИНКИ", &"squid": "РОЗОВЫЕ КАЛОШИ", &"clerk": "ЛАКОВЫЕ ТУФЛИ", &"janitor": "РАБОЧИЕ САПОГИ",
+	&"uncle_vitya": "ШЛЁПКИ+НОСКИ", &"blogger": "НЕОНОВЫЕ КРОССЫ", &"granny": "ВАЛЕНКИ", &"courier": "КРОССЫ КУРЬЕРА",
+	&"pigeon": "КЕДЫ НА ЛАПКИ", &"punk": "БЕРЦЫ", &"shawarma": "ТАПКИ ИЗ ФОЛЬГИ", &"guard": "КИРЗАЧИ",
+	&"student": "КЕДЫ ИЗ ПЕРЕХОДА", &"plumber": "РЕЗИНОВЫЕ САПОГИ", &"dacha": "КАЛОШИ", &"skater": "КЕДЫ СКЕЙТЕРА", &"slime": "КРОКСЫ",
+}
 const DASH_FX_RADIUS: float = 40.0
 const DASH_FX_SLOW: float = 0.4          # множитель скорости врага
 const DASH_FX_SLOW_SEC: float = 2.0
@@ -480,6 +487,9 @@ const CURSED_SHOP_CHANCE: float = 0.12       # шанс, что товар-пр�
 const CURSED_HP_DRAIN_SEC: float = 8.0       # портсигар: -1 ХП раз в столько секунд боя
 
 const ITEMS: Dictionary = {
+	# Обувь героя = рывок: герой начинает босиком, рывок покупается в Ларьке (у каждого своя пара).
+	# limit считает ItemLibrary.max_count: заряды рывка героя (HERO_DASH charges, обычно 1, у шустрых 2).
+	&"dash_shoes": {"tier": 1, "price": 16, "limit": 1, "fx": {&"dash": 1.0}},
 	&"cigarette": {"tier": 1, "price": 14, "limit": 0, "mods": {&"speed": 6.0, &"max_hp": -3.0}},
 	&"sandwich": {"tier": 1, "price": 15, "limit": 0, "mods": {&"max_hp": 8.0, &"dodge": -3.0}},
 	&"holey_sock": {"tier": 1, "price": 13, "limit": 0, "mods": {&"dodge": 6.0, &"armor": -1.0}},

@@ -18,6 +18,8 @@ var _color: Array[Sprite2D] = []
 var _part: Array[float] = [1.0, 1.0]
 var _step_t: float = 0.0
 var _deny_left: float = 0.0
+var _owned: int = 0
+var _barefoot_note_left: float = 0.0
 var _sprite: Sprite2D = null
 var _animator: Node = null
 
@@ -33,6 +35,7 @@ func _ready() -> void:
 		_grey.append(g)
 		_color.append(c)
 	set_hero(GameState.character)
+	visible = false   # до первой покупки - босиком
 	EventBus.dash_state.connect(_on_dash_state)
 
 
@@ -54,6 +57,8 @@ func _make() -> Sprite2D:
 
 
 func _on_dash_state(charges: int, max_charges: int, recharge: float) -> void:
+	_owned = max_charges
+	visible = _sheet != null and max_charges > 0   # обувь не куплена - герой босой
 	var old: Array[float] = _part.duplicate()
 	for i: int in 2:
 		var slot: int = i if max_charges > 1 else 0   # один заряд - оба ботинка показывают его
@@ -65,6 +70,9 @@ func _on_dash_state(charges: int, max_charges: int, recharge: float) -> void:
 ## Нажал рывок, а сил нет.
 func deny() -> void:
 	_deny_left = 0.35
+	if _owned == 0 and _barefoot_note_left <= 0.0:   # подсказка, где взять рывок
+		_barefoot_note_left = 4.0
+		HitFx.popup(get_tree(), global_position + Vector2(0.0, -26.0), "БОСИКОМ? КУПИ ОБУВЬ", Color(1.0, 0.6, 0.1), 14.0, 1.4)
 
 
 func _pop(i: int) -> void:
@@ -75,6 +83,7 @@ func _pop(i: int) -> void:
 
 
 func _process(delta: float) -> void:
+	_barefoot_note_left -= delta
 	if _sheet == null or _sprite == null:
 		return
 	var row: int = int(_animator.get(&"row")) if _animator != null else 0

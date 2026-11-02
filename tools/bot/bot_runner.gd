@@ -702,6 +702,8 @@ func _offer_score(offer: Dictionary) -> float:
 			return 6.0 + (power - worst_power) * 0.4 + synergy
 		return -50.0
 	if offer["kind"] == &"item":
+		if offer["id"] == ItemLibrary.SHOES:
+			return 60.0   # рывок - первое, что покупает любой живой человек
 		var data: Dictionary = Balance.ITEMS[offer["id"]]
 		var score: float = 3.0 + tier * 2.5
 		for stat: StringName in data.get("mods", {}):

@@ -106,6 +106,14 @@ if __name__ == "__main__":
         for i, a in enumerate((s, f, grey(s), grey(f))):
             im = Image.fromarray(a); out.paste(im, (i * CW + (CW - im.width) // 2, CH - im.height), im)
         out.save(f"assets/sprites/shoes_{h}.png"); sheets.append(out)
+        # значки товара в Ларьке: пара обуви крупно (32) и мелко (16)
+        pair = Image.fromarray(s)
+        for size, k, p1, p2 in ((32, 2, (1, 5), (15, 14)), (16, 1, (0, 3), (8, 8))):
+            icon = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+            big = pair.resize((pair.width * k, pair.height * k), Image.NEAREST)
+            icon.paste(big, p1, big)       # пара вразбежку, не налезая
+            icon.paste(big, p2, big)
+            icon.save(f"assets/ui/item_shoes_{h}{'' if size == 32 else '_s'}.png")
         feet[h] = feet_y(h)
     lines = ["class_name HeroFeet", "extends RefCounted",
              "## СГЕНЕРИРОВАНО tools/gen_shoes.py - не править руками.",
