@@ -48,18 +48,44 @@ def mod_payday(c):   # мешок с говном и знаком денег, м
         c.px(x, y, BLACK); c.px(x - 1, y - 1, LG); c.px(x + 1, y - 1, LG)
 
 def truck_frame(k):
-    """Мусоровоз сбоку, едет вправо: кузов-контейнер, кабина с глазами, колёса крутятся (k = 0/1)."""
-    c = Canvas(46, 26)
-    c.rect(1, 3, 28, 18, GREEN, dither=DGREEN); c.rect(1, 3, 28, 4, LGREEN)
-    for x in range(4, 27, 6): c.rect(x, 6, x + 1, 16, DGREEN)
-    c.ell(10, 2, 4, 2, BROWN); c.ell(20, 1, 3, 2, (150, 90, 40)); c.pts([(14, 0), (8, 0)], GREEN)   # мусор торчит
-    c.rect(29, 7, 43, 18, YELLOW, dither=ORANGE); c.rect(33, 9, 42, 13, (150, 220, 255), dither=CYAN)
-    c.eye(36, 11, 1.5, (1, 0)); c.eye(40, 11, 2, (1, 0))
-    c.rect(41, 15, 44, 18, BLACK); c.teeth(36, 44, 16, WHITE, BLACK, 2)
-    for wx in (8, 22, 38):
-        c.ell(wx, 21, 3.5, 3.5, BLACK); c.ell(wx, 21, 1.5, 1.5, GREY)
-        c.px(wx + (1 if k else -1), 21 - 1, WHITE)
-    c.pts([(0, 10), (0, 14)], BROWN)   # капает жижа
+    """Мусоровоз сбоку 92×52 (едет вправо): ржавый контейнер с мусором, кабина-морда с клыками и глазами,
+    жижа капает, мухи, колёса крутятся (k = 0/1)."""
+    import random
+    rng = random.Random(5)
+    c = Canvas(92, 52)
+    RUST = (170, 90, 40); DRUST = (120, 60, 25)
+    # контейнер
+    c.rect(2, 10, 58, 38, GREEN, dither=DGREEN); c.rect(2, 10, 58, 12, LGREEN)
+    for x in range(7, 56, 8): c.rect(x, 14, x + 2, 34, DGREEN)
+    for _ in range(14):   # ржавчина пятнами
+        x, y = rng.randint(4, 54), rng.randint(14, 36); c.ell(x, y, rng.uniform(1, 2.6), rng.uniform(1, 2), RUST, dither=DRUST)
+    c.rect(2, 36, 58, 38, DGREY)
+    # мусор горой сверху
+    for (x, y, r, col) in [(10, 8, 5, BROWN), (20, 6, 6, (150, 90, 40)), (31, 7, 5, GREY), (42, 6, 6, (200, 60, 120)), (52, 8, 4, BROWN)]:
+        c.ell(x, y, r, r * 0.7, col)
+    c.line(24, 2, 30, 6, WHITE); c.ell(37, 3, 2, 2, YELLOW); c.pts([(16, 2), (47, 1), (45, 2)], LGREEN)
+    c.eye(20, 6, 1.5, (1, 0))   # из мусора кто-то смотрит
+    # кабина-морда
+    poly(c, [(60, 16), (80, 16), (88, 26), (88, 40), (60, 40)], YELLOW, dither=ORANGE)
+    poly(c, [(64, 19), (78, 19), (84, 27), (64, 27)], (150, 220, 255), dither=CYAN)
+    c.eye(70, 23, 3, (2, 0)); c.eye(79, 24, 2, (1, 0))
+    c.rect(72, 32, 89, 39, BLACK); c.teeth(72, 89, 32, WHITE, BLACK, 4)
+    c.rect(86, 28, 89, 31, RED); c.rect(60, 30, 62, 39, DGREY)
+    c.rect(56, 40, 90, 42, DGREY); c.rect(88, 41, 91, 44, GREY)   # бампер
+    # жижа капает и лужица
+    for x in (6, 18, 33, 47):
+        c.rect(x, 38, x + 1, 41 + rng.randint(0, 3), (120, 160, 40))
+    # колёса
+    for wx in (14, 44, 76):
+        c.ell(wx, 44, 7, 7, BLACK); c.ell(wx, 44, 4, 4, DGREY); c.ell(wx, 44, 2, 2, GREY)
+        for a in range(4):
+            import math
+            ang = math.pi / 2 * a + (math.pi / 4 if k else 0.0)
+            c.px(int(wx + math.cos(ang) * 5), int(44 + math.sin(ang) * 5), WHITE)
+    # мухи
+    for (x, y) in [(5, 4), (58, 3), (66, 10)]:
+        fx = x + (1 if k else 0)
+        c.px(fx, y, BLACK); c.px(fx - 1, y - 1, (190, 190, 230)); c.px(fx + 1, y - 1, (190, 190, 230))
     return c.finish(DGREEN, YELLOW, lim=0.35)
 
 def render(n):
@@ -76,5 +102,5 @@ if __name__ == "__main__":
     w, h = frames[0].size; sheet = Image.new("RGBA", (w * 2, h))
     for j, fr in enumerate(frames): sheet.paste(fr, (j * w, 0))
     if apply: sheet.save("assets/sprites/garbage_truck.png")
-    big = sheet.resize((sheet.width * 3, sheet.height * 3), Image.NEAREST); prev.paste(big, (10, 34 * k + 6), big)
+    big = sheet.resize((sheet.width * 2, sheet.height * 2), Image.NEAREST); prev.paste(big, (10, 34 * k + 6), big)
     prev.save("tools/_preview/wave_mods.png"); print("ok", sheet.size)

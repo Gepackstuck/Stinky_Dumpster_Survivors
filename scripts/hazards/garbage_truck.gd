@@ -41,4 +41,4 @@ func _physics_process(delta: float) -> void:
 
 func _inside(point: Vector2) -> bool:
 	var off: Vector2 = point - global_position
-	return absf(off.dot(_dir)) < 24.0 and absf(off.dot(_dir.orthogonal())) < Balance.TRUCK_HALF_WIDTH
+	return absf(off.dot(_dir)) < 46.0 and absf(off.dot(_dir.orthogonal())) < Balance.TRUCK_HALF_WIDTH
