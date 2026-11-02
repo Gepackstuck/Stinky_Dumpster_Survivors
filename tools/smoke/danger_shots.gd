@@ -19,6 +19,10 @@ func _run() -> void:
 	get_tree().root.add_child(yard)
 	await get_tree().create_timer(2.5).timeout
 	await _shot("graves")
+	for hero: int in [3, 16, 8]:
+		yard.call("_select", hero)
+		await get_tree().create_timer(0.2).timeout
+		await _shot("dossier_%d" % hero)
 	yard.call("_choose")
 	await get_tree().create_timer(0.3).timeout
 	yard.set("_pick_danger", 2)

@@ -294,6 +294,11 @@ func _on_hurt(damage: float) -> void:
 
 ## Эффекты предметов на попадание: поджог (зажигалка) и сильный отброс (лом).
 func _item_hit_effects() -> void:
+	if GameState.ink_percent > 0.0 and randf() * 100.0 < GameState.ink_percent:   # кальмар: чернила
+		slow(0.5, 1.5)
+	if GameState.steal_percent > 0.0 and randf() * 100.0 < GameState.steal_percent:   # крыс: ворюга
+		GameState.coins += 1
+		GameState.run_coins_earned += 1
 	if GameState.burn_percent > 0.0 and randf() * 100.0 < GameState.burn_percent:
 		ignite(Balance.ITEM_BURN_DPS, Balance.ITEM_BURN_SEC)
 	if GameState.bash_percent > 0.0 and randf() * 100.0 < GameState.bash_percent and is_instance_valid(_target):

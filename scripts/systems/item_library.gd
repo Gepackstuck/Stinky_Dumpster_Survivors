@@ -282,4 +282,28 @@ static func describe(data: Dictionary) -> String:
 				lines.append("КАЖДЫЙ РЫВОК СТОИТ %d ХП" % v)
 			&"no_regen":
 				lines.append("РЕГЕН НЕ РАБОТАЕТ ВООБЩЕ")
+			&"ink":
+				lines.append("%d%% ЗАЛИТЬ ВРАГА ЧЕРНИЛАМИ (ТОРМОЗИТ)" % v)
+			&"steal":
+				lines.append("%d%% СПЕРЕТЬ ГОВНО УДАРОМ" % v)
+			&"salary":
+				lines.append("ЗАРПЛАТА: %d ГОВНА x НОМЕР ВОЛНЫ" % v)
+			&"clean_heal":
+				lines.append("КАЖДЫЕ %d ГОВНИН +1 ХП" % v)
+			&"hype":
+				lines.append("ХАЙП: +1%% УРОНА ЗА %d УБИЙСТВ" % v)
+			&"pies":
+				lines.append("ПИРОЖКИ: +%d ХП В НАЧАЛЕ ВОЛНЫ" % v)
+			&"rush":
+				lines.append("+%d%% СКОРОСТИ ПЕРВЫЕ 5 СЕК ВОЛНЫ" % v)
+			&"regen_mult":
+				lines.append("РЕГЕН x2")
+			&"post":
+				lines.append("СТОИШЬ НА ПОСТУ: +%d%% УРОНА" % v)
+			&"xp_bonus":
+				lines.append("+%d%% ОПЫТА" % v)
+			&"trick":
+				lines.append("ПОСЛЕ РЫВКА +%d%% УРОНА 2 СЕК" % v)
+			&"slime_touch":
+				lines.append("ВРАГИ ВПЛОТНУЮ ВЯЗНУТ")
 	return "\n".join(lines)

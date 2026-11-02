@@ -63,6 +63,19 @@ var ghost_drunk_count: int = 0
 var ghost_granny_count: int = 0
 var _item_stats: Dictionary[StringName, float] = {}
 var _coin_remainder: float = 0.0
+var ink_percent: float = 0.0          # фишки героев (Balance.CHARACTERS fx)
+var steal_percent: float = 0.0
+var salary: float = 0.0
+var clean_heal_every: int = 0
+var hype_per: float = 0.0
+var pies: float = 0.0
+var rush: float = 0.0
+var regen_bonus: float = 0.0
+var post_bonus: float = 0.0
+var xp_bonus: float = 0.0
+var trick_bonus: float = 0.0
+var trick_left: float = 0.0
+var slime_touch: float = 0.0
 var hp_drain: float = 0.0            # проклятье: ХП утекает (раз в Balance.CURSED_HP_DRAIN_SEC)
 var enemy_haste: float = 0.0         # проклятье: враги быстрее, %
 var dash_hp_cost: float = 0.0        # проклятье: рывок стоит ХП
@@ -293,6 +306,18 @@ func _recompute_items() -> void:
 		comp_counts[comp_key] = roundi(fx.get(comp_key, 0.0))
 	ghost_drunk_count = roundi(fx.get(&"ghost_drunk", 0.0))
 	hp_drain = fx.get(&"hp_drain", 0.0)
+	ink_percent = fx.get(&"ink", 0.0)
+	steal_percent = fx.get(&"steal", 0.0)
+	salary = fx.get(&"salary", 0.0)
+	clean_heal_every = roundi(fx.get(&"clean_heal", 0.0))
+	hype_per = fx.get(&"hype", 0.0)
+	pies = fx.get(&"pies", 0.0)
+	rush = fx.get(&"rush", 0.0)
+	regen_bonus = fx.get(&"regen_mult", 0.0)
+	post_bonus = fx.get(&"post", 0.0)
+	xp_bonus = fx.get(&"xp_bonus", 0.0)
+	trick_bonus = fx.get(&"trick", 0.0)
+	slime_touch = fx.get(&"slime_touch", 0.0)
 	enemy_haste = fx.get(&"enemy_haste", 0.0)
 	dash_hp_cost = fx.get(&"dash_cost", 0.0)
 	no_regen = fx.get(&"no_regen", 0.0) > 0.0
@@ -301,7 +326,7 @@ func _recompute_items() -> void:
 
 ## Урон выстрела с учётом статов, перков и крита.
 func roll_damage(base: float) -> float:
-	var result: float = floorf(base * projectile_damage_mult * damage_mult * WaveRules.mod_f("player_damage", 1.0) * 100.0) / 100.0
+	var result: float = floorf(base * projectile_damage_mult * damage_mult * WaveRules.mod_f("player_damage", 1.0) * hero_damage_mult() * 100.0) / 100.0
 	if randf() * 100.0 < crit_percent:
 		result = floorf(result * Balance.CRIT_DAMAGE_MULT * 100.0) / 100.0 + CRIT_MARK
 		if randf() * 100.0 < crit_coin_percent:
@@ -316,6 +341,18 @@ const CRIT_MARK: float = 0.00037
 static func is_crit_damage(damage: float) -> bool:
 	var rest: float = fposmod(damage, 0.01)
 	return rest > 0.0003 and rest < 0.00044
+
+
+## Фишки героев на урон: хайп блогера, пост Саныча, трюк скейтера.
+func hero_damage_mult() -> float:
+	var mult: float = 1.0
+	if hype_per > 0.0:
+		mult += minf(floorf(kills / hype_per), Balance.HERO_HYPE_MAX) / 100.0
+	if post_bonus > 0.0 and still_sec >= Balance.HERO_POST_SEC:
+		mult += post_bonus / 100.0
+	if trick_bonus > 0.0 and trick_left > 0.0:
+		mult += trick_bonus / 100.0
+	return mult
 
 
 func cooldown_for(base_sec: float) -> float:
@@ -338,7 +375,7 @@ func _recompute_perk_stats() -> void:
 	bonus_max_hp = stat_total(&"max_hp")
 	extra_projectiles = Balance.PERK_DOUBLE_SHOT_EXTRA_PROJECTILES * shots
 	projectile_damage_mult = pow(Balance.PERK_DOUBLE_SHOT_DAMAGE_MULT, shots)
-	regen_hp = 0.0 if no_regen else Balance.PERK_REGEN_HP * regen + Balance.REGEN_HP_PER_POINT * stat_total(&"regen")
+	regen_hp = 0.0 if no_regen else (Balance.PERK_REGEN_HP * regen + Balance.REGEN_HP_PER_POINT * stat_total(&"regen")) * (1.0 + regen_bonus / 100.0)
 
 
 func _on_enemy_died(enemy_id: StringName, _position: Vector2) -> void:
@@ -375,6 +412,10 @@ func _on_player_hit(damage: float) -> void:
 ## Чистая волна: ни одного попадания - бонус говна (растёт с номером волны).
 func _on_wave_ended_clean(wave_number: int) -> void:
 	last_clean_bonus = 0
+	if run_active and salary > 0.0:   # планктон: зарплата
+		var pay: int = roundi(salary * wave_number)
+		coins += pay
+		run_coins_earned += pay
 	if not run_active or wave_damage_taken > 0.0:
 		return
 	last_clean_bonus = Balance.CLEAN_WAVE_BONUS_BASE + Balance.CLEAN_WAVE_BONUS_PER_WAVE * wave_number
@@ -391,6 +432,7 @@ static func xp_needed(at_level: int) -> int:
 func _on_xp_collected(amount: int) -> void:
 	if not run_active:
 		return
+	amount = roundi(amount * (1.0 + xp_bonus / 100.0)) if xp_bonus > 0.0 else amount
 	xp += amount
 	_coin_remainder += float(amount) * Balance.COIN_PER_XP * (1.0 + coin_bonus + streak_bonus()) * WaveRules.mod_f("coin", 1.0)  # деньги — доля от опыта, копить придётся
 	var whole: int = floori(_coin_remainder)

@@ -118,7 +118,15 @@ static func dash_line(id: StringName) -> String:
 
 ## Плюсы и минусы построчно (как у предметов).
 static func stat_lines(id: StringName) -> PackedStringArray:
-	return ItemLibrary.describe(Balance.CHARACTERS[id]).split("\n", false)
+	return ItemLibrary.describe({"mods": Balance.CHARACTERS[id].get("mods", {})}).split("\n", false)
+
+
+## Фишки героя (fx) одной строкой: «ФИШКА: ПИРОЖКИ: +3 ХП В НАЧАЛЕ ВОЛНЫ, ...».
+static func trait_line(id: StringName) -> String:
+	var fx: Dictionary = Balance.CHARACTERS[id].get("fx", {})
+	if fx.is_empty():
+		return ""
+	return "ФИШКА: " + ItemLibrary.describe({"fx": fx}).replace("\n", ". ")
 
 
 static func hat_icon(id: StringName) -> Texture2D:

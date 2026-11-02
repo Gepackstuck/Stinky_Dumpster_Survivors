@@ -16,6 +16,8 @@ const HELD_WEAPON: GDScript = preload("res://scripts/weapons/held_weapon.gd")
 @onready var _dash: DashComponent = $Dash
 var _facing: Vector2 = Vector2.RIGHT
 var _drain_timer: float = 0.0
+var _slime_tick: float = 0.0
+var _pickups_for_heal: int = 0
 
 var _arena_max: Vector2 = Vector2.ZERO
 var _regen_timer: float = 0.0
@@ -51,6 +53,12 @@ func _ready() -> void:
 	EventBus.wave_started.connect(_on_wave_started_items)
 	EventBus.wave_ended.connect(_on_wave_ended_items)
 	EventBus.streak_changed.connect(_on_streak_changed)
+	EventBus.dash_used.connect(func(_at: Vector2) -> void: GameState.trick_left = Balance.HERO_TRICK_SEC if GameState.trick_bonus > 0.0 else 0.0)
+	EventBus.xp_collected.connect(_on_xp_for_heal)
+	EventBus.wave_started.connect(func(_w: int) -> void:
+		if GameState.pies > 0.0:
+			heal(GameState.pies)
+			HitFx.popup(get_tree(), global_position + Vector2(0.0, -16.0), "ПИРОЖОК! +%d" % roundi(GameState.pies), Color(1.0, 0.75, 0.3), 12.0, 0.8))
 	EventBus.wave_started.connect(func(_w: int) -> void: _update_magnet_radius())
 	EventBus.wave_ended.connect(func(_w: int) -> void: _update_magnet_radius.call_deferred())
 	_update_magnet_radius()
@@ -63,7 +71,7 @@ func _physics_process(delta: float) -> void:
 		_facing = direction
 	if Input.is_action_just_pressed(&"dash"):
 		_dash.try_dash(direction, _facing)
-	var wanted: Vector2 = direction * Balance.PLAYER_MOVE_SPEED * GameState.move_speed_mult * WaveRules.mod_f("player_speed", 1.0)
+	var wanted: Vector2 = direction * Balance.PLAYER_MOVE_SPEED * GameState.move_speed_mult * WaveRules.mod_f("player_speed", 1.0) * _rush_mult()
 	if _dash.is_dashing():
 		velocity = _dash.dash_velocity()
 	elif WaveRules.mod_fx("ice", false):   # жирный пол: разгон и торможение с инерцией
@@ -91,6 +99,16 @@ func _physics_process(delta: float) -> void:
 	_update_still_regen(delta, direction == Vector2.ZERO)
 	_update_item_timers(delta)
 	_update_slow_field(delta, direction != Vector2.ZERO)
+	if GameState.trick_left > 0.0:
+		GameState.trick_left -= delta
+	if GameState.slime_touch > 0.0:
+		_slime_tick -= delta
+		if _slime_tick <= 0.0:
+			_slime_tick = 0.25
+			for node: Node in get_tree().get_nodes_in_group(&"enemies"):
+				var enemy: EnemyBase = node as EnemyBase
+				if enemy != null and enemy.global_position.distance_to(global_position) < Balance.HERO_SLIME_RADIUS:
+					enemy.slow(1.0 - GameState.slime_touch / 100.0, Balance.HERO_SLIME_SEC)
 	if GameState.hp_drain > 0.0 and GameState.run_active and GameState.wave_time_left > 0.0:
 		_drain_timer += delta
 		if _drain_timer >= Balance.CURSED_HP_DRAIN_SEC:
@@ -325,6 +343,24 @@ func _explode(at: Vector2) -> void:
 			var enemy: EnemyBase = node as EnemyBase
 			if enemy != null and at.distance_squared_to(enemy.global_position) <= radius_sq:
 				enemy.hit_by_weapon(Balance.ITEM_EXPLODE_DAMAGE * GameState.damage_mult, (enemy.global_position - at).normalized() * 140.0)
+
+
+## Курьер: в первые секунды волны бегает быстрее.
+func _rush_mult() -> float:
+	if GameState.rush <= 0.0 or GameState.wave <= 0:
+		return 1.0
+	var elapsed: float = WaveRules.duration_sec(GameState.wave) - GameState.wave_time_left
+	return 1.0 + GameState.rush / 100.0 if elapsed < Balance.HERO_RUSH_SEC else 1.0
+
+
+## Палыч: каждые N подобранных говнин +1 ХП.
+func _on_xp_for_heal(_amount: int) -> void:
+	if GameState.clean_heal_every <= 0:
+		return
+	_pickups_for_heal += 1
+	if _pickups_for_heal >= GameState.clean_heal_every:
+		_pickups_for_heal = 0
+		heal(1.0)
 
 
 ## Плата здоровьем за проклятье: без неуязвимости и без смерти от неё (минимум 1 ХП).

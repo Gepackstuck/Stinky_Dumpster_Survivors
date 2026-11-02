@@ -52,6 +52,8 @@ var _preview: Sprite2D
 var _title: Label
 var _tagline: Label
 var _dash_label: Label   # рывок героя
+var _trait: Label        # фишка героя
+var _plus2: Label
 var _plus: Label
 var _minus: Label
 var _weapon: Label
@@ -392,12 +394,16 @@ func _build_panel() -> void:
 	_title = _label("", Vector2(96.0, 158.0), 350.0, YELLOW)
 	_title.add_theme_color_override(&"font_shadow_color", PINK)
 	_tagline = _label("", Vector2(96.0, 168.0), 350.0, WHITE)
-	_plus = _label("", Vector2(96.0, 180.0), 210.0, GREEN)
+	_plus = _label("", Vector2(96.0, 180.0), 108.0, GREEN)
+	_plus2 = _label("", Vector2(206.0, 180.0), 108.0, GREEN)   # плюсы сверх двух - во вторую колонку
 	_minus = _label("", Vector2(316.0, 180.0), 130.0, RED)
-	_weapon = _label("", Vector2(96.0, 213.0), 350.0, YELLOW)
-	_dash_label = _label("", Vector2(96.0, 222.0), 350.0, Color(0.0, 0.94, 1.0))
-	_status = _label("", Vector2(96.0, 231.0), 350.0, GREEN)
-	for node: Label in [_title, _tagline, _plus, _minus, _weapon, _dash_label, _status]:
+	_trait = _label("", Vector2(96.0, 204.0), 350.0, PINK)
+	_trait.autowrap_mode = TextServer.AUTOWRAP_OFF
+	_trait.clip_text = true
+	_weapon = _label("", Vector2(96.0, 215.0), 350.0, YELLOW)
+	_dash_label = _label("", Vector2(96.0, 224.0), 350.0, Color(0.0, 0.94, 1.0))
+	_status = _label("", Vector2(96.0, 233.0), 350.0, GREEN)
+	for node: Label in [_title, _tagline, _plus, _plus2, _minus, _trait, _weapon, _dash_label, _status]:
 		_info_nodes.append(node)
 	_lore = _label("", Vector2(96.0, 170.0), 346.0, WHITE)
 	_lore.visible = false
@@ -565,10 +571,12 @@ func _refresh() -> void:
 			minus.append(line)
 		else:
 			plus.append(line)
-	_plus.text = "\n".join(plus)
+	_plus.text = "\n".join(plus.slice(0, 2))
+	_plus2.text = "\n".join(plus.slice(2))
 	_minus.text = "\n".join(minus)
 	_weapon.text = CharacterLibrary.weapon_line(id)
 	_dash_label.text = CharacterLibrary.dash_line(id)
+	_trait.text = CharacterLibrary.trait_line(id)
 	if unlocked:
 		_status.text = "ОТКОПАН. ЖМИ ПРОБЕЛ."
 		_status.add_theme_color_override(&"font_color", GREEN)
