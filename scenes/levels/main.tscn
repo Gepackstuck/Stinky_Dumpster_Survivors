@@ -17,6 +17,7 @@
 [ext_resource type="Script" path="res://scripts/systems/wave_modifiers.gd" id="50_mods"]
 [ext_resource type="Script" path="res://scripts/effects/screen_fx.gd" id="51_sfx"]
 [ext_resource type="Script" path="res://scripts/effects/ambient_fx.gd" id="52_amb"]
+[ext_resource type="Script" path="res://scripts/ui/roulette_screen.gd" id="53_rul"]
 
 [node name="Main" type="ColorRect"]
 offset_right = 320.0
@@ -75,3 +76,6 @@ script = ExtResource("50_mods")
 [node name="PauseMenu" parent="." instance=ExtResource("99_pm")]
 
 [node name="DeathScreen" parent="." instance=ExtResource("8_ds")]
+
+[node name="RouletteScreen" type="CanvasLayer" parent="."]
+script = ExtResource("53_rul")

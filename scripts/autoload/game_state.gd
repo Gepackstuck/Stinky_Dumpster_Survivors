@@ -89,6 +89,9 @@ var damage_by_source: Dictionary = {}  # источник -> нанесённы�
 var hp_history: Array[float] = []     # доля ХП раз в секунду боя (график на экране итога)
 var hp_wave_marks: Array[int] = []    # индексы hp_history, где началась волна
 var wind: Vector2 = Vector2.ZERO     # снос героя ветром (модификатор волны)
+var piles_this_run: int = 0          # сколько куч-лотерей появилось за забег (макс Balance.PILE_MAX_PER_RUN)
+var roulette_pending: bool = false   # вступил в кучу: перед следующей волной крутим рулетку
+var pending_mod: StringName = &""     # что выпало на рулетке (станет wave_mod следующей волны)
 var wave_mod: StringName = &""      # модификатор текущей волны (Balance.WAVE_MODS) или пусто
 var wave_damage_taken: float = 0.0   # урон за текущую волну (чистая волна = 0)
 var last_clean_bonus: int = 0        # бонус за чистую прошлую волну (для Ларька)
@@ -137,6 +140,9 @@ func reset_run() -> void:
 	_coin_remainder = 0.0
 	wave_damage_taken = 0.0
 	wave_mod = &""
+	piles_this_run = 0
+	roulette_pending = false
+	pending_mod = &""
 	endless = false
 	if daily:
 		seed(daily_seed)

@@ -64,6 +64,12 @@ signal run_won                             # убиты боссы 20-й вол�
 @warning_ignore("unused_signal")
 signal endless_requested                   # после победы игрок выбрал «бесконечно»
 @warning_ignore("unused_signal")
+signal pile_stepped                        # герой вступил в кучу-лотерею
+@warning_ignore("unused_signal")
+signal roulette_requested                  # крутим рулетку модификатора (перед волной)
+@warning_ignore("unused_signal")
+signal roulette_done(mod: StringName)      # рулетка остановилась
+@warning_ignore("unused_signal")
 signal run_started
 @warning_ignore("unused_signal")
 signal run_ended

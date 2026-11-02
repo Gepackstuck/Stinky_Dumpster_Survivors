@@ -63,7 +63,7 @@ func _stream(sfx_name: StringName, folder: String) -> AudioStream:
 
 ## Проиграть короткий звук по имени (pitch_var - разброс высоты, чтобы повторы не резали ухо).
 func play_sfx(sfx_name: StringName, pitch_var: float = 0.05) -> void:
-	if Settings.sfx_volume <= 0.0:
+	if Settings.sfx_volume <= 0.0 or Profile.sandbox:   # тесты и боты - без звука
 		return
 	var now: float = Time.get_ticks_msec() / 1000.0
 	if now - float(_last_play.get(sfx_name, -1.0)) < float(MIN_GAP.get(sfx_name, DEFAULT_GAP)):
@@ -82,6 +82,8 @@ func play_sfx(sfx_name: StringName, pitch_var: float = 0.05) -> void:
 
 ## Запустить музыкальный луп по имени (тот же - не перезапускает).
 func play_music(music_name: StringName) -> void:
+	if Profile.sandbox:
+		return
 	if music_name == _music_name and _music.playing:
 		return
 	var stream: AudioStreamWAV = _stream(music_name, "music") as AudioStreamWAV

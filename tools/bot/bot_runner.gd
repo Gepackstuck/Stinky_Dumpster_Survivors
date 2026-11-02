@@ -202,7 +202,7 @@ func _end_run(result: String) -> void:
 	var record: Dictionary = {
 		"hero": String(_hero), "skill": String(_skill_id), "danger": GameState.danger, "seed": _seed, "run": _run_index, "result": result,
 		"wave": GameState.wave, "waves_total": Balance.WAVE_COUNT, "game_sec": snappedf(_game_time, 0.1),
-		"shop_visits": _shop_visits, "dashes": _dashes, "clean_waves": GameState.clean_waves, "best_streak": snappedf(GameState.best_streak_sec, 0.1), "killer": String(GameState.last_damage_source) if result == "death" else "",
+		"piles": GameState.piles_this_run, "shop_visits": _shop_visits, "dashes": _dashes, "clean_waves": GameState.clean_waves, "best_streak": snappedf(GameState.best_streak_sec, 0.1), "killer": String(GameState.last_damage_source) if result == "death" else "",
 		"surrounded_at_end": snappedf(_last_coverage, 0.01), "hp_end_ratio": snappedf(GameState.hp / maxf(GameState.max_hp, 1.0), 0.01), "level": GameState.level,
 		"kills": GameState.kills, "weapons": weapons, "sets": sets, "items": items, "waves": _waves.duplicate(true),
 		"real_sec": snappedf((Time.get_ticks_msec() - _real_start) / 1000.0, 0.1),
@@ -525,6 +525,11 @@ func _escape_direction(pos: Vector2, near: Array) -> Vector2:
 
 ## Цель манёвра: точка простора подальше от толпы и стен.
 func _pick_goal(pos: Vector2, near: Array) -> void:
+	var pile: Node2D = get_tree().get_first_node_in_group(&"mod_pile") as Node2D
+	if pile != null and _skill_id != &"noob":   # куча-лотерея: азарт - идём вступать
+		_goal = pile.global_position
+		_goal_left = 1.0
+		return
 	var arena: float = Balance.ARENA_SIZE
 	var best: Vector2 = Vector2(arena, arena) * 0.5
 	var best_score: float = -INF

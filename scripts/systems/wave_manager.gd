@@ -83,7 +83,8 @@ func _camp_raid(delta: float) -> void:
 func _start_wave(wave: int) -> void:
 	GameState.wave = wave
 	GameState.wave_kind = wave_kind(wave)
-	GameState.wave_mod = WaveRules.roll_mod(wave, GameState.wave_kind, _last_mod)
+	GameState.wave_mod = GameState.pending_mod   # модификатор - только с рулетки (куча-лотерея)
+	GameState.pending_mod = &""
 	GameState.wave_note = ""
 	_wave_elapsed = 0.0
 	_camp_warned = false
@@ -202,4 +203,8 @@ func _on_endless_requested() -> void:
 
 
 func _on_next_wave_requested() -> void:
+	if GameState.roulette_pending:   # вступил в кучу: сначала рулетка
+		GameState.roulette_pending = false
+		EventBus.roulette_requested.emit()
+		GameState.pending_mod = await EventBus.roulette_done
 	_start_wave(GameState.wave + 1)

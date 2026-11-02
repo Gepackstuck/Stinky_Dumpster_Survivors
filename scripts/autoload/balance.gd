@@ -143,7 +143,18 @@ const DANGER_LEVELS: Array = [
 
 # --- Модификаторы волн (сюрприз в начале обычной волны) ---
 const WAVE_MOD_FROM: int = 3                 # не раньше этой волны
-const WAVE_MOD_CHANCE: float = 0.45          # шанс на обычную волну (элита/орда/боссы - без модификаторов)
+const WAVE_MOD_CHANCE: float = 0.45          # (устарело: модификатор теперь только через кучу-лотерею)
+# Куча-лотерея: редкая светящаяся куча говна посреди волны. Вступил - после Ларька рулетка модификатора на следующую волну.
+# Расчёт: 11 подходящих волн (4..14) x шанс 0.2 -> в среднем ~2 кучи, ни одной - ~9% забегов, больше 3 - нельзя.
+const PILE_FROM_WAVE: int = 4
+const PILE_CHANCE: float = 0.2
+const PILE_MAX_PER_RUN: int = 3
+const PILE_APPEAR_FRACTION: Vector2 = Vector2(0.15, 0.55)   # когда появляется (доля волны)
+const PILE_MIN_DIST: float = 140.0          # от героя: надо сходить
+const PILE_RADIUS: float = 14.0
+const PILE_SOUND_DIST: float = 320.0        # дальше - не слышно мух
+const ROULETTE_SPIN_SEC: float = 3.6
+const ROULETTE_SEGMENTS: int = 8
 # Модификаторы: title/line - объявление; fx - эффекты (множители к врагам/игроку, спавнеры, фильтры экрана, эффекты при смерти).
 # Ключи fx: enemy_speed, enemy_hp, enemy_damage, enemy_size, enemy_count, coin, player_speed, player_damage, attack_speed,
 #   pickup, time_scale, spawn_near (множитель мин. дистанции спавна), spread (разброс выстрелов, град),

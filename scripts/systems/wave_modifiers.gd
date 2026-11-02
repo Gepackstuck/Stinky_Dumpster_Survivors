@@ -61,14 +61,38 @@ func _overlay_rect(shader: Shader, layer: CanvasLayer) -> ColorRect:
 	return rect
 
 
-func _on_wave_started(_wave: int) -> void:
+func _on_wave_started(wave: int) -> void:
 	_timer = 1.5
+	_maybe_spawn_pile(wave)
 	var ts: float = WaveRules.mod_f("time_scale", 1.0)
 	if ts != 1.0 and not _scaled:
 		_base_time_scale = Engine.time_scale
 		Engine.time_scale = _base_time_scale * ts
 		_scaled = true
 	_wind_left = 0.0
+
+
+## Куча-лотерея: редкая (Balance.PILE_*), не больше 3 за забег, не на боссах; появляется посреди волны вдали от героя.
+func _maybe_spawn_pile(wave: int) -> void:
+	if wave < Balance.PILE_FROM_WAVE or GameState.wave_kind == &"boss" or GameState.piles_this_run >= Balance.PILE_MAX_PER_RUN:
+		return
+	if randf() >= Balance.PILE_CHANCE:
+		return
+	GameState.piles_this_run += 1
+	var delay: float = WaveRules.duration_sec(wave) * randf_range(Balance.PILE_APPEAR_FRACTION.x, Balance.PILE_APPEAR_FRACTION.y)
+	await get_tree().create_timer(delay, false).timeout
+	if not is_inside_tree() or not GameState.run_active or GameState.wave != wave or GameState.wave_time_left <= 0.0:
+		return
+	var player: Node2D = _player()
+	var at: Vector2 = Vector2(Balance.ARENA_SIZE, Balance.ARENA_SIZE) * 0.5
+	for i: int in 20:
+		at = Vector2(randf_range(40.0, Balance.ARENA_SIZE - 40.0), randf_range(40.0, Balance.ARENA_SIZE - 40.0))
+		if player == null or at.distance_to(player.global_position) >= Balance.PILE_MIN_DIST:
+			break
+	var pile: ModPile = ModPile.new()
+	get_tree().current_scene.add_child(pile)
+	pile.global_position = at
+	AudioManager.play_sfx(&"splat_pile")
 
 
 func _reset_wave_state() -> void:

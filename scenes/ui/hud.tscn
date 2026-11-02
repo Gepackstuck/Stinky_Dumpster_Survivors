@@ -14,6 +14,7 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/dash_meter.tscn" id="12_dash"]
 [ext_resource type="Script" path="res://scripts/ui/streak_meter.gd" id="13_streak"]
 [ext_resource type="Script" path="res://scripts/ui/wave_mod_badge.gd" id="14_mod"]
+[ext_resource type="Script" path="res://scripts/ui/pile_pointer.gd" id="15_pile"]
 
 [node name="Hud" type="CanvasLayer"]
 layer = 5
@@ -157,3 +158,6 @@ offset_top = 36.0
 offset_right = 340.0
 offset_bottom = 52.0
 script = ExtResource("14_mod")
+
+[node name="PilePointer" type="Sprite2D" parent="Root"]
+script = ExtResource("15_pile")
