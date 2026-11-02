@@ -82,7 +82,7 @@ const WAVE_ENEMY_UNLOCK: Dictionary = {     # с какой волны тип м
 	&"blinker": 7, &"shield_bearer": 8, &"mirror": 10,
 }
 const WAVE_ENEMY_WEIGHTS: Dictionary = {    # вес в взвешенном рандоме
-	&"squid_gopnik": 10, &"chaser": 8, &"microbe": 5, &"charger": 7, &"npc_bot": 4, &"spitter": 12,
+	&"squid_gopnik": 10, &"chaser": 8, &"microbe": 5, &"charger": 7, &"npc_bot": 4, &"spitter": 8,
 	&"looter": 1, &"cockroach": 4, &"bruiser": 4, &"wifi_ghost": 3,
 	&"healer": 3, &"glutton": 3, &"egg": 2, &"mamka": 2,
 	&"blinker": 3, &"shield_bearer": 3, &"mirror": 2,
@@ -126,14 +126,14 @@ const GOLEM_DEBRIS_DAMAGE: float = 7.0
 const GOLEM_SUMMON: int = 3
 # --- Голубиный папа (финал) ---
 const UK_ATTACK_INTERVAL_SEC: float = 2.5    # Н25 управляющая компания
-const UK_MINES: int = 5
+const UK_MINES: int = 4
 const UK_MINE_RADIUS: float = 14.0
 const UK_MINE_DELAY: float = 1.3
-const UK_MINE_DAMAGE: float = 8.0
-const UK_CALL_COUNT: int = 3
-const UK_BILLS: int = 7
+const UK_MINE_DAMAGE: float = 5.5
+const UK_CALL_COUNT: int = 2
+const UK_BILLS: int = 5
 const UK_BILL_SPEED: float = 120.0
-const UK_BILL_DAMAGE: float = 5.0
+const UK_BILL_DAMAGE: float = 4.0
 const UK_LUNCH_EVERY_SEC: float = 11.0
 const UK_LUNCH_SEC: float = 2.5
 const MIL_ATTACK_INTERVAL_SEC: float = 2.4   # Н24 тёща
@@ -418,7 +418,7 @@ const CHARGER_DASH_SEC: float = 0.55
 const CHARGER_DASH_SPEED: float = 260.0
 const SPITTER_WINDUP_SEC: float = 0.4       # плевун надувается и показывает линию плевка
 const SPITTER_AIM_LENGTH: float = 60.0
-const SPITTER_DAMAGE: float = 1.5           # плевок больнее касания: от него можно увернуться (скилл решает)
+const SPITTER_DAMAGE: float = 1.2           # плевок больнее касания: от него можно увернуться (скилл решает)
 const SPITTER_LATE_WEIGHT_PER_WAVE: float = 0.1   # с 6-й волны плевунов всё больше: +10% веса за волну
 const HAMSTER_SLAM_TELE_RADIUS: float = 60.0
 const MINION_WHIRL_TELE_RADIUS: float = 60.0
@@ -662,7 +662,7 @@ const WEAPON_CLASSES: Dictionary = {
 const WEAPON_CLASS_BONUS: Dictionary = {
 	&"kitchen": {"mod": &"max_hp", "values": [2.0, 4.0, 6.0, 9.0, 12.0]},
 	&"household": {"mod": &"armor", "values": [1.0, 1.0, 2.0, 3.0, 4.0]},
-	&"guns": {"mod": &"crit", "values": [5.0, 9.0, 13.0, 17.0, 22.0]},
+	&"guns": {"mod": &"crit", "values": [7.0, 12.0, 17.0, 22.0, 28.0]},
 	&"fire": {"fx": &"burn", "values": [5.0, 10.0, 15.0, 20.0, 25.0]},
 	&"stinky": {"fx": &"repel", "values": [3.0, 6.0, 9.0, 12.0, 15.0]},
 	&"prison": {"fx": &"lifesteal", "values": [3.0, 6.0, 9.0, 12.0, 15.0]},
@@ -929,7 +929,7 @@ const BOSS_BLUE_WHALE_TEARS_COUNT: int = 5  # веер снарядов
 const WEAPONS: Dictionary = {
 	&"lighter": {"damage": 9.0, "cooldown": 0.35, "burn_dps": 2.0, "burn_duration": 3.0, "tag": "ПОДЖИГАЕТ"},
 	&"sock": {"damage": 15.0, "cooldown": 1.0, "radius": 66.0, "tag": "ВОНЬ ВОКРУГ"},
-	&"slingshot": {"damage": 8.0, "cooldown": 0.6, "ricochets": 2, "ricochet_range": 110.0, "tag": "ОТСКОКИ"},
+	&"slingshot": {"damage": 9.5, "cooldown": 0.6, "ricochets": 2, "ricochet_range": 110.0, "tag": "ОТСКОКИ"},
 	&"laser_pointer": {"damage": 3.0, "cooldown": 0.2, "beam_half_width": 5.0, "tag": "ПРОБИВАЕТ"},
 	&"mop": {"damage": 17.0, "cooldown": 0.8, "knockback": 240.0, "reach": 56.0, "arc_deg": 140.0, "tag": "ОТБРОС"},
 	&"slipper": {"damage": 30.0, "cooldown": 2.5, "aoe_radius": 40.0, "flight_sec": 0.5, "tag": "ВЗРЫВ"},
@@ -940,18 +940,18 @@ const WEAPONS: Dictionary = {
 	&"cart_mortar": {"damage": 24.0, "cooldown": 2.4, "aoe_radius": 42.0, "flight_sec": 0.6, "range": 230.0,
 			"projectile": "res://assets/sprites/proj_tin_bomb.png", "tag": "МИНОМЁТ", "structure": true},   # структура: стоит на месте, стреляет сама
 	# --- Пачка 2: pellets/spread_deg/jitter_deg/proj_speed/proj_life/pierce - у стрелков; reach/arc_deg/knockback - у ближних; radius - у аур
-	&"pipe_gun": {"damage": 5.0, "cooldown": 1.0, "pellets": 5, "spread_deg": 9.0, "proj_life": 0.45, "tag": "ДРОБЬ"},
-	&"crossbow": {"damage": 14.0, "cooldown": 1.2, "pierce": 3, "proj_speed": 300.0, "tag": "ПРОБИВАЕТ"},
+	&"pipe_gun": {"damage": 6.0, "cooldown": 1.0, "pellets": 5, "spread_deg": 9.0, "proj_life": 0.45, "tag": "ДРОБЬ"},
+	&"crossbow": {"damage": 17.0, "cooldown": 1.2, "pierce": 3, "proj_speed": 300.0, "tag": "ПРОБИВАЕТ"},
 	&"frying_pan": {"damage": 29.0, "cooldown": 0.95, "knockback": 420.0, "reach": 38.0, "arc_deg": 100.0, "tag": "ОТБРОС"},
 	&"rolling_pin": {"damage": 9.0, "cooldown": 0.3, "knockback": 90.0, "reach": 40.0, "arc_deg": 90.0, "tag": "БЫСТРАЯ"},
 	&"rotten_cheese": {"damage": 5.0, "cooldown": 0.5, "radius": 85.0, "tag": "ВОНЬ ВОКРУГ"},
 	&"spray_can": {"damage": 2.0, "cooldown": 0.1, "jitter_deg": 12.0, "proj_life": 0.32, "burn_dps": 1.5, "burn_duration": 2.0, "tag": "ПОДЖИГАЕТ"},
 	&"bottle": {"damage": 10.0, "cooldown": 1.0, "ricochets": 4, "ricochet_range": 140.0, "projectile": "res://assets/sprites/proj_bottle.png", "tag": "ОТСКОКИ"},
-	&"mosin": {"damage": 42.0, "cooldown": 2.1, "pierce": 2, "proj_speed": 520.0, "proj_life": 1.2, "tag": "СНАЙПЕР"},
+	&"mosin": {"damage": 48.0, "cooldown": 2.1, "pierce": 2, "proj_speed": 520.0, "proj_life": 1.2, "tag": "СНАЙПЕР"},
 	# --- Пачка 3: range - дальность прицела (меньше общей), chain_* - цепная молния
-	&"plunger": {"damage": 25.0, "cooldown": 0.8, "knockback": 340.0, "reach": 44.0, "arc_deg": 90.0, "tag": "ОТБРОС"},
+	&"plunger": {"damage": 22.0, "cooldown": 0.8, "knockback": 340.0, "reach": 44.0, "arc_deg": 90.0, "tag": "ОТБРОС"},
 	&"shiv": {"damage": 6.0, "cooldown": 0.2, "knockback": 40.0, "reach": 30.0, "arc_deg": 70.0, "tag": "ОЧЕНЬ БЫСТРАЯ"},
-	&"shovel": {"damage": 40.0, "cooldown": 1.35, "knockback": 220.0, "reach": 48.0, "arc_deg": 120.0, "tag": "ТЯЖЁЛАЯ"},
+	&"shovel": {"damage": 36.0, "cooldown": 1.35, "knockback": 220.0, "reach": 48.0, "arc_deg": 120.0, "tag": "ТЯЖЁЛАЯ"},
 	&"blowtorch": {"damage": 3.0, "cooldown": 0.11, "jitter_deg": 9.0, "proj_speed": 300.0, "proj_life": 0.3, "pierce": 2, "range": 95.0,
 			"burn_dps": 3.0, "burn_duration": 2.5, "projectile": "res://assets/sprites/proj_flame.png", "tag": "ПОДЖИГАЕТ"},
 	&"syringe": {"damage": 6.0, "cooldown": 0.5, "proj_speed": 380.0, "pierce": 1, "burn_dps": 3.5, "burn_duration": 4.0,
@@ -1033,22 +1033,22 @@ const CHARACTER_ORDER: Array[StringName] = [&"hobo", &"squid", &"clerk", &"janit
 const CHARACTERS: Dictionary = {
 	&"hobo": {"weapon": &"", "mods": {&"max_hp": 4.0, &"pickup": 15.0}, "fx": {&"stash": 30.0}, "unlock": &"open", "need": 0, "tint": Color(1.0, 1.0, 1.0), "hat": &"ushanka"},
 	&"squid": {"weapon": &"mop", "mods": {&"damage": 15.0, &"speed": 8.0, &"max_hp": -3.0}, "fx": {&"ink": 12.0}, "unlock": &"open", "need": 0, "tint": Color(0.65, 0.85, 1.0), "hat": &"cigarette"},
-	&"clerk": {"weapon": &"slingshot", "mods": {&"crit": 7.0, &"attack_speed": 10.0, &"max_hp": -4.0, &"armor": -1.0}, "fx": {&"salary": 3.0}, "unlock": &"open", "need": 0, "tint": Color(0.85, 0.85, 1.0), "hat": &"dirty_glasses"},
-	&"janitor": {"weapon": &"sock", "mods": {&"armor": 3.0, &"max_hp": 6.0, &"speed": -4.0, &"pickup": 20.0}, "fx": {&"clean_heal": 25.0}, "unlock": &"kills", "need": 300, "tint": Color(1.0, 0.85, 0.6), "hat": &"helmet"},
-	&"uncle_vitya": {"weapon": &"lighter", "mods": {&"dodge": 12.0, &"damage": -8.0}, "fx": {&"drunk": 25.0, &"burn": 20.0}, "unlock": &"deaths", "need": 1, "tint": Color(1.0, 0.7, 0.7), "hat": &"vodka"},
+	&"clerk": {"weapon": &"slingshot", "mods": {&"crit": 8.0, &"attack_speed": 12.0, &"max_hp": -2.0}, "fx": {&"salary": 3.0}, "unlock": &"open", "need": 0, "tint": Color(0.85, 0.85, 1.0), "hat": &"dirty_glasses"},
+	&"janitor": {"weapon": &"sock", "mods": {&"armor": 3.0, &"max_hp": 6.0, &"damage": 6.0, &"pickup": 20.0}, "fx": {&"clean_heal": 25.0}, "unlock": &"kills", "need": 300, "tint": Color(1.0, 0.85, 0.6), "hat": &"helmet"},
+	&"uncle_vitya": {"weapon": &"lighter", "mods": {&"dodge": 9.0, &"damage": -8.0}, "fx": {&"drunk": 25.0, &"burn": 20.0}, "unlock": &"deaths", "need": 1, "tint": Color(1.0, 0.7, 0.7), "hat": &"vodka"},
 	&"blogger": {"weapon": &"laser_pointer", "mods": {&"damage": -12.0, &"crit": 8.0}, "fx": {&"hype": 50.0, &"coin_bonus": 40.0}, "unlock": &"coins", "need": 600, "tint": Color(0.8, 1.0, 0.8), "hat": &"gold_tooth"},
-	&"granny": {"weapon": &"slipper", "mods": {&"max_hp": 6.0, &"armor": 2.0, &"speed": -4.0}, "fx": {&"pies": 3.0, &"thorns": 3.0}, "unlock": &"kills", "need": 600, "tint": Color(1, 1, 1), "hat": &"scarf"},
-	&"courier": {"weapon": &"spray_can", "mods": {&"speed": 20.0, &"attack_speed": 8.0, &"max_hp": -4.0}, "fx": {&"rush": 40.0, &"coin_bonus": 25.0}, "unlock": &"coins", "need": 1000, "tint": Color(1, 1, 1), "hat": &"bottle_cap"},
-	&"pigeon": {"weapon": &"condensed_milk", "mods": {&"dodge": 10.0, &"speed": 10.0, &"max_hp": -5.0}, "fx": {&"pigeons": 1.0, &"lifesteal": 5.0}, "unlock": &"deaths", "need": 5, "tint": Color(1, 1, 1), "hat": &"dried_fish"},
-	&"punk": {"weapon": &"frying_pan", "mods": {&"damage": 14.0, &"max_hp": 3.0, &"speed": 6.0}, "fx": {&"steal": 4.0, &"pets": 1.0}, "unlock": &"wins", "need": 1, "tint": Color(1, 1, 1), "hat": &"crowbar"},
-	&"shawarma": {"weapon": &"rolling_pin", "mods": {&"max_hp": 8.0, &"damage": 4.0, &"armor": 1.0}, "fx": {&"regen_mult": 100.0, &"coin_bonus": 15.0}, "unlock": &"coins", "need": 2500, "tint": Color(1, 1, 1), "hat": &"shawarma"},
+	&"granny": {"weapon": &"slipper", "mods": {&"max_hp": 6.0, &"armor": 2.0, &"damage": 6.0}, "fx": {&"pies": 3.0, &"thorns": 3.0}, "unlock": &"kills", "need": 600, "tint": Color(1, 1, 1), "hat": &"scarf"},
+	&"courier": {"weapon": &"spray_can", "mods": {&"speed": 16.0, &"attack_speed": 6.0, &"max_hp": -4.0}, "fx": {&"rush": 40.0, &"coin_bonus": 15.0}, "unlock": &"coins", "need": 1000, "tint": Color(1, 1, 1), "hat": &"bottle_cap"},
+	&"pigeon": {"weapon": &"condensed_milk", "mods": {&"dodge": 10.0, &"speed": 10.0, &"max_hp": -5.0}, "fx": {&"pigeons": 1.0, &"lifesteal": 3.0}, "unlock": &"deaths", "need": 5, "tint": Color(1, 1, 1), "hat": &"dried_fish"},
+	&"punk": {"weapon": &"frying_pan", "mods": {&"damage": 16.0, &"max_hp": 6.0, &"speed": 6.0, &"armor": 1.0}, "fx": {&"steal": 4.0, &"pets": 1.0}, "unlock": &"wins", "need": 1, "tint": Color(1, 1, 1), "hat": &"crowbar"},
+	&"shawarma": {"weapon": &"rolling_pin", "mods": {&"max_hp": 10.0, &"damage": 10.0, &"armor": 1.0, &"attack_speed": 6.0}, "fx": {&"regen_mult": 100.0, &"coin_bonus": 15.0}, "unlock": &"coins", "need": 2500, "tint": Color(1, 1, 1), "hat": &"shawarma"},
 	&"guard": {"weapon": &"mosin", "mods": {&"armor": 1.0, &"crit": 6.0, &"speed": -10.0}, "fx": {&"post": 25.0}, "unlock": &"kills", "need": 2000, "tint": Color(1, 1, 1), "hat": &"binoculars"},
-	&"student": {"weapon": &"bottle", "mods": {&"attack_speed": 6.0, &"max_hp": -4.0, &"speed": 8.0}, "fx": {&"xp_bonus": 12.0}, "unlock": &"deaths", "need": 10, "tint": Color(1, 1, 1), "hat": &"energy_can"},
-	&"plumber": {"weapon": &"pipe_gun", "mods": {&"damage": 10.0, &"armor": 2.0}, "fx": {&"bash": 15.0}, "unlock": &"kills", "need": 3500, "tint": Color(1, 1, 1), "hat": &"pot"},
-	&"dacha": {"weapon": &"rotten_cheese", "mods": {&"max_hp": 10.0, &"speed": -12.0, &"pickup": 30.0}, "fx": {&"turrets": 1.0}, "unlock": &"coins", "need": 4000, "tint": Color(1, 1, 1), "hat": &"plastic_bag"},
+	&"student": {"weapon": &"bottle", "mods": {&"attack_speed": 6.0, &"max_hp": -4.0, &"speed": 8.0}, "fx": {&"xp_bonus": 8.0}, "unlock": &"deaths", "need": 10, "tint": Color(1, 1, 1), "hat": &"energy_can"},
+	&"plumber": {"weapon": &"pipe_gun", "mods": {&"damage": 16.0, &"armor": 2.0, &"attack_speed": 8.0}, "fx": {&"bash": 15.0}, "unlock": &"kills", "need": 3500, "tint": Color(1, 1, 1), "hat": &"pot"},
+	&"dacha": {"weapon": &"rotten_cheese", "mods": {&"max_hp": 7.0, &"speed": -12.0, &"pickup": 20.0}, "fx": {&"turrets": 1.0}, "unlock": &"coins", "need": 4000, "tint": Color(1, 1, 1), "hat": &"plastic_bag"},
 	&"skater": {"weapon": &"crossbow", "mods": {&"speed": 25.0, &"dodge": 10.0, &"max_hp": -5.0}, "fx": {&"trick": 25.0}, "unlock": &"deaths", "need": 15, "tint": Color(1, 1, 1), "hat": &"skateboard"},
 	# Н18: открываются достижениями (unlock = &"ach", ach = id достижения).
-	&"gopnik_jock": {"weapon": &"shiv", "mods": {&"damage": 18.0, &"max_hp": 6.0, &"speed": -6.0, &"attack_speed": -5.0}, "fx": {&"bash": 20.0}, "unlock": &"ach", "ach": &"bump_100", "need": 1, "tint": Color(1, 1, 1), "hat": &"nail_knuckles"},
-	&"cat": {"weapon": &"tin_bomb", "mods": {&"speed": 12.0, &"dodge": 8.0, &"pickup": 15.0}, "fx": {&"nine_lives": 9.0}, "unlock": &"ach", "ach": &"deaths_50", "need": 1, "tint": Color(1, 1, 1), "hat": &"old_milk"},
-	&"slime": {"weapon": &"plunger", "mods": {&"max_hp": 10.0, &"damage": 12.0, &"armor": 2.0, &"pickup": 10.0}, "fx": {&"slime_touch": 40.0, &"thorns": 2.0}, "unlock": &"kills", "need": 5000, "tint": Color(1, 1, 1), "hat": &"rubber_boot"},
+	&"gopnik_jock": {"weapon": &"shiv", "mods": {&"damage": 25.0, &"max_hp": 12.0, &"armor": 1.0}, "fx": {&"bash": 20.0}, "unlock": &"ach", "ach": &"bump_100", "need": 1, "tint": Color(1, 1, 1), "hat": &"nail_knuckles"},
+	&"cat": {"weapon": &"tin_bomb", "mods": {&"speed": 8.0, &"dodge": 4.0, &"pickup": 15.0}, "fx": {&"nine_lives": 9.0}, "unlock": &"ach", "ach": &"deaths_50", "need": 1, "tint": Color(1, 1, 1), "hat": &"old_milk"},
+	&"slime": {"weapon": &"plunger", "mods": {&"max_hp": 14.0, &"damage": 14.0, &"armor": 2.0, &"pickup": 10.0, &"attack_speed": 8.0}, "fx": {&"slime_touch": 40.0, &"thorns": 2.0}, "unlock": &"kills", "need": 5000, "tint": Color(1, 1, 1), "hat": &"rubber_boot"},
 }
