@@ -12,6 +12,7 @@ var selected: StringName = &"hobo"
 var enemy_kills: Dictionary = {}   # id врага -> сколько убито за всё время (бестиарий)
 var weapons_announced: Array[StringName] = []   # оружие, про которое экран смерти уже объявил «открыто»
 var combos_found: Array[StringName] = []
+var graffiti: Array = []   # Н30: последние смерти [{hero, wave}] - граффити на краю арены
 var achievements: Array[StringName] = []    # открытые достижения (Achievements)
 var mods_seen: Array[StringName] = []       # модификаторы волн, которые уже попадались
 var stats: Dictionary = {}                  # счётчики для достижений: рывки, упоры...
@@ -89,7 +90,12 @@ func _record_run(won: bool) -> void:
 		danger_unlocked = clampi(maxi(danger_unlocked, GameState.danger + 1), 0, Balance.DANGER_LEVELS.size() - 1)
 	else:
 		deaths += 1
-		stat_add(StringName("deaths_" + String(GameState.character)), 1)   # живое кладбище: грибы и мухи по смертям героя
+		stat_add(StringName("deaths_" + String(GameState.character)), 1)
+		if not graffiti.is_empty() and int(graffiti.back().get("wave", -1)) == GameState.wave and StringName(graffiti.back().get("hero", "")) == GameState.character:
+			Achievements.unlock(&"deja_vu")   # сдох тем же героем на той же волне, что и в прошлый раз
+		graffiti.append({"hero": String(GameState.character), "wave": GameState.wave})
+		if graffiti.size() > Balance.GRAFFITI_KEEP:
+			graffiti = graffiti.slice(graffiti.size() - Balance.GRAFFITI_KEEP)   # живое кладбище: грибы и мухи по смертям героя
 	save()
 
 
@@ -200,6 +206,7 @@ func save() -> void:
 	for id: StringName in combos_found:
 		combos.append(String(id))
 	cfg.set_value("run", "combos_found", combos)
+	cfg.set_value("run", "graffiti", graffiti)
 	cfg.set_value("danger", "unlocked", danger_unlocked)
 	cfg.set_value("modes", "endless_best", endless_best)
 	var ach: PackedStringArray = PackedStringArray()
@@ -262,6 +269,7 @@ func _load() -> bool:
 	if cfg.has_section("danger_wins"):
 		for key: String in cfg.get_section_keys("danger_wins"):
 			hero_wins[StringName(key)] = cfg.get_value("danger_wins", key, [])
+	graffiti = cfg.get_value("run", "graffiti", [])
 	for entry_c: String in cfg.get_value("run", "combos_found", PackedStringArray()):
 		if Balance.ITEM_COMBOS.has(StringName(entry_c)):
 			combos_found.append(StringName(entry_c))

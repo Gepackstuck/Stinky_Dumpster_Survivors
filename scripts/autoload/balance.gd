@@ -835,6 +835,10 @@ const THIEF_STEAL_SEC: float = 12.0       # сколько ворует, пот�
 const THIEF_MAX_STEAL: int = 15           # полный мешок - удирает раньше
 const THIEF_SEE_RADIUS: float = 220.0
 
+# --- Н30: граффити о прошлых смертях на краю арены ---
+const GRAFFITI_MAX: int = 4        # сколько последних смертей видно (по 2 сверху и снизу - не налезают)
+const GRAFFITI_KEEP: int = 20      # сколько хранится в профиле
+
 # --- Хитрые враги ---
 const BLINKER_INTERVAL_SEC: float = 3.2      # как часто глючный бомж прыгает
 const BLINKER_WARN_SEC: float = 0.6          # метка на земле до прыжка (успеть отойти)

@@ -110,3 +110,4 @@ SET_VICTORY,РОЛИК ПОБЕДЫ,VICTORY CUTSCENE
 МЕШОК ЛОПНУЛ! x2,МЕШОК ЛОПНУЛ! x2,BAG BURST! x2
 ЩИПАЧ,ЩИПАЧ,PICKPOCKET
 "Не дерётся, а тырит упавшее говно прямо у тебя из-под носа и сваливает к краю. Догони и прибей - мешок лопнет вдвое жирнее.","Не дерётся, а тырит упавшее говно прямо у тебя из-под носа и сваливает к краю. Догони и прибей - мешок лопнет вдвое жирнее.",Doesn't fight - snatches your dropped crap right under your nose and runs for the edge. Catch and smack him - the bag bursts twice as fat.
+ТУТ СДОХ %s. ВОЛНА %d,ТУТ СДОХ %s. ВОЛНА %d,%s DIED HERE. WAVE %d
