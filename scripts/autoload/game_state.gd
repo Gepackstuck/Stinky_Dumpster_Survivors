@@ -38,6 +38,7 @@ var weapons: Array[Dictionary] = []    # оружие игрока: {id, tier}, 
 var endless: bool = false            # бесконечный режим после победы
 var daily: bool = false              # ежедневный забег (один сид на всех в этот день)
 var daily_seed: int = 0
+var seed_word: String = ""            # «Шизосид»: слово -> один и тот же забег (пусто - обычный рандом)
 var danger: int = 0                  # уровень опасности забега (Balance.DANGER_LEVELS)
 var character: StringName = &"hobo"   # выбранный на кладбище персонаж (живёт между забегами)
 var run_coins_earned: int = 0
@@ -159,6 +160,8 @@ func reset_run() -> void:
 	endless = false
 	if daily:
 		seed(daily_seed)
+	elif seed_word != "":
+		seed(seed_word.hash())
 	season = &""
 	damage_by_source = {}
 	hp_history.clear()

@@ -166,6 +166,8 @@ func _show_result(title: String, died: bool = false) -> void:
 	var secs: int = GameState.hp_history.size()
 	_stats.text = "УБИТО %d   УР. %d   ВОЛНА %d/%d   %d:%02d   %s" % [GameState.kills, GameState.level, GameState.wave, Balance.WAVE_COUNT,
 			secs / 60, secs % 60, WaveRules.danger_v("name")]
+	if GameState.seed_word != "":
+		_stats.text += "   " + tr("СИД: %s") % GameState.seed_word
 	_graph.died = died
 	_graph.queue_redraw()
 	_fill_damage()

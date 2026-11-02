@@ -48,6 +48,11 @@ func _run() -> void:
 	get_tree().root.add_child(menu)
 	await get_tree().create_timer(0.3).timeout
 	_check("меню", menu)
+	menu.call("_open_seed")
+	await get_tree().process_frame
+	_check("шизосид", menu)
+	menu.get("_seed_panel").emit_signal("closed")
+	await get_tree().process_frame
 	menu.call("_open_settings")
 	await get_tree().process_frame
 	_check("настройки", menu)
@@ -151,6 +156,7 @@ func _run() -> void:
 	GameState.damage_by_source = {&"extension_cord": 9999.0, &"rotten_cheese": 5000.0, &"pets": 300.0, &"structures": 100.0, &"ult": 50.0}
 	for killer: StringName in [&"boss_trash_golem", &"garbage_truck", &"wire", &"squid_gopnik"]:
 		GameState.last_damage_source = killer
+		GameState.seed_word = "МОРКОВСКВАСЯШАУР"   # самый длинный сид - строка итогов не должна вылезти
 		ds.call("_show_result", FlavorText.random_death(), true)
 		await get_tree().process_frame
 		_check("итоги/" + String(killer), ds)

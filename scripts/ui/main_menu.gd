@@ -23,6 +23,8 @@ var _bestiary: Control = null
 
 var _settings_button: Button = null
 var _daily_button: Button = null
+var _seed_button: Button = null
+var _seed_panel: SeedPanel = null
 var _settings: SettingsPanel = null
 
 
@@ -53,13 +55,16 @@ func _ready() -> void:
 	_hero.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	_hero.position = Vector2(SCREEN.x * 0.5, 112.0)
 	add_child(_hero)
-	_start = _button(tr("MENU_PLAY"), 126.0)
-	_daily_button = _button(tr("MENU_DAILY"), 150.0)
-	_bestiary_button = _button(tr("MENU_BESTIARY"), 174.0)
-	_settings_button = _button(tr("MENU_SETTINGS"), 198.0)
-	_quit = _button(tr("MENU_QUIT"), 222.0)
-	for b: Button in [_start, _daily_button, _bestiary_button, _settings_button, _quit]:
-		b.size.y = 22.0
+	_start = _button(tr("MENU_PLAY"), 124.0)
+	_daily_button = _button(tr("MENU_DAILY"), 145.0)
+	_seed_button = _button(tr("ШИЗОСИД"), 166.0)
+	_bestiary_button = _button(tr("MENU_BESTIARY"), 187.0)
+	_settings_button = _button(tr("MENU_SETTINGS"), 208.0)
+	_quit = _button(tr("MENU_QUIT"), 229.0)
+	for b: Button in [_start, _daily_button, _seed_button, _bestiary_button, _settings_button, _quit]:
+		b.size.y = 20.0
+	UI_BUTTONS.skin(_seed_button, 5)
+	_seed_button.pressed.connect(_open_seed)
 	UI_BUTTONS.skin(_daily_button, 1)
 	_daily_button.pressed.connect(_start_daily)
 	var best: int = int(Profile.daily_best.get(str(GameState.today_seed()), 0))
@@ -72,11 +77,12 @@ func _ready() -> void:
 	_bestiary_button.pressed.connect(_open_bestiary)
 	_start.pressed.connect(func() -> void:
 		GameState.daily = false
+		GameState.seed_word = ""
 		SceneFlow.go(GRAVEYARD_SCENE, Vector2.DOWN))
 	_quit.pressed.connect(func() -> void: get_tree().quit())
-	UI_BUTTONS.add_focus_arrows([_start, _daily_button, _bestiary_button, _settings_button, _quit])
+	UI_BUTTONS.add_focus_arrows([_start, _daily_button, _seed_button, _bestiary_button, _settings_button, _quit])
 	_start.grab_focus()
-	_title(tr("MENU_HINT"), 246.0, GREY, Color.BLACK)
+	_title(tr("MENU_HINT"), 254.0, GREY, Color.BLACK)
 
 
 func _title(text: String, y: float, color: Color, shadow: Color) -> Label:
@@ -105,11 +111,25 @@ func _button(text: String, y: float) -> Button:
 
 ## Ежедневка: герой дня, опасность ГНИЛЬ, один сид на всех - сразу на арену.
 func _start_daily() -> void:
+	GameState.seed_word = ""
 	GameState.daily = true
 	GameState.daily_seed = GameState.today_seed()
 	GameState.character = Balance.CHARACTER_ORDER[GameState.daily_seed % Balance.CHARACTER_ORDER.size()]
 	GameState.danger = Balance.DAILY_DANGER
 	SceneFlow.go("res://scenes/levels/main.tscn", Vector2.DOWN)
+
+
+func _open_seed() -> void:
+	_seed_panel = SeedPanel.new()
+	_seed_panel.closed.connect(func() -> void:
+		_seed_panel.queue_free()
+		_seed_panel = null
+		_seed_button.grab_focus())
+	_seed_panel.chosen.connect(func(word: String) -> void:
+		GameState.daily = false
+		GameState.seed_word = word   # сид сработает в reset_run; героя и опасность выбираешь на кладбище
+		SceneFlow.go(GRAVEYARD_SCENE, Vector2.DOWN))
+	add_child(_seed_panel)
 
 
 func _open_settings() -> void:
@@ -131,7 +151,7 @@ func _open_bestiary() -> void:
 
 
 func _input(event: InputEvent) -> void:
-	if _bestiary != null or _settings != null:
+	if _bestiary != null or _settings != null or _seed_panel != null:
 		return
 	var step: int = 0
 	if event.is_action_pressed(&"move_up") or event.is_action_pressed(&"ui_up"):
@@ -140,7 +160,7 @@ func _input(event: InputEvent) -> void:
 		step = 1
 	if step != 0:
 		get_viewport().set_input_as_handled()
-		var order: Array[Button] = [_start, _daily_button, _bestiary_button, _settings_button, _quit]
+		var order: Array[Button] = [_start, _daily_button, _seed_button, _bestiary_button, _settings_button, _quit]
 		var at: int = 0
 		for i: int in order.size():
 			if order[i].has_focus():

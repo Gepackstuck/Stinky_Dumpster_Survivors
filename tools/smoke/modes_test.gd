@@ -18,6 +18,19 @@ func _check(ok: bool, what: String) -> void:
 
 
 func _run() -> void:
+	# «Шизосид»: одно слово - одинаковый рандом, разные слова - разный
+	GameState.daily = false
+	GameState.seed_word = "ВАСЯ"
+	GameState.reset_run()
+	var a: Array = [randi(), randi(), ShopLibrary.fill_offers([], 3).map(func(o: Dictionary) -> StringName: return o["id"])]
+	GameState.reset_run()
+	var b: Array = [randi(), randi(), ShopLibrary.fill_offers([], 3).map(func(o: Dictionary) -> StringName: return o["id"])]
+	GameState.seed_word = "ПЕТЯ"
+	GameState.reset_run()
+	var c: Array = [randi(), randi()]
+	_check(a == b, "одно слово - один и тот же забег")
+	_check(a[0] != c[0], "другое слово - другой забег")
+	GameState.seed_word = ""
 	GameState.character = &"janitor"
 	var level: Node = MAIN.instantiate()
 	get_tree().root.add_child(level)
