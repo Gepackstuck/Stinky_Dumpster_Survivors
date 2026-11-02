@@ -121,8 +121,8 @@ static func ids() -> Array[StringName]:
 
 static func title(item_id: StringName) -> String:
 	if item_id == SHOES:
-		return Balance.SHOES_NAMES.get(GameState.character, "ОБУВЬ")
-	return _TITLES[item_id]
+		return TranslationServer.translate(Balance.SHOES_NAMES.get(GameState.character, "ОБУВЬ"))
+	return TranslationServer.translate(_TITLES[item_id])   # ключ перевода = русский текст (translations/ui.csv)
 
 
 ## Обувь героя = рывок (см. Balance.ITEMS dash_shoes).
@@ -253,8 +253,8 @@ static func describe(data: Dictionary) -> String:
 		var v: int = roundi(fx[key])
 		match key:
 			&"dash":
-				lines.append("+1 РЫВОК")
-				lines.append("БОСИКОМ НЕ РВАНЁШЬ" if GameState.item_count(SHOES) == 0 else "ВТОРОЙ ЗАРЯД")
+				lines.append(TranslationServer.translate("+1 РЫВОК"))
+				lines.append(TranslationServer.translate("БОСИКОМ НЕ РВАНЁШЬ" if GameState.item_count(SHOES) == 0 else "ВТОРОЙ ЗАРЯД"))
 			&"coin_bonus":
 				lines.append("+%d%% ГОВНА С ДРОПА" % v)
 			&"repel":

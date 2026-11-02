@@ -49,7 +49,7 @@ func filter_damage(damage: float) -> float:
 	HitFx.sparks(tree, boss.global_position + _facing * 10.0, Color(0.85, 0.85, 0.9))
 	if _ding_left <= 0.0:
 		_ding_left = 0.6
-		HitFx.popup(tree, boss.global_position + Vector2(0.0, -14.0), "ДЗЫНЬ", Color(0.75, 0.75, 0.8))
+		HitFx.popup(tree, boss.global_position + Vector2(0.0, -14.0), TranslationServer.translate("ДЗЫНЬ"), Color(0.75, 0.75, 0.8))
 	return damage * Balance.SHIELD_BLOCK
 
 

@@ -122,7 +122,7 @@ func _apply_slow(player: Node2D) -> void:
 func _heat(player: Node2D) -> void:
 	if GameState.hp > Balance.HEAT_PLAYER_MIN_HP and player.has_method(&"pay_hp"):
 		player.call(&"pay_hp", Balance.HEAT_PLAYER_DAMAGE)
-		HitFx.popup(get_tree(), player.global_position + Vector2(0.0, -24.0), "ЖАРКО", Color(1.0, 0.55, 0.1))
+		HitFx.popup(get_tree(), player.global_position + Vector2(0.0, -24.0), tr("ЖАРКО"), Color(1.0, 0.55, 0.1))
 	for node: Node in get_tree().get_nodes_in_group(&"enemies"):
 		var enemy: EnemyBase = node as EnemyBase
 		if enemy != null:
@@ -137,10 +137,10 @@ func _pick_drops(player: Node2D) -> void:
 		_drops.erase(d)
 		if randf() < 0.5:
 			GameState.coins += Balance.SNOWDROP_COINS
-			HitFx.popup(get_tree(), d.global_position + Vector2(0.0, -12.0), "+%d ГОВНА" % Balance.SNOWDROP_COINS, Color(0.97, 1.0, 0.0))
+			HitFx.popup(get_tree(), d.global_position + Vector2(0.0, -12.0), tr("+%d ГОВНА") % Balance.SNOWDROP_COINS, Color(0.97, 1.0, 0.0))
 		else:
 			player.call(&"heal", Balance.SNOWDROP_HEAL)
-			HitFx.popup(get_tree(), d.global_position + Vector2(0.0, -12.0), "+%d ХП" % int(Balance.SNOWDROP_HEAL), Color(0.22, 1.0, 0.08))
+			HitFx.popup(get_tree(), d.global_position + Vector2(0.0, -12.0), tr("+%d ХП") % int(Balance.SNOWDROP_HEAL), Color(0.22, 1.0, 0.08))
 		AudioManager.play_sfx(&"pickup")
 		d.queue_free()
 

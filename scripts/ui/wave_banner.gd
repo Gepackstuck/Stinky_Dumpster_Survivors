@@ -77,7 +77,7 @@ func _on_wave_started(wave: int) -> void:
 			_show_small("ВОЛНА %d: БОССЫ!" % wave, "", Color(1, 0.0627451, 0.2, 1))
 		_ when GameState.wave_mod == &"" and GameState.season != &"":
 			var weather: Dictionary = Balance.SEASONS[GameState.season]
-			_show_small("ВОЛНА %d - %s!" % [wave, weather["name"]], weather["line"], Color(0.55, 0.85, 1.0))
+			_show_small(tr("ВОЛНА %d - %s!") % [wave, tr(weather["name"])], tr(weather["line"]), Color(0.55, 0.85, 1.0))
 		_ when GameState.wave_mod != &"":
 			_show_small("ВОЛНА %d: %s!" % [wave, Balance.WAVE_MOD_DATA[GameState.wave_mod]["title"]], Balance.WAVE_MOD_DATA[GameState.wave_mod]["line"], Color(0.2235, 1.0, 0.0784))
 		_:

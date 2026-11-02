@@ -11,6 +11,10 @@ var _seen: Dictionary = {}
 func _ready() -> void:
 	Profile.sandbox = true
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	for arg: String in OS.get_cmdline_user_args():   # -- --locale=en: тот же обход на другом языке
+		if arg.begins_with("--locale="):
+			TranslationServer.set_locale(arg.trim_prefix("--locale="))
+	print("UI AUDIT LOCALE ", TranslationServer.get_locale())
 	_run.call_deferred()
 
 

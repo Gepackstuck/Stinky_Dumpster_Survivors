@@ -72,7 +72,7 @@ func deny() -> void:
 	_deny_left = 0.35
 	if _owned == 0 and _barefoot_note_left <= 0.0:   # подсказка, где взять рывок
 		_barefoot_note_left = 4.0
-		HitFx.popup(get_tree(), global_position + Vector2(0.0, -26.0), "БОСИКОМ? КУПИ ОБУВЬ", Color(1.0, 0.6, 0.1), 14.0, 1.4)
+		HitFx.popup(get_tree(), global_position + Vector2(0.0, -26.0), tr("БОСИКОМ? КУПИ ОБУВЬ"), Color(1.0, 0.6, 0.1), 14.0, 1.4)
 
 
 func _pop(i: int) -> void:

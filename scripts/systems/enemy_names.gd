@@ -62,7 +62,7 @@ const _DESCRIPTIONS: Dictionary[StringName, String] = {
 
 
 static func description(enemy_id: StringName) -> String:
-	return _DESCRIPTIONS.get(enemy_id, "Науке неизвестно. Лучше не выяснять.")
+	return TranslationServer.translate(_DESCRIPTIONS.get(enemy_id, "Науке неизвестно. Лучше не выяснять."))   # ключ перевода = русский текст
 
 
 ## Серьёзность врага для цвета имени: 0 обычный, 1 опасный, 2 элита, 3 босс.
@@ -84,5 +84,5 @@ static func color(enemy_id: StringName) -> Color:
 
 static func title(enemy_id: StringName) -> String:
 	if Balance.BOSS_NAMES.has(enemy_id):
-		return Balance.BOSS_NAMES[enemy_id]
-	return _TITLES.get(enemy_id, "ХЗ КТО, НО ЖЁСТКО")
+		return TranslationServer.translate(Balance.BOSS_NAMES[enemy_id])
+	return TranslationServer.translate(_TITLES.get(enemy_id, "ХЗ КТО, НО ЖЁСТКО"))

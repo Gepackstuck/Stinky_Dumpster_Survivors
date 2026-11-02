@@ -58,7 +58,7 @@ func filter_damage(damage: float) -> float:
 	HitFx.sparks(tree, boss.global_position, Color(0.7, 0.95, 1.0))
 	if _shard_left <= 0.0:
 		_shard_left = Balance.MIRROR_SHARD_GAP_SEC
-		HitFx.popup(tree, boss.global_position + Vector2(0.0, -16.0), "ОТРАЖАЮ!", Color(0.0, 0.94, 1.0))
+		HitFx.popup(tree, boss.global_position + Vector2(0.0, -16.0), TranslationServer.translate("ОТРАЖАЮ!"), Color(0.0, 0.94, 1.0))
 		shoot(SHARD, direction_to_target(), Balance.MIRROR_SHARD_DAMAGE * WaveRules.damage_mult(GameState.wave),
 				Balance.MIRROR_SHARD_SPEED, 2.5, 10.0)
 	return 0.0

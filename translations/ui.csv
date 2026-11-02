@@ -21,3 +21,52 @@ SET_BACK,НАЗАД,BACK
 SET_YES,ДА,YEP
 SET_NO,НЕТ,NOPE
 SET_HINT,W/S - СТРОКА   A/D - МЕНЯТЬ   ESC - НАЗАД,W/S - ROW   A/D - CHANGE   ESC - BACK
+ЛЕТО: ЖАРИЩА,ЛЕТО: ЖАРИЩА,SUMMER: SCORCHER
+"ВСЕ ПЛАВЯТСЯ И ТЕРЯЮТ ХП. ТЫ ТОЖЕ, ЛОХ","ВСЕ ПЛАВЯТСЯ И ТЕРЯЮТ ХП. ТЫ ТОЖЕ, ЛОХ","EVERYONE MELTS AND LOSES HP. YOU TOO, LOSER"
+ОСЕНЬ: СЛЯКОТЬ,ОСЕНЬ: СЛЯКОТЬ,AUTUMN: SLUSH
+"ЛЬЁТ ДОЖДЬ, В ЛУЖАХ ВСЕ ВЯЗНУТ","ЛЬЁТ ДОЖДЬ, В ЛУЖАХ ВСЕ ВЯЗНУТ",IT POURS. EVERYONE GETS STUCK IN PUDDLES
+ЗИМА: ДУБАК,ЗИМА: ДУБАК,WINTER: FREEZING
+СНЕГ И СУГРОБЫ. ВРАГИ В ШУБАХ - ТОЛЩЕ,СНЕГ И СУГРОБЫ. ВРАГИ В ШУБАХ - ТОЛЩЕ,SNOW AND DRIFTS. ENEMIES IN FUR COATS - THICKER
+ВЕСНА: ВСЁ ТАЕТ,ВЕСНА: ВСЁ ТАЕТ,SPRING: MELTDOWN
+ВЫТАЯЛИ ПОДСНЕЖНИКИ. ВРАГИ ОТ ГОРМОНОВ ЗЛЕЕ,ВЫТАЯЛИ ПОДСНЕЖНИКИ. ВРАГИ ОТ ГОРМОНОВ ЗЛЕЕ,THAWED-OUT JUNK. HORNY ENEMIES HIT HARDER
+ВОЛНА %d - %s!,ВОЛНА %d - %s!,WAVE %d - %s!
+ЖАРКО,ЖАРКО,HOT
++%d ГОВНА,+%d ГОВНА,+%d CRAP
++%d ХП,+%d ХП,+%d HP
+ДЗЫНЬ,ДЗЫНЬ,CLANG
+ОТРАЖАЮ!,ОТРАЖАЮ!,REFLECT!
+БОСИКОМ? КУПИ ОБУВЬ,БОСИКОМ? КУПИ ОБУВЬ,BAREFOOT? BUY SHOES
++1 РЫВОК,+1 РЫВОК,+1 DASH
+БОСИКОМ НЕ РВАНЁШЬ,БОСИКОМ НЕ РВАНЁШЬ,NO DASHING BAREFOOT
+ВТОРОЙ ЗАРЯД,ВТОРОЙ ЗАРЯД,SECOND CHARGE
+ОБУВЬ,ОБУВЬ,SHOES
+РВАНЫЕ БОТИНКИ,РВАНЫЕ БОТИНКИ,TORN BOOTS
+РОЗОВЫЕ КАЛОШИ,РОЗОВЫЕ КАЛОШИ,PINK GALOSHES
+ЛАКОВЫЕ ТУФЛИ,ЛАКОВЫЕ ТУФЛИ,PATENT SHOES
+РАБОЧИЕ САПОГИ,РАБОЧИЕ САПОГИ,WORK BOOTS
+ШЛЁПКИ+НОСКИ,ШЛЁПКИ+НОСКИ,SANDALS+SOCKS
+НЕОНОВЫЕ КРОССЫ,НЕОНОВЫЕ КРОССЫ,NEON KICKS
+ВАЛЕНКИ,ВАЛЕНКИ,FELT BOOTS
+КРОССЫ КУРЬЕРА,КРОССЫ КУРЬЕРА,COURIER KICKS
+КЕДЫ НА ЛАПКИ,КЕДЫ НА ЛАПКИ,PAW SNEAKERS
+БЕРЦЫ,БЕРЦЫ,COMBAT BOOTS
+ТАПКИ ИЗ ФОЛЬГИ,ТАПКИ ИЗ ФОЛЬГИ,FOIL SLIPPERS
+КИРЗАЧИ,КИРЗАЧИ,ARMY BOOTS
+КЕДЫ ИЗ ПЕРЕХОДА,КЕДЫ ИЗ ПЕРЕХОДА,KNOCKOFF SNEAKERS
+РЕЗИНОВЫЕ САПОГИ,РЕЗИНОВЫЕ САПОГИ,RUBBER BOOTS
+КАЛОШИ,КАЛОШИ,GALOSHES
+КЕДЫ СКЕЙТЕРА,КЕДЫ СКЕЙТЕРА,SKATER SHOES
+КРОКСЫ,КРОКСЫ,CROCS
+ЭВОЛЮЦИЯ: %s!,ЭВОЛЮЦИЯ: %s!,EVOLUTION: %s!
+ВОНЮЧИЙ ТАЙФУН,ВОНЮЧИЙ ТАЙФУН,STINKING TYPHOON
+ПУЛЕМЁТ КРЫШЕК,ПУЛЕМЁТ КРЫШЕК,BOTTLECAP GATLING
+ОГНЕМЁТ ИЗ ЗАЖИГАЛКИ,ОГНЕМЁТ ИЗ ЗАЖИГАЛКИ,LIGHTER FLAMETHROWER
+НОСОК СМЕРТИ,НОСОК СМЕРТИ,SOCK OF DEATH
+СНАЙПЕР С ПОМОЙКИ,СНАЙПЕР С ПОМОЙКИ,DUMPSTER SNIPER
+ЛЭП,ЛЭП,POWER LINE
+ГЛЮЧНЫЙ БОМЖ,ГЛЮЧНЫЙ БОМЖ,GLITCHY HOBO
+ГОПНИК С КРЫШКОЙ,ГОПНИК С КРЫШКОЙ,LID THUG
+ТРЮМО-МУТАНТ,ТРЮМО-МУТАНТ,MUTANT VANITY
+"Выпил «телепортину» и теперь глючит. Прыгает к тебе через фиолетовую дыру. Увидел дыру под ногами - беги, тормоз.","Выпил «телепортину» и теперь глючит. Прыгает к тебе через фиолетовую дыру. Увидел дыру под ногами - беги, тормоз.","Drank ""teleportine"" and now he glitches. Jumps at you through a purple hole. See a hole under your feet - run, dummy."
+"Прикрывается крышкой от бака и лузгает семки. Спереди не пробить, а поворачивается он медленно. Зайди сбоку, если ноги не из задницы.","Прикрывается крышкой от бака и лузгает семки. Спереди не пробить, а поворачивается он медленно. Зайди сбоку, если ноги не из задницы.","Hides behind a trash can lid, cracking seeds. Can't hit him from the front, but he turns slowly. Flank him, if your legs work."
+"Трюмо из бабкиной квартиры, отрастило щупальца. Когда блестит - бить бесполезно, швыряет осколки обратно. Жди, пока помутнеет.","Трюмо из бабкиной квартиры, отрастило щупальца. Когда блестит - бить бесполезно, швыряет осколки обратно. Жди, пока помутнеет.","Granny's old vanity mirror grew tentacles. While it shines, hitting is useless - it throws shards back. Wait till it fogs up."

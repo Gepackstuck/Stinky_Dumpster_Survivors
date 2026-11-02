@@ -143,7 +143,7 @@ static func description(offer: Dictionary) -> String:
 		text += ItemLibrary.description(offer["id"])
 		var evo_name: String = WeaponLibrary.evolution_by_item(offer["id"])
 		if evo_name != "":
-			text += "\nЭВОЛЮЦИЯ: %s!" % evo_name
+			text += "\n" + TranslationServer.translate("ЭВОЛЮЦИЯ: %s!") % evo_name
 		var combo: StringName = ItemLibrary.combo_with_owned(offer["id"])
 		if combo != &"":
 			text += "\nКОМБО: %s!" % ItemLibrary.title(combo) if combo in Profile.combos_found else "\nЧТО-ТО ЗАШЕВЕЛИЛОСЬ..."

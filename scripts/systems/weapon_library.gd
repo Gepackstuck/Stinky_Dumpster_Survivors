@@ -40,7 +40,7 @@ static func stat(weapon_id: StringName, tier: int, key: String, default: Variant
 ## Имя оружия с учётом эволюции (тир 5).
 static func display_name(weapon_id: StringName, tier: int) -> String:
 	if tier >= 5 and Balance.WEAPON_EVOLUTIONS.has(weapon_id):
-		return Balance.WEAPON_EVOLUTIONS[weapon_id]["name"]
+		return TranslationServer.translate(Balance.WEAPON_EVOLUTIONS[weapon_id]["name"])
 	return PerkLibrary.title(StringName("w_" + String(weapon_id)))
 
 
@@ -49,7 +49,7 @@ static func evolution_by_item(item_id: StringName) -> String:
 	for w: Dictionary in GameState.weapons:
 		var evo: Dictionary = Balance.WEAPON_EVOLUTIONS.get(w["id"], {})
 		if not evo.is_empty() and evo["item"] == item_id and w["tier"] == 4:
-			return evo["name"]
+			return TranslationServer.translate(evo["name"])
 	return ""
 
 

@@ -41,7 +41,7 @@ func _refresh() -> void:
 		_icon.texture = load("res://assets/ui/mod_%s_s.png" % mod) as Texture2D
 	var parts: PackedStringArray = []
 	if weather != &"":
-		parts.append(String(Balance.SEASONS[weather]["name"]).get_slice(":", 0))
+		parts.append(tr(Balance.SEASONS[weather]["name"]).get_slice(":", 0))
 	if mod != &"":
 		parts.append(Balance.WAVE_MOD_DATA[mod]["title"])
 	if bet != "":
