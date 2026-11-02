@@ -223,6 +223,12 @@ const TRUCK_HALF_WIDTH: float = 24.0
 const TRUCK_DAMAGE: float = 6.0                # × сила волны^0.7
 const ICE_ACCEL: float = 3.0                   # чем меньше, тем дольше разгон и торможение
 
+# --- Советчик за хреновый билд (BuildAdvisor)
+const ADVISOR_SLOTS_WAVE: int = 5       # с этой волны пустые слоты - позор
+const ADVISOR_LOW_HP: float = 25.0
+const ADVISOR_HP_WAVE: int = 6
+const ADVISOR_HOARD_COINS: int = 150
+
 # --- Фишки героев (fx в CHARACTERS): параметры
 const HERO_RUSH_SEC: float = 5.0        # курьер: ускорение в начале волны
 const HERO_POST_SEC: float = 1.0        # саныч: стоять столько, чтобы включился «пост»

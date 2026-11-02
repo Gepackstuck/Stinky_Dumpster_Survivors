@@ -162,7 +162,13 @@ func _show_result(title: String, died: bool = false) -> void:
 	_killer_label.hide()
 	if died and GameState.last_damage_source != &"":
 		_show_killer(GameState.last_damage_source)
-	_hint_label.text = "\n".join(HINTS.death_lines()) if died else ""
+	var lines: Array[String] = []
+	var why: String = BuildAdvisor.top()
+	if died and why != "":
+		lines.append("ПОЧЕМУ СДОХ: " + why)
+	if died:
+		lines.append_array(HINTS.death_lines())
+	_hint_label.text = "\n".join(lines.slice(0, 3))
 	_scatter_decor()
 	_root.show()
 	_retry.grab_focus()
