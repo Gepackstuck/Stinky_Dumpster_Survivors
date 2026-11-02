@@ -21,7 +21,9 @@ var dog_level: int = 1
 var bones: int = 0
 var dog_enabled: bool = true
 var dog_wear: String = ""
-var dog_wardrobe: Array = []   # Н30: последние смерти [{hero, wave}] - граффити на краю арены
+var dog_wardrobe: Array = []
+var quests: Array = []                 # Н17: записки от бомжей
+var last_quest_note: String = ""       # что выполнено в прошлом забеге - покажет кладбище   # Н30: последние смерти [{hero, wave}] - граффити на краю арены
 var achievements: Array[StringName] = []    # открытые достижения (Achievements)
 var mods_seen: Array[StringName] = []       # модификаторы волн, которые уже попадались
 var stats: Dictionary = {}                  # счётчики для достижений: рывки, упоры...
@@ -74,6 +76,7 @@ func announce_weapons(ids: Array[StringName]) -> void:
 
 func _on_enemy_died(enemy_id: StringName, _at: Vector2) -> void:
 	enemy_kills[enemy_id] = int(enemy_kills.get(enemy_id, 0)) + 1
+	Quests.on_kill(enemy_id)
 
 
 func killed(enemy_id: StringName) -> int:
@@ -94,6 +97,8 @@ func _record_run(won: bool) -> void:
 	if GameState.mode == &"duel":
 		save()
 		return   # битва героев - не в статистику
+	Quests.ensure()
+	last_quest_note = Quests.on_run_end(won)
 	if GameState.daily:
 		var key: String = str(GameState.daily_seed)
 		daily_best[key] = maxi(int(daily_best.get(key, 0)), GameState.run_score(won))
@@ -249,6 +254,7 @@ func save() -> void:
 	cfg.set_value("dog", "enabled", dog_enabled)
 	cfg.set_value("dog", "wear", dog_wear)
 	cfg.set_value("dog", "wardrobe", dog_wardrobe)
+	cfg.set_value("quests", "list", quests)
 	cfg.set_value("danger", "unlocked", danger_unlocked)
 	cfg.set_value("modes", "endless_best", endless_best)
 	var ach: PackedStringArray = PackedStringArray()
@@ -320,6 +326,7 @@ func _load() -> bool:
 	dog_enabled = bool(cfg.get_value("dog", "enabled", true))
 	dog_wear = str(cfg.get_value("dog", "wear", ""))
 	dog_wardrobe = cfg.get_value("dog", "wardrobe", [])
+	quests = cfg.get_value("quests", "list", [])
 	for entry_c: String in cfg.get_value("run", "combos_found", PackedStringArray()):
 		if Balance.ITEM_COMBOS.has(StringName(entry_c)):
 			combos_found.append(StringName(entry_c))

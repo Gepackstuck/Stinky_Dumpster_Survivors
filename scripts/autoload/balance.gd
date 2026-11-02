@@ -885,6 +885,9 @@ const DOG_WEAR_NAMES: Dictionary = {"collar": "ОШЕЙНИК С ШИПАМИ", 
 		"cloak": "ПЛАЩ СУПЕРПСА", "glasses": "ТЁМНЫЕ ОЧКИ", "bow": "БАНТИК"}
 const DOG_NAMES: Array[String] = ["ШАРИК", "БУБЛИК", "ГОВНОХВОСТ", "ТУЗИК", "ПОМОЕЧНИК", "БОБИК", "ЖУЧКА", "КОТЛЕТА", "ДРУЖОК", "ВОНЮЧКА"]
 
+# --- Н17: записки от бомжей ---
+const QUEST_COUNT: int = 3
+
 # --- Хитрые враги ---
 const BLINKER_INTERVAL_SEC: float = 3.2      # как часто глючный бомж прыгает
 const BLINKER_WARN_SEC: float = 0.6          # метка на земле до прыжка (успеть отойти)

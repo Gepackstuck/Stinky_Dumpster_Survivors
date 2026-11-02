@@ -86,6 +86,14 @@ func _run() -> void:
 		yard.call("_select", i)
 		await get_tree().process_frame
 		_check("кладбище/" + String(Balance.CHARACTER_ORDER[i]), yard)
+	Profile.quests.clear()   # Н17: записки - десяток раз, самые длинные тексты
+	for k: int in 10:
+		Profile.quests = [Quests.make(), Quests.make(), Quests.make()]
+		var np: NotesPanel = NotesPanel.new()
+		yard.add_child(np)
+		await get_tree().process_frame
+		_check("записки/%d" % k, np)
+		np.queue_free()
 	Profile.dog_owned = true   # Н16: будка пса со всеми шмотками
 	Profile.dog_name = "ГОВНОХВОСТ"
 	Profile.dog_wardrobe = Balance.DOG_WEAR.duplicate()

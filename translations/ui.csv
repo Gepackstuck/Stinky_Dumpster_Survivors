@@ -160,3 +160,14 @@ IV ТИР: %s,IV ТИР: %s,TIER IV: %s
 ПЛАЩ СУПЕРПСА,ПЛАЩ СУПЕРПСА,SUPERDOG CAPE
 ТЁМНЫЕ ОЧКИ,ТЁМНЫЕ ОЧКИ,SUNGLASSES
 БАНТИК,БАНТИК,BOW
+ЗАПИСКИ (N),ЗАПИСКИ (N),NOTES (N)
+ЗАПИСКИ ОТ БОМЖЕЙ. ВЫПОЛНИШЬ - ДАДУТ КОСТЕЙ ПСУ,ЗАПИСКИ ОТ БОМЖЕЙ. ВЫПОЛНИШЬ - ДАДУТ КОСТЕЙ ПСУ,NOTES FROM HOBOS. DO THEM - GET BONES FOR THE DOG
+%d / %d      НАГРАДА: %d КОСТЕЙ,%d / %d      НАГРАДА: %d КОСТЕЙ,%d / %d      REWARD: %d BONES
+ESC / N - НАЗАД,ESC / N - НАЗАД,ESC / N - BACK
+B - НАЗАД,B - НАЗАД,B - BACK
+УБЕЙ %d: %s,УБЕЙ %d: %s,KILL %d: %s
+УБЕЙ %d: %s ЗА %s,УБЕЙ %d: %s ЗА %s,KILL %d: %s AS %s
+ДОЖИВИ ДО %d ВОЛНЫ ЗА %s,ДОЖИВИ ДО %d ВОЛНЫ ЗА %s,SURVIVE TO WAVE %d AS %s
+ПОБЕДИ ЗА %s,ПОБЕДИ ЗА %s,WIN AS %s
+ЗАВАЛИ: %s,ЗАВАЛИ: %s,TAKE DOWN: %s
+ЗАПИСКА ВЫПОЛНЕНА: +%d КОСТЕЙ,ЗАПИСКА ВЫПОЛНЕНА: +%d КОСТЕЙ,NOTE DONE: +%d BONES

@@ -65,6 +65,7 @@ var _hint: Label
 var _leaving: bool = false
 var _book: Control = null
 var _kennel: KennelPanel = null      # Н16: будка пса
+var _notes: NotesPanel = null        # Н17: записки от бомжей
 var _walker: Node2D = null
 var _dossier: bool = false
 var _lore: Label = null
@@ -180,6 +181,29 @@ func _build_menu_button() -> void:
 	book.pressed.connect(_toggle_book)
 	UI_BUTTONS.skin(book, 5)
 	add_child(book)
+	var notes: Button = Button.new()   # Н17: записки от бомжей
+	notes.text = tr("ЗАПИСКИ (N)")
+	notes.position = Vector2(90.0, 4.0)
+	notes.size = Vector2(72.0, 16.0)
+	notes.focus_mode = Control.FOCUS_NONE
+	notes.pressed.connect(_toggle_notes)
+	UI_BUTTONS.skin(notes, 3)
+	add_child(notes)
+	if Profile.last_quest_note != "":   # выполнил записку в прошлом забеге - похвастаемся
+		var done: Label = Label.new()
+		done.text = Profile.last_quest_note
+		done.position = Vector2(0.0, 26.0)
+		done.size = Vector2(SCREEN.x, 10.0)
+		done.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		done.add_theme_color_override(&"font_color", Color(0.97, 1.0, 0.0))
+		done.add_theme_color_override(&"font_shadow_color", Color.BLACK)
+		done.z_index = 50
+		add_child(done)
+		var tw: Tween = done.create_tween()
+		tw.tween_interval(3.0)
+		tw.tween_property(done, ^"modulate:a", 0.0, 0.8)
+		tw.tween_callback(done.queue_free)
+		Profile.last_quest_note = ""
 	if Profile.dog_owned:   # Н16: будка пса
 		var dog: Button = Button.new()
 		dog.text = tr("ПЁС (P)")
@@ -191,6 +215,16 @@ func _build_menu_button() -> void:
 		add_child(dog)
 		if Profile.dog_pending_name:
 			_toggle_kennel.call_deferred()   # подобрал пса - сразу спросим кличку
+
+
+func _toggle_notes() -> void:
+	if _notes != null:
+		_notes.queue_free()
+		_notes = null
+		return
+	_notes = NotesPanel.new()
+	_notes.closed.connect(_toggle_notes)
+	add_child(_notes)
 
 
 func _toggle_kennel() -> void:
@@ -513,8 +547,12 @@ func _build_panel() -> void:
 func _input(event: InputEvent) -> void:
 	if _leaving:
 		return
-	if _kennel != null:
-		return   # будка пса сама разбирает клавиши
+	if _kennel != null or _notes != null:
+		return   # будка пса и записки сами разбирают клавиши
+	if event is InputEventKey and event.pressed and not event.echo and (event as InputEventKey).physical_keycode == KEY_N and _book == null and _picker == null:
+		get_viewport().set_input_as_handled()
+		_toggle_notes()
+		return
 	if event is InputEventKey and event.pressed and not event.echo and (event as InputEventKey).physical_keycode == KEY_P and Profile.dog_owned and _book == null and _picker == null:
 		get_viewport().set_input_as_handled()
 		_toggle_kennel()
