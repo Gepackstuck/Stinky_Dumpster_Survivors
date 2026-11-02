@@ -52,6 +52,7 @@ func _physics_process(delta: float) -> void:
 
 func _drop(target: Node2D) -> void:
 	var bomb: Node2D = THROWN.new()
+	bomb.set(&"source", &"pets")
 	bomb.set(&"texture", TEX.load_tex("res://assets/sprites/proj_poop.png"))
 	get_tree().current_scene.add_child(bomb)
 	var aim: Vector2 = target.global_position

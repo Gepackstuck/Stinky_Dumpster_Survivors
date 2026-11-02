@@ -81,6 +81,10 @@ var hp_drain: float = 0.0            # проклятье: ХП утекает (
 var enemy_haste: float = 0.0         # проклятье: враги быстрее, %
 var dash_hp_cost: float = 0.0        # проклятье: рывок стоит ХП
 var no_regen: bool = false           # проклятье: реген не работает
+var hit_source: StringName = &""     # кто сейчас бьёт (оружие/питомцы/шипы) - для статистики урона
+var damage_by_source: Dictionary = {}  # источник -> нанесённый урон за забег
+var hp_history: Array[float] = []     # доля ХП раз в секунду боя (график на экране итога)
+var hp_wave_marks: Array[int] = []    # индексы hp_history, где началась волна
 var wind: Vector2 = Vector2.ZERO     # снос героя ветром (модификатор волны)
 var wave_mod: StringName = &""      # модификатор текущей волны (Balance.WAVE_MODS) или пусто
 var wave_damage_taken: float = 0.0   # урон за текущую волну (чистая волна = 0)
@@ -98,7 +102,9 @@ func _ready() -> void:
 	EventBus.xp_collected.connect(_on_xp_collected)
 	EventBus.weapons_changed.connect(_recompute_perk_stats)
 	EventBus.player_hit.connect(_on_player_hit)
-	EventBus.wave_started.connect(func(_w: int) -> void: wave_damage_taken = 0.0)
+	EventBus.wave_started.connect(func(_w: int) -> void:
+		wave_damage_taken = 0.0
+		hp_wave_marks.append(hp_history.size()))
 	EventBus.wave_ended.connect(_on_wave_ended_clean)   # бонусы наборов зависят от оружия в слотах
 
 
@@ -128,6 +134,10 @@ func reset_run() -> void:
 	_coin_remainder = 0.0
 	wave_damage_taken = 0.0
 	wave_mod = &""
+	damage_by_source = {}
+	hp_history.clear()
+	hp_wave_marks.clear()
+	hit_source = &""
 	last_clean_bonus = 0
 	clean_waves = 0
 	nohit_sec = 0.0
@@ -389,6 +399,13 @@ func _recompute_perk_stats() -> void:
 func _on_enemy_died(enemy_id: StringName, _position: Vector2) -> void:
 	if not Balance.ENEMIES.get(enemy_id, {}).get("neutral", false):
 		kills += 1
+
+
+## Урон врагу засчитываем источнику (выставляется прямо перед ударом).
+func record_damage(amount: float) -> void:
+	var src: StringName = hit_source if hit_source != &"" else &"other"
+	damage_by_source[src] = damage_by_source.get(src, 0.0) + amount
+	hit_source = &""
 
 
 ## Серия без урона: тикает из игрока (только в бою), ступени из Balance.NOHIT_STREAK_TIERS.

@@ -22,7 +22,13 @@ const PANEL_RECT: Rect2 = Rect2(60.0, 55.0, 360.0, 160.0)
 @onready var _stats: Label = $Root/Stats
 @onready var _retry: Button = $Root/RetryButton
 
-const KILLER_POS: Vector2 = Vector2(170.0, 150.0)
+const KILLER_POS: Vector2 = Vector2(92.0, 126.0)
+const SOURCE_ICONS: Dictionary = {&"pets": "item_dead_rat", &"structures": "item_bucket_turret", &"thorns": "item_barbed_wire",
+		&"items": "item_diarrhea", &"turret": "item_bucket_turret", &"stink_lamp": "item_stink_lamp", &"cart_mortar": "item_cart_mortar"}
+const SOURCE_TITLES: Dictionary = {&"pets": "ПИТОМЦЫ", &"structures": "ПОСТРОЙКИ", &"thorns": "ШИПЫ", &"items": "ПРЕДМЕТЫ", &"dash": "РЫВОК", &"other": "ПРОЧЕЕ"}
+const BAR_UNDER: Texture2D = preload("res://assets/ui/hp_bar_under.png")
+const BAR_FILL: Texture2D = preload("res://assets/ui/hp_bar_fill.png")
+const DASH_ICON: Texture2D = preload("res://assets/ui/hud_dash_full.png")
 const KILLER_MAX_SIZE: float = 30.0
 const KILLER_FRAME_SEC: float = 0.25
 const WIRE_TEXTURE: Texture2D = preload("res://assets/sprites/arena_wire.png")
@@ -32,12 +38,29 @@ var _killer_sprite: Sprite2D = null
 var _killer_label: Label = null
 var _killer_id: StringName = &""
 var _killer_time: float = 0.0
+var _graph: HpGraph = null
+var _graph_label: Label = null
+var _damage_box: VBoxContainer = null
+var _won: bool = false
 
 
 func _ready() -> void:
 	_root.hide()
 	_retry.pressed.connect(_on_retry)
 	_build_killer()
+	_graph_label = Label.new()
+	_graph_label.text = "ТВОИ ХП ЗА ЗАБЕГ:"
+	_graph_label.position = Vector2(76.0, 140.0)
+	_graph_label.add_theme_color_override(&"font_color", Color(0.7, 0.7, 0.75))
+	_root.add_child(_graph_label)
+	_graph = HpGraph.new()
+	_graph.position = Vector2(76.0, 151.0)
+	_graph.size = Vector2(158.0, 28.0)
+	_root.add_child(_graph)
+	_damage_box = VBoxContainer.new()
+	_damage_box.position = Vector2(246.0, 110.0)
+	_damage_box.add_theme_constant_override(&"separation", 1)
+	_root.add_child(_damage_box)
 	_hint_label = Label.new()
 	_hint_label.position = Vector2(20.0, 220.0)
 	_hint_label.size = Vector2(440.0, 40.0)
@@ -59,8 +82,8 @@ func _build_killer() -> void:
 	_killer_sprite.hide()
 	_root.add_child(_killer_sprite)
 	_killer_label = Label.new()
-	_killer_label.position = Vector2(KILLER_POS.x + 28.0, KILLER_POS.y - 10.0)
-	_killer_label.size = Vector2(260.0, 20.0)
+	_killer_label.position = Vector2(KILLER_POS.x + 18.0, KILLER_POS.y - 10.0)
+	_killer_label.size = Vector2(130.0, 20.0)
 	_killer_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	_killer_label.add_theme_color_override(&"font_shadow_color", Color.BLACK)
 	_killer_label.hide()
@@ -121,12 +144,19 @@ func _on_player_died() -> void:
 
 
 func _on_run_won() -> void:
-	pass   # победа: на арене открываются ворота (main_level.gd), панель не нужна
+	_won = true
+	_show_result(FlavorText.random_win(), false)   # итоги; кнопка ведёт обратно на арену к воротам
 
 
 func _show_result(title: String, died: bool = false) -> void:
 	_title.text = title
-	_stats.text = "УБИТО: %d     УРОВЕНЬ: %d     ВОЛНА: %d" % [GameState.kills, GameState.level, GameState.wave]
+	var secs: int = GameState.hp_history.size()
+	_stats.text = "УБИТО %d   УР. %d   ВОЛНА %d/%d   %d:%02d   %s" % [GameState.kills, GameState.level, GameState.wave, Balance.WAVE_COUNT,
+			secs / 60, secs % 60, WaveRules.danger_v("name")]
+	_graph.died = died
+	_graph.queue_redraw()
+	_fill_damage()
+	_retry.text = "К ВОРОТАМ" if _won else "ЕЩЁ РАЗ"
 	_killer_id = &""
 	_killer_sprite.hide()
 	_killer_label.hide()
@@ -139,7 +169,68 @@ func _show_result(title: String, died: bool = false) -> void:
 	get_tree().paused = true
 
 
+## Урон по источникам: топ-5 полосками с иконками (кто реально тащил забег).
+func _fill_damage() -> void:
+	for child: Node in _damage_box.get_children():
+		child.queue_free()
+	var head: Label = Label.new()
+	head.text = "КТО ТАЩИЛ (УРОН):"
+	head.add_theme_color_override(&"font_color", Color(0.7, 0.7, 0.75))
+	_damage_box.add_child(head)
+	var src: Dictionary = GameState.damage_by_source
+	var keys: Array = src.keys()
+	keys.sort_custom(func(a: StringName, b: StringName) -> bool: return src[a] > src[b])
+	var top: float = float(src[keys[0]]) if not keys.is_empty() else 1.0
+	for key: StringName in keys.slice(0, 5):
+		var row: HBoxContainer = HBoxContainer.new()
+		row.add_theme_constant_override(&"separation", 3)
+		var icon: TextureRect = TextureRect.new()
+		icon.custom_minimum_size = Vector2(12.0, 12.0)
+		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		icon.texture = _source_icon(key)
+		row.add_child(icon)
+		var bar: TextureProgressBar = TextureProgressBar.new()
+		bar.texture_under = BAR_UNDER
+		bar.texture_progress = BAR_FILL
+		bar.texture_progress_offset = Vector2(2, 2)
+		bar.max_value = top
+		bar.value = float(src[key])
+		bar.tint_progress = Color(0.2235, 1.0, 0.0784)
+		bar.custom_minimum_size = Vector2(72.0, 10.0)
+		row.add_child(bar)
+		var num: Label = Label.new()
+		num.text = "%d %s" % [roundi(src[key]), _source_title(key)]
+		num.add_theme_color_override(&"font_color", Color(0.95, 0.95, 0.95))
+		num.add_theme_font_size_override(&"font_size", 6)
+		row.add_child(num)
+		_damage_box.add_child(row)
+
+
+func _source_icon(key: StringName) -> Texture2D:
+	if key == &"dash":
+		return DASH_ICON
+	if SOURCE_ICONS.has(key):
+		return load("res://assets/ui/%s_s.png" % SOURCE_ICONS[key]) as Texture2D
+	if Balance.WEAPONS.has(key):
+		return PerkLibrary.icon_small(ShopLibrary.perk_id_of(key))
+	return load("res://assets/ui/item_poop_wallet_s.png") as Texture2D
+
+
+func _source_title(key: StringName) -> String:
+	if SOURCE_TITLES.has(key):
+		return SOURCE_TITLES[key]
+	if Balance.WEAPONS.has(key) and not Balance.WEAPONS[key].get("structure", false):
+		return PerkLibrary.title(ShopLibrary.perk_id_of(key))
+	return "ПОСТРОЙКИ"
+
+
 func _on_retry() -> void:
+	if _won:   # победа: панель убираем, герой идёт к воротам сам
+		_won = false
+		_root.hide()
+		get_tree().paused = false
+		return
 	SceneFlow.from_arena = true
 	SceneFlow.go("res://scenes/ui/graveyard.tscn", Vector2.DOWN)
 

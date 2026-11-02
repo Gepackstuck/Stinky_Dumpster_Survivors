@@ -15,6 +15,7 @@ var burn_dps: float = 0.0
 var burn_sec: float = 0.0
 var slow_factor: float = 1.0
 var slow_sec: float = 0.0
+var source_weapon: StringName = &""   # оружие-источник (статистика урона)
 var pierce: int = 0   # сколько врагов пробивает насквозь
 var trail_kind: StringName = &"tracer"   # tracer — светящийся росчерк, flame — огненный шлейф
 var trail_color: Color = Color(1.0, 0.92, 0.25)
@@ -60,6 +61,7 @@ func _on_area_entered(area: Area2D) -> void:
 	if area is HurtboxComponent:
 		if area.get_parent() == _ignore:
 			return
+		GameState.hit_source = source_weapon
 		(area as HurtboxComponent).receive_hit(_damage)
 		var victim: Node = area.get_parent()
 		if burn_sec > 0.0 and victim.has_method(&"ignite"):

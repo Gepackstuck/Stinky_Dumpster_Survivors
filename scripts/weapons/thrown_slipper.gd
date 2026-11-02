@@ -14,6 +14,7 @@ var _flight: float = 0.5
 var _t: float = 0.0
 var _landed: bool = false
 var _ring: float = 0.0
+var source: StringName = &""   # оружие-источник (статистика урона)
 var texture: Texture2D = null   # своя картинка снаряда (банка), если нужна
 var _sprite: Sprite2D = null
 
@@ -62,6 +63,7 @@ func _land() -> void:
 		for node: Node in get_tree().get_nodes_in_group(group):
 			var enemy: EnemyBase = node as EnemyBase
 			if enemy != null and global_position.distance_squared_to(enemy.global_position) <= radius_sq:
+				GameState.hit_source = source
 				enemy.hit_by_weapon(_damage, (enemy.global_position - global_position).normalized() * 120.0)
 	HitFx.explosion(get_tree(), global_position, maxf(_radius, 20.0))
 	HitFx.burst(get_tree(), global_position, Color(0.58, 0.34, 0.12), 12, _radius * 2.0, 3.0, 0.5, true)

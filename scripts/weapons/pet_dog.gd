@@ -38,7 +38,7 @@ func _physics_process(delta: float) -> void:
 		goal = target.global_position
 		if global_position.distance_squared_to(goal) <= 144.0 and _bite_left <= 0.0:
 			_bite_left = Balance.DOG_BITE_SEC
-			target.hit_by_weapon(Balance.DOG_DAMAGE * GameState.damage_mult, (goal - global_position).normalized() * 90.0)
+			target.hit_by_weapon(Balance.DOG_DAMAGE * GameState.damage_mult, (goal - global_position).normalized() * 90.0, &"pets")
 			HitFx.burst(get_tree(), goal, Color(1.0, 0.0, 0.2), 4, 40.0, 2.0, 0.25, true)
 	var step: Vector2 = goal - global_position
 	if step.length_squared() > 4.0:

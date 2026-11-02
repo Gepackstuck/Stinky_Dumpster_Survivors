@@ -28,7 +28,7 @@ func _fire(target: Node2D) -> void:
 			var to: Vector2 = enemy.global_position - origin
 			var along: float = to.dot(dir)
 			if along > 0.0 and along < length and absf(to.cross(dir)) <= half_width + 5.0:
-				enemy.hit_by_weapon(GameState.roll_damage(_damage))
+				enemy.hit_by_weapon(GameState.roll_damage(_damage), Vector2.ZERO, weapon_id)
 	_beam_dir = dir
 	_beam_from = to_local(origin)
 	_beam_len = minf(origin.distance_to(target.global_position) + 60.0, length)

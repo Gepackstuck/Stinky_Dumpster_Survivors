@@ -261,9 +261,11 @@ func _apply_size(radius: float) -> void:
 
 
 ## Удар оружием игрока: урон и (опционально) своя скорость отбрасывания.
-func hit_by_weapon(damage: float, push: Vector2 = Vector2.ZERO) -> void:
+func hit_by_weapon(damage: float, push: Vector2 = Vector2.ZERO, source: StringName = &"") -> void:
 	if _dead:
 		return
+	if source != &"":
+		GameState.hit_source = source
 	if _hurtbox.receive_hit(damage) and push != Vector2.ZERO:
 		_knockback = push
 
@@ -289,6 +291,8 @@ func _on_hurt(damage: float) -> void:
 		HitFx.popup(get_tree(), global_position + Vector2(0.0, -14.0), str(int(damage)) + "!", Color(1.0, 0.85, 0.0), 22.0, 0.8, true)
 	else:
 		HitFx.popup(get_tree(), global_position + Vector2(0.0, -10.0), str(int(damage)), Color.WHITE)
+	if not _neutral:
+		GameState.record_damage(minf(damage, _health.current_health))
 	_health.take_damage(damage)
 
 

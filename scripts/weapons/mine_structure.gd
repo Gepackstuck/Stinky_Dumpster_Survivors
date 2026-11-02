@@ -34,6 +34,7 @@ func _physics_process(delta: float) -> void:
 func _explode() -> void:
 	_armed = false
 	var boom: Node2D = THROWN.new()
+	boom.set(&"source", &"structures")
 	get_tree().current_scene.add_child(boom)
 	boom.call(&"launch", global_position, global_position, Balance.MINE_DAMAGE * GameState.damage_mult, Balance.MINE_RADIUS, 0.02)
 	HitFx.burst(get_tree(), global_position, Color(1.0, 0.47, 0.0), 14, 100.0, 3.0, 0.4, true)

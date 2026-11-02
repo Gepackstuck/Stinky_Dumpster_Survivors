@@ -64,7 +64,7 @@ func _physics_process(delta: float) -> void:
 			continue
 		var to: Vector2 = enemy.global_position - global_position
 		if to.length() <= _reach and absf(angle_difference(_swing_dir, to.angle())) <= _half_arc:
-			enemy.hit_by_weapon(GameState.roll_damage(_damage), to.normalized() * _knockback)
+			enemy.hit_by_weapon(GameState.roll_damage(_damage), to.normalized() * _knockback, weapon_id)
 
 
 func _draw() -> void:

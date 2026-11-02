@@ -39,7 +39,7 @@ func _physics_process(delta: float) -> void:
 		goal = target.global_position
 		if global_position.distance_squared_to(goal) <= 100.0 and _bite_left <= 0.0:
 			_bite_left = Balance.PET_BITE_SEC
-			target.hit_by_weapon(Balance.PET_DAMAGE * GameState.damage_mult, (goal - global_position).normalized() * 60.0)
+			target.hit_by_weapon(Balance.PET_DAMAGE * GameState.damage_mult, (goal - global_position).normalized() * 60.0, &"pets")
 	var step: Vector2 = goal - global_position
 	if step.length_squared() > 4.0:
 		global_position += step.normalized() * minf(Balance.PET_SPEED * delta, step.length())

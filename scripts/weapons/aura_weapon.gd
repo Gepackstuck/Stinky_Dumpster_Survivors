@@ -45,7 +45,7 @@ func _physics_process(delta: float) -> void:
 	for node: Node in get_tree().get_nodes_in_group(&"enemies") + get_tree().get_nodes_in_group(&"neutrals"):
 		var enemy: EnemyBase = node as EnemyBase
 		if enemy != null and global_position.distance_squared_to(enemy.global_position) <= r_sq:
-			enemy.hit_by_weapon(GameState.roll_damage(_damage))
+			enemy.hit_by_weapon(GameState.roll_damage(_damage), Vector2.ZERO, weapon_id)
 			hit_any = true
 	if hit_any:
 		_wave = 0.0

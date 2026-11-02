@@ -71,6 +71,7 @@ func _act() -> void:
 	var damage: float = Balance.GHOST_DRUNK_DAMAGE if kind == &"drunk" else Balance.GHOST_GRANNY_SLIPPER_DAMAGE
 	var projectile: Projectile = PoolManager.acquire(PROJECTILE_SCENE) as Projectile
 	get_tree().current_scene.add_child(projectile)
+	projectile.source_weapon = &"pets"
 	projectile.launch(global_position, global_position.direction_to(target.global_position), damage * GameState.damage_mult, Balance.GHOST_THROW_SPEED, 1.4)
 	projectile.ricochets = 0
 	projectile.burn_sec = 0.0

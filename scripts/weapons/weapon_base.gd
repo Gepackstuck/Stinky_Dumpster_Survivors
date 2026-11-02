@@ -141,6 +141,7 @@ func _fire(target: Node2D) -> void:
 		root.add_child(projectile)
 		projectile.launch(origin, base_direction.rotated(angle), damage, _proj_speed, _proj_life)
 		projectile.pierce = _pierce
+		projectile.source_weapon = weapon_id
 		projectile.ricochets = _ricochets
 		projectile.ricochet_range = _ricochet_range
 		projectile.burn_dps = _burn_dps * GameState.damage_mult

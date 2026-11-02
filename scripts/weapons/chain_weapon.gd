@@ -25,7 +25,7 @@ func _fire(target: Node2D) -> void:
 		points.append(to_local(current.global_position))
 		var enemy: EnemyBase = current as EnemyBase
 		if enemy != null:
-			enemy.hit_by_weapon(damage)
+			enemy.hit_by_weapon(damage, Vector2.ZERO, weapon_id)
 		HitFx.burst(get_tree(), current.global_position, Color(0.0, 0.94, 1.0), 4, 50.0, 2.0, 0.25, true)
 		hit.append(current)
 		damage *= float(stats["chain_falloff"])

@@ -112,7 +112,7 @@ func _finish() -> void:
 			HitFx.burst(get_tree(), end, Color(0.968627, 1.0, 0.0), 12, 80.0, 3.0, 0.4, true)
 		&"sweep":
 			for enemy: EnemyBase in _enemies_on_path(_start, end, 16.0):
-				enemy.hit_by_weapon(GameState.roll_damage(Balance.DASH_FX_DAMAGE), _dir * Balance.DASH_FX_KNOCK * 0.6)
+				enemy.hit_by_weapon(GameState.roll_damage(Balance.DASH_FX_DAMAGE), _dir * Balance.DASH_FX_KNOCK * 0.6, &"dash")
 		&"trail":
 			for enemy: EnemyBase in _enemies_on_path(_start, end, 22.0):
 				enemy.slow(Balance.DASH_FX_SLOW, Balance.DASH_FX_SLOW_SEC)

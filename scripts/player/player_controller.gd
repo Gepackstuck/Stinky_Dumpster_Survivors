@@ -17,6 +17,7 @@ const HELD_WEAPON: GDScript = preload("res://scripts/weapons/held_weapon.gd")
 var _facing: Vector2 = Vector2.RIGHT
 var _drain_timer: float = 0.0
 var _slime_tick: float = 0.0
+var _hp_sample: float = 0.0
 var _pickups_for_heal: int = 0
 
 var _arena_max: Vector2 = Vector2.ZERO
@@ -99,6 +100,11 @@ func _physics_process(delta: float) -> void:
 	_update_still_regen(delta, direction == Vector2.ZERO)
 	_update_item_timers(delta)
 	_update_slow_field(delta, direction != Vector2.ZERO)
+	if GameState.run_active and GameState.wave_time_left > 0.0:   # график ХП для экрана итога
+		_hp_sample += delta
+		if _hp_sample >= 1.0:
+			_hp_sample = 0.0
+			GameState.hp_history.append(clampf(GameState.hp / maxf(GameState.max_hp, 1.0), 0.0, 1.0))
 	if GameState.trick_left > 0.0:
 		GameState.trick_left -= delta
 	if GameState.slime_touch > 0.0:
@@ -312,6 +318,7 @@ func _thorns_hit() -> void:
 	for node: Node in get_tree().get_nodes_in_group(&"enemies"):
 		var enemy: EnemyBase = node as EnemyBase
 		if enemy != null and global_position.distance_squared_to(enemy.global_position) <= radius_sq:
+			GameState.hit_source = &"thorns"
 			enemy.hit_by_weapon(GameState.thorns_damage * GameState.damage_mult, (enemy.global_position - global_position).normalized() * 80.0)
 
 
@@ -342,6 +349,7 @@ func _explode(at: Vector2) -> void:
 		for node: Node in get_tree().get_nodes_in_group(group):
 			var enemy: EnemyBase = node as EnemyBase
 			if enemy != null and at.distance_squared_to(enemy.global_position) <= radius_sq:
+				GameState.hit_source = &"items"
 				enemy.hit_by_weapon(Balance.ITEM_EXPLODE_DAMAGE * GameState.damage_mult, (enemy.global_position - at).normalized() * 140.0)
 
 

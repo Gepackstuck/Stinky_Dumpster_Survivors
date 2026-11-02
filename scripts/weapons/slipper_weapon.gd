@@ -7,6 +7,7 @@ extends WeaponBase
 func _fire(target: Node2D) -> void:
 	var stats: Dictionary = Balance.WEAPONS[weapon_id]
 	var shot: ThrownSlipper = ThrownSlipper.new()
+	shot.source = weapon_id
 	if stats.has("projectile"):
 		shot.texture = TEX.load_tex(stats["projectile"])
 	get_tree().current_scene.add_child(shot)
