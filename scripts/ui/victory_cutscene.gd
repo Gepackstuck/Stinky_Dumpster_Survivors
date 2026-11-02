@@ -1,11 +1,14 @@
 extends Control
-## Ролик победы (идея 19): герой выходит из ворот, а за ними - помойка ещё больше (тизер бесконечности).
+## Ролик победы (идея 19): герой выходит из ворот арены и идёт по дороге домой, на кладбище (оно на горизонте),
+## а камера показывает, что вокруг - помойка до горизонта: арена была только её краем (тизер бесконечности).
 ## ~8 с, любая кнопка - пропустить. Выключается в настройках (Settings.victory_cutscene). Дальше - кладбище.
 
 const GRAVEYARD: String = "res://scenes/ui/graveyard.tscn"
 const SKY: Texture2D = preload("res://assets/ui/victory_sky.png")
 const FAR: Texture2D = preload("res://assets/ui/victory_far.png")
 const NEAR: Texture2D = preload("res://assets/ui/victory_near.png")
+const ROAD: Texture2D = preload("res://assets/ui/victory_road.png")
+const YARD: Texture2D = preload("res://assets/ui/victory_yard.png")
 const LENGTH_SEC: float = 8.0
 
 var _t: float = 0.0
@@ -21,6 +24,8 @@ func _ready() -> void:
 	_layer(SKY, Vector2.ZERO)
 	_far = _layer(FAR, Vector2(0.0, 120.0))
 	_near = _layer(NEAR, Vector2(0.0, 140.0))
+	_layer(ROAD, Vector2(0.0, 140.0))
+	_layer(YARD, Vector2(180.0, 106.0))
 	_hero = Sprite2D.new()
 	_hero.texture = CharacterLibrary.sprite_sheet(GameState.character)
 	_hero.hframes = 4
@@ -30,7 +35,7 @@ func _ready() -> void:
 	_hero.position = Vector2(240.0, 290.0)
 	_hero.scale = Vector2(3.0, 3.0)
 	add_child(_hero)
-	var texts: Array[String] = [tr("ТЫ ВЫБРАЛСЯ..."), tr("...НА ПОМОЙКУ ПОБОЛЬШЕ."), tr("ТУТ ДАЖЕ ГОЛУБИ ЗЛЕЕ. УДАЧИ, ЛОХ.")]
+	var texts: Array[String] = [tr("ТЫ ВЫБРАЛСЯ..."), tr("...ОБРАТНО НА КЛАДБИЩЕ."), tr("А ВОКРУГ ПОМОЙКА ДО ГОРИЗОНТА. ЭТО ТОЛЬКО НАЧАЛО, ЛОХ.")]
 	var colors: Array[Color] = [Color(0.97, 1.0, 0.0), Color(1.0, 0.06, 0.94), Color(0.9, 0.9, 0.9)]
 	for i: int in texts.size():
 		var l: Label = Label.new()
@@ -73,9 +78,9 @@ func _process(delta: float) -> void:
 	_t += delta
 	var k: float = clampf(_t / LENGTH_SEC, 0.0, 1.0)
 	_far.position.x = roundf(-k * 120.0)    # параллакс: дальнее ползёт медленно, ближнее быстрее
-	_near.position.x = roundf(-k * 240.0)
+	_near.position.x = roundf(-k * 160.0)
 	var walk: float = clampf(_t / 5.0, 0.0, 1.0)   # герой уходит по дороге вдаль и уменьшается
-	_hero.position = Vector2(240.0, lerpf(290.0, 196.0, walk)).round()
+	_hero.position = Vector2(240.0, lerpf(290.0, 158.0, walk)).round()   # к воротам кладбища на горизонте
 	_hero.scale = Vector2.ONE * (3.0 if walk < 0.4 else (2.0 if walk < 0.8 else 1.0))
 	_hero.frame = 4 + (int(_t * 8.0) % 4 if walk < 1.0 else 0)
 	var starts: Array[float] = [1.2, 3.0, 4.8]
