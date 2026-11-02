@@ -25,3 +25,6 @@ export_credentials.cfg
 tools/_preview/
 builds/
 _proj_src.tar
+
+# Бот-ферма: результаты прогонов
+tools/_bot_runs/

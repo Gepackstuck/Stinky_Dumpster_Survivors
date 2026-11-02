@@ -57,7 +57,7 @@ func _ready() -> void:
 	EventBus.player_died.connect(_on_player_died)
 
 
-const CLAIM_MSEC: int = 350
+const CLAIM_FRAMES: int = 21   # ~0.35 с игрового времени (кадры физики, а не реальные часы: бот гоняет игру на ускорении)
 static var _claims: Dictionary = {}
 
 
@@ -75,7 +75,7 @@ func _physics_process(delta: float) -> void:
 	if target == null:
 		_cooldown_left = RETARGET_INTERVAL_SEC
 		return
-	_claims[target.get_instance_id()] = Time.get_ticks_msec() + CLAIM_MSEC
+	_claims[target.get_instance_id()] = Engine.get_physics_frames() + CLAIM_FRAMES
 	_fire(target)
 	var fire_dir: Vector2 = global_position.direction_to(target.global_position)
 	HitFx.muzzle(get_tree(), _muzzle(target), fire_dir, Color(1.0, 0.5, 0.05) if _burn_dps > 0.0 else Color(1.0, 0.92, 0.25))
@@ -89,7 +89,7 @@ func _find_nearest_enemy() -> Node2D:
 	var best_sq: float = _range_sq
 	var fallback: Node2D = null
 	var fallback_sq: float = _range_sq
-	var now: int = Time.get_ticks_msec()
+	var now: int = Engine.get_physics_frames()
 	if _claims.size() > 300:
 		_claims.clear()
 	for node: Node in get_tree().get_nodes_in_group(&"enemies"):

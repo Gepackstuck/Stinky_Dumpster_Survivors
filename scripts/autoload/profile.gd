@@ -11,6 +11,7 @@ var wins: int = 0
 var selected: StringName = &"hobo"
 var enemy_kills: Dictionary = {}   # id врага -> сколько убито за всё время (бестиарий)
 var weapons_announced: Array[StringName] = []   # оружие, про которое экран смерти уже объявил «открыто»
+var sandbox: bool = false   # бот-ферма и тесты: всё открыто, на диск ничего не пишем (не портим живой профиль)
 var announced: Array[StringName] = []   # персонажи, про которых кладбище уже объявило «откопан»
 
 
@@ -82,12 +83,16 @@ func counter(kind: StringName) -> int:
 
 
 func is_unlocked(character_id: StringName) -> bool:
+	if sandbox:
+		return true
 	var data: Dictionary = Balance.CHARACTERS[character_id]
 	return data["unlock"] == &"open" or counter(data["unlock"]) >= data["need"]
 
 
 ## Оружие в ларьке доступно? Записи нет в WEAPON_UNLOCK - открыто сразу.
 func is_weapon_unlocked(weapon_id: StringName) -> bool:
+	if sandbox:
+		return true
 	if not Balance.WEAPON_UNLOCK.has(weapon_id):
 		return true
 	var rule: Dictionary = Balance.WEAPON_UNLOCK[weapon_id]
@@ -111,6 +116,8 @@ func announce(ids: Array[StringName]) -> void:
 
 
 func save() -> void:
+	if sandbox:
+		return
 	var cfg: ConfigFile = ConfigFile.new()
 	cfg.set_value("stats", "total_kills", total_kills)
 	cfg.set_value("stats", "total_coins", total_coins)
