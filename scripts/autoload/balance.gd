@@ -77,7 +77,7 @@ const FLYER_BODY_MASK: int = 32
 const ENEMY_DAMAGE_MULT: float = 1.0   # общий множитель урона врагов по игроку
 const WAVE_ENEMY_UNLOCK: Dictionary = {     # с какой волны тип может выпасть (15 волн)
 	&"squid_gopnik": 1, &"chaser": 3, &"microbe": 3, &"charger": 3, &"npc_bot": 3, &"spitter": 3,
-	&"looter": 4, &"cockroach": 4, &"bruiser": 5, &"wifi_ghost": 6,
+	&"looter": 4, &"cockroach": 5, &"bruiser": 5, &"wifi_ghost": 6,
 	&"healer": 5, &"glutton": 6, &"egg": 8, &"mamka": 9,
 }
 const WAVE_ENEMY_WEIGHTS: Dictionary = {    # вес в взвешенном рандоме
@@ -574,7 +574,7 @@ const ENEMIES: Dictionary = {
 	&"squid_gopnik": {"hp": 40.0, "damage": 2.5, "speed": 68.0, "xp": 2, "coins": 1},
 	&"microbe": {"hp": 60.0, "damage": 1.5, "speed": 40.0, "xp": 3, "coins": 1},
 	&"npc_bot": {"hp": 32.0, "damage": 2.0, "speed": 50.0, "xp": 2, "coins": 1},
-	&"cockroach": {"hp": 9.0, "damage": 2.0, "speed": 140.0, "xp": 1, "coins": 2},
+	&"cockroach": {"hp": 9.0, "damage": 1.5, "speed": 120.0, "xp": 1, "coins": 2},
 	&"wifi_ghost": {"hp": 50.0, "damage": 3.0, "speed": 70.0, "xp": 4, "coins": 2, "flying": true},
 	# Враги Шага 4 (поведение как в Brotato): group_mult — множитель размера группы.
 	&"chaser": {"hp": 10.0, "damage": 1.0, "speed": 90.0, "xp": 1, "coins": 1, "radius": 5.0, "group_mult": 1.4, "flying": true},
@@ -630,11 +630,11 @@ const BOSS_BLUE_WHALE_TEARS_COUNT: int = 5  # веер снарядов
 # --- Оружие: damage, cooldown (GDD) ---
 const WEAPONS: Dictionary = {
 	&"lighter": {"damage": 9.0, "cooldown": 0.35, "burn_dps": 2.0, "burn_duration": 3.0, "tag": "ПОДЖИГАЕТ"},
-	&"sock": {"damage": 12.0, "cooldown": 1.0, "radius": 60.0, "tag": "ВОНЬ ВОКРУГ"},
+	&"sock": {"damage": 15.0, "cooldown": 1.0, "radius": 66.0, "tag": "ВОНЬ ВОКРУГ"},
 	&"slingshot": {"damage": 8.0, "cooldown": 0.6, "ricochets": 2, "ricochet_range": 110.0, "tag": "ОТСКОКИ"},
 	&"laser_pointer": {"damage": 3.0, "cooldown": 0.2, "beam_half_width": 5.0, "tag": "ПРОБИВАЕТ"},
-	&"mop": {"damage": 14.0, "cooldown": 0.8, "knockback": 240.0, "reach": 52.0, "arc_deg": 140.0, "tag": "ОТБРОС"},
-	&"slipper": {"damage": 25.0, "cooldown": 2.5, "aoe_radius": 40.0, "flight_sec": 0.5, "tag": "ВЗРЫВ"},
+	&"mop": {"damage": 17.0, "cooldown": 0.8, "knockback": 240.0, "reach": 56.0, "arc_deg": 140.0, "tag": "ОТБРОС"},
+	&"slipper": {"damage": 30.0, "cooldown": 2.5, "aoe_radius": 40.0, "flight_sec": 0.5, "tag": "ВЗРЫВ"},
 	&"condensed_milk": {"damage": 6.0, "cooldown": 0.5, "slow_factor": 0.5, "slow_duration": 2.0,
 			"projectile": "res://assets/sprites/proj_milk.png", "tag": "ЗАМЕДЛЯЕТ"},
 	&"turret": {"damage": 7.0, "cooldown": 0.9, "tag": "ТУРЕЛЬ", "structure": true},
@@ -644,16 +644,16 @@ const WEAPONS: Dictionary = {
 	# --- Пачка 2: pellets/spread_deg/jitter_deg/proj_speed/proj_life/pierce - у стрелков; reach/arc_deg/knockback - у ближних; radius - у аур
 	&"pipe_gun": {"damage": 4.0, "cooldown": 1.1, "pellets": 5, "spread_deg": 9.0, "proj_life": 0.45, "tag": "ДРОБЬ"},
 	&"crossbow": {"damage": 14.0, "cooldown": 1.2, "pierce": 3, "proj_speed": 300.0, "tag": "ПРОБИВАЕТ"},
-	&"frying_pan": {"damage": 24.0, "cooldown": 0.95, "knockback": 420.0, "reach": 38.0, "arc_deg": 100.0, "tag": "ОТБРОС"},
-	&"rolling_pin": {"damage": 7.0, "cooldown": 0.3, "knockback": 90.0, "reach": 40.0, "arc_deg": 90.0, "tag": "БЫСТРАЯ"},
-	&"rotten_cheese": {"damage": 4.0, "cooldown": 0.5, "radius": 85.0, "tag": "ВОНЬ ВОКРУГ"},
+	&"frying_pan": {"damage": 29.0, "cooldown": 0.95, "knockback": 420.0, "reach": 38.0, "arc_deg": 100.0, "tag": "ОТБРОС"},
+	&"rolling_pin": {"damage": 9.0, "cooldown": 0.3, "knockback": 90.0, "reach": 40.0, "arc_deg": 90.0, "tag": "БЫСТРАЯ"},
+	&"rotten_cheese": {"damage": 5.0, "cooldown": 0.5, "radius": 85.0, "tag": "ВОНЬ ВОКРУГ"},
 	&"spray_can": {"damage": 2.0, "cooldown": 0.1, "jitter_deg": 12.0, "proj_life": 0.32, "burn_dps": 1.5, "burn_duration": 2.0, "tag": "ПОДЖИГАЕТ"},
 	&"bottle": {"damage": 10.0, "cooldown": 1.0, "ricochets": 4, "ricochet_range": 140.0, "projectile": "res://assets/sprites/proj_bottle.png", "tag": "ОТСКОКИ"},
 	&"mosin": {"damage": 42.0, "cooldown": 2.1, "pierce": 2, "proj_speed": 520.0, "proj_life": 1.2, "tag": "СНАЙПЕР"},
 	# --- Пачка 3: range - дальность прицела (меньше общей), chain_* - цепная молния
-	&"plunger": {"damage": 21.0, "cooldown": 0.8, "knockback": 340.0, "reach": 44.0, "arc_deg": 90.0, "tag": "ОТБРОС"},
-	&"shiv": {"damage": 5.0, "cooldown": 0.2, "knockback": 40.0, "reach": 30.0, "arc_deg": 70.0, "tag": "ОЧЕНЬ БЫСТРАЯ"},
-	&"shovel": {"damage": 34.0, "cooldown": 1.35, "knockback": 220.0, "reach": 48.0, "arc_deg": 120.0, "tag": "ТЯЖЁЛАЯ"},
+	&"plunger": {"damage": 25.0, "cooldown": 0.8, "knockback": 340.0, "reach": 44.0, "arc_deg": 90.0, "tag": "ОТБРОС"},
+	&"shiv": {"damage": 6.0, "cooldown": 0.2, "knockback": 40.0, "reach": 30.0, "arc_deg": 70.0, "tag": "ОЧЕНЬ БЫСТРАЯ"},
+	&"shovel": {"damage": 40.0, "cooldown": 1.35, "knockback": 220.0, "reach": 48.0, "arc_deg": 120.0, "tag": "ТЯЖЁЛАЯ"},
 	&"blowtorch": {"damage": 3.0, "cooldown": 0.11, "jitter_deg": 9.0, "proj_speed": 300.0, "proj_life": 0.3, "pierce": 2, "range": 95.0,
 			"burn_dps": 3.0, "burn_duration": 2.5, "projectile": "res://assets/sprites/proj_flame.png", "tag": "ПОДЖИГАЕТ"},
 	&"syringe": {"damage": 6.0, "cooldown": 0.5, "proj_speed": 380.0, "pierce": 1, "burn_dps": 3.5, "burn_duration": 4.0,
