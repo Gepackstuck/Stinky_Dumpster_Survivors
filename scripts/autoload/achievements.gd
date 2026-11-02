@@ -172,6 +172,7 @@ func unlock(id: StringName, title: String = "") -> void:
 		return
 	Profile.achievements.append(id)
 	Profile.save()
+	SteamService.set_achievement(id)
 	_queue.append(title if title != "" else title_of(id))
 	if not _toast.visible:
 		_show_next()
