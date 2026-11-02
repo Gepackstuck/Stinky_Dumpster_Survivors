@@ -98,6 +98,23 @@ const ZAKHAR_ATTACK_INTERVAL_SEC: float = 2.2   # пауза между атак
 const ZAKHAR_CARROT_DAMAGE: float = 8.0
 const ZAKHAR_CARROT_SPEED: float = 140.0
 const ZAKHAR_CARROT_FAN_DEG: float = 18.0       # в ярости — веер из трёх
+# --- Уровни опасности (как в Brotato): открываются победой на предыдущем. Множители к врагам, шанс модификаторов,
+# both_bosses - в финале всегда оба босса, early_elite - элита ещё и на этой волне.
+const DANGER_LEVELS: Array = [
+	{"name": "ПОМОЙКА", "hp": 1.0, "dmg": 1.0, "speed": 1.0, "mod_add": 0.0, "both_bosses": false, "early_elite": 0,
+			"text": "ДЛЯ НОВИЧКОВ И ЛОХОВ. ТО ЕСТЬ ДЛЯ ТЕБЯ"},
+	{"name": "ВОНЮЧКА", "hp": 1.12, "dmg": 1.12, "speed": 1.0, "mod_add": 0.05, "both_bosses": false, "early_elite": 0,
+			"text": "ВРАГИ ЗЛЕЕ НА 12%. ПАХНЕТ ХУЖЕ"},
+	{"name": "ГНИЛЬ", "hp": 1.25, "dmg": 1.25, "speed": 1.04, "mod_add": 0.1, "both_bosses": false, "early_elite": 0,
+			"text": "+25% ВРАГАМ, МОДИФИКАТОРЫ ЧАЩЕ"},
+	{"name": "ТРУПНЯК", "hp": 1.4, "dmg": 1.4, "speed": 1.07, "mod_add": 0.15, "both_bosses": true, "early_elite": 0,
+			"text": "+40% ВРАГАМ. В ФИНАЛЕ ОБА БОССА. ВСЕГДА"},
+	{"name": "АД КАНАЛИЗАЦИИ", "hp": 1.6, "dmg": 1.6, "speed": 1.1, "mod_add": 0.2, "both_bosses": true, "early_elite": 5,
+			"text": "+60% ВРАГАМ, ЭЛИТА УЖЕ НА 5-Й ВОЛНЕ"},
+	{"name": "ДНО ДНА", "hp": 1.85, "dmg": 1.85, "speed": 1.14, "mod_add": 0.3, "both_bosses": true, "early_elite": 5,
+			"text": "НИЖЕ ПАДАТЬ НЕКУДА. НО ТЫ ПОПРОБУЙ"},
+]
+
 # --- Модификаторы волн (сюрприз в начале обычной волны) ---
 const WAVE_MOD_FROM: int = 3                 # не раньше этой волны
 const WAVE_MOD_CHANCE: float = 0.45          # шанс на обычную волну (элита/орда/боссы - без модификаторов)

@@ -11,7 +11,10 @@ var wins: int = 0
 var selected: StringName = &"hobo"
 var enemy_kills: Dictionary = {}   # id врага -> сколько убито за всё время (бестиарий)
 var weapons_announced: Array[StringName] = []   # оружие, про которое экран смерти уже объявил «открыто»
-var combos_found: Array[StringName] = []   # открытые комбо предметов
+var combos_found: Array[StringName] = []
+var danger_unlocked: int = 0                 # максимальный открытый уровень опасности
+var last_danger: int = 0
+var hero_wins: Dictionary = {}               # герой -> Array[int] уровней опасности, на которых он победил (отметки на могиле)   # открытые комбо предметов
 var mod_bag: Array[StringName] = []   # мешок модификаторов волн (без повторов, пока не выпадут все)
 var _last_mod: StringName = &""
 var sandbox: bool = false   # бот-ферма и тесты: всё открыто, на диск ничего не пишем (не портим живой профиль)
@@ -67,6 +70,11 @@ func _record_run(won: bool) -> void:
 	total_coins += GameState.run_coins_earned
 	if won:
 		wins += 1
+		var list: Array = hero_wins.get(GameState.character, [])
+		if GameState.danger not in list:
+			list.append(GameState.danger)
+		hero_wins[GameState.character] = list
+		danger_unlocked = clampi(maxi(danger_unlocked, GameState.danger + 1), 0, Balance.DANGER_LEVELS.size() - 1)
 	else:
 		deaths += 1
 	save()
@@ -166,6 +174,10 @@ func save() -> void:
 	for id: StringName in combos_found:
 		combos.append(String(id))
 	cfg.set_value("run", "combos_found", combos)
+	cfg.set_value("danger", "unlocked", danger_unlocked)
+	cfg.set_value("danger", "last", last_danger)
+	for hero: StringName in hero_wins:
+		cfg.set_value("danger_wins", String(hero), hero_wins[hero])
 	cfg.set_value("run", "last_mod", String(_last_mod))
 	cfg.save(PATH)
 
@@ -195,6 +207,11 @@ func _load() -> bool:
 		if Balance.WAVE_MOD_DATA.has(StringName(entry_m)):
 			mod_bag.append(StringName(entry_m))
 	_last_mod = StringName(str(cfg.get_value("run", "last_mod", "")))
+	danger_unlocked = int(cfg.get_value("danger", "unlocked", 0))
+	last_danger = int(cfg.get_value("danger", "last", 0))
+	if cfg.has_section("danger_wins"):
+		for key: String in cfg.get_section_keys("danger_wins"):
+			hero_wins[StringName(key)] = cfg.get_value("danger_wins", key, [])
 	for entry_c: String in cfg.get_value("run", "combos_found", PackedStringArray()):
 		if Balance.ITEM_COMBOS.has(StringName(entry_c)):
 			combos_found.append(StringName(entry_c))

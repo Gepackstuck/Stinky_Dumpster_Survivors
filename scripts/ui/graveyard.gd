@@ -39,6 +39,11 @@ var _selected: int = 0
 var _fresh: Array[StringName] = []
 var _time: float = 0.0
 var _scale: float = 1.0
+var _picker: Control = null          # выбор уровня опасности (после выбора героя, если открыт хоть один)
+var _pick_danger: int = 0
+var _pick_skulls: Array[TextureRect] = []
+var _pick_title: Label = null
+var _pick_text: Label = null
 var _leaves: Array[TextureRect] = []
 var _captions: Array[Label] = []
 var _cols: int = 8
@@ -337,6 +342,23 @@ func _build_grave(i: int) -> void:
 		tag.add_theme_constant_override(&"shadow_offset_x", 1)
 		tag.add_theme_constant_override(&"shadow_offset_y", 1)
 		root.add_child(tag)
+	if unlocked:   # отметки побед по уровням опасности: 6 медалей в полный размер, несобранные - тёмные силуэты
+		var won: Array = Profile.hero_wins.get(id, [])
+		var row: Panel = Panel.new()
+		var box: StyleBoxFlat = StyleBoxFlat.new()
+		box.bg_color = Color(0.04, 0.02, 0.05, 0.8)
+		row.add_theme_stylebox_override(&"panel", box)
+		row.size = Vector2(44.0, 10.0)
+		row.position = (root.position + Vector2(GRAVE_W * _scale * 0.5 - 22.0, GRAVE_H * _scale - 13.0)).round()
+		row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		add_child(row)
+		for d: int in Balance.DANGER_LEVELS.size():
+			var mark: TextureRect = TextureRect.new()
+			mark.texture = load("res://assets/ui/mark_%d.png" % d if d in won else "res://assets/ui/mark_empty.png") as Texture2D
+			mark.position = Vector2(1.0 + d * 7.0, 1.0)
+			mark.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+			mark.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			row.add_child(mark)
 	var click: Button = Button.new()
 	click.flat = true
 	click.focus_mode = Control.FOCUS_NONE
@@ -399,10 +421,15 @@ func _input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 		if _book != null:
 			_toggle_book()
+		elif _picker != null:
+			_close_picker()
 		else:
 			_to_menu()
 		return
 	if _book != null:
+		return
+	if _picker != null:
+		_picker_input(event)
 		return
 	if event.is_action_pressed(&"move_left") or event.is_action_pressed(&"ui_left"):
 		get_viewport().set_input_as_handled()
@@ -419,6 +446,72 @@ func _input(event: InputEvent) -> void:
 	elif event.is_action_pressed(&"ui_accept"):
 		get_viewport().set_input_as_handled()
 		_choose()
+
+
+## Выбор опасности: 6 черепов, A/D - уровень, пробел - в бой, Esc - назад. Закрытые уровни - тёмные.
+func _open_picker() -> void:
+	_pick_danger = clampi(Profile.last_danger, 0, Profile.danger_unlocked)
+	_picker = Control.new()
+	_picker.position = Vector2(90.0, 46.0)
+	_picker.size = Vector2(300.0, 92.0)
+	_picker.z_index = 60
+	add_child(_picker)
+	var back: Panel = Panel.new()   # плотная плашка с кислотной рамкой: могилы под ней не просвечивают
+	var box: StyleBoxFlat = StyleBoxFlat.new()
+	box.bg_color = Color(0.06, 0.02, 0.07)
+	box.border_color = PINK
+	box.set_border_width_all(2)
+	back.add_theme_stylebox_override(&"panel", box)
+	back.size = _picker.size
+	_picker.add_child(back)
+	var head: Label = _label("ВЫБЕРИ, НАСКОЛЬКО ГЛУБОКО ПАДАТЬ", Vector2(0.0, 4.0), 300.0, YELLOW, HORIZONTAL_ALIGNMENT_CENTER)
+	head.reparent(_picker, false)
+	_pick_skulls.clear()
+	for d: int in Balance.DANGER_LEVELS.size():
+		var skull: TextureRect = TextureRect.new()
+		skull.texture = load("res://assets/ui/danger_%d.png" % d) as Texture2D
+		skull.position = Vector2(48.0 + d * 36.0, 18.0)
+		skull.scale = Vector2.ONE * 2.0
+		skull.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		_picker.add_child(skull)
+		_pick_skulls.append(skull)
+	_pick_title = _label("", Vector2(0.0, 54.0), 300.0, PINK, HORIZONTAL_ALIGNMENT_CENTER)
+	_pick_title.reparent(_picker, false)
+	_pick_text = _label("", Vector2(0.0, 66.0), 300.0, WHITE, HORIZONTAL_ALIGNMENT_CENTER)
+	_pick_text.reparent(_picker, false)
+	var hint: Label = _label("A/D - УРОВЕНЬ   ПРОБЕЛ - ПОГНАЛИ   ESC - НАЗАД", Vector2(0.0, 79.0), 300.0, GREY, HORIZONTAL_ALIGNMENT_CENTER)
+	hint.reparent(_picker, false)
+	_refresh_picker()
+
+
+func _refresh_picker() -> void:
+	for d: int in _pick_skulls.size():
+		var open: bool = d <= Profile.danger_unlocked
+		_pick_skulls[d].modulate = (Color.WHITE if d == _pick_danger else Color(0.6, 0.6, 0.6)) if open else Color(0.15, 0.15, 0.18)
+		_pick_skulls[d].position.y = 14.0 if d == _pick_danger else 18.0
+	var data: Dictionary = Balance.DANGER_LEVELS[_pick_danger]
+	_pick_title.text = "ОПАСНОСТЬ %d: %s" % [_pick_danger, data["name"]]
+	_pick_text.text = data["text"]
+
+
+func _picker_input(event: InputEvent) -> void:
+	if event.is_action_pressed(&"move_left") or event.is_action_pressed(&"ui_left"):
+		get_viewport().set_input_as_handled()
+		_pick_danger = maxi(_pick_danger - 1, 0)
+		_refresh_picker()
+	elif event.is_action_pressed(&"move_right") or event.is_action_pressed(&"ui_right"):
+		get_viewport().set_input_as_handled()
+		_pick_danger = mini(_pick_danger + 1, Profile.danger_unlocked)
+		_refresh_picker()
+	elif event.is_action_pressed(&"ui_accept"):
+		get_viewport().set_input_as_handled()
+		_choose()
+
+
+func _close_picker() -> void:
+	if _picker != null:
+		_picker.queue_free()
+		_picker = null
 
 
 func _on_grave_pressed(i: int) -> void:
@@ -440,9 +533,15 @@ func _choose() -> void:
 		_status.text = "ЗАКОПАН НАГЛУХО. СНАЧАЛА: %s" % CharacterLibrary.unlock_text(id)
 		_status.add_theme_color_override(&"font_color", RED)
 		return
+	if Profile.danger_unlocked > 0 and _picker == null:
+		_open_picker()
+		return
 	Profile.selected = id
 	Profile.save()
 	GameState.character = id
+	GameState.danger = _pick_danger if Profile.danger_unlocked > 0 else 0
+	Profile.last_danger = GameState.danger
+	_close_picker()
 	_leaving = true
 	_arrow.hide()
 	_set_info(false)

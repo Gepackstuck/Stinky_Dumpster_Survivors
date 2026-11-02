@@ -56,7 +56,7 @@ func _process(delta: float) -> void:
 		_timer_label.text = str(second)
 	if GameState.wave != _last_wave:
 		_last_wave = GameState.wave
-		_wave_label.text = "ВОЛНА %d/%d" % [GameState.wave, Balance.WAVE_COUNT]
+		_wave_label.text = "ВОЛНА %d/%d" % [GameState.wave, Balance.WAVE_COUNT] + ("  %s" % WaveRules.danger_v("name") if GameState.danger > 0 else "")
 
 
 ## Сердечко стучит: двойной удар «тук-тук», чем меньше HP, тем чаще.

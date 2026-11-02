@@ -35,6 +35,8 @@ func _ready() -> void:
 
 ## Вид волны (normal/elite/horde/boss) — нужен экрану между волнами для превью следующей.
 func wave_kind(wave: int) -> StringName:
+	if int(WaveRules.danger_v("early_elite")) == wave:
+		return &"elite"
 	return _special.get(wave, &"normal")
 
 
@@ -127,7 +129,7 @@ func _spawn_special_units() -> void:
 		_bosses_spawned = true
 		var pool: Array[StringName] = Balance.FINAL_BOSS_POOL.duplicate()
 		pool.shuffle()
-		var count: int = randi_range(1, pool.size())
+		var count: int = pool.size() if WaveRules.danger_v("both_bosses") else randi_range(1, pool.size())
 		for i: int in count:
 			spawner.spawn_single(pool[i], WaveRules.hp_mult(wave) * Balance.BOSS_HP_MULT)
 			_bosses_alive += 1

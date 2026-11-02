@@ -12,6 +12,7 @@ ap.add_argument("--jobs", type=int, default=6)
 ap.add_argument("--chunk", type=int, default=5)
 ap.add_argument("--heroes", default="all")
 ap.add_argument("--tag", default="")
+ap.add_argument("--danger", type=int, default=0)
 a = ap.parse_args()
 out = os.path.join(ROOT, "tools", "_bot_runs", time.strftime("%Y%m%d_%H%M%S") + (("_" + a.tag) if a.tag else ""))
 os.makedirs(os.path.join(out, "logs"))
@@ -20,7 +21,7 @@ for part in a.plan.split(","):
     skill, n = part.split("="); n = int(n)
     while n > 0:
         k = min(n, a.chunk)
-        jobs.append((godot_cmd(skill, seed, k, out, a.heroes), os.path.join(out, "logs", f"{skill}_{seed}.log"), skill))
+        jobs.append((godot_cmd(skill, seed, k, out, a.heroes, None, a.danger), os.path.join(out, "logs", f"{skill}_{seed}.log"), skill))
         seed += 1; n -= k
 
 

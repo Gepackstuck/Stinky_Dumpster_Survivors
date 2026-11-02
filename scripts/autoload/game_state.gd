@@ -35,6 +35,7 @@ var crit_percent: float = 0.0
 var bonus_max_hp: float = 0.0
 var reroll_count: int = 0
 var weapons: Array[Dictionary] = []    # оружие игрока: {id, tier}, до WEAPON_SLOTS штук
+var danger: int = 0                  # уровень опасности забега (Balance.DANGER_LEVELS)
 var character: StringName = &"hobo"   # выбранный на кладбище персонаж (живёт между забегами)
 var run_coins_earned: int = 0
 var items: Dictionary[StringName, int] = {}   # рюкзак: id предмета -> штук

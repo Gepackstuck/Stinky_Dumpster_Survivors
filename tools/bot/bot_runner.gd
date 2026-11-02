@@ -95,6 +95,7 @@ func _parse_args() -> void:
 	_skill_id = StringName(args.get("skill", "mid"))
 	_skill = SKILLS.get(_skill_id, SKILLS[&"mid"])
 	_runs_total = int(args.get("runs", "1"))
+	GameState.danger = int(args.get("danger", "0"))
 	_seed = int(args.get("seed", "1"))
 	_out_dir = args.get("out", ProjectSettings.globalize_path("res://tools/_bot_runs/manual"))
 	_brain = BRAIN_DEFAULT.duplicate()
@@ -198,7 +199,7 @@ func _end_run(result: String) -> void:
 	for id: StringName in GameState.items:
 		items[String(id)] = GameState.items[id]
 	var record: Dictionary = {
-		"hero": String(_hero), "skill": String(_skill_id), "seed": _seed, "run": _run_index, "result": result,
+		"hero": String(_hero), "skill": String(_skill_id), "danger": GameState.danger, "seed": _seed, "run": _run_index, "result": result,
 		"wave": GameState.wave, "waves_total": Balance.WAVE_COUNT, "game_sec": snappedf(_game_time, 0.1),
 		"shop_visits": _shop_visits, "dashes": _dashes, "clean_waves": GameState.clean_waves, "best_streak": snappedf(GameState.best_streak_sec, 0.1), "killer": String(GameState.last_damage_source) if result == "death" else "",
 		"surrounded_at_end": snappedf(_last_coverage, 0.01), "hp_end_ratio": snappedf(GameState.hp / maxf(GameState.max_hp, 1.0), 0.01), "level": GameState.level,

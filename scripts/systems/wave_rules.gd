@@ -34,23 +34,23 @@ static func _late(wave: int) -> float:
 
 static func hp_mult(wave: int) -> float:
 	var n: float = float(maxi(wave, 1) - 1)
-	return (1.0 + n * Balance.WAVE_HP_GROWTH + _late(wave) * _late(wave) * Balance.WAVE_HP_QUAD) * Balance.ENEMY_HP_MULT * mod_f("enemy_hp", 1.0)
+	return (1.0 + n * Balance.WAVE_HP_GROWTH + _late(wave) * _late(wave) * Balance.WAVE_HP_QUAD) * Balance.ENEMY_HP_MULT * mod_f("enemy_hp", 1.0) * danger_f("hp")
 
 
 static func damage_mult(wave: int) -> float:
 	var n: float = float(maxi(wave, 1) - 1)
-	return (1.0 + n * Balance.WAVE_DAMAGE_GROWTH + _late(wave) * _late(wave) * Balance.WAVE_DAMAGE_QUAD) * Balance.ENEMY_DAMAGE_MULT * mod_f("enemy_damage", 1.0)
+	return (1.0 + n * Balance.WAVE_DAMAGE_GROWTH + _late(wave) * _late(wave) * Balance.WAVE_DAMAGE_QUAD) * Balance.ENEMY_DAMAGE_MULT * mod_f("enemy_damage", 1.0) * danger_f("dmg")
 
 
 static func speed_mult(wave: int) -> float:
 	var mult: float = minf(1.0 + (maxi(wave, 1) - 1) * Balance.WAVE_SPEED_GROWTH, Balance.WAVE_SPEED_MAX_MULT)
-	return mult * mod_f("enemy_speed", 1.0) * (1.0 + GameState.enemy_haste / 100.0)
+	return mult * mod_f("enemy_speed", 1.0) * (1.0 + GameState.enemy_haste / 100.0) * danger_f("speed")
 
 
 ## Модификатор волны: только на обычных волнах с WAVE_MOD_FROM. Берётся из «мешка» (Profile.mod_bag):
 ## пока не выпали все, ни один не повторяется; мешок живёт между забегами.
 static func roll_mod(wave: int, kind: StringName, _last: StringName) -> StringName:
-	if kind != &"normal" or wave < Balance.WAVE_MOD_FROM or randf() >= Balance.WAVE_MOD_CHANCE:
+	if kind != &"normal" or wave < Balance.WAVE_MOD_FROM or randf() >= Balance.WAVE_MOD_CHANCE + danger_f("mod_add"):
 		return &""
 	return Profile.next_mod()
 
@@ -60,6 +60,15 @@ static func mod_fx(key: String, default: Variant = null) -> Variant:
 	if GameState.wave_mod == &"":
 		return default
 	return Balance.WAVE_MOD_DATA[GameState.wave_mod]["fx"].get(key, default)
+
+
+## Параметр текущего уровня опасности.
+static func danger_f(key: String) -> float:
+	return float(Balance.DANGER_LEVELS[clampi(GameState.danger, 0, Balance.DANGER_LEVELS.size() - 1)][key])
+
+
+static func danger_v(key: String) -> Variant:
+	return Balance.DANGER_LEVELS[clampi(GameState.danger, 0, Balance.DANGER_LEVELS.size() - 1)][key]
 
 
 static func mod_f(key: String, default: float) -> float:

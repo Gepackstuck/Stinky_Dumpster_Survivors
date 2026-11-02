@@ -97,29 +97,23 @@ static func weapon_line(id: StringName) -> String:
 
 
 const _DASH_FX_TEXT: Dictionary = {
-	&"slow": "ТОРМОЗИТ ВРАГОВ РЯДОМ", &"sweep": "БЬЁТ ВСЕХ ПО ПУТИ", &"knock": "РАСПИХИВАЕТ ВСЕХ ВОКРУГ",
-	&"trail": "СКОЛЬЗКИЙ СЛЕД ТОРМОЗИТ", &"blink": "ТЕЛЕПОРТ", &"drunk": "КРИВОЙ, НО ДОЛЬШЕ НЕУЯЗВИМ",
-	&"heal": "+1 ХП ЗА РЫВОК", &"fly": "ПЕРЕЛЁТ, НЕУЯЗВИМ В ВОЗДУХЕ",
+	&"slow": "ТОРМОЗИТ ВРАГОВ", &"sweep": "БЬЁТ ПО ПУТИ", &"knock": "РАСПИХИВАЕТ",
+	&"trail": "СКОЛЬЗКИЙ СЛЕД", &"blink": "ТЕЛЕПОРТ", &"drunk": "КРИВОЙ, ДОЛЬШЕ НЕУЯЗВИМ",
+	&"heal": "+1 ХП", &"fly": "ПЕРЕЛЁТ",
 }
 
 
 ## Рывок героя одной строкой: «РЫВОК: ОЛЛИ, 2 ЗАРЯДА, ДАЛЕКО».
 static func dash_line(id: StringName) -> String:
 	var p: Dictionary = DashComponent.profile(id)
-	var parts: Array[String] = ["РЫВОК: " + String(p.get("name", "РЫВОК"))]
-	if int(p["charges"]) > 1:
-		parts.append("%d ЗАРЯДА" % int(p["charges"]))
-	if float(p["dist"]) >= 85.0:
-		parts.append("ДАЛЕКО")
-	elif float(p["dist"]) <= 50.0:
-		parts.append("КОРОТКИЙ")
-	if float(p["cd"]) <= 1.2:
-		parts.append("ЧАСТО")
-	elif float(p["cd"]) >= 2.2:
-		parts.append("РЕДКО")
+	var parts: Array[String] = []
 	if _DASH_FX_TEXT.has(p["fx"]):
 		parts.append(_DASH_FX_TEXT[p["fx"]])
-	return ", ".join(parts)
+	if int(p["charges"]) > 1:
+		parts.append("%d ЗАРЯДА" % int(p["charges"]))
+	if parts.is_empty():
+		parts.append("ДАЛЕКО И ЧАСТО" if float(p["dist"]) >= 85.0 else ("ЧАСТО" if float(p["cd"]) <= 1.3 else "ОБЫЧНЫЙ"))
+	return "РЫВОК: %s (%s)" % [String(p.get("name", "РЫВОК")), ", ".join(parts)]
 
 
 ## Плюсы и минусы построчно (как у предметов).

@@ -22,9 +22,9 @@ def cpu_idle():
         return 50.0
 
 
-def godot_cmd(skill, seed, runs, out, heroes="all", brain=None):
+def godot_cmd(skill, seed, runs, out, heroes="all", brain=None, danger=0):
     cmd = ["nice", "-n", "15", GODOT, "--headless", "--fixed-fps", "60", "--path", ROOT, "res://tools/bot/bot_runner.tscn", "--",
-           f"--skill={skill}", f"--seed={seed}", f"--runs={runs}", f"--heroes={heroes}", f"--out={out}"]
+           f"--skill={skill}", f"--seed={seed}", f"--runs={runs}", f"--heroes={heroes}", f"--out={out}", f"--danger={danger}"]
     if brain:
         cmd.append(f"--brain={brain}")
     return cmd
