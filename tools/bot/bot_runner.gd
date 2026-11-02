@@ -30,7 +30,7 @@ const BRAIN_PATH: String = "res://tools/bot/brain.json"
 const SECTORS: int = 24   # круг вокруг героя для поиска дыр в окружении
 const STAT_WEIGHT: Dictionary = {&"damage": 4.2, &"attack_speed": 3.6, &"max_hp": 3.4, &"armor": 3.0, &"crit": 1.6,
 		&"speed": 2.0, &"dodge": 2.2, &"regen": 2.2, &"pickup": 0.8}
-const DANGEROUS: Array[StringName] = [&"charger", &"bruiser", &"boss_zakhar", &"boss_minion", &"boss_mega_hamster", &"boss_rat_queen", &"boss_blue_whale"]
+const DANGEROUS: Array[StringName] = [&"charger", &"bruiser", &"boss_zakhar", &"boss_minion", &"boss_mega_hamster", &"boss_rat_queen", &"boss_blue_whale", &"boss_roach_king", &"boss_trash_golem", &"boss_pigeon_papa"]
 
 var _skill_id: StringName = &"mid"
 var _skill: Dictionary = {}

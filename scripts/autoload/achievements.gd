@@ -27,6 +27,9 @@ const LIST: Dictionary = {
 	&"boss_zakhar": ["МОРКОВКУ В ЗУБЫ", "Убей Захара из Морковска"],
 	&"boss_minion": ["ПСИХ НЕ ПОМОГ", "Убей Миньона-психа"],
 	&"boss_whale": ["КИТОБОЙ", "Убей Синего кита"],
+	&"boss_roach_king": ["ДУСТ", "Убей Таракана-качка"],
+	&"boss_golem": ["ВЫНЕС МУСОР", "Убей Мусорного голема"],
+	&"boss_pigeon_papa": ["ОСИРОТИЛ ГОЛУБЕЙ", "Убей Голубиного папу"],
 	&"clean_wave": ["НИ ЦАРАПИНЫ", "Пройди волну без урона"],
 	&"clean_5": ["СКОЛЬЗКИЙ ТИП", "5 чистых волн за забег"],
 	&"clean_all": ["НЕУЛОВИМЫЙ ГОВНЮК", "Победи, не получив урона ни в одной волне"],
@@ -119,6 +122,9 @@ func _on_enemy_died(id: StringName, _at: Vector2) -> void:
 		&"boss_zakhar": unlock(&"boss_zakhar")
 		&"boss_minion": unlock(&"boss_minion")
 		&"boss_blue_whale": unlock(&"boss_whale")
+		&"boss_roach_king": unlock(&"boss_roach_king")
+		&"boss_trash_golem": unlock(&"boss_golem")
+		&"boss_pigeon_papa": unlock(&"boss_pigeon_papa")
 	if GameState.coins >= 999:
 		unlock(&"coins_hoard_999")
 

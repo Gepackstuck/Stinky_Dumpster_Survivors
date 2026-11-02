@@ -85,8 +85,8 @@ const WAVE_ENEMY_WEIGHTS: Dictionary = {    # вес в взвешенном р�
 	&"looter": 1, &"cockroach": 4, &"bruiser": 4, &"wifi_ghost": 3,
 	&"healer": 3, &"glutton": 3, &"egg": 2, &"mamka": 2,
 }
-const FINAL_BOSS_POOL: Array[StringName] = [&"boss_zakhar", &"boss_minion", &"boss_blue_whale"]
-const ELITE_POOL: Array[StringName] = [&"boss_mega_hamster", &"boss_rat_queen"]   # элита окна - одна из них
+const FINAL_BOSS_POOL: Array[StringName] = [&"boss_zakhar", &"boss_minion", &"boss_blue_whale", &"boss_trash_golem", &"boss_pigeon_papa"]
+const ELITE_POOL: Array[StringName] = [&"boss_mega_hamster", &"boss_rat_queen", &"boss_roach_king"]   # элита окна - одна из них
 const FINAL_BOSS_MAX: int = 2      # одновременно в финале не больше стольких боссов (на ТРУПНЯКЕ+ - всегда столько)  # боссы 20-й волны: один или оба
 const ELITE_ID: StringName = &"boss_mega_hamster"                           # элита на волнах 11–12, 14–15, 17–18
 const BOSS_NAMES: Dictionary = {
@@ -95,7 +95,41 @@ const BOSS_NAMES: Dictionary = {
 	&"boss_minion": "МИНЬОН-ПСИХ",
 	&"boss_rat_queen": "КОРОЛЕВА КРЫС",
 	&"boss_blue_whale": "СИНИЙ КИТ",
+	&"boss_roach_king": "ТАРАКАН-КАЧОК",
+	&"boss_trash_golem": "МУСОРНЫЙ ГОЛЕМ",
+	&"boss_pigeon_papa": "ГОЛУБИНЫЙ ПАПА",
 }
+# --- Таракан-качок (элита) ---
+const ROACH_KING_ATTACK_INTERVAL_SEC: float = 2.4
+const ROACH_KING_CAST_SEC: float = 0.55
+const ROACH_KING_DASHES: int = 3
+const ROACH_KING_DASH_WINDUP: float = 0.45
+const ROACH_KING_DASH_SPEED: float = 280.0
+const ROACH_KING_DASH_SEC: float = 0.45
+const ROACH_KING_EGGS: int = 3
+const ROACH_KING_STOMP_RADIUS: float = 50.0
+const ROACH_KING_STOMP_DAMAGE: float = 6.0
+# --- Мусорный голем (финал) ---
+const GOLEM_ATTACK_INTERVAL_SEC: float = 2.5
+const GOLEM_CAST_SEC: float = 0.6
+const GOLEM_BAG_SPEED: float = 150.0
+const GOLEM_BAG_RADIUS: float = 22.0
+const GOLEM_POUND_RADIUS: float = 56.0
+const GOLEM_POUND_DAMAGE: float = 12.0
+const GOLEM_DEBRIS: int = 14
+const GOLEM_DEBRIS_SPEED: float = 110.0
+const GOLEM_DEBRIS_DAMAGE: float = 7.0
+const GOLEM_SUMMON: int = 3
+# --- Голубиный папа (финал) ---
+const PIGEON_PAPA_ATTACK_INTERVAL_SEC: float = 2.3
+const PIGEON_PAPA_CAST_SEC: float = 0.55
+const PIGEON_PAPA_DIVE_SPEED: float = 320.0
+const PIGEON_PAPA_DIVE_SEC: float = 0.7
+const PIGEON_PAPA_BOMBS: int = 6
+const PIGEON_PAPA_BOMB_DAMAGE: float = 9.0
+const PIGEON_PAPA_FEATHERS: int = 9
+const PIGEON_PAPA_FEATHER_SPEED: float = 130.0
+const PIGEON_PAPA_FEATHER_DAMAGE: float = 7.0
 # --- Королева крыс (элита) ---
 const RAT_QUEEN_ATTACK_INTERVAL_SEC: float = 2.4
 const RAT_QUEEN_CAST_SEC: float = 0.5
@@ -634,6 +668,12 @@ const ENEMIES: Dictionary = {
 			"brain": "res://scripts/enemies/brains/boss_zakhar_brain.gd"},
 	&"boss_rat_queen": {"hp": 650.0, "damage": 5.0, "speed": 45.0, "xp": 30, "coins": 20, "radius": 26.0, "anim_rows": 5,
 			"brain": "res://scripts/enemies/brains/boss_rat_queen_brain.gd"},
+	&"boss_roach_king": {"hp": 620.0, "damage": 5.0, "speed": 50.0, "xp": 30, "coins": 20, "radius": 24.0, "anim_rows": 5,
+			"brain": "res://scripts/enemies/brains/boss_roach_brain.gd"},
+	&"boss_trash_golem": {"hp": 1100.0, "damage": 6.0, "speed": 32.0, "xp": 40, "coins": 25, "radius": 34.0, "anim_rows": 5,
+			"brain": "res://scripts/enemies/brains/boss_golem_brain.gd"},
+	&"boss_pigeon_papa": {"hp": 850.0, "damage": 5.0, "speed": 48.0, "xp": 40, "coins": 25, "radius": 28.0, "anim_rows": 5, "flying": true,
+			"brain": "res://scripts/enemies/brains/boss_pigeon_brain.gd"},
 	&"boss_blue_whale": {"hp": 1000.0, "damage": 5.0, "speed": 30.0, "xp": 40, "coins": 25, "radius": 34.0, "anim_rows": 5,
 			"brain": "res://scripts/enemies/brains/boss_whale_brain.gd"},
 	&"boss_minion": {"hp": 700.0, "damage": 3.0, "speed": 70.0, "xp": 40, "coins": 25, "radius": 22.0, "anim_rows": 5,
