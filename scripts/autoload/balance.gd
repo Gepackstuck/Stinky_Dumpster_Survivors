@@ -796,6 +796,19 @@ const GRAVE_MUSHROOM_DEATHS: Array[int] = [1, 3, 6, 10]   # по грибу за
 const GRAVE_FLY_DEATHS: Array[int] = [5, 12, 25]           # по мухе
 const GRAVE_MONUMENT_MIN: int = 5                          # памятник из говна - самому дохлому, если сдох хотя бы столько
 
+# --- Н7: бутылки-гранаты на поле (пнул на ходу - бахнула) ---
+const BOTTLE_FROM_WAVE: int = 2
+const BOTTLE_EVERY_SEC: float = 9.0
+const BOTTLE_MAX: int = 3
+const BOTTLE_KICK_RADIUS: float = 9.0
+const BOTTLE_KICK_SPEED: float = 230.0
+const BOTTLE_FLY_SEC: float = 0.6
+const BOTTLE_DAMAGE: float = 22.0
+const BOTTLE_DAMAGE_PER_WAVE: float = 0.12   # +12% урона за волну
+const BOTTLE_RADIUS: float = 34.0
+const BOTTLE_SELF_RADIUS: float = 18.0       # стоял ближе - автогол
+const BOTTLE_SELF_DAMAGE: float = 3.0
+
 # --- Хитрые враги ---
 const BLINKER_INTERVAL_SEC: float = 3.2      # как часто глючный бомж прыгает
 const BLINKER_WARN_SEC: float = 0.6          # метка на земле до прыжка (успеть отойти)

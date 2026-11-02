@@ -22,6 +22,7 @@ const _TITLES: Dictionary[StringName, String] = {
 	&"glutton": "ЖРУН",
 	&"wire": "КОЛЮЧАЯ ПРОВОЛОКА",
 	&"garbage_truck": "МУСОРОВОЗ",
+	&"bottle": "СВОЯ ЖЕ БУТЫЛКА",
 	&"acid_rain": "КИСЛОТНЫЙ ДОЖДЬ",
 	&"thunder": "МОЛНИЯ",
 	&"slipper_storm": "ЛЕТАЮЩИЙ ТАПОК",

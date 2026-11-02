@@ -15,6 +15,7 @@ func _ready() -> void:
 	size = Vector2(Balance.ARENA_SIZE, Balance.ARENA_SIZE)
 	_enter_from_top()
 	add_child(CompanionManager.new())
+	add_child(BottleGrenades.new())   # Н7: бутылки-гранаты
 	EventBus.run_won.connect(_open_gate)
 	if not GameState.weapons.is_empty():
 		# у персонажа своё стартовое оружие: выдаём его и запускаем 1-ю волну без выбора

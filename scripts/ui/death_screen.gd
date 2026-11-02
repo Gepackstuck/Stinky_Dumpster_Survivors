@@ -116,6 +116,11 @@ func _show_killer(enemy_id: StringName) -> void:
 		_killer_sprite.hframes = 2 if enemy_id == &"garbage_truck" else 1
 		_killer_sprite.vframes = 1
 		_killer_sprite.frame = 0
+	elif enemy_id == &"bottle":
+		_killer_sprite.texture = load("res://assets/sprites/bottle_grenade.png") as Texture2D
+		_killer_sprite.hframes = 2
+		_killer_sprite.vframes = 1
+		_killer_sprite.frame = 0
 	elif enemy_id == &"wire":
 		var cell: AtlasTexture = AtlasTexture.new()
 		cell.atlas = WIRE_TEXTURE
