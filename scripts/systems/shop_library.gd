@@ -52,6 +52,13 @@ static func new_offer(wave: int) -> Dictionary:
 	var offer: Dictionary = {"locked": false, "sold": false}
 	var roll: float = randf()
 	if roll >= Balance.SHOP_WEAPON_CHANCE and roll < Balance.SHOP_WEAPON_CHANCE + Balance.SHOP_ITEM_CHANCE:
+		var cursed: Array[StringName] = ItemLibrary.cursed_pool()
+		if wave >= Balance.CURSED_FROM_WAVE and not cursed.is_empty() and randf() < Balance.CURSED_SHOP_CHANCE:
+			offer["kind"] = &"item"
+			offer["id"] = cursed[randi() % cursed.size()]
+			offer["tier"] = ItemLibrary.tier(offer["id"])
+			offer["price"] = price(&"item", offer["id"], offer["tier"], wave)
+			return offer
 		var item_tier: int = roll_tier(wave)
 		var candidates: Array[StringName] = []
 		for t: int in range(item_tier, 0, -1):  # нет такого тира — берём ниже
@@ -114,7 +121,12 @@ static func icon(offer: Dictionary) -> Texture2D:
 static func description(offer: Dictionary) -> String:
 	var text: String = ""
 	if offer["kind"] == &"item":
+		if ItemLibrary.is_cursed(offer["id"]):
+			text += "ПРОКЛЯТО!\n"
 		text += ItemLibrary.description(offer["id"])
+		var combo: StringName = ItemLibrary.combo_with_owned(offer["id"])
+		if combo != &"":
+			text += "\nКОМБО: %s!" % ItemLibrary.title(combo) if combo in Profile.combos_found else "\nЧТО-ТО ЗАШЕВЕЛИЛОСЬ..."
 	elif offer["kind"] == &"weapon":
 		var stats: Dictionary = Balance.WEAPONS[offer["id"]]
 		var tier: int = offer["tier"]

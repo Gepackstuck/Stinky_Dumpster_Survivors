@@ -15,6 +15,7 @@ const HELD_WEAPON: GDScript = preload("res://scripts/weapons/held_weapon.gd")
 @onready var _magnet_collision: CollisionShape2D = $Magnet/CollisionShape2D
 @onready var _dash: DashComponent = $Dash
 var _facing: Vector2 = Vector2.RIGHT
+var _drain_timer: float = 0.0
 
 var _arena_max: Vector2 = Vector2.ZERO
 var _regen_timer: float = 0.0
@@ -90,6 +91,11 @@ func _physics_process(delta: float) -> void:
 	_update_still_regen(delta, direction == Vector2.ZERO)
 	_update_item_timers(delta)
 	_update_slow_field(delta, direction != Vector2.ZERO)
+	if GameState.hp_drain > 0.0 and GameState.run_active and GameState.wave_time_left > 0.0:
+		_drain_timer += delta
+		if _drain_timer >= Balance.CURSED_HP_DRAIN_SEC:
+			_drain_timer = 0.0
+			pay_hp(GameState.hp_drain)
 	if GameState.regen_hp > 0.0:
 		_regen_timer += delta
 		if _regen_timer >= Balance.PERK_REGEN_INTERVAL_SEC:
@@ -319,6 +325,14 @@ func _explode(at: Vector2) -> void:
 			var enemy: EnemyBase = node as EnemyBase
 			if enemy != null and at.distance_squared_to(enemy.global_position) <= radius_sq:
 				enemy.hit_by_weapon(Balance.ITEM_EXPLODE_DAMAGE * GameState.damage_mult, (enemy.global_position - at).normalized() * 140.0)
+
+
+## Плата здоровьем за проклятье: без неуязвимости и без смерти от неё (минимум 1 ХП).
+func pay_hp(amount: float) -> void:
+	var take: float = minf(amount, _health.current_health - 1.0)
+	if take > 0.0:
+		_health.take_damage(take)
+		HitFx.popup(get_tree(), global_position + Vector2(0.0, -14.0), "-%d" % roundi(take), Color(0.6, 0.0, 0.8), 12.0, 0.6)
 
 
 func heal(amount: float) -> void:

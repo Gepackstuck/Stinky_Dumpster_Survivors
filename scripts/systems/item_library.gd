@@ -4,6 +4,12 @@ extends RefCounted
 
 const TEX: GDScript = preload("res://scripts/systems/tex.gd")
 const _TITLES: Dictionary[StringName, String] = {
+	&"cursed_cigcase": "ПОРТСИГАР МЕРТВЕЦА", &"cursed_teeth": "ЧУЖИЕ ЗУБЫ", &"cursed_chain": "ЦЕПЬ АЛКАША",
+	&"cursed_wallet": "КОШЕЛЁК С КЛАДБИЩА", &"cursed_voodoo": "КУКЛА ВУДУ", &"cursed_shawarma": "ШАУРМА ИЗ МУСОРКИ",
+	&"cursed_mirror": "ОСКОЛОК ЗЕРКАЛА", &"cursed_rat_crown": "КОРОНА КРЫСИНОГО КОРОЛЯ",
+	&"combo_smoke": "ЗАКУРИЛ", &"combo_rotten_lunch": "ПРОСРОЧЕННЫЙ ОБЕД", &"combo_stink_set": "КОМПЛЕКТ ВОНИ",
+	&"combo_double_head": "ДВОЙНАЯ БАШКА", &"combo_golden_poop": "ЗОЛОТОЕ ГОВНО", &"combo_russian_winter": "РУССКАЯ ЗИМА",
+	&"combo_dacha_defense": "ОБОРОНА ДАЧИ", &"combo_friendship": "ДРУЖБА НАРОДОВ",
 	&"cigarette": "ОКУРОК",
 	&"sandwich": "ТУХЛЫЙ СЭНДВИЧ",
 	&"holey_sock": "ДЫРЯВЫЙ НОСОК",
@@ -53,6 +59,9 @@ const _TITLES: Dictionary[StringName, String] = {
 	&"cart_mortar": "ТЕЛЕЖКА-МИНОМЁТ",
 }
 const _SLOTS: Dictionary[StringName, StringName] = {
+	&"combo_double_head": &"head", &"combo_russian_winter": &"head", &"cursed_rat_crown": &"head",
+	&"cursed_mirror": &"face", &"combo_smoke": &"face", &"cursed_chain": &"chest", &"cursed_voodoo": &"chest",
+	&"combo_stink_set": &"back", &"cursed_cigcase": &"chest",
 	&"pot": &"head",
 	&"foil_hat": &"head",
 	&"golden_toilet": &"head",
@@ -110,6 +119,34 @@ static func title(item_id: StringName) -> String:
 	return _TITLES[item_id]
 
 
+static func is_cursed(item_id: StringName) -> bool:
+	return Balance.ITEMS[item_id].get("cursed", false)
+
+
+static func is_combo(item_id: StringName) -> bool:
+	return Balance.ITEMS[item_id].get("combo", false)
+
+
+## Комбо, которое можно собрать с этим предметом, если у героя уже есть второй кусок: id комбо или пусто.
+static func combo_with_owned(item_id: StringName) -> StringName:
+	for combo_id: StringName in Balance.ITEM_COMBOS:
+		var parts: Array = Balance.ITEM_COMBOS[combo_id]
+		if item_id in parts and GameState.item_count(combo_id) == 0:
+			var other: StringName = parts[1] if parts[0] == item_id else parts[0]
+			if GameState.item_count(other) > 0:
+				return combo_id
+	return &""
+
+
+## Проклятые предметы, которые ещё можно взять.
+static func cursed_pool() -> Array[StringName]:
+	var result: Array[StringName] = []
+	for id: StringName in Balance.ITEMS:
+		if is_cursed(id) and not at_limit(id):
+			result.append(id)
+	return result
+
+
 static func is_companion(item_id: StringName) -> bool:
 	var fx: Dictionary = Balance.ITEMS[item_id].get("fx", {})
 	return fx.has(&"pets") or fx.has(&"turrets") or fx.has(&"ghost_drunk") or fx.has(&"ghost_granny") or fx.has(&"dogs") or fx.has(&"pigeons") or fx.has(&"mines") or fx.has(&"lamps") or fx.has(&"mortars")
@@ -146,7 +183,7 @@ static func at_limit(item_id: StringName) -> bool:
 static func pool(tier_value: int) -> Array[StringName]:
 	var result: Array[StringName] = []
 	for id: StringName in Balance.ITEMS:
-		if Balance.ITEMS[id]["tier"] == tier_value and not at_limit(id):
+		if Balance.ITEMS[id]["tier"] == tier_value and not at_limit(id) and not is_cursed(id) and not is_combo(id):
 			var weight: int = Balance.SHOP_COMPANION_WEIGHT if is_companion(id) else 1
 			for i: int in weight:
 				result.append(id)
@@ -237,4 +274,12 @@ static func describe(data: Dictionary) -> String:
 				lines.append("+%d%% КО ВСЕМ ПЛЮСАМ ПРЕДМЕТОВ" % v)
 			&"discount":
 				lines.append("-%d%% ЦЕН В ЛАРЬКЕ" % v)
+			&"hp_drain":
+				lines.append("-%d ХП КАЖДЫЕ %d СЕК. ТЛЕЕШЬ" % [v, roundi(Balance.CURSED_HP_DRAIN_SEC)])
+			&"enemy_haste":
+				lines.append("ВРАГИ НА %d%% БЫСТРЕЕ" % v)
+			&"dash_cost":
+				lines.append("КАЖДЫЙ РЫВОК СТОИТ %d ХП" % v)
+			&"no_regen":
+				lines.append("РЕГЕН НЕ РАБОТАЕТ ВООБЩЕ")
 	return "\n".join(lines)

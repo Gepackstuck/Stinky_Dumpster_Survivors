@@ -294,6 +294,21 @@ const ITEM_SLOW_SEC: float = 1.0
 const ITEM_STILL_WAIT_SEC: float = 0.4              # сколько надо постоять, чтобы бинт заработал
 # tier: 1-4 (цвет рамки), price: цена в говне до роста по волнам, limit: макс. штук (0 — без лимита),
 # mods: статы (как у карточек уровня; можно с минусом), fx: coin_bonus/repel/thorns/explode/lifesteal/discount (на штуку)
+# --- Комбо предметов: два предмета у героя сливаются в третий при покупке (скрытые, открываются в профиле).
+const ITEM_COMBOS: Dictionary = {
+	&"combo_smoke": [&"cigarette", &"lighter"],
+	&"combo_rotten_lunch": [&"sandwich", &"old_milk"],
+	&"combo_stink_set": [&"holey_sock", &"stinky_pants"],
+	&"combo_double_head": [&"helmet", &"pot"],
+	&"combo_golden_poop": [&"gold_tooth", &"poop_wallet"],
+	&"combo_russian_winter": [&"vodka", &"ushanka"],
+	&"combo_dacha_defense": [&"bucket_turret", &"bottle_mine"],
+	&"combo_friendship": [&"dead_rat", &"stray_dog"],
+}
+const CURSED_FROM_WAVE: int = 4
+const CURSED_SHOP_CHANCE: float = 0.12       # шанс, что товар-предмет в Ларьке - проклятый
+const CURSED_HP_DRAIN_SEC: float = 8.0       # портсигар: -1 ХП раз в столько секунд боя
+
 const ITEMS: Dictionary = {
 	&"cigarette": {"tier": 1, "price": 14, "limit": 0, "mods": {&"speed": 6.0, &"max_hp": -3.0}},
 	&"sandwich": {"tier": 1, "price": 15, "limit": 0, "mods": {&"max_hp": 8.0, &"dodge": -3.0}},
@@ -342,6 +357,24 @@ const ITEMS: Dictionary = {
 	&"bottle_mine": {"tier": 1, "price": 20, "limit": 4, "fx": {&"mines": 2.0}},
 	&"stink_lamp": {"tier": 3, "price": 42, "limit": 2, "fx": {&"lamps": 1.0}},
 	&"cart_mortar": {"tier": 3, "price": 46, "limit": 2, "fx": {&"mortars": 1.0}},
+	# --- Проклятые: огромный плюс и мерзкий минус. В Ларьке отдельным шансом с CURSED_FROM_WAVE.
+	&"cursed_cigcase": {"tier": 3, "price": 40, "limit": 1, "cursed": true, "mods": {&"damage": 40.0}, "fx": {&"hp_drain": 1.0}},
+	&"cursed_teeth": {"tier": 3, "price": 40, "limit": 1, "cursed": true, "mods": {&"attack_speed": 35.0}, "fx": {&"enemy_haste": 15.0}},
+	&"cursed_chain": {"tier": 2, "price": 30, "limit": 1, "cursed": true, "mods": {&"armor": 8.0, &"speed": -25.0}},
+	&"cursed_wallet": {"tier": 2, "price": 26, "limit": 1, "cursed": true, "mods": {&"max_hp": -8.0}, "fx": {&"coin_bonus": 60.0}},
+	&"cursed_voodoo": {"tier": 3, "price": 38, "limit": 1, "cursed": true, "fx": {&"thorns": 15.0, &"dash_cost": 1.0}},
+	&"cursed_shawarma": {"tier": 2, "price": 30, "limit": 1, "cursed": true, "mods": {&"max_hp": 20.0}, "fx": {&"no_regen": 1.0}},
+	&"cursed_mirror": {"tier": 3, "price": 36, "limit": 1, "cursed": true, "mods": {&"crit": 25.0, &"dodge": -15.0}},
+	&"cursed_rat_crown": {"tier": 3, "price": 42, "limit": 1, "cursed": true, "mods": {&"damage": -15.0, &"max_hp": -5.0}, "fx": {&"pets": 3.0}},
+	# --- Комбо: не продаются, получаются слиянием двух предметов (Balance.ITEM_COMBOS).
+	&"combo_smoke": {"tier": 4, "price": 0, "limit": 1, "combo": true, "mods": {&"damage": 15.0, &"speed": 5.0}, "fx": {&"burn": 25.0}},
+	&"combo_rotten_lunch": {"tier": 4, "price": 0, "limit": 1, "combo": true, "mods": {&"max_hp": 20.0, &"regen": 3.0}, "fx": {&"explode": 10.0}},
+	&"combo_stink_set": {"tier": 4, "price": 0, "limit": 1, "combo": true, "fx": {&"repel": 35.0, &"thorns": 8.0}},
+	&"combo_double_head": {"tier": 4, "price": 0, "limit": 1, "combo": true, "mods": {&"armor": 6.0}, "fx": {&"block": 2.0}},
+	&"combo_golden_poop": {"tier": 4, "price": 0, "limit": 1, "combo": true, "fx": {&"coin_bonus": 50.0, &"crit_coin": 40.0}},
+	&"combo_russian_winter": {"tier": 4, "price": 0, "limit": 1, "combo": true, "mods": {&"max_hp": 10.0, &"dodge": 10.0}, "fx": {&"drunk": 20.0}},
+	&"combo_dacha_defense": {"tier": 4, "price": 0, "limit": 1, "combo": true, "fx": {&"turrets": 2.0, &"mines": 2.0}},
+	&"combo_friendship": {"tier": 4, "price": 0, "limit": 1, "combo": true, "mods": {&"damage": 5.0}, "fx": {&"pets": 2.0, &"dogs": 1.0}},
 }
 
 # --- Забег ---

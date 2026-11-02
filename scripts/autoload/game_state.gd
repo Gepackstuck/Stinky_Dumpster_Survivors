@@ -62,6 +62,10 @@ var ghost_drunk_count: int = 0
 var ghost_granny_count: int = 0
 var _item_stats: Dictionary[StringName, float] = {}
 var _coin_remainder: float = 0.0
+var hp_drain: float = 0.0            # проклятье: ХП утекает (раз в Balance.CURSED_HP_DRAIN_SEC)
+var enemy_haste: float = 0.0         # проклятье: враги быстрее, %
+var dash_hp_cost: float = 0.0        # проклятье: рывок стоит ХП
+var no_regen: bool = false           # проклятье: реген не работает
 var wind: Vector2 = Vector2.ZERO     # снос героя ветром (модификатор волны)
 var wave_mod: StringName = &""      # модификатор текущей волны (Balance.WAVE_MODS) или пусто
 var wave_damage_taken: float = 0.0   # урон за текущую волну (чистая волна = 0)
@@ -197,6 +201,21 @@ func recycle_weapon(index: int) -> int:
 	return value
 
 
+## Два куска комбо у героя: забираем по одному и выдаём комбо-предмет. Пусто - комбо нет.
+func _try_combo(item_id: StringName) -> StringName:
+	for combo_id: StringName in Balance.ITEM_COMBOS:
+		var parts: Array = Balance.ITEM_COMBOS[combo_id]
+		if item_id in parts and item_count(combo_id) == 0 and item_count(parts[0]) > 0 and item_count(parts[1]) > 0:
+			for part: StringName in parts:
+				items[part] = item_count(part) - 1
+				if items[part] <= 0:
+					items.erase(part)
+			items[combo_id] = 1
+			Profile.found_combo(combo_id)
+			return combo_id
+	return &""
+
+
 ## Применить карточку стата нужного тира.
 func apply_stat(stat_id: StringName, tier: int) -> void:
 	var value: float = Balance.STAT_VALUES[stat_id][tier - 1]
@@ -216,6 +235,9 @@ func item_count(item_id: StringName) -> int:
 ## Положить предмет в рюкзак (+1 штука) и пересчитать статы.
 func add_item(item_id: StringName) -> void:
 	items[item_id] = item_count(item_id) + 1
+	var combo: StringName = _try_combo(item_id)
+	if combo != &"":
+		EventBus.item_combo.emit(combo)
 	_recompute_perk_stats()
 	EventBus.perk_chosen.emit(StringName("item_" + String(item_id)))
 	EventBus.items_changed.emit()
@@ -269,6 +291,10 @@ func _recompute_items() -> void:
 	for comp_key: StringName in [&"dogs", &"pigeons", &"mines", &"lamps", &"mortars"]:
 		comp_counts[comp_key] = roundi(fx.get(comp_key, 0.0))
 	ghost_drunk_count = roundi(fx.get(&"ghost_drunk", 0.0))
+	hp_drain = fx.get(&"hp_drain", 0.0)
+	enemy_haste = fx.get(&"enemy_haste", 0.0)
+	dash_hp_cost = fx.get(&"dash_cost", 0.0)
+	no_regen = fx.get(&"no_regen", 0.0) > 0.0
 	ghost_granny_count = roundi(fx.get(&"ghost_granny", 0.0))
 
 
@@ -311,7 +337,7 @@ func _recompute_perk_stats() -> void:
 	bonus_max_hp = stat_total(&"max_hp")
 	extra_projectiles = Balance.PERK_DOUBLE_SHOT_EXTRA_PROJECTILES * shots
 	projectile_damage_mult = pow(Balance.PERK_DOUBLE_SHOT_DAMAGE_MULT, shots)
-	regen_hp = Balance.PERK_REGEN_HP * regen + Balance.REGEN_HP_PER_POINT * stat_total(&"regen")
+	regen_hp = 0.0 if no_regen else Balance.PERK_REGEN_HP * regen + Balance.REGEN_HP_PER_POINT * stat_total(&"regen")
 
 
 func _on_enemy_died(enemy_id: StringName, _position: Vector2) -> void:

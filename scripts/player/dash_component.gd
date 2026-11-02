@@ -60,6 +60,8 @@ func try_dash(move_dir: Vector2, facing: Vector2) -> bool:
 	elif fx == &"fly":
 		iframe += 0.15
 	_start = body.global_position
+	if GameState.dash_hp_cost > 0.0 and body.has_method(&"pay_hp"):   # проклятье куклы вуду
+		body.call(&"pay_hp", GameState.dash_hp_cost)
 	hurtbox.grant_invulnerability(iframe)
 	if fx == &"slow":
 		_slow_around(_start, Balance.DASH_FX_RADIUS)

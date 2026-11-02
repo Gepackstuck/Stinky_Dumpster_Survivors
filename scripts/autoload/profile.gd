@@ -11,6 +11,7 @@ var wins: int = 0
 var selected: StringName = &"hobo"
 var enemy_kills: Dictionary = {}   # id врага -> сколько убито за всё время (бестиарий)
 var weapons_announced: Array[StringName] = []   # оружие, про которое экран смерти уже объявил «открыто»
+var combos_found: Array[StringName] = []   # открытые комбо предметов
 var mod_bag: Array[StringName] = []   # мешок модификаторов волн (без повторов, пока не выпадут все)
 var _last_mod: StringName = &""
 var sandbox: bool = false   # бот-ферма и тесты: всё открыто, на диск ничего не пишем (не портим живой профиль)
@@ -119,6 +120,12 @@ func announce(ids: Array[StringName]) -> void:
 
 ## Следующий модификатор волны из мешка: перемешанный набор всех модификаторов, тянем по одному,
 ## пустой - перемешиваем заново (первым не ставим только что выпавший). Сохраняется в профиль.
+func found_combo(combo_id: StringName) -> void:
+	if combo_id not in combos_found:
+		combos_found.append(combo_id)
+		save()
+
+
 func next_mod() -> StringName:
 	if mod_bag.is_empty():
 		var fresh: Array = Balance.WAVE_MODS.duplicate()
@@ -155,6 +162,10 @@ func save() -> void:
 	for id: StringName in mod_bag:
 		bag.append(String(id))
 	cfg.set_value("run", "mod_bag", bag)
+	var combos: PackedStringArray = PackedStringArray()
+	for id: StringName in combos_found:
+		combos.append(String(id))
+	cfg.set_value("run", "combos_found", combos)
 	cfg.set_value("run", "last_mod", String(_last_mod))
 	cfg.save(PATH)
 
@@ -184,4 +195,7 @@ func _load() -> bool:
 		if Balance.WAVE_MOD_DATA.has(StringName(entry_m)):
 			mod_bag.append(StringName(entry_m))
 	_last_mod = StringName(str(cfg.get_value("run", "last_mod", "")))
+	for entry_c: String in cfg.get_value("run", "combos_found", PackedStringArray()):
+		if Balance.ITEM_COMBOS.has(StringName(entry_c)):
+			combos_found.append(StringName(entry_c))
 	return true

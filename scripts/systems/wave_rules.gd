@@ -44,7 +44,7 @@ static func damage_mult(wave: int) -> float:
 
 static func speed_mult(wave: int) -> float:
 	var mult: float = minf(1.0 + (maxi(wave, 1) - 1) * Balance.WAVE_SPEED_GROWTH, Balance.WAVE_SPEED_MAX_MULT)
-	return mult * mod_f("enemy_speed", 1.0)
+	return mult * mod_f("enemy_speed", 1.0) * (1.0 + GameState.enemy_haste / 100.0)
 
 
 ## Модификатор волны: только на обычных волнах с WAVE_MOD_FROM. Берётся из «мешка» (Profile.mod_bag):

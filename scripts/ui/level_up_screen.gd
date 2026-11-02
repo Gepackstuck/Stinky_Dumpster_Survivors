@@ -56,6 +56,9 @@ func _ready() -> void:
 	EventBus.wave_ended.connect(_on_wave_ended)
 	EventBus.run_won.connect(func() -> void: _root.hide())
 	EventBus.player_died.connect(_on_player_died)
+	EventBus.item_combo.connect(func(combo_id: StringName) -> void:
+		_refresh_items()
+		_toast("КОМБО! %s. %s" % [ItemLibrary.title(combo_id), ItemLibrary.description(combo_id).replace("\n", ", ")]))
 	_show_start_choice.call_deferred()
 
 

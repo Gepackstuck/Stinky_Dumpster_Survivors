@@ -59,6 +59,8 @@ func setup_offer(offer: Dictionary, hotkey_index: int, frame_variant: int) -> vo
 	_hotkey.text = str(hotkey_index)
 	_title.text = ShopLibrary.title(offer) + "\nТИР " + StatLibrary.TIER_NAMES[offer["tier"] - 1]
 	_title.add_theme_color_override(&"font_color", StatLibrary.tier_color(offer["tier"]))
+	if offer["kind"] == &"item" and ItemLibrary.is_cursed(offer["id"]):
+		_title.add_theme_color_override(&"font_color", Color(0.75, 0.2, 1.0))   # проклятое - фиолетовое
 	_description.text = ShopLibrary.description(offer)
 	var affordable: bool = GameState.coins >= offer["price"]
 	_price.text = "%d ГОВНА" % offer["price"]
