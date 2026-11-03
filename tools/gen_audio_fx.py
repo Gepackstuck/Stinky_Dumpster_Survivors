@@ -4,7 +4,7 @@
 PYTHONPATH=tools tools/_venv/py/bin/python tools/gen_audio_fx.py -> assets/sfx/"""
 import os
 import numpy as np
-from gen_audio import N, T, TAU, R, filt, noise, gate, sweep, phase, plus, room, save, bell, OUT_SFX
+from gen_audio import N, T, TAU, R, filt, noise, gate, sweep, phase, plus, room, save, bell, graveyard, OUT_SFX
 
 
 def at(buf, x, sec, gain=1.0):
@@ -182,6 +182,7 @@ if __name__ == "__main__":
     cnt = 0
     for prefix, group in (("w_", weapons()), ("e_", enemies()), ("r_", bosses())):
         for k, v in group.items():
+            v = graveyard(v, prefix + k, 6000.0 if prefix == "w_" else 4800.0)   # общий тон меню: темнее, эхо склепа
             v = v * gate(len(v), len(v) / SR_ - 0.01, 0.01, 0.0005)
             save(f"{OUT_SFX}/{prefix}{k}.wav", v, 0.8); cnt += 1
     print("fx:", cnt)

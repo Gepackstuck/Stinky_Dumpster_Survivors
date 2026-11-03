@@ -16,7 +16,7 @@ const VOLUME_DB: Dictionary = {&"pickup": -13.0, &"hit": -15.0, &"hit_crit": -12
 		&"weapon": -12.0, &"w_mosin": -5.0, &"w_pipe_gun": -8.0, &"w_frying_pan": -9.0, &"w_shovel": -9.0, &"w_spray_can": -16.0, &"w_blowtorch": -16.0, &"w_laser_pointer": -17.0}
 const MUSIC_FADE_SEC: float = 0.8
 const BATTLE_TRACKS: Array[StringName] = [&"battle_a", &"battle_b", &"battle_c"]
-const PICKUP_SCALE: Array[int] = [0, 2, 4, 7, 9, 12, 14, 16, 19, 21, 24]   # подбор подряд - вверх по пентатонике, как в Brotato
+const PICKUP_SCALE: Array[int] = [-12, -9, -7, -5, -2, 0, 3, 5, 7]   # подбор подряд - вверх по минорной пентатонике (тон меню), как в Brotato
 const PICKUP_CHAIN_SEC: float = 0.45
 
 var _players: Array[AudioStreamPlayer] = []

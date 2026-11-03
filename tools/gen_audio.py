@@ -564,6 +564,46 @@ def room(x, sec=0.6, wet=0.25):
     return x + y * wet
 
 
+# ---------------- звуки в тоне меню: ре минор, колокол, шкатулка, хор, орган, эхо склепа ----------------
+DM = [62, 65, 69, 74, 77, 81, 86]   # ре минор: D F A D F A D
+FREQUENT = ("shoot", "hit", "enemy_death", "swing", "pickup", "ui_move", "w_", "e_", "roulette_tick")
+
+
+def graveyard(x, name, dark=5200.0):
+    """Общая обработка всех звуков под меню: темнее (срез верха) и с эхом склепа. Частым - эха меньше, чтобы не мылило."""
+    frequent = any(name.startswith(f) for f in FREQUENT)
+    wet = 0.07 if frequent else 0.18
+    x = filt(np.concatenate([x, np.zeros(N(0.05 if frequent else 0.35))]), hi=dark)
+    return room(x, 0.6 if frequent else 1.1, wet)
+
+
+def stack(parts, length):
+    """Собрать звук из кусков (время, массив)."""
+    out = np.zeros(N(length))
+    for t0, x in parts:
+        s0 = N(t0); e = min(s0 + len(x), len(out)); out[s0:e] += x[:e - s0]
+    return out
+
+
+def hymn_sfx():
+    H = {}
+    H["pickup"] = musicbox(midi(86), 0.12, 0.8)[:N(0.3)]                                   # шкатулка, D6 (в игре идёт вверх по ре-минорной пентатонике)
+    H["level_up"] = stack([(i * 0.09, plus(0.5 * tbell(midi(m), 1.0, 0.8), 0.4 * musicbox(midi(m + 12), 0.4, 0.7))) for i, m in enumerate((62, 65, 69, 74))]
+                          + [(0.3, 0.5 * choir(midi(62), 0.7, 0.8) + 0.0)], 1.6)               # колокола вверх по Dm и вздох хора
+    H["combo"] = stack([(i * 0.06, musicbox(midi(m), 0.3, 0.8)) for i, m in enumerate((74, 77, 81, 86, 89))], 0.9)
+    H["buy"] = stack([(0, tbell(midi(69), 0.6, 0.8)), (0.07, tbell(midi(74), 0.7, 0.7)), (0.0, filt(noise(N(0.08)), lo=4000, hi=7000) * np.exp(-T(N(0.08)) / 0.02) * 0.2)], 0.9)
+    H["ui_select"] = stack([(0, tbell(midi(57), 0.3, 0.7)), (0.05, tbell(midi(62), 0.4, 0.7))], 0.5)
+    H["warn"] = stack([(0, tbell(midi(69), 0.25, 0.8)), (0.11, tbell(midi(68), 0.3, 0.8))], 0.5)      # тревожная полутоновая пара
+    H["wave_horn"] = stack([(0, tbell(midi(50), 1.6, 1.0)), (0, 1.2 * kick()), (0.05, 0.5 * choir(midi(62), 0.6, 0.9, "a")), (0.05, 0.4 * choir(midi(69), 0.6, 0.9, "a"))], 1.8)
+    H["win"] = stack([(0, 0.6 * choir(midi(m), 1.6, 0.9, "a")) for m in (62, 66, 69, 74)] + [(i * 0.2, tbell(midi(m), 1.5, 0.7)) for i, m in enumerate((74, 78, 81, 86))], 2.6)   # ре мажор - светлый конец
+    H["death"] = stack([(0, tbell(midi(38), 2.5, 1.0))] + [(0.15 + i * 0.4, 0.5 * choir(midi(m), 0.45, 0.8)) for i, m in enumerate((69, 68, 67, 62))], 2.6)   # похоронный колокол и хор вниз
+    H["roulette_tick"] = (np.sin(TAU * 900 * T(N(0.04))) * np.exp(-T(N(0.04)) / 0.006) + 0.5 * np.sin(TAU * 450 * T(N(0.04))) * np.exp(-T(N(0.04)) / 0.012))
+    H["roulette_win"] = stack([(i * 0.09, tbell(midi(m), 0.8 if i < 5 else 1.4, 0.7)) for i, m in enumerate(DM[:6])], 1.8)
+    H["streak_break"] = stack([(0, tbell(midi(65), 0.4, 0.8)), (0.1, tbell(midi(61), 0.6, 0.8))], 0.8)   # минус серия: колокол съезжает вниз
+    H["level_up"] = H["level_up"] / (np.max(np.abs(H["level_up"])) + 1e-9)
+    return H
+
+
 def sfx():
     S = {}
     for i, f0 in enumerate((820, 920, 1020)):   # выстрел: мягкий «пиу-ток»
@@ -662,6 +702,8 @@ def sfx():
     for i, m in enumerate((67, 72, 76, 79, 84, 88)): x = bell(midi(m), 0.5 if i < 5 else 1.0); s0 = N(i * 0.08); rw[s0:s0 + len(x)] += x[:len(rw) - s0]
     S["roulette_win"] = room(rw, 1.0, 0.3)
     n = N(0.22); t = T(n); S["streak_break"] = np.sin(phase(sweep(720, 240, n, 0.07), n)) * np.exp(-t / 0.08)
+    S.update(hymn_sfx())   # музыкальные звуки - в тоне кладбищенского хорала меню
+    S = {k: graveyard(v, k) for k, v in S.items()}
     os.makedirs(OUT_SFX, exist_ok=True)
     vol = {"ui_move": 0.5, "pickup": 0.6, "hit": 0.7, "hit_2": 0.7, "hit_3": 0.7}
     for k, v in S.items():
