@@ -84,14 +84,17 @@ func _physics_process(delta: float) -> void:
 	if Input.is_action_just_pressed(&"dash"):
 		if not _dash.try_dash(direction, _facing) and not _dash.is_dashing():
 			_shoes.deny()   # сил нет - ботинки краснеют
-	var wanted: Vector2 = direction * Balance.PLAYER_MOVE_SPEED * GameState.move_speed_mult * WaveRules.mod_f("player_speed", 1.0) * _rush_mult() * terrain_mult
+	var speed_mult: float = GameState.move_speed_mult * WaveRules.mod_f("player_speed", 1.0) * _rush_mult() * terrain_mult
+	if not GameState.run_active:   # забег окончен: к воротам идём ровным шагом, статы и погода больше не важны
+		speed_mult = Balance.AFTER_RUN_SPEED_MULT
+	var wanted: Vector2 = direction * Balance.PLAYER_MOVE_SPEED * speed_mult
 	if _dash.is_dashing():
 		velocity = _dash.dash_velocity()
-	elif WaveRules.mod_fx("ice", false):   # жирный пол: разгон и торможение с инерцией
+	elif WaveRules.mod_fx("ice", false) and GameState.run_active:   # жирный пол: разгон и торможение с инерцией
 		velocity = velocity.lerp(wanted, clampf(Balance.ICE_ACCEL * delta, 0.0, 1.0))
 	else:
 		velocity = wanted
-	if not _dash.is_dashing():
+	if not _dash.is_dashing() and GameState.run_active:
 		velocity += GameState.wind   # ветер с помойки (модификатор волны)
 	if direction.x != 0.0:
 		_sprite.flip_h = direction.x > 0.0

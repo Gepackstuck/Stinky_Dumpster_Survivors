@@ -60,14 +60,14 @@ const WAVE_END_COLLECT_SEC: float = 1.5           # время на авто-с�
 const ENEMY_HP_MULT: float = 0.8                  # общий множитель HP врагов (под Brotato: враги умирают за 1-2 удара)
 # Поздние волны растут быстрее (как в Brotato: к 10-й волне экран уже забит, к 15-й это настоящая орда).
 const WAVE_LATE_START: int = 7
-const WAVE_ENEMIES_LATE: float = 4.0        # + это * (волна - LATE_START)^2 врагов за волну
-const WAVE_HP_QUAD: float = 0.5           # + это * (волна-1)^2 к множителю HP
-const WAVE_DAMAGE_QUAD: float = 0.06       # + это * (волна-1)^2 к множителю урона
-const BOSS_HP_MULT: float = 1.0                   # боссы последней волны крепче обычного роста
-const ELITE_HP_MULT: float = 2.0
-const WAVE_HP_GROWTH: float = 0.6   # рост HP врагов за волну
+const WAVE_ENEMIES_LATE: float = 5.0        # + это * (волна - LATE_START)^2 врагов за волну
+const WAVE_HP_QUAD: float = 0.6           # + это * (волна-1)^2 к множителю HP
+const WAVE_DAMAGE_QUAD: float = 0.07       # + это * (волна-1)^2 к множителю урона
+const BOSS_HP_MULT: float = 1.6                   # боссы последней волны крепче обычного роста
+const ELITE_HP_MULT: float = 3.0
+const WAVE_HP_GROWTH: float = 0.7   # рост HP врагов за волну
 const PLAYER_MAX_HIT_FRACTION: float = 0.34   # один удар не снимает больше трети максимума HP (нет ваншотов)
-const WAVE_DAMAGE_GROWTH: float = 0.35   # рост урона врагов за волну
+const WAVE_DAMAGE_GROWTH: float = 0.4   # рост урона врагов за волну
 const WAVE_SPEED_GROWTH: float = 0.055       # +3% скорости за волну
 const WAVE_SPEED_MAX_MULT: float = 1.6
 const GROUND_BODY_LAYER: int = 2                 # тела наземных врагов толкаются друг с другом и со стеной
@@ -314,8 +314,8 @@ const HERO_SLIME_SEC: float = 1.0
 
 # --- Награда за скилл: чистая волна и серия без урона ---
 const CLEAN_WAVE_BONUS_BASE: int = 6          # говна за волну без единого попадания
-const CLEAN_WAVE_BONUS_PER_WAVE: int = 3      # + за номер волны
-const NOHIT_STREAK_TIERS: Array = [[10.0, 0.10], [20.0, 0.25], [40.0, 0.50], [60.0, 0.80]]   # [сек без урона, + доля говна с дропа]
+const CLEAN_WAVE_BONUS_PER_WAVE: int = 2      # + за номер волны
+const NOHIT_STREAK_TIERS: Array = [[10.0, 0.05], [20.0, 0.15], [40.0, 0.30], [60.0, 0.50]]   # [сек без урона, + доля говна с дропа]
 
 # --- Рывок (у всех героев, у каждого свой): dist - px, sec - длительность, cd - перезарядка, charges - зарядов,
 # fx - фишка: knock (отпихнуть вокруг в конце), sweep (урон по пути), slow (тормозит врагов у старта), trail (тормозит по пути),
@@ -699,21 +699,24 @@ const WEAPON_PRICE: Dictionary = {&"lighter": 22, &"sock": 24, &"slingshot": 22,
 const PERK_PRICE: Dictionary = {&"speed": 14, &"regen": 16, &"double_shot": 30, &"loot_goblin": 12}
 const SHOP_SLOTS: int = 4
 const SHOP_PRICE_TIER_MULT: Array[float] = [1.0, 2.0, 3.5, 6.0, 9.0]
-const COIN_PER_XP: float = 0.6   # сколько говна даёт 1 XP (было 1.3: к 15-й волне копилось 8000 - скупал всё)
-const SHOP_PRICE_WAVE_GROWTH: float = 0.2           # цена *(1 + это * волна)
+const COIN_PER_XP: float = 0.5   # сколько говна даёт 1 XP (было 1.3 -> 0.6 -> 0.5: к 15-й волне копилось 8000 - скупал всё)
+const SHOP_PRICE_WAVE_GROWTH: float = 0.25          # цена *(1 + это * волна)
 const SHOP_WEAPON_CHANCE: float = 0.45              # шанс, что слот — оружие (предмет — SHOP_ITEM_CHANCE, иначе перк)
 const SHOP_TIER2_PER_WAVE: float = 0.05             # II-тир: (волна-1)*это, до 0.5
 const SHOP_TIER3_PER_WAVE: float = 0.03             # III-тир: (волна-3)*это, до 0.35
 const SHOP_TIER4_PER_WAVE: float = 0.015            # IV-тир: (волна-7)*это, до 0.2
-const RECYCLE_FRACTION: float = 0.5                 # возврат говна за переработку
+const RECYCLE_FRACTION: float = 0.35                # возврат говна за переработку
 const REROLL_BASE_COST: int = 3
-const REROLL_WAVE_FACTOR: float = 0.7               # + волна * это
-const REROLL_STEP_COST: int = 2                     # + за каждый реролл в эту волну
+const REROLL_WAVE_FACTOR: float = 1.0               # + волна * это
+const REROLL_STEP_COST: int = 3                     # + за каждый реролл в эту волну
 const ARMOR_MIN_FACTOR: float = 0.45                # броня режет урон не больше чем на 55%
 const ARMOR_K: float = 15.0                         # урон *= K/(K+броня)
 const DODGE_MAX_PERCENT: float = 60.0
+const AFTER_RUN_SPEED_MULT: float = 1.0     # после победы к воротам - базовая скорость, без статов и погоды
 const MOVE_SPEED_MIN_MULT: float = 0.45     # скорость героя не ниже 45% от базовой, как ни обвешайся
-const COIN_BONUS_MAX: float = 0.6           # бонусы «+% говна» вместе не больше +60%
+const COIN_BONUS_MAX: float = 0.5           # бонусы «+% говна» вместе не больше +50%
+const HIT_COINS_WAVE_BASE: int = 5          # говно с попаданий (крит-зуб, ворюга): за волну не больше BASE + PER_WAVE * волна
+const HIT_COINS_PER_WAVE: int = 1
 const CRIT_MAX_PERCENT: float = 100.0       # больше 100% крита не бывает
 const ITEM_LIMIT_DEFAULT: int = 4           # предмет без своего предела - не больше стольких штук
 const ITEM_LIMIT_COMPANION: int = 3         # компаньоны (крысы, псы, голуби, турели, мины...) - не больше стольких

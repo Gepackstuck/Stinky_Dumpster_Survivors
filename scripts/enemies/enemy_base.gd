@@ -304,6 +304,7 @@ func _on_hurt(damage: float) -> void:
 	if not _neutral:
 		HitFx.burst(get_tree(), global_position, Color(1.0, 0.0, 0.2), 5, 70.0)
 		_item_hit_effects()
+		EventBus.enemy_hurt.emit(GameState.is_crit_damage(damage))
 	# цифры урона: по настройке (0 - нет, 1 - только криты, 2 - все); криты обычного размера - иначе врагов не видно
 	if Settings.damage_numbers >= 1 and GameState.is_crit_damage(damage):
 		HitFx.popup(get_tree(), global_position + Vector2(0.0, -14.0), str(int(damage)) + "!", Color(1.0, 0.85, 0.0), 14.0, 0.5)
@@ -319,8 +320,7 @@ func _item_hit_effects() -> void:
 	if GameState.ink_percent > 0.0 and randf() * 100.0 < GameState.ink_percent:   # кальмар: чернила
 		slow(0.5, 1.5)
 	if GameState.steal_percent > 0.0 and randf() * 100.0 < GameState.steal_percent:   # крыс: ворюга
-		GameState.coins += 1
-		GameState.run_coins_earned += 1
+		GameState.hit_coin()
 	if GameState.burn_percent > 0.0 and randf() * 100.0 < GameState.burn_percent:
 		ignite(Balance.ITEM_BURN_DPS, Balance.ITEM_BURN_SEC)
 	if GameState.bash_percent > 0.0 and randf() * 100.0 < GameState.bash_percent and is_instance_valid(_target):

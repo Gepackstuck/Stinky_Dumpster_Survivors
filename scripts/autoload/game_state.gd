@@ -73,6 +73,7 @@ var still_regen: float = 0.0        # бинт: ХП за тик на месте
 var drunk_percent: float = 0.0     # палёнка: шанс пьянки с убийства
 var combo_percent: float = 0.0     # батарейка: % скорости атаки за звено серии
 var slow_field_count: int = 0      # доска: сколько досок (сила замедления)
+var wave_hit_coins: int = 0   # говно с попаданий за эту волну (с пределом)
 var stash_percent: float = 0.0     # рюкзак: шанс найти предмет после волны
 var temp_attack_bonus: float = 0.0 # временная прибавка к скорости атаки (пьянка, серия)
 var block_charges: int = 0          # осталось гашений в этой волне
@@ -141,6 +142,7 @@ func _ready() -> void:
 		shop_spent = 0
 		truck_kills = 0
 		wave_damage_taken = 0.0
+		wave_hit_coins = 0
 		hp_wave_marks.append(hp_history.size()))
 	EventBus.wave_ended.connect(_on_wave_ended_clean)   # бонусы наборов зависят от оружия в слотах
 
@@ -411,8 +413,17 @@ func roll_damage(base: float) -> float:
 	if randf() * 100.0 < crit_percent:
 		result = floorf(result * Balance.CRIT_DAMAGE_MULT * 100.0) / 100.0 + CRIT_MARK
 		if randf() * 100.0 < crit_coin_percent:
-			coins += 1
+			hit_coin()
 	return result
+
+
+## Говно за попадание (крит-зуб, ворюга): не больше HIT_COINS_* за волну, иначе скорострельность = бесконечные деньги.
+func hit_coin() -> void:
+	if wave_hit_coins >= Balance.HIT_COINS_WAVE_BASE + Balance.HIT_COINS_PER_WAVE * wave:
+		return
+	wave_hit_coins += 1
+	coins += 1
+	run_coins_earned += 1
 
 
 ## Крит помечается микроскопической добавкой к урону — по ней враг красит цифру.

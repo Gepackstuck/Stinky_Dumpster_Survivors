@@ -79,6 +79,7 @@ var _speech_left: float = 0.0
 
 
 func _ready() -> void:
+	AudioManager.play_music(&"menu")
 	if Balance.CHARACTER_ORDER.all(func(h: StringName) -> bool: return Profile.is_unlocked(h)):
 		Achievements.unlock(&"heroes_all")
 	_ids = CharacterLibrary.ids().duplicate()
