@@ -17,6 +17,7 @@ static var _textures: Dictionary[StringName, Texture2D] = {}
 @onready var _hitbox: HitboxComponent = $Hitbox
 @onready var _anim: FrameAnimatorComponent = $FrameAnimator
 
+var _sep_radius: float = 6.0   # радиус мягкого расталкивания (по ширине спрайта)
 var _squash_tween: Tween = null
 var _target: Node2D = null
 var _speed: float = 0.0
@@ -123,7 +124,7 @@ func _physics_process(delta: float) -> void:
 	else:
 		velocity = global_position.direction_to(_target.global_position) * _speed * speed_mult * (_slow_factor if _slow_left > 0.0 else 1.0) + extra_velocity
 	_knockback = _knockback.move_toward(Vector2.ZERO, Balance.KNOCKBACK_DECAY * delta)
-	velocity += _knockback
+	velocity += _knockback + _separation()
 	if velocity.x != 0.0:
 		_sprite.flip_h = velocity.x < 0.0
 	move_and_slide()
@@ -133,6 +134,45 @@ func _physics_process(delta: float) -> void:
 		_sprite.position.y = -absf(sin(_bounce_t)) * 4.0
 	elif _sprite.position.y != 0.0:
 		_sprite.position.y = 0.0
+
+
+## Мягкое расталкивание врагов между собой (как в Brotato): твёрдых столкновений нет - толпа не встаёт пробкой,
+## но и не сливается в кашу: налезшие соседи плавно разъезжаются. Соседи ищутся по сетке (220 врагов - дёшево).
+static var _sep_grid: Dictionary = {}
+static var _sep_frame: int = -1
+
+
+static func _sep_cell(p: Vector2) -> Vector2i:
+	return Vector2i(floori(p.x / Balance.SEPARATION_CELL), floori(p.y / Balance.SEPARATION_CELL))
+
+
+func _separation() -> Vector2:
+	var frame: int = Engine.get_physics_frames()
+	if frame != _sep_frame:   # первый враг в кадре строит сетку
+		_sep_frame = frame
+		_sep_grid.clear()
+		for node: Node in get_tree().get_nodes_in_group(&"enemies"):
+			var e: EnemyBase = node as EnemyBase
+			if e != null and not e._dead:
+				var c: Vector2i = _sep_cell(e.global_position)
+				if not _sep_grid.has(c):
+					_sep_grid[c] = []
+				(_sep_grid[c] as Array).append(e)
+	var push: Vector2 = Vector2.ZERO
+	var me: Vector2i = _sep_cell(global_position)
+	for dx: int in range(-1, 2):
+		for dy: int in range(-1, 2):
+			for other: EnemyBase in _sep_grid.get(me + Vector2i(dx, dy), []):
+				if other == self:
+					continue
+				var off: Vector2 = global_position - other.global_position
+				var reach: float = _sep_radius + other._sep_radius
+				var d2: float = off.length_squared()
+				if d2 < reach * reach:
+					var d: float = sqrt(d2)
+					var away: Vector2 = off / d if d > 0.01 else Vector2.from_angle(randf() * TAU)
+					push += away * (1.0 - d / reach)
+	return push * Balance.SEPARATION_SPEED
 
 
 ## Мягкое расталкивание: враг не заходит внутрь игрока, а отъезжает — через толпу можно проломиться.
@@ -266,7 +306,8 @@ func _apply_size(radius: float, body_radius: float = -1.0, frame_w: float = 0.0)
 		hit_shape.shape = hit_shape.shape.duplicate()
 		_shapes_ready = true
 	var k: float = radius / BASE_RADIUS
-	(body.shape as CircleShape2D).radius = body_radius if body_radius > 0.0 else radius
+	_sep_radius = body_radius if body_radius > 0.0 else radius
+	(body.shape as CircleShape2D).radius = radius   # твёрдое тело маленькое (стены); друг от друга - мягкое расталкивание по _sep_radius
 	(hurt_shape.shape as RectangleShape2D).size = Vector2.ONE * maxf(14.0 * k, frame_w * 0.6)
 	(hit_shape.shape as RectangleShape2D).size = Vector2(12.0, 12.0) * k
 

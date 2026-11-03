@@ -42,6 +42,7 @@ var seed_word: String = ""
 var mode: StringName = &""
 var duel_scores: Array = []                  # Н31: итоги раундов битвы героев [{hero, kills, wave, alive}]                   # режим из меню РЕЖИМЫ: endless (Н32), closed (Н33), "" - обычный
 var death_position: Vector2 = Vector2.ZERO   # Н30: где сдох герой (граффити ставится на это место)
+var last_tickets: Array[Dictionary] = []   # Н12: итог каждого стёртого билета {kind: empty/coins/item/jackpot, coins, item} - для стирания в Ларьке
 var last_event_note: String = ""     # что случилось на событии между волнами - Ларёк покажет строкой
 var lottery_tickets: int = 0          # Н12: куплено билетов, сотрутся в следующем Ларьке
 var card_spent: int = 0               # Н13: говно, потраченное в Ларьке (идёт в штампы карты «Помойка+»)
@@ -634,21 +635,29 @@ func scratch_tickets() -> String:
 	var won_coins: int = 0
 	var won_items: Array[String] = []
 	var jackpot: bool = false
+	last_tickets.clear()
 	for i: int in lottery_tickets:
 		var r: float = randf()
 		var odds: Array[float] = Balance.TICKET_ODDS
 		if r < odds[0]:
+			last_tickets.append({"kind": &"empty"})
 			continue
 		elif r < odds[0] + odds[1]:
-			won_coins += randi_range(Balance.TICKET_SMALL.x, Balance.TICKET_SMALL.y)
+			var small: int = randi_range(Balance.TICKET_SMALL.x, Balance.TICKET_SMALL.y)
+			won_coins += small
+			last_tickets.append({"kind": &"coins", "coins": small})
 		elif r < odds[0] + odds[1] + odds[2]:
 			var item: StringName = ItemLibrary.roll_free_item(wave)
 			if item != &"":
 				add_item(item)
 				won_items.append(ItemLibrary.title(item))
+				last_tickets.append({"kind": &"item", "item": item})
+			else:
+				last_tickets.append({"kind": &"empty"})
 		else:
 			won_coins += Balance.TICKET_JACKPOT
 			jackpot = true
+			last_tickets.append({"kind": &"jackpot", "coins": Balance.TICKET_JACKPOT})
 	Profile.stat_add(&"tickets", lottery_tickets)
 	if Profile.stat(&"tickets") >= 50:
 		Achievements.unlock(&"tickets_50")

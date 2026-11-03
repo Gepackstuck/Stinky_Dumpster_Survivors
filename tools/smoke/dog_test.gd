@@ -63,6 +63,7 @@ func _run() -> void:
 	kennel.call("_save_name")
 	await get_tree().process_frame
 	Profile.bones = 50
+	Profile.dog_level = 1   # не зависеть от живого профиля игрока
 	Profile.dog_wardrobe = ["cloak", "bow"]
 	Profile.dog_wear = "cloak"
 	yard.call("_toggle_kennel")

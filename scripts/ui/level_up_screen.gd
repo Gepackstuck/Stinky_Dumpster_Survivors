@@ -287,6 +287,13 @@ func _on_wave_ended(_wave: int) -> void:
 	if card_fired:
 		ShopLibrary.reprice(GameState.shop_offers, GameState.wave + 1)
 	var lottery: String = GameState.scratch_tickets()
+	if not GameState.last_tickets.is_empty():   # Н12: билеты стираются по-настоящему, по одному
+		get_tree().paused = true
+		var sp: ScratchPanel = ScratchPanel.new()
+		_root.get_parent().add_child(sp)
+		sp.setup(GameState.last_tickets)
+		await sp.done
+		lottery = ""   # итог уже видели на билетах
 	_show_choices()
 	var notes: PackedStringArray = []   # итоги события, лотереи и карты - одной строкой и подольше, чтобы успеть прочитать
 	if GameState.last_event_note != "":

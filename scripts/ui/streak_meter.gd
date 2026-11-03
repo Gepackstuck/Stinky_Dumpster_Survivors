@@ -16,8 +16,8 @@ func _ready() -> void:
 func _on_streak(tier: int, bonus: float, _broken: bool) -> void:
 	visible = tier > 0
 	if tier > 0:
-		text = "БЕЗ ЦАРАПИН +%d%%" % roundi(bonus * 100.0)
+		text = tr("БЕЗ ЦАРАПИН: +%d%% ГОВНА") % roundi(bonus * 100.0)   # под полосками слева - не на таймере волны
 		add_theme_color_override(&"font_color", COLORS[mini(tier, COLORS.size()) - 1])
-		pivot_offset = size * 0.5
+		pivot_offset = Vector2(0.0, size.y * 0.5)
 		scale = Vector2.ONE * 1.4
 		create_tween().tween_property(self, "scale", Vector2.ONE, 0.25)

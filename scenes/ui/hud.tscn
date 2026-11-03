@@ -147,10 +147,10 @@ offset_bottom = 16.0
 
 [node name="StreakMeter" type="Label" parent="Root"]
 layout_mode = 0
-offset_left = 186.0
-offset_top = 5.0
-offset_right = 300.0
-offset_bottom = 15.0
+offset_left = 4.0
+offset_top = 32.0
+offset_right = 150.0
+offset_bottom = 42.0
 script = ExtResource("13_streak")
 
 [node name="WaveModBadge" type="HBoxContainer" parent="Root"]

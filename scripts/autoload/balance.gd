@@ -31,9 +31,9 @@ const WAVE_DURATION_FIRST_SEC: float = 20.0
 const WAVE_DURATION_STEP_SEC: float = 4.0
 const WAVE_DURATION_MAX_SEC: float = 70.0
 const WAVE_DURATION_FINAL_SEC: float = 120.0      # последняя волна (боссы)
-const WAVE_ENEMIES_BASE: int = 24   # врагов за 1-ю волну (баланс по Brotato: старт спокойный)
-const WAVE_ENEMIES_PER_WAVE: int = 16   # + столько за каждую следующую (к 15-й волне ~136)
-const MAX_ALIVE_ENEMIES: int = 220                    # потолок врагов на карте — как в Brotato
+const WAVE_ENEMIES_BASE: int = 30   # врагов за 1-ю волну (баланс по Brotato: старт спокойный)
+const WAVE_ENEMIES_PER_WAVE: int = 20   # + столько за каждую следующую (к 15-й волне ~136)
+const MAX_ALIVE_ENEMIES: int = 260                    # потолок врагов на карте — как в Brotato
 const WAVE_MIN_GROUPS: int = 3                       # минимум групп за волну
 const WAVE_GROUP_SIZE_BASE: int = 3               # размер группы = BASE + (волна-1)/STEP (±1, +1)
 const WAVE_GROUP_SIZE_WAVES_PER_STEP: int = 3
@@ -61,19 +61,19 @@ const ENEMY_HP_MULT: float = 0.45                 # общий множител�
 # Поздние волны растут быстрее (как в Brotato: к 10-й волне экран уже забит, к 15-й это настоящая орда).
 const WAVE_LATE_START: int = 7
 const WAVE_ENEMIES_LATE: float = 5.0        # + это * (волна - LATE_START)^2 врагов за волну
-const WAVE_HP_QUAD: float = 1.4           # + это * (волна-1)^2 к множителю HP
+const WAVE_HP_QUAD: float = 1.0           # + это * (волна-1)^2 к множителю HP
 const WAVE_DAMAGE_QUAD: float = 0.1       # + это * (волна-1)^2 к множителю урона
-const BOSS_HP_MULT: float = 1.6                   # боссы последней волны крепче обычного роста
-const ELITE_HP_MULT: float = 3.0
+const BOSS_HP_MULT: float = 1.3                   # боссы последней волны крепче обычного роста
+const ELITE_HP_MULT: float = 2.0
 const WAVE_HP_GROWTH: float = 0.55  # рост HP врагов за волну
 const PLAYER_MAX_HIT_FRACTION: float = 0.34   # один удар не снимает больше трети максимума HP (нет ваншотов)
 const WAVE_DAMAGE_GROWTH: float = 0.32  # рост урона врагов за волну
 const WAVE_SPEED_GROWTH: float = 0.03        # +3% скорости за волну
 const WAVE_SPEED_MAX_MULT: float = 1.35
 const GROUND_BODY_LAYER: int = 2                 # тела наземных врагов толкаются друг с другом и со стеной
-const GROUND_BODY_MASK: int = 34
+const GROUND_BODY_MASK: int = 32   # только стена: друг друга враги мягко расталкивают (жёсткие тела вставали пробкой)
 const FLYER_BODY_LAYER: int = 64                 # летающие: свой слой, сталкиваются только со стеной (бит 6)
-const FLYER_BODY_MASK: int = 96   # стена + другие летуны: мухи не слипаются в одну кучу
+const FLYER_BODY_MASK: int = 32
 const ENEMY_DAMAGE_MULT: float = 1.0   # общий множитель урона врагов по игроку
 const WAVE_ENEMY_UNLOCK: Dictionary = {     # с какой волны тип может выпасть (15 волн)
 	&"squid_gopnik": 1, &"chaser": 3, &"microbe": 3, &"charger": 3, &"npc_bot": 3, &"spitter": 3,
@@ -82,7 +82,7 @@ const WAVE_ENEMY_UNLOCK: Dictionary = {     # с какой волны тип м
 	&"blinker": 7, &"shield_bearer": 8, &"mirror": 10,
 }
 const WAVE_ENEMY_WEIGHTS: Dictionary = {    # вес в взвешенном рандоме
-	&"squid_gopnik": 10, &"chaser": 8, &"microbe": 5, &"charger": 7, &"npc_bot": 4, &"spitter": 8,
+	&"squid_gopnik": 14, &"chaser": 10, &"microbe": 7, &"charger": 8, &"npc_bot": 6, &"spitter": 8,   # ближников больше (плейтест)
 	&"looter": 1, &"cockroach": 4, &"bruiser": 4, &"wifi_ghost": 3,
 	&"healer": 3, &"glutton": 3, &"egg": 2, &"mamka": 2,
 	&"blinker": 3, &"shield_bearer": 3, &"mirror": 2,
@@ -382,8 +382,8 @@ const STASH_OPEN_SEC: float = 2.0
 const STASH_RADIUS: float = 20.0
 const STASH_COINS: int = 25                 # если предмета не выпало: + это x номер волны / 3
 # --- Пол пачкается: пятна не исчезают полностью
-const SPLAT_KEEP_ALPHA: float = 0.35
-const SPLAT_KEEP_MAX: int = 140
+const SPLAT_KEEP_ALPHA: float = 0.16   # (было 0.35 - к поздним волнам пол пестрел и спорил с врагами)
+const SPLAT_KEEP_MAX: int = 70
 # --- Комментатор-бомж
 const COMMENT_GAP_SEC: float = 12.0
 const COMMENT_SHOW_SEC: float = 2.6
@@ -463,7 +463,7 @@ const KNOCKBACK_DECAY: float = 600.0         # px/с² — как быстро �
 const SHAKE_EXPLOSION: float = 2.5
 const SHAKE_BOSS_SLAM: float = 5.0
 const SHAKE_LIGHTNING: float = 3.0
-const SPLAT_MAX: int = 45                     # пятен от смертей на полу одновременно (больше - каша)
+const SPLAT_MAX: int = 30                     # пятен от смертей на полу одновременно (больше - каша)
 const SPLAT_FADE_SEC: float = 8.0
 const PLAYER_HIT_SHAKE: float = 4.0          # px — тряска камеры при уроне по игроку
 const SHAKE_DECAY: float = 28.0              # px/с — затухание тряски
@@ -475,8 +475,10 @@ const WIRE_SHOCK_DAMAGE: float = 5.0     # удар током/огнём от �
 const ENEMY_PLAYER_MIN_DISTANCE: float = 10.0  # ближе враг не подходит — игрок его расталкивает
 const BOSS_VISUAL_SCALE: float = 0.9        # боссы и элиты чуть мельче, но остаются крупными
 const ENEMY_VISUAL_SCALE: float = 0.8      # враги мельче (плейтест: меньше, но больше; читаемость)
+const SEPARATION_CELL: float = 24.0        # клетка сетки поиска соседей
+const SEPARATION_SPEED: float = 130.0       # скорость разъезда налезших врагов (px/с при полном наложении)
 const ENEMY_BODY_FILL: float = 0.36        # тело врага = такая доля ширины кадра: соседи не залезают друг в друга
-const GROUND_DECAL_AREA_PX2: float = 9000.0  # одна декаль пола на столько px² арены
+const GROUND_DECAL_AREA_PX2: float = 16000.0  # одна декаль пола на столько px² арены
 const CAMERA_ZOOM: float = 0.8  # камера дальше (видно больше арены). Рендер в полном разрешении экрана (stretch canvas_items) - дробный зум не рвёт пиксели
 
 # --- Предметы (рюкзак Ларька): плюсы/минусы к статам + особые эффекты ---
@@ -708,7 +710,7 @@ const WEAPON_PRICE: Dictionary = {&"lighter": 22, &"sock": 24, &"slingshot": 22,
 const PERK_PRICE: Dictionary = {&"speed": 14, &"regen": 16, &"double_shot": 30, &"loot_goblin": 12}
 const SHOP_SLOTS: int = 4
 const SHOP_PRICE_TIER_MULT: Array[float] = [1.0, 1.8, 3.0, 5.0, 8.0]
-const COIN_PER_XP: float = 0.55  # (плейтест 2: на 0.5 и толстых врагах к 5-й волне 1 предмет)  сколько говна даёт 1 XP (было 1.3 -> 0.6 -> 0.5: к 15-й волне копилось 8000 - скупал всё)
+const COIN_PER_XP: float = 0.5   # (плейтест 2: на 0.5 и толстых врагах к 5-й волне 1 предмет)  сколько говна даёт 1 XP (было 1.3 -> 0.6 -> 0.5: к 15-й волне копилось 8000 - скупал всё)
 const SHOP_PRICE_WAVE_QUAD: float = 0.008     # + это * волна^2: поздно доход 800+/волну (плейтест 4) - цены догоняют
 const SHOP_PRICE_WAVE_GROWTH: float = 0.12   # (плейтест 3: при 0.25 рогатка II на 4-й волне стоила 88 при доходе ~45 за волну)          # цена *(1 + это * волна)
 const SHOP_WEAPON_CHANCE: float = 0.45              # шанс, что слот — оружие (предмет — SHOP_ITEM_CHANCE, иначе перк)

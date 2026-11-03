@@ -26,6 +26,33 @@ def small():
     return c.finish(BROWN, WHITE)
 
 
+def ticket_big():
+    """Большой билет для стирания в Ларьке 128x64: бумага, красная шапка (надпись кладёт игра), окно под слоем, корешок."""
+    c = Canvas(128, 64)
+    c.rect(2, 2, 125, 61, PAPER, dither=(225, 215, 170))
+    for x in range(2, 126, 4): c.px(x, 2, (200, 190, 150)); c.px(x + 2, 61, (200, 190, 150))   # рваный край
+    c.rect(4, 4, 123, 15, RED, dither=(200, 0, 40))                       # шапка «ГОВНОЛОТО»
+    for x in range(8, 120, 12): c.pts([(x, 5), (x + 1, 6)], YELLOW)
+    c.rect(18, 22, 109, 53, (255, 250, 225))                              # окно с призом (под слоем)
+    c.line(18, 21, 109, 21, BROWN); c.line(18, 54, 109, 54, BROWN); c.line(17, 22, 17, 53, BROWN); c.line(110, 22, 110, 53, BROWN)
+    for y in range(20, 58, 4): c.px(116, y, BROWN); c.px(10, y, BROWN)    # перфорация корешков
+    c.ell(122, 56, 2, 2, BROWN); c.px(121, 54, (90, 50, 20))              # пятно от говна
+    return c.finish(BROWN, WHITE, lim=0.3)
+
+
+def ticket_foil():
+    """Защитный слой 92x32: серебро с дизерингом и блёстками - стирается в игре."""
+    c = Canvas(92, 32)
+    c.rect(0, 0, 91, 31, (175, 178, 190), dither=(140, 142, 155))
+    import random
+    rnd = random.Random(3)
+    for _ in range(40): c.px(rnd.randrange(92), rnd.randrange(32), WHITE)
+    for x in range(6, 90, 14): c.pts([(x, 15), (x + 1, 14), (x + 2, 15), (x + 1, 16)], (110, 110, 125))   # «?» узор
+    return c.a
+
+
+Image.fromarray(ticket_big()).save("assets/ui/ticket_big.png")
+Image.fromarray(ticket_foil()).save("assets/ui/ticket_foil.png")
 Image.fromarray(big()).save("assets/ui/item_lottery_ticket.png")
 Image.fromarray(small()).save("assets/ui/item_lottery_ticket_s.png")
 p = Image.new("RGBA", (56, 34), (40, 30, 30, 255))

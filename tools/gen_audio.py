@@ -519,6 +519,76 @@ def boss():
     s.render("boss", sc=0.4, rev_sec=2.8, rms=0.14, wow=0.001)
 
 
+def battle_d():
+    """Псалом мусорщика: 110 bpm, F минор (Fm - Db - Bbm - C), шаффл-хэты, высокие колокола, органные удары на слабую долю, хор."""
+    s = Song(110, 16, swing=0.25)
+    prog = [(41, [56, 60, 65]), (37, [56, 61, 65]), (46, [58, 61, 65]), (48, [55, 60, 64])]
+    bells = [(0, 80), (4, 77), (8, 75), (12, 72)]
+    for bar in range(16):
+        root, ch = prog[bar % 4]; sec = bar // 8
+        hymn_drums(s, bar, kick_at=(0, 7, 10), snare_at=(4, 12))
+        s.add(ebass(midi(root - 12), 3 * s.sd, 0.9, 0.6), s.t(bar, 0), 0, 0.45 * BASS_G, 0.03, 0, True)
+        s.add(ebass(midi(root - 12 + 7), 2 * s.sd, 0.7, 0.6), s.t(bar, 7), 0, 0.4 * BASS_G, 0.03, 0, True)
+        s.add(ebass(midi(root - 12 + 12), 2 * s.sd, 0.7, 0.6), s.t(bar, 10), 0, 0.4 * BASS_G, 0.03, 0, True)
+        for st in (2, 6, 10, 14): s.chord(s.t(bar, st), ch, 1.5 * s.sd, 0.6, organ, 0.04, 0.35, 0.5, True)
+        if bar % 2 == 0: s.chord(s.t(bar, 0), [n + 12 for n in ch], 32 * s.sd, 0.6, choir, 0.065, 0.6, 0.6, True)
+        if sec == 1:
+            for st, m in bells: s.add(tbell(midi(m + (root - 41) % 12 * 0), 1.0, 0.45), s.t(bar, st), 0.35 if st % 8 else -0.35, 0.06, 0.5, 0.2)
+    s.render("battle_d", sc=0.3, rev_sec=2.8, rms=0.125, wow=0.002, extra=np.vstack([crackle(s.n, 3)] * 2))
+
+
+def battle_e():
+    """Чёрная месса: 128 bpm, E фригийский (Em - F - Em - D), гонящий бас восьмыми, хор «а», колокол раз в два такта, томы, шкатулка."""
+    s = Song(128, 16)
+    prog = [(40, [52, 55, 59]), (41, [53, 57, 60]), (40, [52, 55, 59]), (38, [54, 57, 62])]
+    box = [(0, 76, 2), (2, 77, 2), (4, 79, 2), (6, 77, 2), (8, 76, 4), (12, 74, 4), (16, 76, 2), (18, 77, 2), (20, 81, 4), (24, 79, 8)]
+    for bar in range(16):
+        root, ch = prog[bar % 4]; sec = bar // 8
+        if bar % 2 == 0: s.add(tbell(midi(40), 3.0, 1.0), s.t(bar, 0), 0, 0.12, 0.6)
+        hymn_drums(s, bar, kick_at=(0, 4, 8, 12), snare_at=(4, 12), kick_g=0.85)
+        if bar % 4 == 3:
+            for k, st in enumerate((10, 12, 14)): s.drum(tom(150 - 25 * k), s.t(bar, st), 0.33, -0.3 + 0.3 * k, 0.2)
+        for st in range(0, 16, 2):
+            s.add(gritty_bass(midi(root - 12 + (12 if st % 4 == 2 else 0)), 1.7 * s.sd, 0.8), s.t(bar, st), 0, 0.38 * BASS_G, 0.02, 0, True)
+        s.chord(s.t(bar, 0), [n + 12 for n in ch], 16 * s.sd, 0.8, lambda f, d, v: choir(f, d, v, "a"), 0.08, 0.55, 0.6, True)
+        if sec == 1 and bar % 2 == 0:
+            for st, m, ln in box: s.add(musicbox(midi(m) * 0.995, 0.6, 0.7), s.t(bar, st), 0.3, 0.12 * LEAD_G, 0.5, 0.3)
+    s.render("battle_e", sc=0.4, rev_sec=2.6, rms=0.135, wow=0.0015)
+
+
+def shop_b():
+    """Ларёк-шкатулка: 3/4, 132 bpm, D минор. Заводная шкатулка, орган «умпа-па», колокольчик, скрип."""
+    s = Song(132, 16, steps=12)
+    prog = [(38, [57, 62, 65]), (45, [57, 61, 64]), (38, [57, 62, 65]), (43, [55, 58, 62])]
+    mel = [(0, 74, 4), (4, 77, 2), (6, 76, 2), (8, 74, 4), (12, 73, 6), (18, 69, 6), (24, 70, 4), (28, 74, 2), (30, 73, 2), (32, 74, 4), (36, 69, 6), (42, 62, 6)]
+    for bar in range(16):
+        root, ch = prog[bar % 4]
+        s.add(tuba(midi(root - 12), 3 * s.sd, 0.8), s.t(bar, 0), 0, 0.28, 0.1)
+        s.drum(kick(0.6), s.t(bar, 0), 0.5, is_kick=True)
+        for st in (4, 8): s.chord(s.t(bar, st), ch, 2.5 * s.sd, 0.55, organ, 0.04, 0.35, 0.5)
+        if bar % 4 == 0:
+            for st, m, ln in mel: s.add(musicbox(midi(m + 12) * 0.993, 0.6, 0.75), s.t(bar, st), -0.2, 0.13 * LEAD_G, 0.45, 0.25)
+        if bar % 4 == 2: s.add(tbell(midi(74), 1.2, 0.4), s.t(bar, 6), 0.4, 0.05, 0.5)
+    s.render("shop_b", sc=0.0, rev_sec=2.6, rms=0.11, wow=0.004, extra=np.vstack([crackle(s.n, 5)] * 2))
+
+
+def shop_c():
+    """Ларёк в склепе: 80 bpm, C минор. Тихий хор, редкий колокол, щелчки рима, капли, шкатулка вразвалку."""
+    s = Song(80, 12, swing=0.3)
+    prog = [(36, [55, 60, 63]), (32, [56, 60, 63]), (34, [55, 58, 62]), (31, [55, 59, 62])]
+    for bar in range(12):
+        root, ch = prog[bar % 4]
+        s.drum(kick(0.6), s.t(bar, 0), 0.5, is_kick=True); s.drum(kick(0.4), s.t(bar, 10), 0.45, is_kick=True)
+        for st in (4, 12): s.drum(rim(0.6), s.t(bar, st), 0.14, 0.3, 0.2)
+        for st in range(0, 16, 4): s.drum(hat(vel=0.4), s.t(bar, st + 2), 0.15, 0.25)
+        s.add(ebass(midi(root - 12), 12 * s.sd, 0.8, 0.3), s.t(bar, 0), 0, 0.4 * BASS_G, 0.03)
+        s.chord(s.t(bar, 0), [n + 12 for n in ch], 16 * s.sd, 0.5, choir, 0.06, 0.6, 0.6)
+        for i, st in enumerate((0, 6, 10)): s.add(musicbox(midi(ch[(i + bar) % 3] + 12) * 0.995, 0.7, 0.5), s.t(bar, st), 0.35 if i % 2 else -0.35, 0.11, 0.5, 0.3)
+        if bar % 3 == 0: s.add(tbell(midi(48), 2.2, 0.6), s.t(bar, 8), -0.3, 0.08, 0.6)
+        if bar % 2 == 1: s.drum(drip(0.7), s.t(bar, 13), 0.1, R.uniform(-0.6, 0.6), 0.5)
+    s.render("shop_c", sc=0.0, rev_sec=3.0, rms=0.1, wow=0.003, extra=np.vstack([crackle(s.n, 4)] * 2))
+
+
 def shop():
     """Злобный ларёк: зловещий ярмарочный вальс 3/4, 160 bpm, A минор. Туба «умпа», расстроенный аккордеон, дудка, хрипы."""
     s = Song(160, 24, steps=12)
@@ -601,6 +671,12 @@ def hymn_sfx():
     H["roulette_win"] = stack([(i * 0.09, tbell(midi(m), 0.8 if i < 5 else 1.4, 0.7)) for i, m in enumerate(DM[:6])], 1.8)
     H["streak_break"] = stack([(0, tbell(midi(65), 0.4, 0.8)), (0.1, tbell(midi(61), 0.6, 0.8))], 0.8)   # минус серия: колокол съезжает вниз
     H["level_up"] = H["level_up"] / (np.max(np.abs(H["level_up"])) + 1e-9)
+    coin = lambda: filt(noise(N(0.08)), lo=4000, hi=7000) * np.exp(-T(N(0.08)) / 0.02) * 0.2
+    H["buy_2"] = stack([(0, tbell(midi(62), 0.5, 0.8)), (0.06, tbell(midi(69), 0.6, 0.7)), (0.12, musicbox(midi(86), 0.3, 0.6)), (0, coin())], 0.9)
+    H["buy_3"] = stack([(0, 0.6 * choir(midi(74), 0.35, 0.9, "a")), (0, tbell(midi(77), 0.6, 0.6)), (0.04, coin())], 0.9)       # «а-а» хора и колокол
+    H["buy_4"] = stack([(i * 0.05, musicbox(midi(m), 0.25, 0.7)) for i, m in enumerate((74, 77, 81))] + [(0, coin())], 0.8)     # шкатулка вверх
+    H["buy_5"] = stack([(0, squelch(0.9) * 0.6), (0.05, tbell(midi(65), 0.5, 0.7)), (0.1, tbell(midi(74), 0.6, 0.7)), (0.02, coin())], 0.9)   # хлюп в кассу и звон
+    H["buy_6"] = stack([(0, organ(midi(62), 0.18, 0.8) * 0.5), (0.0, organ(midi(69), 0.18, 0.7) * 0.4), (0.12, tbell(midi(81), 0.6, 0.6)), (0.1, coin())], 0.9)   # органный аккорд
     return H
 
 
@@ -702,6 +778,8 @@ def sfx():
     for i, m in enumerate((67, 72, 76, 79, 84, 88)): x = bell(midi(m), 0.5 if i < 5 else 1.0); s0 = N(i * 0.08); rw[s0:s0 + len(x)] += x[:len(rw) - s0]
     S["roulette_win"] = room(rw, 1.0, 0.3)
     n = N(0.22); t = T(n); S["streak_break"] = np.sin(phase(sweep(720, 240, n, 0.07), n)) * np.exp(-t / 0.08)
+    n = N(0.12); t = T(n)   # скребок монеткой по серебру лотерейного билета
+    S["scratch"] = filt(noise(n), lo=2500, hi=7000) * (0.5 + 0.5 * (np.sin(TAU * 55 * t) > 0)) * np.sin(np.pi * t / t[-1]) * 0.8
     S.update(hymn_sfx())   # музыкальные звуки - в тоне кладбищенского хорала меню
     S = {k: graveyard(v, k) for k, v in S.items()}
     os.makedirs(OUT_SFX, exist_ok=True)
@@ -715,5 +793,5 @@ def sfx():
 if __name__ == "__main__":
     names = sfx(); print("sfx:", len(names))
     os.makedirs(OUT_MUS, exist_ok=True)
-    for fn in (battle_a, battle_b, battle_c, boss, shop, menu):
+    for fn in (battle_a, battle_b, battle_c, battle_d, battle_e, boss, shop, shop_b, shop_c, menu):
         fn()

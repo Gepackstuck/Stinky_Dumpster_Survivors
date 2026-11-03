@@ -15,7 +15,8 @@ const VOLUME_DB: Dictionary = {&"pickup": -13.0, &"hit": -15.0, &"hit_crit": -12
 		&"ui_move": -10.0, &"ui_select": -8.0, &"warn": -8.0, &"player_hurt": -5.0, &"explosion": -6.0, &"truck_horn": -8.0, &"wave_horn": -4.0,
 		&"weapon": -12.0, &"w_mosin": -5.0, &"w_pipe_gun": -8.0, &"w_frying_pan": -9.0, &"w_shovel": -9.0, &"w_spray_can": -16.0, &"w_blowtorch": -16.0, &"w_laser_pointer": -17.0}
 const MUSIC_FADE_SEC: float = 0.8
-const BATTLE_TRACKS: Array[StringName] = [&"battle_a", &"battle_b", &"battle_c"]
+const BATTLE_TRACKS: Array[StringName] = [&"battle_a", &"battle_b", &"battle_c", &"battle_d", &"battle_e"]
+const SHOP_TRACKS: Array[StringName] = [&"shop", &"shop_b", &"shop_c"]   # Ларёк: случайный, не тот же подряд
 const PICKUP_SCALE: Array[int] = [-12, -9, -7, -5, -2, 0, 3, 5, 7]   # подбор подряд - вверх по минорной пентатонике (тон меню), как в Brotato
 const PICKUP_CHAIN_SEC: float = 0.45
 
@@ -53,7 +54,7 @@ func _ready() -> void:
 	EventBus.wave_started.connect(func(_w: int) -> void:
 		play_sfx(&"wave_horn")
 		play_music(battle_track()))
-	EventBus.wave_ended.connect(func(_w: int) -> void: play_music(&"shop"))
+	EventBus.wave_ended.connect(func(_w: int) -> void: play_music(_shop_track()))
 	EventBus.boss_spawned.connect(func(id: StringName) -> void: play_sfx_or(StringName("r_" + String(id)), &"boss_roar", 0.0))
 	EventBus.dash_used.connect(func(_at: Vector2) -> void: play_sfx(&"dash"))
 	EventBus.player_died.connect(func() -> void:
@@ -79,6 +80,15 @@ func battle_track() -> StringName:
 	if GameState.wave_kind in [&"boss", &"elite"] or GameState.wave == Balance.WAVE_COUNT:
 		return &"boss"
 	return BATTLE_TRACKS[maxi(GameState.wave - 1, 0) % BATTLE_TRACKS.size()]
+
+
+var _last_shop: StringName = &""
+
+
+func _shop_track() -> StringName:
+	var pool: Array = SHOP_TRACKS.filter(func(t: StringName) -> bool: return t != _last_shop)
+	_last_shop = pool[randi() % pool.size()]
+	return _last_shop
 
 
 func _play_pickup() -> void:

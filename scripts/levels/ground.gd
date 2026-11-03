@@ -4,7 +4,7 @@ extends Sprite2D
 
 const DECALS: Texture2D = preload("res://assets/sprites/ground_decals.png")
 const CELL: float = 24.0
-const DECAL_ALPHA: float = 0.62
+const DECAL_ALPHA: float = 0.4   # спокойный пол: враги и пикапы читаются (как в Brotato)
 const DECAL_TINT: Color = Color(0.92, 0.72, 0.78)  # приглушает зелёное: декали не должны путаться с опытом
 
 
