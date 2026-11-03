@@ -333,6 +333,7 @@ const DASH_FX_RADIUS: float = 40.0
 const DASH_FX_SLOW: float = 0.4          # множитель скорости врага
 const DASH_FX_SLOW_SEC: float = 2.0
 const DASH_FX_KNOCK: float = 300.0
+const DASH_RAM_MULT: float = 2.0       # таран Жоры бьёт вдвое сильнее обычного рывка
 const DASH_FX_DAMAGE: float = 12.0       # урон рывка по пути (растёт с уроном героя)
 const DASH_FX_HEAL: float = 1.0
 const DASH_DRUNK_DEG: float = 30.0
@@ -361,7 +362,7 @@ const HERO_DASH: Dictionary = {
 	&"dacha": {"name": "ГРЯДКА ЛЕЧИТ", "dist": 26.0, "old": true, "fart": 0.3, "cd": 2.2, "fx": &"heal"},
 	&"skater": {"name": "ОЛЛИ", "dist": 100.0, "sec": 0.2, "cd": 1.6, "charges": 2},
 	&"slime": {"name": "ПОЛЗОК", "dist": 60.0, "cd": 1.5, "fx": &"trail"},
-	&"gopnik_jock": {"name": "ТАРАН", "dist": 70.0, "cd": 1.6, "fx": &"knock"},
+	&"gopnik_jock": {"name": "ТАРАН", "dist": 70.0, "cd": 1.4, "fx": &"ram"},
 	&"cat": {"name": "ПРЫЖОК С БАКА", "dist": 90.0, "sec": 0.25, "cd": 1.0, "charges": 2, "fx": &"fly"},
 }
 
@@ -1033,10 +1034,10 @@ const CHARACTER_ORDER: Array[StringName] = [&"hobo", &"squid", &"clerk", &"janit
 const CHARACTERS: Dictionary = {
 	&"hobo": {"weapon": &"", "mods": {&"max_hp": 4.0, &"pickup": 15.0}, "fx": {&"stash": 30.0}, "unlock": &"open", "need": 0, "tint": Color(1.0, 1.0, 1.0), "hat": &"ushanka"},
 	&"squid": {"weapon": &"mop", "mods": {&"damage": 15.0, &"speed": 8.0, &"max_hp": -3.0}, "fx": {&"ink": 12.0}, "unlock": &"open", "need": 0, "tint": Color(0.65, 0.85, 1.0), "hat": &"cigarette"},
-	&"clerk": {"weapon": &"slingshot", "mods": {&"crit": 8.0, &"attack_speed": 12.0, &"max_hp": -2.0}, "fx": {&"salary": 3.0}, "unlock": &"open", "need": 0, "tint": Color(0.85, 0.85, 1.0), "hat": &"dirty_glasses"},
-	&"janitor": {"weapon": &"sock", "mods": {&"armor": 3.0, &"max_hp": 6.0, &"damage": 6.0, &"pickup": 20.0}, "fx": {&"clean_heal": 25.0}, "unlock": &"kills", "need": 300, "tint": Color(1.0, 0.85, 0.6), "hat": &"helmet"},
+	&"clerk": {"weapon": &"slingshot", "mods": {&"crit": 7.0, &"attack_speed": 10.0, &"max_hp": -3.0}, "fx": {&"salary": 3.0}, "unlock": &"open", "need": 0, "tint": Color(0.85, 0.85, 1.0), "hat": &"dirty_glasses"},
+	&"janitor": {"weapon": &"sock", "mods": {&"armor": 3.0, &"max_hp": 6.0, &"damage": 3.0, &"pickup": 20.0}, "fx": {&"clean_heal": 25.0}, "unlock": &"kills", "need": 300, "tint": Color(1.0, 0.85, 0.6), "hat": &"helmet"},
 	&"uncle_vitya": {"weapon": &"lighter", "mods": {&"dodge": 9.0, &"damage": -8.0}, "fx": {&"drunk": 25.0, &"burn": 20.0}, "unlock": &"deaths", "need": 1, "tint": Color(1.0, 0.7, 0.7), "hat": &"vodka"},
-	&"blogger": {"weapon": &"laser_pointer", "mods": {&"damage": -12.0, &"crit": 8.0}, "fx": {&"hype": 50.0, &"coin_bonus": 40.0}, "unlock": &"coins", "need": 600, "tint": Color(0.8, 1.0, 0.8), "hat": &"gold_tooth"},
+	&"blogger": {"weapon": &"laser_pointer", "mods": {&"damage": -12.0, &"crit": 6.0}, "fx": {&"hype": 50.0, &"coin_bonus": 40.0}, "unlock": &"coins", "need": 600, "tint": Color(0.8, 1.0, 0.8), "hat": &"gold_tooth"},
 	&"granny": {"weapon": &"slipper", "mods": {&"max_hp": 6.0, &"armor": 2.0, &"damage": 6.0}, "fx": {&"pies": 3.0, &"thorns": 3.0}, "unlock": &"kills", "need": 600, "tint": Color(1, 1, 1), "hat": &"scarf"},
 	&"courier": {"weapon": &"spray_can", "mods": {&"speed": 16.0, &"attack_speed": 6.0, &"max_hp": -4.0}, "fx": {&"rush": 40.0, &"coin_bonus": 15.0}, "unlock": &"coins", "need": 1000, "tint": Color(1, 1, 1), "hat": &"bottle_cap"},
 	&"pigeon": {"weapon": &"condensed_milk", "mods": {&"dodge": 10.0, &"speed": 10.0, &"max_hp": -5.0}, "fx": {&"pigeons": 1.0, &"lifesteal": 3.0}, "unlock": &"deaths", "need": 5, "tint": Color(1, 1, 1), "hat": &"dried_fish"},
@@ -1045,10 +1046,10 @@ const CHARACTERS: Dictionary = {
 	&"guard": {"weapon": &"mosin", "mods": {&"armor": 1.0, &"crit": 6.0, &"speed": -10.0}, "fx": {&"post": 25.0}, "unlock": &"kills", "need": 2000, "tint": Color(1, 1, 1), "hat": &"binoculars"},
 	&"student": {"weapon": &"bottle", "mods": {&"attack_speed": 6.0, &"max_hp": -4.0, &"speed": 8.0}, "fx": {&"xp_bonus": 8.0}, "unlock": &"deaths", "need": 10, "tint": Color(1, 1, 1), "hat": &"energy_can"},
 	&"plumber": {"weapon": &"pipe_gun", "mods": {&"damage": 16.0, &"armor": 2.0, &"attack_speed": 8.0}, "fx": {&"bash": 15.0}, "unlock": &"kills", "need": 3500, "tint": Color(1, 1, 1), "hat": &"pot"},
-	&"dacha": {"weapon": &"rotten_cheese", "mods": {&"max_hp": 7.0, &"speed": -12.0, &"pickup": 20.0}, "fx": {&"turrets": 1.0}, "unlock": &"coins", "need": 4000, "tint": Color(1, 1, 1), "hat": &"plastic_bag"},
+	&"dacha": {"weapon": &"rotten_cheese", "mods": {&"max_hp": 5.0, &"speed": -12.0, &"pickup": 20.0}, "fx": {&"turrets": 1.0}, "unlock": &"coins", "need": 4000, "tint": Color(1, 1, 1), "hat": &"plastic_bag"},
 	&"skater": {"weapon": &"crossbow", "mods": {&"speed": 25.0, &"dodge": 10.0, &"max_hp": -5.0}, "fx": {&"trick": 25.0}, "unlock": &"deaths", "need": 15, "tint": Color(1, 1, 1), "hat": &"skateboard"},
 	# Н18: открываются достижениями (unlock = &"ach", ach = id достижения).
-	&"gopnik_jock": {"weapon": &"shiv", "mods": {&"damage": 25.0, &"max_hp": 12.0, &"armor": 1.0}, "fx": {&"bash": 20.0}, "unlock": &"ach", "ach": &"bump_100", "need": 1, "tint": Color(1, 1, 1), "hat": &"nail_knuckles"},
-	&"cat": {"weapon": &"tin_bomb", "mods": {&"speed": 8.0, &"dodge": 4.0, &"pickup": 15.0}, "fx": {&"nine_lives": 9.0}, "unlock": &"ach", "ach": &"deaths_50", "need": 1, "tint": Color(1, 1, 1), "hat": &"old_milk"},
-	&"slime": {"weapon": &"plunger", "mods": {&"max_hp": 14.0, &"damage": 14.0, &"armor": 2.0, &"pickup": 10.0, &"attack_speed": 8.0}, "fx": {&"slime_touch": 40.0, &"thorns": 2.0}, "unlock": &"kills", "need": 5000, "tint": Color(1, 1, 1), "hat": &"rubber_boot"},
+	&"gopnik_jock": {"weapon": &"shiv", "mods": {&"damage": 25.0, &"max_hp": 12.0, &"armor": 2.0}, "fx": {&"bash": 20.0}, "unlock": &"ach", "ach": &"bump_100", "need": 1, "tint": Color(1, 1, 1), "hat": &"nail_knuckles"},
+	&"cat": {"weapon": &"tin_bomb", "mods": {&"speed": 8.0, &"dodge": 4.0, &"pickup": 10.0}, "fx": {&"nine_lives": 9.0}, "unlock": &"ach", "ach": &"deaths_50", "need": 1, "tint": Color(1, 1, 1), "hat": &"old_milk"},
+	&"slime": {"weapon": &"plunger", "mods": {&"max_hp": 20.0, &"speed": 6.0, &"damage": 14.0, &"armor": 2.0, &"pickup": 10.0, &"attack_speed": 8.0}, "fx": {&"slime_touch": 40.0, &"thorns": 2.0}, "unlock": &"kills", "need": 5000, "tint": Color(1, 1, 1), "hat": &"rubber_boot"},
 }

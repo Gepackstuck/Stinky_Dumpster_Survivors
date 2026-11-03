@@ -112,7 +112,7 @@ func _physics_process(delta: float) -> void:
 		if _recharge <= 0.0:
 			_charges = mini(_charges + 1, int(_p["charges"]))
 			_recharge = float(_p["cd"]) if _charges < int(_p["charges"]) else 0.0
-	if _dash_left > 0.0 and StringName(_p["fx"]) not in [&"fly", &"pipe"] and _blocked(body.global_position, _dir):
+	if _dash_left > 0.0 and StringName(_p["fx"]) not in [&"fly", &"pipe", &"ram"] and _blocked(body.global_position, _dir):
 		_bump()
 	if _dash_left > 0.0:
 		_dash_left -= delta
@@ -216,6 +216,11 @@ func _finish() -> void:
 		&"knock":
 			for enemy: EnemyBase in _enemies_near(end, Balance.DASH_FX_RADIUS):
 				enemy.shove(end.direction_to(enemy.global_position) * Balance.DASH_FX_KNOCK)
+			HitFx.burst(get_tree(), end, Color(0.968627, 1.0, 0.0), 12, 80.0, 3.0, 0.4, true)
+		&"ram":   # таран Жоры: сквозь толпу, всех по пути бьёт и раскидывает в стороны
+			for enemy: EnemyBase in _enemies_on_path(_start, end, 18.0):
+				var side: Vector2 = _dir.orthogonal() * signf(_dir.orthogonal().dot(enemy.global_position - _start) + 0.01)
+				enemy.hit_by_weapon(GameState.roll_damage(Balance.DASH_FX_DAMAGE * Balance.DASH_RAM_MULT), side * Balance.DASH_FX_KNOCK, &"dash")
 			HitFx.burst(get_tree(), end, Color(0.968627, 1.0, 0.0), 12, 80.0, 3.0, 0.4, true)
 		&"sweep":
 			for enemy: EnemyBase in _enemies_on_path(_start, end, 16.0):
