@@ -153,8 +153,10 @@ func _grid_page() -> void:
 	_cursor_rect.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	_cursor_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_page.add_child(_cursor_rect)
-	_info = _text("", Vector2(20.0, 196.0), 440.0, YELLOW, HORIZONTAL_ALIGNMENT_CENTER)
-	_info_sub = _text("", Vector2(20.0, 208.0), 440.0, Color.WHITE, HORIZONTAL_ALIGNMENT_CENTER)
+	_info = _text("", Vector2(20.0, 192.0), 440.0, YELLOW, HORIZONTAL_ALIGNMENT_CENTER)
+	_info.size.y = 16.0
+	_info_sub = _text("", Vector2(20.0, 210.0), 440.0, Color.WHITE, HORIZONTAL_ALIGNMENT_CENTER)
+	_info_sub.size.y = 30.0   # длинное описание в 2-3 строки
 	_update_cursor()
 
 

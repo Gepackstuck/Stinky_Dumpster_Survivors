@@ -75,7 +75,7 @@ static var _popups_alive: int = 0
 
 
 static func popup(tree: SceneTree, at: Vector2, text: String, color: Color, rise: float = 14.0, duration: float = 0.55, big: bool = false) -> void:
-	if _popups_alive >= 45 and not big:
+	if _popups_alive >= Balance.POPUP_MAX_ALIVE and not big:
 		return   # экран не должен превращаться в кашу из цифр
 	_popups_alive += 1
 	var label: Label = Label.new()

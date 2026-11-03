@@ -158,6 +158,10 @@ func _run() -> void:
 		lu.call("_show_choices")
 		await get_tree().process_frame
 		_check("ларёк", lu)
+	for note: String in ["МЕНЯЛА ЗАБРАЛ ЗАМИНИРОВАННЫЙ ТАПОК, ДАЛ: НАКОЛКА «НЕ ЗАБУДУ», ГЛУШИТЕЛЬ ИЗ БУТЫЛКИ", "МЕНТ ОТОБРАЛ 2345 ГОВНА. РИСКНУЛ, ЛОХ.", "КАРТА «ПОМОЙКА+» ПОЛНАЯ: РЕРОЛЛ БЕСПЛАТНО, ВСЁ -10%", "БИЛЕТЫ: +15, ШАПКА ИЗ ФОЛЬГИ, ОБОСРАННЫЕ ШТАНЫ"]:
+		lu.call("_toast", note, 0.05)   # итоги событий в строке Ларька
+		await get_tree().process_frame
+		_check("ларёк/итог", lu)
 	lu.set("_shop_mode", true)
 	for i: int in GameState.weapons.size():
 		lu.call("_update_slot_info", i)
@@ -189,6 +193,9 @@ func _run() -> void:
 	_check("пауза", pause)
 	for it: StringName in Balance.ITEMS:
 		GameState.items[it] = 1
+	GameState.weapons.clear()   # все шесть классов сразу - самый длинный список наборов
+	for w: StringName in [&"lighter", &"mop", &"pipe_gun", &"frying_pan", &"syringe", &"tin_bomb"]:
+		GameState.weapons.append({"id": w, "tier": 4})
 	pause.call("_open_inventory")
 	await get_tree().process_frame
 	_check("пауза/хлам", pause)

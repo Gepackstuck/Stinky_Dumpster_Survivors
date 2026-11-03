@@ -199,7 +199,12 @@ static func icon_small(item_id: StringName) -> Texture2D:
 static func max_count(item_id: StringName) -> int:
 	if item_id == SHOES:
 		return shoes_max()
-	return Balance.ITEMS[item_id]["limit"]
+	var limit: int = Balance.ITEMS[item_id]["limit"]
+	if limit > 0:
+		return limit
+	if item_id == TICKET:
+		return 0   # билетов сколько угодно
+	return Balance.ITEM_LIMIT_COMPANION if is_companion(item_id) else Balance.ITEM_LIMIT_DEFAULT
 
 
 static func at_limit(item_id: StringName) -> bool:
@@ -256,7 +261,7 @@ static func describe(data: Dictionary) -> String:
 		match key:
 			&"lottery":
 				lines.append(TranslationServer.translate("СОТРЁШЬ В СЛЕДУЮЩЕМ ЛАРЬКЕ"))
-				lines.append(TranslationServer.translate("ДЖЕКПОТ 100 ГОВНА"))
+				lines.append(TranslationServer.translate("60% ПУСТО, 30% 5-15, 9% ПРЕДМЕТ, 1% ДЖЕКПОТ 100"))
 			&"dash":
 				lines.append(TranslationServer.translate("+1 РЫВОК"))
 				lines.append(TranslationServer.translate("БОСИКОМ НЕ РВАНЁШЬ" if GameState.item_count(SHOES) == 0 else "ВТОРОЙ ЗАРЯД"))

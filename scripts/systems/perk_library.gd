@@ -139,6 +139,10 @@ static func max_stacks(perk_id: StringName) -> int:
 		return Balance.PERK_SPEED_MAX_STACKS
 	if perk_id in WEAPON_PERKS:
 		return 1
+	if perk_id == DOUBLE_SHOT:
+		return Balance.PERK_DOUBLE_SHOT_MAX_STACKS   # 8 стаков - экран тонул в пулях
+	if perk_id == LOOT_GOBLIN:
+		return Balance.LOOT_GOBLIN_MAX_STACKS
 	return 0
 
 

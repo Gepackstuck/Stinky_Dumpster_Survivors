@@ -304,9 +304,10 @@ func _on_hurt(damage: float) -> void:
 	if not _neutral:
 		HitFx.burst(get_tree(), global_position, Color(1.0, 0.0, 0.2), 5, 70.0)
 		_item_hit_effects()
-	if GameState.is_crit_damage(damage):
-		HitFx.popup(get_tree(), global_position + Vector2(0.0, -14.0), str(int(damage)) + "!", Color(1.0, 0.85, 0.0), 22.0, 0.8, true)
-	else:
+	# цифры урона: по настройке (0 - нет, 1 - только криты, 2 - все); криты обычного размера - иначе врагов не видно
+	if Settings.damage_numbers >= 1 and GameState.is_crit_damage(damage):
+		HitFx.popup(get_tree(), global_position + Vector2(0.0, -14.0), str(int(damage)) + "!", Color(1.0, 0.85, 0.0), 14.0, 0.5)
+	elif Settings.damage_numbers >= 2:
 		HitFx.popup(get_tree(), global_position + Vector2(0.0, -10.0), str(int(damage)), Color.WHITE)
 	if not _neutral:
 		GameState.record_damage(minf(damage, _health.current_health))

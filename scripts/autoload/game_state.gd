@@ -42,6 +42,7 @@ var seed_word: String = ""
 var mode: StringName = &""
 var duel_scores: Array = []                  # Н31: итоги раундов битвы героев [{hero, kills, wave, alive}]                   # режим из меню РЕЖИМЫ: endless (Н32), closed (Н33), "" - обычный
 var death_position: Vector2 = Vector2.ZERO   # Н30: где сдох герой (граффити ставится на это место)
+var last_event_note: String = ""     # что случилось на событии между волнами - Ларёк покажет строкой
 var lottery_tickets: int = 0          # Н12: куплено билетов, сотрутся в следующем Ларьке
 var card_spent: int = 0               # Н13: говно, потраченное в Ларьке (идёт в штампы карты «Помойка+»)
 var card_stamps: int = 0
@@ -363,7 +364,7 @@ func _recompute_items() -> void:
 		for stat_id: StringName in _item_stats.keys():
 			if _item_stats[stat_id] > 0.0:
 				_item_stats[stat_id] *= 1.0 + crown / 100.0
-	coin_bonus = fx.get(&"coin_bonus", 0.0) / 100.0
+	coin_bonus = minf(fx.get(&"coin_bonus", 0.0) / 100.0, Balance.COIN_BONUS_MAX)
 	repel_percent = minf(fx.get(&"repel", 0.0), Balance.ITEM_REPEL_MAX_PERCENT)
 	thorns_damage = fx.get(&"thorns", 0.0)
 	explode_percent = minf(fx.get(&"explode", 0.0), 75.0)
@@ -446,12 +447,13 @@ func _recompute_perk_stats() -> void:
 	var shots: int = get_perk_stacks(PerkLibrary.DOUBLE_SHOT)
 	var regen: int = get_perk_stacks(PerkLibrary.REGEN)
 	move_speed_mult = (1.0 + Balance.PERK_SPEED_BONUS * speed + stat_total(&"speed") / 100.0) * pow(Balance.PERK_LOOT_GOBLIN_MOVE_SPEED_MULT, goblin) * WaveRules.season_f("player_speed")
+	move_speed_mult = maxf(move_speed_mult, Balance.MOVE_SPEED_MIN_MULT)   # с -106% герой стоял колом и не мог дойти до ворот
 	pickup_radius_mult = 1.0 + (Balance.PERK_LOOT_GOBLIN_PICKUP_RADIUS_MULT - 1.0) * goblin + stat_total(&"pickup") / 100.0
 	damage_mult = 1.0 + stat_total(&"damage") / 100.0
 	attack_speed_mult = 1.0 + stat_total(&"attack_speed") / 100.0
 	armor = stat_total(&"armor")
 	dodge_percent = minf(stat_total(&"dodge"), Balance.DODGE_MAX_PERCENT)
-	crit_percent = stat_total(&"crit")
+	crit_percent = minf(stat_total(&"crit"), Balance.CRIT_MAX_PERCENT)
 	bonus_max_hp = stat_total(&"max_hp")
 	extra_projectiles = Balance.PERK_DOUBLE_SHOT_EXTRA_PROJECTILES * shots
 	projectile_damage_mult = pow(Balance.PERK_DOUBLE_SHOT_DAMAGE_MULT, shots)

@@ -284,10 +284,15 @@ func _on_wave_ended(_wave: int) -> void:
 		ShopLibrary.reprice(GameState.shop_offers, GameState.wave + 1)
 	var lottery: String = GameState.scratch_tickets()
 	_show_choices()
+	var notes: PackedStringArray = []   # итоги события, лотереи и карты - одной строкой и подольше, чтобы успеть прочитать
+	if GameState.last_event_note != "":
+		notes.append(GameState.last_event_note)
+		GameState.last_event_note = ""
 	if lottery != "":
-		_toast(lottery)
-	elif card_fired:
-		_toast(tr("КАРТА «ПОМОЙКА+» ПОЛНАЯ: РЕРОЛЛ БЕСПЛАТНО, ВСЁ -10%"))
+		notes.append(lottery)
+	if card_fired:
+		notes.append(tr("КАРТА «ПОМОЙКА+» ПОЛНАЯ: РЕРОЛЛ БЕСПЛАТНО, ВСЁ -10%"))
+	_toast_seq(notes)
 	if GameState.last_bet_result != 0:
 		_toast("ПАРИ ВЫИГРАНО! +ГОВНО И ПРЕДМЕТ" if GameState.last_bet_result > 0 else "ПАРИ ПРОДУЛ. ТАК ТЕБЕ И НАДО")
 		GameState.last_bet_result = 0
@@ -484,7 +489,16 @@ func _sets_text() -> String:
 	if not _shop_mode:
 		return ""
 	var lines: Array[String] = WeaponLibrary.active_sets_lines(true)
-	return "НАБОРЫ: " + "   ".join(lines) if not lines.is_empty() else "НАБОРОВ НЕТ. 2 ОРУЖИЯ ОДНОГО КЛАССА = БОНУС"
+	if lines.is_empty():
+		return "НАБОРОВ НЕТ. 2 ОРУЖИЯ ОДНОГО КЛАССА = БОНУС"
+	var text: String = "НАБОРЫ: " + lines[0]
+	var shown: int = 1
+	while shown < lines.size() and (text + "   " + lines[shown]).length() <= 72:   # строка не должна уезжать за экран
+		text += "   " + lines[shown]
+		shown += 1
+	if shown < lines.size():
+		text += "   +%d (ПАУЗА - ХЛАМ И СТАТЫ)" % (lines.size() - shown)
+	return text
 
 
 func _on_next_pressed() -> void:
@@ -565,13 +579,22 @@ func _on_player_died() -> void:
 
 
 ## Короткое сообщение под заголовком (жёсткая фраза); само гаснет.
-func _toast(text: String) -> void:
+## Несколько сообщений подряд (итоги события, лотереи, карты): каждое по 3 с, чтобы успеть прочитать.
+func _toast_seq(notes: PackedStringArray) -> void:
+	for n: String in notes:
+		_toast(n, 3.0)
+		await get_tree().create_timer(3.0, true).timeout
+		if not _root.visible:
+			return
+
+
+func _toast(text: String, sec: float = 1.8) -> void:
 	_toast_id += 1
 	var my_id: int = _toast_id
 	_counter.text = text
 	_counter.add_theme_color_override(&"font_color", Color(1.0, 0.1, 0.2))
 	_coins.text = _coins_text()
-	await get_tree().create_timer(1.8, true).timeout
+	await get_tree().create_timer(sec, true).timeout
 	if my_id == _toast_id:
 		_counter.text = _counter_base
 		_counter.add_theme_color_override(&"font_color", COUNTER_COLOR)

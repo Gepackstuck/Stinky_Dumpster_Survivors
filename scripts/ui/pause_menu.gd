@@ -181,7 +181,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		_inventory_button.grab_focus()
 	elif _root.visible:
 		_close()
-	elif not get_tree().paused and GameState.run_active and GameState.wave > 0:
+	elif not get_tree().paused and GameState.wave > 0 and (GameState.run_active or get_tree().get_first_node_in_group(&"player") != null):   # после победы тоже (идёшь к воротам)
 		_open()
 
 
@@ -240,8 +240,8 @@ func _build_inventory() -> void:
 	_inventory_weapons.position = Vector2(12.0, 226.0)
 	_inventory.add_child(_inventory_weapons)
 	_inventory_sets = GridContainer.new()
-	_inventory_sets.columns = 1
-	_inventory_sets.position = Vector2(140.0, 196.0)
+	_inventory_sets.columns = 2   # наборы в два столбика: в один не влезали и наезжали на «НАЗАД»
+	_inventory_sets.position = Vector2(140.0, 190.0)
 	_inventory_sets.add_theme_constant_override(&"h_separation", 8)
 	_inventory_sets.add_theme_constant_override(&"v_separation", 0)
 	_inventory.add_child(_inventory_sets)
@@ -335,12 +335,15 @@ func _open_inventory() -> void:
 		row.add_theme_constant_override(&"separation", 2)
 		var icon: TextureRect = TextureRect.new()
 		icon.texture = WeaponLibrary.class_icon(class_id)
-		icon.custom_minimum_size = Vector2(16.0, 16.0)
+		icon.custom_minimum_size = Vector2(12.0, 12.0)
 		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		icon.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
 		row.add_child(icon)
 		var label: Label = Label.new()
-		label.text = "%s %d: %s" % [WeaponLibrary.class_title(class_id), count, WeaponLibrary.set_bonus_text(class_id, count)]
+		label.text = "%s %d: %s" % [WeaponLibrary.CLASS_SHORT[class_id], count, WeaponLibrary.set_bonus_text(class_id, count)]
+		label.custom_minimum_size = Vector2(150.0, 0.0)
+		label.autowrap_mode = TextServer.AUTOWRAP_WORD
+		label.size = Vector2(150.0, 10.0)
 		label.add_theme_color_override(&"font_color", WeaponLibrary.CLASS_COLORS[class_id])
 		row.add_child(label)
 		_inventory_sets.add_child(row)

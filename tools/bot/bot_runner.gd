@@ -8,7 +8,7 @@ extends Node
 
 const MAIN: PackedScene = preload("res://scenes/levels/main.tscn")
 const GAME_TIMEOUT_SEC: float = 3600.0
-const SHOP_ACTIONS_MAX: int = 40          # защита от зацикливания в Ларьке
+const SHOP_ACTIONS_MAX: int = 300         # защита от зацикливания в Ларьке (человек скупает всё - бот тоже)
 const SKILLS: Dictionary = {
 	# react - как часто бот пересматривает направление (с); noise - ошибка оценки позиции врагов (px);
 	# mistake - шанс дёрнуться не туда при решении; look - насколько вперёд предсказывает (с);
@@ -623,6 +623,7 @@ func _process(_delta: float) -> void:
 	elif _ui.get("_shop_mode"):
 		if _shop_actions == 0:
 			_shop_visits += 1
+			_rerolls = 0   # рерроллы считаем на каждый Ларёк, а не на весь забег (иначе бот копил тысячи говна)
 		_shop_actions += 1
 		if _shop_actions > SHOP_ACTIONS_MAX:
 			_ui.call("_on_next_pressed")
@@ -765,7 +766,7 @@ func _shop() -> void:
 		_ui.call("_show_choices")
 		return
 	var cost: int = _ui.call("_reroll_cost")
-	var reroll_cap: int = 25 if _skill["shop"] == &"sets" else 6
+	var reroll_cap: int = 60 if _skill["shop"] == &"sets" else 8
 	if _rerolls < reroll_cap and GameState.coins >= cost + 8:
 		_rerolls += 1
 		_ui.call("_on_reroll_pressed")

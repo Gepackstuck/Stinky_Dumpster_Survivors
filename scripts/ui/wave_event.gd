@@ -83,7 +83,7 @@ func _texts() -> Dictionary:
 		&"fortune":
 			return {"face": &"granny", "title": "ГАДАЛКА С ВОКЗАЛА", "text": "ПОЗОЛОТИ РУЧКУ (%d ГОВНА) - НАГАДАЮ КУЧУ НА СЛЕДУЮЩЕЙ ВОЛНЕ. РУЛЕТКА БУДЕТ." % _fortune_price(), "yes": "ПЛАЧУ", "no": "НЕ ВЕРЮ"}
 		&"cop":
-			return {"face": &"guard", "title": "МЕНТ", "text": "ДОКУМЕНТЫ! ВЗЯТКА %d ГОВНА - И Я ТЕБЯ НЕ ВИДЕЛ. ИЛИ РИСКНЁШЬ?" % _bribe(), "yes": "НА, ПОДАВИСЬ", "no": "РИСКНУ"}
+			return {"face": &"guard", "title": "МЕНТ", "text": "ДОКУМЕНТЫ! ВЗЯТКА %d ГОВНА - И Я ТЕБЯ НЕ ВИДЕЛ. РИСКНЁШЬ - ПОЛОВИНА ШАНСА, ЧТО ОТБЕРУ ТРЕТЬ ВСЕГО ГОВНА." % _bribe(), "yes": "НА, ПОДАВИСЬ", "no": "РИСКНУ"}
 		_:
 			return {"face": &"punk", "title": "СПОРЩИК", "text": "СПОРИМ НА %d ГОВНА: %s? ВЫИГРАЕШЬ - ВТРОЕ БОЛЬШЕ И ПРЕДМЕТ." % [_stake(), _bet_text()], "yes": "СПОРИМ", "no": "СЛАБО"}
 
@@ -121,25 +121,36 @@ func choose(i: int) -> void:
 				for k: int in GameState.weapons.size():
 					if GameState.weapons[k]["tier"] < GameState.weapons[worst]["tier"]:
 						worst = k
+				var gone: String = PerkLibrary.title(ShopLibrary.perk_id_of(GameState.weapons[worst]["id"]))
 				GameState.weapons.remove_at(worst)
 				EventBus.weapons_changed.emit()
+				var got: PackedStringArray = []
 				for n: int in 2:
 					var item: StringName = ItemLibrary.roll_free_item(GameState.wave)
 					if item != &"":
 						GameState.add_item(item)
+						got.append(ItemLibrary.title(item))
+				GameState.last_event_note = "МЕНЯЛА ЗАБРАЛ %s, ДАЛ: %s" % [gone, ", ".join(got)]
 		&"fortune":
 			if yes and GameState.coins >= _fortune_price():
 				GameState.coins -= _fortune_price()
 				GameState.forced_pile = true
+				GameState.last_event_note = "ГАДАЛКА: В СЛЕДУЮЩЕЙ ВОЛНЕ БУДЕТ СВЕТЯЩАЯСЯ КУЧА"
 		&"cop":
 			if yes:
 				GameState.coins -= _bribe()
+				GameState.last_event_note = "ОТДАЛ МЕНТУ %d ГОВНА. СВОБОДЕН." % _bribe()
 			elif randf() < 0.5:
-				GameState.coins -= roundi(GameState.coins * Balance.EVENT_COP_TAKE)
+				var taken: int = roundi(GameState.coins * Balance.EVENT_COP_TAKE)
+				GameState.coins -= taken
+				GameState.last_event_note = "МЕНТ ОТОБРАЛ %d ГОВНА. РИСКНУЛ, ЛОХ." % taken
+			else:
+				GameState.last_event_note = "МЕНТ ЗЕВНУЛ И УШЁЛ. ПОВЕЗЛО ТЕБЕ."
 		&"bet":
 			if yes and GameState.coins >= _stake():
 				GameState.coins -= _stake()
 				GameState.active_bet = {"kind": _bet, "stake": _stake(), "kills": _bet_kills(), "kills0": GameState.kills, "dashes": 0, "hits": 0}
+				GameState.last_event_note = "ПОСПОРИЛ НА %d ГОВНА. УСЛОВИЕ - ВВЕРХУ ЭКРАНА В БОЮ." % _stake()
 	AudioManager.play_sfx(&"buy" if yes else &"ui_select")
 	done.emit()
 	queue_free()

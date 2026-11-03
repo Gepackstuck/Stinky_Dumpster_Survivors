@@ -211,6 +211,8 @@ func _show_result(title: String, died: bool = false) -> void:
 	_hint_label.text = "\n".join(lines.slice(0, 3))
 	_scatter_decor()
 	_root.show()
+	_retry.focus_neighbor_right = _retry.get_path_to(_endless_button)   # стрелками между «К ВОРОТАМ» и «БЕСКОНЕЧНО»
+	_endless_button.focus_neighbor_left = _endless_button.get_path_to(_retry)
 	_retry.grab_focus()
 	get_tree().paused = true
 
