@@ -134,7 +134,8 @@ static func trait_line(id: StringName) -> String:
 	var fx: Dictionary = Balance.CHARACTERS[id].get("fx", {})
 	if fx.is_empty():
 		return ""
-	return "ФИШКА: " + ItemLibrary.describe({"fx": fx}).replace("\n", ". ")
+	var text: String = ItemLibrary.describe({"fx": fx}).replace("\n", ". ").strip_edges()
+	return "" if text == "" else "ФИШКА: " + text
 
 
 static func hat_icon(id: StringName) -> Texture2D:

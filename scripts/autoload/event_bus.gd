@@ -40,6 +40,9 @@ signal enemy_died(enemy_id: StringName, position: Vector2)
 ## Враг получил урон (звук попадания; crit - крит).
 @warning_ignore("unused_signal")
 signal enemy_hurt(crit: bool)
+## Оружие ближнего боя попало (звук удара именно этого оружия).
+@warning_ignore("unused_signal")
+signal melee_hit(weapon_id: StringName, hits: int)
 
 @warning_ignore("unused_signal")
 signal xp_drop_requested(at: Vector2, value: int)   # враг просит уронить XP (обжора)

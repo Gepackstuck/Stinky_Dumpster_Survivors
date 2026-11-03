@@ -452,7 +452,13 @@ const MINION_ENRAGE_MULT: float = 0.7            # в ярости кулдау�
 const PROJECTILE_BOSS_LIFETIME_SEC: float = 3.0
 
 # --- Отдача от попаданий ---
-const ENEMY_KNOCKBACK_SPEED: float = 120.0   # импульс, который враг получает от попадания
+const HITSTOP_MELEE_SEC: float = 0.035      # стоп-кадр при попадании ближним оружием
+const HITSTOP_CRIT_SEC: float = 0.025
+const HITSTOP_BIG_KILL_SEC: float = 0.12    # убил элиту или босса
+const HITSTOP_GAP_SEC: float = 0.12         # стоп-кадры не чаще (иначе игра «заикается»)
+const HITSTOP_TIME_SCALE: float = 0.05
+const SHAKE_MELEE_HIT: float = 1.2
+const ENEMY_KNOCKBACK_SPEED: float = 165.0   # импульс, который враг получает от попадания
 const KNOCKBACK_DECAY: float = 600.0         # px/с² — как быстро гаснет отдача
 const SHAKE_EXPLOSION: float = 2.5
 const SHAKE_BOSS_SLAM: float = 5.0
@@ -698,17 +704,17 @@ const WEAPON_PRICE: Dictionary = {&"lighter": 22, &"sock": 24, &"slingshot": 22,
 		&"plunger": 22, &"shiv": 18, &"shovel": 30, &"blowtorch": 28, &"syringe": 24, &"tin_bomb": 30, &"extension_cord": 28}
 const PERK_PRICE: Dictionary = {&"speed": 14, &"regen": 16, &"double_shot": 30, &"loot_goblin": 12}
 const SHOP_SLOTS: int = 4
-const SHOP_PRICE_TIER_MULT: Array[float] = [1.0, 2.0, 3.5, 6.0, 9.0]
+const SHOP_PRICE_TIER_MULT: Array[float] = [1.0, 1.8, 3.0, 5.0, 8.0]
 const COIN_PER_XP: float = 0.7   # (плейтест 2: на 0.5 и толстых врагах к 5-й волне 1 предмет)  сколько говна даёт 1 XP (было 1.3 -> 0.6 -> 0.5: к 15-й волне копилось 8000 - скупал всё)
-const SHOP_PRICE_WAVE_GROWTH: float = 0.25          # цена *(1 + это * волна)
+const SHOP_PRICE_WAVE_GROWTH: float = 0.12   # (плейтест 3: при 0.25 рогатка II на 4-й волне стоила 88 при доходе ~45 за волну)          # цена *(1 + это * волна)
 const SHOP_WEAPON_CHANCE: float = 0.45              # шанс, что слот — оружие (предмет — SHOP_ITEM_CHANCE, иначе перк)
 const SHOP_TIER2_PER_WAVE: float = 0.05             # II-тир: (волна-1)*это, до 0.5
 const SHOP_TIER3_PER_WAVE: float = 0.03             # III-тир: (волна-3)*это, до 0.35
 const SHOP_TIER4_PER_WAVE: float = 0.015            # IV-тир: (волна-7)*это, до 0.2
 const RECYCLE_FRACTION: float = 0.35                # возврат говна за переработку
 const REROLL_BASE_COST: int = 3
-const REROLL_WAVE_FACTOR: float = 1.0               # + волна * это
-const REROLL_STEP_COST: int = 3                     # + за каждый реролл в эту волну
+const REROLL_WAVE_FACTOR: float = 0.6               # + волна * это
+const REROLL_STEP_COST: int = 2                     # + за каждый реролл в эту волну
 const ARMOR_MIN_FACTOR: float = 0.45                # броня режет урон не больше чем на 55%
 const ARMOR_K: float = 15.0                         # урон *= K/(K+броня)
 const DODGE_MAX_PERCENT: float = 60.0

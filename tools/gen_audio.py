@@ -2,8 +2,8 @@
 """Звук v2 «Помойки»: всё синтезом, без чужих сэмплов. Тёплый грув под Brotato: электропиано, мягкий бас,
 пэды, живые барабаны, реверб, эхо, сайдчейн. Звуки мягкие, с вариантами (имя.wav, имя_2.wav, имя_3.wav).
 PYTHONPATH=tools tools/_venv/py/bin/python tools/gen_audio.py  -> assets/sfx/*.wav (моно), assets/music/*.wav (стерео лупы).
-Треки (мрачная помойка): battle_a (помойный фанк), battle_b (мушиное диско), battle_c (гнилой чиллхоп),
-boss (хозяин свалки), shop (ларёк у бака), menu (кладбище: шкатулка, орган, ветер, ворона).
+Треки - хэллоуинская страшилка на помойке: battle_a (пляска на помойке, 5/4), battle_b (пердёжный марш),
+battle_c (трупный грув), boss (хозяин свалки), shop (злобный ярмарочный вальс), menu (кладбищенский хорал).
 Оружие и враги: tools/gen_audio_fx.py (свои звуки у каждого)."""
 import os, wave
 import numpy as np
@@ -171,15 +171,16 @@ def crackle(n, density=7.0):
 
 # ---------------- микшер и песня ----------------
 class Song:
-    def __init__(self, bpm, bars, swing=0.0):
-        self.sd = 60.0 / bpm / 4; self.bars = bars; self.swing = swing
-        self.length = bars * 16 * self.sd
+    def __init__(self, bpm, bars, swing=0.0, steps=16):
+        """steps - шестнадцатых в такте: 16 = 4/4, 12 = 3/4 (вальс), 20 = 5/4."""
+        self.sd = 60.0 / bpm / 4; self.bars = bars; self.swing = swing; self.steps = steps
+        self.length = bars * steps * self.sd
         self.L = N(self.length); self.n = self.L + N(4.0)
         self.dry = np.zeros((2, self.n)); self.duck = np.zeros((2, self.n))
         self.rev = np.zeros((2, self.n)); self.dly = np.zeros((2, self.n)); self.kicks = []
 
     def t(self, bar, step):
-        s = bar * 16 + step + (self.swing if int(step) % 2 == 1 else 0.0)
+        s = bar * self.steps + step + (self.swing if int(step) % 2 == 1 else 0.0)
         return s * self.sd + R.normal(0, 0.002)
 
     def add(self, x, t0, pan=0.0, gain=1.0, rev=0.15, dly=0.0, duck=False):
@@ -344,127 +345,218 @@ def four_floor(s, bar, kick_g=0.9, clap_g=0.5, hats="off", ghost=0.0, open_on=No
     if open_on is not None: s.drum(hat(True), s.t(bar, open_on), 0.25, 0.3, 0.1)
 
 
+# ---------------- страшилка: хэллоуин на помойке ----------------
+def theremin(f, dur, vel=1.0):
+    n = N(dur + 0.25); t = T(n)
+    glide = 1 - 0.06 * np.exp(-t / 0.07)
+    vib = 1 + 0.018 * np.sin(TAU * 6.3 * t) * np.clip(t / 0.25, 0, 1)
+    ph = phase(f * glide * vib, n)
+    return (np.sin(ph) + 0.12 * np.sin(2 * ph)) * np.minimum(t / 0.06, 1) * gate(n, dur, 0.2, 0.001) * vel
+
+
+def choir(f, dur, vel=1.0, vowel="o"):
+    """Хор «у-у-у» / «а-а-а»: пилы через форманты, несколько голосов вразнобой."""
+    n = N(dur + 0.9); t = T(n); x = np.zeros(n)
+    fm = ((320, 1.0), (800, 0.5)) if vowel == "o" else ((700, 1.0), (1150, 0.6))
+    for dt in (-0.008, 0.0, 0.007):
+        ph = TAU * f * (1 + dt) * t + 0.02 * np.sin(TAU * 5.1 * t + dt * 900) * TAU + R.uniform(0, TAU)
+        for k in range(1, 24):
+            fk = f * k
+            if fk > SR * 0.4: break
+            amp = sum(a * np.exp(-((fk - c) / (c * 0.25)) ** 2) for c, a in fm) + 0.04 / k
+            x += amp * np.sin(k * ph)
+    return x / 3 * np.minimum(t / 0.5, 1) ** 2 * gate(n, dur, 0.8, 0.001) * vel
+
+
+def harpsi(f, dur, vel=1.0):
+    n = N(max(dur, 0.2) + 0.6); t = T(n); ph = TAU * f * t; x = np.zeros(n)
+    for k in range(1, 16):
+        if f * k > SR * 0.42: break
+        x += (k ** -0.8) * np.sin(k * ph + 0.3 * k) * np.exp(-t * (3 + k * 1.2))
+    return x * gate(n, max(dur, 0.2) + 0.3, 0.1, 0.001) * vel * 0.6
+
+
+def tuba(f, dur, vel=1.0):
+    n = N(dur + 0.1); t = T(n); ph = TAU * f * t; br = np.minimum(t / 0.06, 1)
+    x = sum(k ** -1.0 * np.sin(k * ph) * np.exp(-k * (1.2 - 0.6 * br)) for k in range(1, 12))
+    return np.tanh(1.5 * x) * gate(n, dur, 0.06, 0.015) * vel
+
+
+def tbell(f, dur=2.5, vel=1.0):
+    """Колокол (церковный/трубчатый): гудящая нижняя, малая терция - звучит тревожно."""
+    n = N(dur); t = T(n); x = np.zeros(n)
+    for r, a, d in ((0.5, 0.6, 1.0), (1.0, 1.0, 0.7), (1.19, 0.5, 0.5), (1.5, 0.35, 0.35), (2.0, 0.3, 0.25), (2.5, 0.2, 0.15), (3.0, 0.12, 0.1)):
+        if f * r < SR * 0.45: x += a * np.sin(TAU * f * r * t + R.uniform(0, TAU)) * np.exp(-t / (d * dur))
+    return x * np.minimum(t / 0.002, 1) * vel
+
+
+def fart_bass(f, dur, vel=1.0):
+    """Пердящий бас: жужжащая пила с дрожанием, мокрым низом и хлюпом на конце."""
+    n = N(dur + 0.06); t = T(n)
+    fl = f * (1 + 0.06 * np.sin(TAU * 17 * t) + 0.03 * np.sin(TAU * 7.3 * t))
+    ph = phase(fl, n)
+    x = sum(k ** -0.7 * np.sin(k * ph) for k in range(1, 18))
+    x = filt(x, hi=900) * (0.75 + 0.25 * np.sin(TAU * 23 * t))
+    return np.tanh(1.8 * x) * gate(n, dur, 0.05, 0.01) * vel * 0.8
+
+
+def tom(f=110, vel=1.0):
+    n = N(0.5); t = T(n)
+    return (np.sin(phase(sweep(f * 1.6, f, n, 0.04), n)) * np.exp(-t / 0.18) + 0.2 * filt(noise(n), hi=2000) * np.exp(-t / 0.03)) * vel
+
+
+def calliope(f, dur, vel=1.0):
+    """Ярмарочная дудка: свистящая, чуть фальшивая."""
+    n = N(dur + 0.08); t = T(n); ph = phase(f * (1.004 + 0.006 * np.sin(TAU * 5.5 * t)), n)
+    x = np.sin(ph) + 0.35 * np.sin(2 * ph) + 0.2 * np.sin(3 * ph) + 0.05 * filt(noise(n), lo=2000, hi=6000)
+    return x * gate(n, dur, 0.05, 0.02) * vel
+
+
+def accordion(f, dur, vel=1.0):
+    n = N(dur + 0.08); t = T(n); x = np.zeros(n)
+    for dt in (-0.004, 0.005):   # две язычковые - бьются друг об друга
+        ph = TAU * f * (1 + dt) * t
+        x += sum((0.8 if k % 2 else 0.5) / k * np.sin(k * ph) for k in range(1, 10))
+    return x * 0.5 * gate(n, dur, 0.06, 0.02) * vel
+
+
+def chains(vel=1.0):
+    b = np.zeros(N(0.3))
+    for p in np.sort(R.uniform(0, 0.2, 5)):
+        n = N(0.06); tt = T(n); s0 = N(p)
+        b[s0:s0 + n] += sum(np.sin(TAU * R.uniform(2500, 5000) * tt) * np.exp(-tt / 0.012) for _ in range(2)) * R.uniform(0.4, 1)
+    return b * vel
+
+
+def burp(vel=1.0):
+    n = N(0.45); t = T(n); f = sweep(110, 75, n, 0.2) * (1 + 0.08 * np.sin(TAU * 26 * t)); ph = phase(f, n)
+    x = sum(k ** -0.9 * np.sin(k * ph) * (1 + 1.5 * np.exp(-((110 * k - 500) / 180) ** 2)) for k in range(1, 20))
+    return np.tanh(filt(x, hi=2500)) * gate(n, 0.38, 0.06, 0.02) * vel
+
+
 def battle_a():
-    """Помойный фанк: D фригийский (Dm9 - Ebmaj7 - Bbmaj7 - A7b9), 112 bpm, грязный бас, хлюпающий малый, «плывущие» клавиши."""
-    s = Song(112, 24)
-    prog = [(38, [53, 57, 60, 64]), (39, [55, 58, 62, 63]), (46, [53, 57, 58, 62]), (45, [55, 58, 61, 64])]
-    bass = [(0, 0, 2), (3, 12, 1, 0.7), (4, 0, 1), (6, 0, 1, 0.8), (7, 12, 1, 0.6), (10, 7, 2), (12, 10, 1, 0.8), (14, 12, 1), (15, 1, 1, 0.7)]
-    stabs = [(2, 2, 0.8), (6, 1, 0.55), (10, 2, 0.75), (13, 2, 0.6)]
-    m1 = [(0, 74, 2), (2, 75, 2), (4, 77, 3), (8, 81, 2), (10, 79, 1), (11, 77, 1), (12, 75, 4), (18, 74, 2), (20, 75, 2), (22, 79, 4), (28, 77, 2), (30, 75, 2)]
-    m2 = [(0, 74, 2), (2, 77, 2), (4, 81, 4), (10, 82, 2), (12, 81, 2), (14, 77, 2), (16, 73, 3), (20, 76, 2), (22, 79, 2), (24, 82, 6)]
-    for bar in range(24):
+    """Пляска на помойке: 5/4 (3+2), 138 bpm, E минор. Клавесин-остинато, пердящий бас, хор, терменвокс, томы."""
+    s = Song(138, 16, steps=20)
+    prog = [(40, [52, 55, 59]), (36, [52, 55, 60]), (40, [52, 55, 59]), (41, [53, 57, 60])]   # Em - C - Em - F (неаполитанский скрежет)
+    ost = [64, 67, 71, 70, 64, 67, 71, 72, 71, 67]   # восьмые: свой ползучий мотив (B-Bb, B-C)
+    lead = [(0, 76, 6), (6, 75, 4), (10, 76, 4), (14, 79, 6), (20, 77, 8), (28, 76, 4), (32, 75, 8)]
+    for bar in range(16):
         root, ch = prog[bar % 4]; sec = bar // 8
-        four_floor(s, bar, hats="off" if sec == 0 else "16", ghost=0.35 if sec == 2 else 0.0, open_on=14 if bar % 2 else None)
-        if bar % 2: s.drum(clink(0.7), s.t(bar, 6), 0.12, 0.4, 0.2)
-        bass_line(s, bar, root, bass, 0.6, inst=gritty_bass)
-        for st, ln, v in stabs: s.chord(s.t(bar, st), ch, ln * s.sd, v, gain=0.17)
-        if sec >= 1 and bar % 4 == 0: s.chord(s.t(bar, 0), [n + 12 for n in ch[:3]], 4 * 16 * s.sd, 0.6, organ, 0.035, 0.4, 0.7, True)
-        if sec == 1 and bar % 4 in (0, 2): melody(s, bar, m1 if bar % 4 == 0 else m2, detuned_lead)
-        if sec == 2 and bar % 4 in (0, 2): melody(s, bar, m1 if bar % 4 == 0 else m2, pluck, 0.2, -0.2, 0.3, 0.4, -12)
-    s.render("battle_a", wow=0.0025)
+        for i, m in enumerate(ost):
+            s.add(harpsi(midi(m + (root - 40) * (1 if bar % 4 == 3 else 0) // 1), 2 * s.sd, 0.8 if i in (0, 3, 6) else 0.6), s.t(bar, i * 2), 0.3 if i % 2 else -0.3, 0.13, 0.25, 0.15)
+        for st, v in ((0, 1.0), (12, 0.8)):
+            s.drum(kick(v), s.t(bar, st), 0.85, is_kick=True)
+            s.add(fart_bass(midi(root - 12), 5 * s.sd, v), s.t(bar, st), 0, 0.5, 0.05, 0, True)
+        for st in (6, 16): s.drum(snare(0.8), s.t(bar, st), 0.4, 0, 0.2); s.drum(squelch(0.9), s.t(bar, st), 0.3, 0.15, 0.15)
+        for st in range(0, 20, 2): s.drum(hat(vel=0.6 if st % 4 == 0 else 0.35), s.t(bar, st), 0.22, 0.25)
+        if bar % 2 == 1:
+            for k, st in enumerate((14, 16, 18)): s.drum(tom(130 - 25 * k), s.t(bar, st), 0.35, -0.3 + 0.3 * k, 0.2)
+        if bar % 4 == 0: s.chord(s.t(bar, 0), [n + 12 for n in ch], 4 * 20 * s.sd, 0.8, choir, 0.08, 0.6, 0.6, True)
+        if sec == 1 and bar % 4 in (0, 2): melody(s, bar, lead, theremin, 0.16, 0.15, 0.5, 0.3)
+        if bar % 8 == 7: s.drum(chains(), s.t(bar, 10), 0.15, 0.5, 0.3)
+    s.render("battle_a", sc=0.35, rms=0.13, wow=0.002)
 
 
 def battle_b():
-    """Мушиное диско: Em9 - Fmaj7 - Em9 - B7, 120 bpm, бас октавами, жужжание мух, бутылки вместо тарелок."""
-    s = Song(120, 24)
-    prog = [(40, [55, 59, 62, 66]), (41, [53, 57, 60, 64]), (40, [55, 59, 62, 66]), (47, [54, 57, 59, 63])]
-    bass = [(i, 0 if i % 4 == 0 else 12, 1.6, 1.0 if i % 4 == 0 else 0.75) for i in range(0, 16, 2)] + [(15, 11, 1, 0.6)]
-    hook = [(0, 76, 3), (4, 79, 2), (6, 77, 2), (8, 76, 4), (14, 71, 2), (16, 75, 3), (20, 78, 2), (22, 79, 2), (24, 78, 4), (30, 75, 2)]
-    for bar in range(24):
-        root, ch = prog[bar % 4]; sec = bar // 8
-        four_floor(s, bar, hats="16" if sec else "off", clap_g=0.45)
-        for st in (2, 6, 10, 14): s.drum(hat(True, 0.8), s.t(bar, st), 0.2, 0.2, 0.08)
-        for st in (3, 11): s.drum(clink(0.6), s.t(bar, st), 0.08, -0.4, 0.2)
-        bass_line(s, bar, root, bass, 0.5, 1.2)
-        s.chord(s.t(bar, 0), ch, 16 * s.sd, 0.7, pad, 0.07, 0.45, 0.8, True)
-        s.chord(s.t(bar, 0), ch, 3 * s.sd, 0.75, rhodes, 0.15); s.chord(s.t(bar, 7), ch, 2 * s.sd, 0.55, rhodes, 0.12)
-        if sec >= 1:
-            arp = [ch[i] + 12 for i in (0, 1, 2, 3, 2, 1, 0, 1)]
-            for st in range(16):
-                pan = 0.6 * np.sin(TAU * (bar * 16 + st) / 64)
-                s.add(pluck(midi(arp[st % 8]), s.sd, 0.8 if st % 4 == 0 else 0.55, 0.8), s.t(bar, st), pan, 0.09, 0.25, 0.2)
-        if sec == 2 and bar % 2 == 0: melody(s, bar, hook, bell, 0.16, 0.2, 0.35, 0.35)
-    fl = flybuzz(s.n)
-    s.render("battle_b", sc=0.5, wow=0.0015, extra=np.vstack([fl, np.roll(fl, 3000)]))
+    """Пердёжный марш: 4/4, 112 bpm, D минор. Туба и пердящий бас «умпа», орган на слабые доли, маршевый малый, ярмарочная дудка."""
+    s = Song(112, 16)
+    prog = [(38, [57, 62, 65]), (45, [57, 61, 64, 67]), (38, [57, 62, 65]), (43, [55, 58, 62]),
+            (38, [57, 62, 65]), (46, [58, 62, 65]), (45, [57, 61, 64, 67]), (38, [57, 62, 65])]
+    mel = [(0, 74, 3), (3, 73, 1), (4, 74, 2), (6, 77, 2), (8, 76, 3), (11, 74, 1), (12, 73, 4),
+           (16, 74, 2), (18, 70, 2), (20, 69, 4), (24, 73, 2), (26, 76, 2), (28, 74, 4)]
+    for bar in range(16):
+        root, ch = prog[bar % 8]; sec = bar // 8
+        for st, semi in ((0, 0), (8, 7)):
+            s.add(tuba(midi(root - 12 + semi), 3 * s.sd, 1.0), s.t(bar, st), 0, 0.3, 0.1)
+            s.add(fart_bass(midi(root - 12 + semi), 2.5 * s.sd, 0.9), s.t(bar, st), 0, 0.3, 0.05)
+            s.drum(kick(0.9), s.t(bar, st), 0.75, is_kick=True)
+        for st in (4, 12): s.chord(s.t(bar, st), ch, 2 * s.sd, 0.8, organ, 0.07, 0.3, 0.5)
+        for st in range(16):   # маршевый малый: акценты на 2 и 4, дробь призраками
+            if st in (4, 12): s.drum(snare(1.0), s.t(bar, st), 0.45, 0, 0.15); s.drum(squelch(0.8), s.t(bar, st), 0.25)
+            elif st % 2 == 1 or bar % 4 == 3: s.drum(snare(0.25), s.t(bar, st), 0.25, 0.2, 0.08)
+        if bar % 4 == 3: s.add(burp(0.8), s.t(bar, 14), -0.4, 0.12, 0.3)
+        if sec == 1 and bar % 2 == 0: melody(s, bar, mel, calliope, 0.13, 0.2, 0.35, 0.25)
+        if sec == 1 and bar % 2 == 0: melody(s, bar, mel, theremin, 0.06, -0.3, 0.5, 0.3, 12)
+    s.render("battle_b", sc=0.25, rms=0.13, wow=0.0015)
 
 
 def battle_c():
-    """Гнилой чиллхоп: Cm9 - Abmaj7 - Fm9 - G7b9, 88 bpm, свинг, капли, винил, сильно плывёт."""
-    s = Song(88, 16, swing=0.3)
-    prog = [(36, [51, 55, 58, 62]), (44, [55, 60, 63, 67]), (41, [56, 60, 63, 67]), (43, [53, 56, 59, 62])]
-    bass = [(0, 0, 5), (7, 7, 2, 0.7), (10, 0, 3, 0.9), (14, 12, 2, 0.7)]
-    mel = [(2, 79, 2), (4, 77, 2), (6, 75, 4), (12, 72, 2), (14, 75, 2), (18, 74, 3), (22, 71, 2), (24, 72, 6)]
+    """Трупный грув: 4/4, 76 bpm (полутемп), C минор. Пердящий саб с глиссандо, трэп-хэты, хор, фальшивая шкатулка, цепи."""
+    s = Song(76, 16)
+    prog = [(36, [55, 60, 63]), (32, [56, 60, 63]), (35, [55, 59, 62, 65]), (36, [55, 60, 63])]   # Cm - Ab - G7b9-ish - Cm
+    box = [(0, 75, 2), (2, 79, 2), (4, 78, 4), (8, 75, 2), (10, 74, 2), (12, 71, 4), (16, 72, 2), (18, 75, 2), (20, 74, 4), (24, 68, 8)]
     for bar in range(16):
         root, ch = prog[bar % 4]; sec = bar // 8
-        for st, v in ((0, 1.0), (7, 0.55), (10, 0.85)): s.drum(kick(v), s.t(bar, st), 0.85, is_kick=True)
-        for st in (4, 12): s.drum(snare(), s.t(bar, st), 0.45, 0.0, 0.15); s.drum(squelch(0.7), s.t(bar, st), 0.25, 0.1, 0.1)
-        s.drum(rim(0.5), s.t(bar, 15), 0.15, 0.3)
-        for st in range(0, 16, 2): s.drum(hat(vel=0.7 if st % 4 == 0 else 0.4), s.t(bar, st), 0.3, 0.2)
-        for st in ((3, 9) if bar % 2 else (5, 13)): s.drum(drip(0.8), s.t(bar, st), 0.12, R.uniform(-0.6, 0.6), 0.35)
-        bass_line(s, bar, root, bass, 0.55, 0.35, False)
-        s.chord(s.t(bar, 0), ch, 6 * s.sd, 0.8, rhodes, 0.2, 0.35); s.chord(s.t(bar, 10), ch, 5 * s.sd, 0.5, rhodes, 0.16, 0.35)
-        if sec == 1 and bar % 2 == 0: melody(s, bar, mel, musicbox, 0.2, 0.25, 0.4, 0.3)
-    s.render("battle_c", sc=0.2, rms=0.12, wow=0.004, extra=np.vstack([crackle(s.n)] * 2))
+        for st, v in ((0, 1.0), (10, 0.7)): s.drum(kick(v), s.t(bar, st), 0.8, is_kick=True)
+        s.add(fart_bass(midi(root - 12), 6 * s.sd, 1.0), s.t(bar, 0), 0, 0.55, 0.05, 0, True)
+        s.add(fart_bass(midi(root - 12 + (3 if bar % 2 else -2)), 3 * s.sd, 0.8), s.t(bar, 10), 0, 0.45, 0.05, 0, True)
+        s.drum(clap(), s.t(bar, 8), 0.45, 0, 0.2); s.drum(squelch(0.9), s.t(bar, 8), 0.35, 0.1, 0.15)
+        for st in range(16):   # трэп-хэты: восьмые и дроби
+            if st % 2 == 0 or (bar % 2 == 1 and st >= 12): s.drum(hat(vel=0.6 if st % 4 == 0 else 0.35), s.t(bar, st), 0.22, 0.25)
+        if bar % 2 == 0: s.chord(s.t(bar, 0), [n + 12 for n in ch], 32 * s.sd, 0.7, choir, 0.07, 0.6, 0.7, True)
+        if bar % 4 == 2: s.drum(chains(0.8), s.t(bar, 6), 0.13, -0.5, 0.3)
+        if sec == 1 and bar % 2 == 0:
+            for st, m, ln in box: s.add(musicbox(midi(m) * 0.99, 0.6, 0.7), s.t(bar, st), 0.3, 0.13 * LEAD_G, 0.5, 0.3)
+    s.render("battle_c", sc=0.4, rms=0.12, wow=0.004, extra=np.vstack([crackle(s.n)] * 2))
 
 
 def boss():
-    """Хозяин свалки: A гармонический минор (Am - F - Dm - E7), 126 bpm, орган, рычащий бас 16-ми, хлюпающий малый."""
-    s = Song(126, 16)
-    prog = [(45, [57, 60, 64]), (41, [57, 60, 65]), (38, [57, 62, 65]), (40, [56, 59, 62, 64]),
-            (45, [57, 60, 64]), (41, [57, 60, 65]), (40, [56, 59, 62, 64]), (40, [56, 59, 62, 64])]
-    bass = [(i, 12 if i % 4 == 2 else 0, 0.9, 1.0 if i % 4 == 0 else 0.7) for i in range(16)]
-    hook = [(0, 81, 4), (4, 80, 2), (6, 81, 2), (8, 83, 4), (12, 76, 4), (16, 77, 4), (20, 76, 2), (22, 74, 2), (24, 80, 8)]
+    """Хозяин свалки: 4/4, 150 bpm, A гармонический минор. Органные пассажи, хор-удары, бочка двойкой, томы, вой терменвокса."""
+    s = Song(150, 16)
+    prog = [(45, [57, 60, 64]), (41, [57, 60, 65]), (38, [57, 62, 65]), (40, [56, 59, 62, 64])]
+    run = [69, 68, 69, 71, 72, 71, 69, 68, 64, 65, 68, 69, 72, 71, 68, 64]
     for bar in range(16):
-        root, ch = prog[bar % 8]; sec = bar // 8
-        four_floor(s, bar, 1.0, 0.55, "16", 0.0, 14)
-        if bar == 15:
-            for st in range(8, 16): s.drum(snare(0.4 + st * 0.04), s.t(bar, st), 0.45)
-        bass_line(s, bar, root - 12 if root > 44 else root, bass, 0.55, inst=gritty_bass)
-        s.chord(s.t(bar, 0), [n + 12 for n in ch], 16 * s.sd, 0.8, pad, 0.07, 0.4, 0.8, True)
-        for st in (0, 6, 10): s.chord(s.t(bar, st), ch, 2 * s.sd, 0.8, organ, 0.06, 0.3, 0.5)
-        if sec == 1 and bar % 2 == 0: melody(s, bar, hook, detuned_lead, 0.17, 0.0, 0.3, 0.3)
-    s.render("boss", sc=0.55, rms=0.14, wow=0.001)
+        root, ch = prog[bar % 4]; sec = bar // 8
+        for st in (0, 3, 4, 8, 11, 12): s.drum(kick(0.9), s.t(bar, st), 0.8, is_kick=True)
+        for st in (4, 12): s.drum(snare(), s.t(bar, st), 0.45, 0, 0.15); s.drum(squelch(), s.t(bar, st), 0.3)
+        for st in range(0, 16, 2): s.drum(hat(vel=0.5), s.t(bar, st), 0.2, 0.25)
+        bass_line(s, bar, root - 12 if root > 44 else root, [(i, 0 if i % 4 else 12, 0.9, 1.0 if i % 4 == 0 else 0.7) for i in range(16)], 0.5, inst=gritty_bass)
+        for st, m in enumerate(run):
+            s.add(organ(midi(m + (root - 45 if bar % 4 == 1 else 0)), s.sd * 0.9, 0.7), s.t(bar, st), 0.25 if st % 2 else -0.25, 0.05, 0.2)
+        s.chord(s.t(bar, 0), [n + 12 for n in ch], 3 * s.sd, 1.0, choir, 0.1, 0.5, 0.6, False)
+        if bar % 2 == 1:
+            for k, st in enumerate((12, 13, 14, 15)): s.drum(tom(140 - 20 * k), s.t(bar, st), 0.35, -0.4 + 0.25 * k, 0.15)
+        if sec == 1 and bar % 2 == 0: s.add(theremin(midi(81 + (bar % 4)), 14 * s.sd, 1.0), s.t(bar, 0), 0.2, 0.14 * LEAD_G, 0.5, 0.3)
+    s.render("boss", sc=0.35, rms=0.14, wow=0.001)
 
 
 def shop():
-    """Ларёк у бака: тёмный лаунж Am9 - Dm9 - E7#9 - Fmaj7, 86 bpm, капли, звон бутылок, клавиши плывут."""
-    s = Song(86, 16)
-    prog = [(45, [55, 59, 60, 64]), (38, [53, 57, 60, 64]), (40, [56, 59, 62, 67]), (41, [52, 57, 60, 64])]
-    bass = [(0, 0, 3), (6, 7, 2, 0.75), (8, 0, 3, 0.9), (14, 7, 2, 0.7)]
-    comp = [(0, 2, 0.7), (3, 2, 0.5), (6, 2, 0.6), (10, 2, 0.55), (13, 2, 0.5)]
-    mel = [(0, 76, 4), (4, 79, 2), (6, 77, 4), (12, 76, 2), (14, 72, 2), (16, 71, 6), (24, 72, 2), (26, 74, 2), (28, 76, 4)]
-    for bar in range(16):
-        root, ch = prog[bar % 4]; sec = bar // 8
-        for st in (0, 8): s.drum(kick(0.7), s.t(bar, st), 0.6, is_kick=True)
-        for st in (0, 3, 6, 10, 12): s.drum(rim(0.6), s.t(bar, st), 0.12, 0.35, 0.12)
-        for st in (2, 14): s.drum(clink(0.5), s.t(bar, st), 0.08, -0.3, 0.2)
-        if bar % 2 == 0: s.drum(drip(0.8), s.t(bar, 9), 0.12, R.uniform(-0.6, 0.6), 0.4)
-        bass_line(s, bar, root, bass, 0.5, 0.5, False)
-        for st, ln, v in comp: s.chord(s.t(bar, st), ch, ln * s.sd, v, rhodes, 0.17, 0.3)
-        if sec == 1 and bar % 2 == 0: melody(s, bar, mel, lead, 0.12, 0.2, 0.4, 0.3)
-    s.render("shop", sc=0.0, rms=0.11, wow=0.003, extra=np.vstack([crackle(s.n, 4)] * 2))
+    """Злобный ларёк: зловещий ярмарочный вальс 3/4, 160 bpm, A минор. Туба «умпа», расстроенный аккордеон, дудка, хрипы."""
+    s = Song(160, 24, steps=12)
+    prog = [(45, [57, 60, 64]), (40, [56, 59, 62, 64]), (45, [57, 60, 64]), (38, [57, 62, 65]),
+            (45, [57, 60, 64]), (41, [57, 60, 65]), (40, [56, 59, 62, 64]), (45, [57, 60, 64])]
+    mel = [(0, 76, 4), (4, 75, 2), (6, 76, 2), (8, 80, 4), (12, 81, 6), (18, 77, 2), (20, 76, 4),
+           (24, 75, 4), (28, 76, 2), (30, 72, 2), (32, 71, 4), (36, 68, 6), (42, 69, 6)]
+    for bar in range(24):
+        root, ch = prog[bar % 8]; sec = bar // 8
+        s.add(tuba(midi(root - 12), 3 * s.sd, 1.0), s.t(bar, 0), 0, 0.35, 0.1)
+        s.drum(kick(0.7), s.t(bar, 0), 0.6, is_kick=True)
+        for st in (4, 8):
+            s.chord(s.t(bar, st), ch, 2.5 * s.sd, 0.7, accordion, 0.06, 0.3, 0.5)
+            s.drum(rim(0.5), s.t(bar, st), 0.1, 0.3, 0.1)
+        if bar % 4 == 3: s.add(burp(0.6), s.t(bar, 8), 0.5, 0.08, 0.3)
+        if sec >= 1 and bar % 4 == 0: melody(s, bar, mel, calliope, 0.12, -0.2, 0.35, 0.2)
+        if sec == 2 and bar % 4 == 0: melody(s, bar, mel, theremin, 0.05, 0.3, 0.5, 0.3, -12)
+    s.render("shop", sc=0.0, rms=0.115, wow=0.0035, extra=np.vstack([crackle(s.n, 4)] * 2))
 
 
 def menu():
-    """Кладбище: Am - F - Dm - E по 2 такта, 66 bpm. Шкатулка, орган, ветер, ворона, капли, винил, плывёт."""
-    s = Song(66, 16, swing=0.2)
-    prog = [(45, [57, 60, 64]), (41, [57, 60, 65]), (38, [57, 62, 65]), (40, [56, 59, 64])]
-    mel = [(0, 76, 4), (6, 77, 2), (8, 76, 4), (12, 72, 4), (16, 74, 6), (24, 71, 4), (28, 68, 4)]
-    for bar in range(16):
-        root, ch = prog[(bar // 2) % 4]
-        s.drum(kick(0.7), s.t(bar, 0), 0.55, is_kick=True); s.drum(kick(0.45), s.t(bar, 10), 0.5, is_kick=True)
-        s.drum(snare(0.6), s.t(bar, 8), 0.3, 0.0, 0.25)
-        for st in range(0, 16, 4): s.drum(hat(vel=0.5), s.t(bar, st + 2), 0.18, 0.25)
-        if bar % 3 == 1: s.drum(drip(0.7), s.t(bar, 13), 0.12, R.uniform(-0.7, 0.7), 0.5)
-        if bar % 2 == 0:
-            s.add(ebass(midi(root - 12), 28 * s.sd, 0.9, 0.3), s.t(bar, 0), 0, 0.45, 0.02)
-            s.chord(s.t(bar, 0), ch, 30 * s.sd, 0.5, organ, 0.05, 0.5, 0.6)
-        for i, st in enumerate((0, 4, 8, 12)):
-            s.add(musicbox(midi(ch[(i + bar) % len(ch)] + 12), 0.8, 0.5), s.t(bar, st), 0.4 if i % 2 else -0.4, 0.12, 0.45, 0.25)
-        if bar in (4, 12): melody(s, bar, mel, musicbox, 0.17, 0.1, 0.5, 0.4)
-    s.add(crow(), s.t(6, 4), -0.6, 0.18, 0.5)
+    """Кладбище: погребальный хорал, 58 bpm, D минор. Колокол, хор, орган, сердцебиение томом, ветер, ворона, шкатулка."""
+    s = Song(58, 12)
+    prog = [(38, [57, 62, 65]), (34, [58, 62, 65]), (43, [55, 58, 62]), (45, [57, 61, 64])]   # Dm - Bb - Gm - A
+    box = [(0, 74, 4), (4, 73, 4), (8, 74, 2), (10, 77, 2), (12, 76, 8), (24, 70, 4), (28, 69, 4)]
+    for bar in range(12):
+        root, ch = prog[bar % 4]
+        s.add(tbell(midi(50), 3.0, 0.9), s.t(bar, 0), -0.2, 0.15, 0.6)   # колокол бьёт раз в такт
+        for st in (0, 2): s.drum(tom(70, 0.8 if st == 0 else 0.5), s.t(bar, 8 + st), 0.4, 0, 0.3)   # тук-тук сердца
+        s.chord(s.t(bar, 0), [n + 12 for n in ch], 16 * s.sd, 0.6, choir, 0.08, 0.7, 0.6)
+        s.chord(s.t(bar, 0), ch, 15 * s.sd, 0.45, organ, 0.04, 0.6, 0.5)
+        s.add(ebass(midi(root - 12), 14 * s.sd, 0.8, 0.3), s.t(bar, 0), 0, 0.4, 0.05)
+        if bar in (4, 8):
+            for st, m, ln in box: s.add(musicbox(midi(m) * 0.995, 0.9, 0.6), s.t(bar, st), 0.35, 0.12 * LEAD_G, 0.6, 0.35)
+    s.add(crow(), s.t(2, 6), -0.6, 0.2, 0.5); s.add(crow(0.7), s.t(9, 3), 0.6, 0.15, 0.6)
     w = wind(s.n)
-    s.render("menu", sc=0.1, rev_sec=3.2, rms=0.105, wow=0.004, extra=np.vstack([crackle(s.n, 5) + w, crackle(s.n, 5) + np.roll(w, 9000)]))
+    s.render("menu", sc=0.0, rev_sec=3.6, rms=0.1, wow=0.003, extra=np.vstack([crackle(s.n, 5) + w * 1.5, crackle(s.n, 5) + np.roll(w, 9000) * 1.5]))
 
 
 # ---------------- звуки ----------------

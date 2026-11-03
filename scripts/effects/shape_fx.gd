@@ -19,7 +19,17 @@ func _process(delta: float) -> void:
 
 func _draw() -> void:
 	var k: float = clampf(_t / life, 0.0, 1.0)
-	if mode == &"ring":
+	if mode == &"impact":   # звезда удара: длинные лучи вдоль удара, короткие поперёк, белое ядро
+		var r: float = radius_max * (0.7 + 0.5 * k)
+		var a: float = 1.0 - k
+		for i: int in 4:
+			var d: Vector2 = dir.rotated(i * PI * 0.5)
+			var ray_len: float = r * (1.0 if i % 2 == 0 else 0.55)
+			var side: Vector2 = d.orthogonal() * 1.6 * (1.0 - k)
+			draw_colored_polygon(PackedVector2Array([side, d * ray_len, -side]), Color(color.r, color.g, color.b, a))
+			draw_colored_polygon(PackedVector2Array([side * 0.5, d * ray_len * 0.6, -side * 0.5]), Color(1.0, 1.0, 1.0, a))
+		draw_circle(Vector2.ZERO, r * 0.3 * (1.0 - k) + 0.5, Color(1.0, 1.0, 1.0, a))
+	elif mode == &"ring":
 		var r: float = radius_max * (1.0 - pow(1.0 - k, 3.0))
 		draw_circle(Vector2.ZERO, r * 0.75, Color(1.0, 0.95, 0.4, (1.0 - k) * 0.55))
 		draw_circle(Vector2.ZERO, r * 0.45, Color(1.0, 1.0, 1.0, (1.0 - k) * 0.7))

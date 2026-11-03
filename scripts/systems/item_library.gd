@@ -331,6 +331,8 @@ static func describe(data: Dictionary) -> String:
 				lines.append("%d%% СПЕРЕТЬ ГОВНО УДАРОМ" % v)
 			&"salary":
 				lines.append("ЗАРПЛАТА: %d ГОВНА x НОМЕР ВОЛНЫ" % v)
+			&"nine_lives":
+				lines.append(TranslationServer.translate("%d ЖИЗНЕЙ: УДАР = МИНУС ЖИЗНЬ") % v)
 			&"clean_heal":
 				lines.append("КАЖДЫЕ %d ГОВНИН +1 ХП" % v)
 			&"hype":

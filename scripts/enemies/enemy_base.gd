@@ -296,15 +296,20 @@ func _on_hurt(damage: float) -> void:
 		if damage <= 0.0:
 			return
 	_flash.flash(Color.WHITE)
-	_squash(Vector2(1.25, 0.8))
+	_squash(Vector2(1.45, 0.7))   # сильнее сплющивает - видно, что попал
+	var crit: bool = GameState.is_crit_damage(damage)
 	if _neutral:
 		_bin_hit_fx(false)
 	if is_instance_valid(_target) and not _neutral:
 		_knockback = _target.global_position.direction_to(global_position) * Balance.ENEMY_KNOCKBACK_SPEED
 	if not _neutral:
-		HitFx.burst(get_tree(), global_position, Color(1.0, 0.0, 0.2), 5, 70.0)
+		var hit_dir: Vector2 = _knockback.normalized() if _knockback != Vector2.ZERO else Vector2.RIGHT
+		HitFx.impact(get_tree(), global_position - hit_dir * 4.0, hit_dir, crit)
+		HitFx.burst(get_tree(), global_position, Color(1.0, 0.0, 0.2), 7 if crit else 5, 90.0 if crit else 70.0, 2.5)
 		_item_hit_effects()
-		EventBus.enemy_hurt.emit(GameState.is_crit_damage(damage))
+		EventBus.enemy_hurt.emit(crit)
+		if crit:
+			HitFx.hitstop(get_tree(), Balance.HITSTOP_CRIT_SEC)
 	# цифры урона: по настройке (0 - нет, 1 - только криты, 2 - все); криты обычного размера - иначе врагов не видно
 	if Settings.damage_numbers >= 1 and GameState.is_crit_damage(damage):
 		HitFx.popup(get_tree(), global_position + Vector2(0.0, -14.0), str(int(damage)) + "!", Color(1.0, 0.85, 0.0), 14.0, 0.5)
@@ -415,8 +420,12 @@ func _on_died() -> void:
 	if _neutral:
 		_bin_hit_fx(true)
 	else:
-		HitFx.burst(get_tree(), global_position, Color(1.0, 0.0625, 0.9412), 14, 110.0, 3.0, 0.5)
-		HitFx.burst(get_tree(), global_position, Color(0.2235, 1.0, 0.0784), 8, 80.0, 2.0, 0.5)
+		HitFx.burst(get_tree(), global_position, Color(1.0, 0.0625, 0.9412), 18, 130.0, 3.0, 0.5)
+		HitFx.burst(get_tree(), global_position, Color(0.2235, 1.0, 0.0784), 10, 95.0, 2.0, 0.5)
+		HitFx.burst(get_tree(), global_position, Color(0.55, 0.0, 0.05), 6, 70.0, 4.0, 0.8, true)   # ошмётки
+		HitFx.impact(get_tree(), global_position, Vector2.from_angle(randf() * TAU), true, Color(1.0, 0.3, 0.8))
+		if Balance.ENEMIES[enemy_id].has("anim_rows"):   # элита или босс
+			HitFx.hitstop(get_tree(), Balance.HITSTOP_BIG_KILL_SEC)
 	if _revived:   # ачивка «ЗОМБИ-ОХОТНИК»
 		Profile.stat_add(&"zombie_kills", 1)
 		if Profile.stat(&"zombie_kills") >= 100:

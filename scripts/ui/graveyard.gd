@@ -161,8 +161,48 @@ func _apply_dossier(shown: bool = true) -> void:
 	_lore.visible = shown and _dossier
 	_lore.text = CharacterLibrary.lore(_ids[_selected])
 	if shown:
-		for node: Label in [_tagline, _plus, _minus, _weapon]:
+		for node: Label in [_tagline, _plus, _plus2, _minus, _trait, _weapon, _dash_label]:
 			node.visible = not _dossier
+	_stack_info()
+
+
+## Строки досье героя друг под другом по реальному числу строк (длинный рывок в две строки не налезает на «ОТКОПАН»).
+## Не влезает в панель - панель растёт вверх.
+func _stack_info() -> void:
+	if _info_nodes.is_empty() or _title == null:
+		return
+	var open_hero: bool = Profile.is_unlocked(_ids[_selected])
+	_status.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT if open_hero else HORIZONTAL_ALIGNMENT_LEFT
+	# откопан - «ЖМИ ПРОБЕЛ» справа в строке имени (экономит строку); закопан - условие отдельной строкой внизу
+	var rows: Array = [[_title, _status] if open_hero else [_title], [_lore] if _lore.visible else [_tagline], [_plus, _plus2, _minus], [_trait], [_weapon], [_dash_label]]
+	if not open_hero:
+		rows.append([_status])
+	var heights: Array[float] = []
+	var total: float = 0.0
+	for row: Array in rows:
+		var h: float = 0.0
+		for l: Label in row:
+			if l.visible and l.text.strip_edges() != "":
+				var lines: int = 1 if l.autowrap_mode == TextServer.AUTOWRAP_OFF else l.get_line_count()
+				h = maxf(h, lines * (l.get_line_height() + l.get_theme_constant(&"line_spacing")))
+		heights.append(h)
+		total += h + (1.0 if h > 0.0 else 0.0)
+	var bottom: float = PANEL_BOTTOM - 3.0
+	if total > bottom - PANEL_TOP_MIN and _tagline.visible and not _lore.visible:
+		_tagline.visible = false   # не влезает - первой жертвой идёт присказка (это флейвор)
+		_stack_info()
+		return
+	var top: float = maxf(minf(PANEL_TOP + 4.0, bottom - total), PANEL_TOP_MIN)
+	var panel: Control = _info_nodes[0] as Control
+	panel.position.y = top - 4.0
+	panel.size.y = PANEL_BOTTOM - panel.position.y
+	_preview.position.y = (panel.position.y + PANEL_BOTTOM) * 0.5 + 2.0
+	var y: float = top
+	for i: int in rows.size():
+		for l: Label in rows[i]:
+			l.position.y = y
+			l.size.y = heights[i]
+		y += heights[i] + (1.0 if heights[i] > 0.0 else 0.0)
 
 
 func _build_menu_button() -> void:
@@ -259,9 +299,13 @@ func _say(text: String) -> void:
 		_speech.queue_free()
 	var at: Vector2 = _rest_pos(_selected) + Vector2(-50.0, -34.0)
 	at.x = clampf(at.x, 4.0, SCREEN.x - 104.0)   # реплика у края не вылезает за экран
-	at.y = maxf(at.y, 2.0)
+	at.y = maxf(at.y, 22.0)   # не на кнопках шапки
 	var label: Label = _label(text, at, 100.0, YELLOW, HORIZONTAL_ALIGNMENT_CENTER)
 	label.z_index = 30
+	var bg: StyleBoxFlat = StyleBoxFlat.new()   # подложка: реплика читается поверх могил и подписей
+	bg.bg_color = Color(0.0, 0.0, 0.0, 0.8)
+	bg.set_content_margin_all(1)
+	label.add_theme_stylebox_override(&"normal", bg)
 	_speech = label
 	_speech_left = 1.4
 
@@ -503,10 +547,15 @@ func _most_dead() -> StringName:
 	return best
 
 
+const PANEL_TOP: float = 154.0
+const PANEL_BOTTOM: float = 242.0
+const PANEL_TOP_MIN: float = 146.0   # выше панель не растёт - иначе закрывает подписи могил
+
+
 func _build_panel() -> void:
 	var panel: Panel = Panel.new()
-	panel.position = Vector2(24.0, 154.0)
-	panel.size = Vector2(432.0, 88.0)
+	panel.position = Vector2(24.0, PANEL_TOP)
+	panel.size = Vector2(432.0, PANEL_BOTTOM - PANEL_TOP)
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var style: StyleBoxFlat = StyleBoxFlat.new()
 	style.bg_color = Color(0.02, 0.02, 0.03)
@@ -538,9 +587,9 @@ func _build_panel() -> void:
 	_status = _label("", Vector2(96.0, 233.0), 350.0, GREEN)
 	for node: Label in [_title, _tagline, _plus, _plus2, _minus, _trait, _weapon, _dash_label, _status]:
 		_info_nodes.append(node)
-	_lore = _label("", Vector2(96.0, 170.0), 346.0, WHITE)
+	_lore = _label("", Vector2(96.0, 170.0), 350.0, WHITE)
 	_lore.visible = false
-	_hint = _label("", Vector2(8.0, 243.0), 200.0, GREY)
+	_hint = _label("", Vector2(8.0, 246.0), 200.0, GREY)
 	_update_hint()
 	InputMode.changed.connect(func(_pad: bool) -> void: _update_hint())
 
@@ -736,6 +785,7 @@ func _refresh() -> void:
 		if _captions[k] != null:
 			var open_k: bool = Profile.is_unlocked(_ids[k])
 			_captions[k].add_theme_color_override(&"font_color", YELLOW if k == _selected else (WHITE if open_k else GREY))
+			_captions[k].visible = k == _selected   # все имена сразу слипались («КАЛЬМАРПЛАНКТОН») - подписан только выбранный
 	var sheet: Texture2D = CharacterLibrary.sprite_sheet(id)
 	_preview.texture = (sheet if sheet != null else PLAYER_TEX) if unlocked else null
 	_preview.visible = unlocked

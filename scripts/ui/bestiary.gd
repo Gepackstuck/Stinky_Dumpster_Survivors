@@ -6,7 +6,7 @@ extends Control
 signal closed
 
 const COLUMNS: int = 6
-const CELL: Vector2 = Vector2(46.0, 46.0)
+const CELL: Vector2 = Vector2(46.0, 40.0)   # 29 врагов = 5 рядов: при 46 сетка налезала на счётчик
 const GRID_POS: Vector2 = Vector2(10.0, 30.0)
 const PANEL_POS: Vector2 = Vector2(304.0, 28.0)
 const PANEL_W: float = 168.0
@@ -86,11 +86,11 @@ func _build_cell(i: int) -> void:
 	sprite.scale = Vector2.ONE * (1.0 if k >= 1.0 else k)
 	if Profile.killed(id) <= 0:
 		sprite.modulate = Color(0.0, 0.0, 0.0, 1.0)
-	sprite.position = _cell_pos(i) + CELL * 0.5 + Vector2(0.0, 4.0)
+	sprite.position = _cell_pos(i) + CELL * 0.5 + Vector2(0.0, 2.0)
 	add_child(sprite)
 	_sprites.append(sprite)
 	if Profile.killed(id) <= 0:
-		var mark: Label = _label("?", _cell_pos(i) + Vector2(0.0, 15.0), CELL.x, GREY, HORIZONTAL_ALIGNMENT_CENTER)
+		var mark: Label = _label("?", _cell_pos(i) + Vector2(0.0, 13.0), CELL.x, GREY, HORIZONTAL_ALIGNMENT_CENTER)
 		mark.z_index = 2
 
 

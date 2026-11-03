@@ -77,9 +77,9 @@ func _ready() -> void:
 	_hint_label = Label.new()
 	_hint_label.position = Vector2(20.0, 220.0)
 	_extra_label = Label.new()
-	_extra_label.position = Vector2(292.0, 190.0)   # справа от кнопки «ЕЩЁ РАЗ», внутри панели
-	_extra_label.size = Vector2(112.0, 9.0)
-	_extra_label.autowrap_mode = TextServer.AUTOWRAP_WORD
+	_extra_label.position = Vector2(282.0, 184.0)   # справа от кнопки «ЕЩЁ РАЗ», внутри панели
+	_extra_label.size = Vector2(124.0, 18.0)
+	_extra_label.autowrap_mode = TextServer.AUTOWRAP_OFF
 	_extra_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	_extra_label.add_theme_color_override(&"font_color", Color(0.75, 0.75, 0.8))
 	_extra_label.add_theme_color_override(&"font_shadow_color", Color.BLACK)
@@ -188,7 +188,7 @@ func _show_result(title: String, died: bool = false) -> void:
 		extra.append(tr({&"endless": "БЕСКОНЕЧНАЯ ПОМОЙКА", &"closed": "ЛАРЁК ЗАКРЫТ"}.get(GameState.mode, "")))
 	if GameState.seed_word != "":
 		extra.append(tr("СИД: %s") % GameState.seed_word)
-	_extra_label.text = "   ".join(extra)
+	_extra_label.text = "\n".join(extra)   # режим и сид - отдельными строками, не в одну длинную
 	_graph.died = died
 	_graph.queue_redraw()
 	_fill_damage()

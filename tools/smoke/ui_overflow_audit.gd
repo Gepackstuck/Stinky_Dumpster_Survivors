@@ -31,11 +31,17 @@ func _check(where: String, root: Node) -> void:
 		var bad: String = ""
 		if l.autowrap_mode == TextServer.AUTOWRAP_OFF and need.x > r.size.x + 1.0:
 			bad = "шире рамки (%d > %d)" % [need.x, r.size.x]
-		elif need.y > r.size.y + 2.0 and l.autowrap_mode != TextServer.AUTOWRAP_OFF:
-			bad = "строк больше, чем места (%d > %d)" % [need.y, r.size.y]
+		elif l.autowrap_mode != TextServer.AUTOWRAP_OFF:
+			# у переносимого текста get_minimum_size - одна строка; считаем реальные строки
+			var lines: int = l.get_line_count() if l.max_lines_visible < 0 else mini(l.get_line_count(), l.max_lines_visible)
+			need.y = lines * (l.get_line_height() + l.get_theme_constant(&"line_spacing")) * sc.y
+			if need.y > r.size.y + 4.0:   # до 4px - запас шрифта под строкой, буквы ещё в рамке
+				bad = "строк больше, чем места (%d > %d)" % [need.y, r.size.y]
 		var drawn: Rect2 = Rect2(r.position, Vector2(maxf(r.size.x, need.x), maxf(r.size.y, need.y)))
 		if not SCREEN.encloses(drawn.grow(-1.0)):
 			bad += (" + " if bad != "" else "") + "за экраном %s" % str(drawn)
+		if bad == "":
+			bad = _overlap(l, drawn)
 		if bad != "":
 			var key: String = where + "|" + l.text
 			if _seen.has(key):
@@ -43,6 +49,44 @@ func _check(where: String, root: Node) -> void:
 			_seen[key] = true
 			_found += 1
 			print("UI OVERFLOW %s | %s | %s | %s" % [where, str(root.get_path_to(l)), bad, l.text.replace("\n", " / ").left(70)])
+
+
+## Текст налезает на соседнюю надпись того же родителя (описание на цену и т.п.). Сравниваются «чернила» - где буквы реально стоят.
+func _overlap(l: Label, _drawn: Rect2) -> String:
+	var mine: Rect2 = _ink(l)
+	for sib: Node in l.get_parent().get_children():
+		var o: Label = sib as Label
+		if o == null or o == l or not o.is_visible_in_tree() or o.text.strip_edges() == "" or o.get_index() < l.get_index():
+			continue
+		if mine.grow(-1.5).intersects(_ink(o).grow(-1.5)):
+			return "налезает на «%s»" % o.text.replace("\n", " / ").left(30)
+	return ""
+
+
+## Прямоугольник, где буквы реально нарисованы (с учётом выравнивания и переносов), в координатах экрана.
+func _ink(l: Label) -> Rect2:
+	var r: Rect2 = l.get_global_rect()
+	var sc: Vector2 = l.get_global_transform().get_scale()
+	var font: Font = l.get_theme_font(&"font")
+	var fs: int = l.get_theme_font_size(&"font_size")
+	var w: float = 0.0
+	for line: String in l.text.split("\n"):
+		w = maxf(w, font.get_string_size(line, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x * sc.x)
+	if l.autowrap_mode != TextServer.AUTOWRAP_OFF:
+		w = minf(w, r.size.x)
+	var lines: int = l.get_line_count() if l.max_lines_visible < 0 else mini(l.get_line_count(), l.max_lines_visible)
+	var h: float = lines * (l.get_line_height() + l.get_theme_constant(&"line_spacing")) * sc.y
+	var x: float = r.position.x
+	if l.horizontal_alignment == HORIZONTAL_ALIGNMENT_CENTER:
+		x += (r.size.x - w) * 0.5
+	elif l.horizontal_alignment == HORIZONTAL_ALIGNMENT_RIGHT:
+		x += r.size.x - w
+	var y: float = r.position.y
+	if l.vertical_alignment == VERTICAL_ALIGNMENT_CENTER:
+		y += (r.size.y - h) * 0.5
+	elif l.vertical_alignment == VERTICAL_ALIGNMENT_BOTTOM:
+		y += r.size.y - h
+	return Rect2(x, y, w, h)
 
 
 func _run() -> void:

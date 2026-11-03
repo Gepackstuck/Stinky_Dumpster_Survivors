@@ -49,6 +49,39 @@ static func explosion(tree: SceneTree, at: Vector2, radius: float, color: Color 
 	burst(tree, at, Color(0.15, 0.1, 0.1), 6, radius * 1.0, 4.0, 0.7, true)
 
 
+## Звезда удара в точке попадания (импакт): короткая, яркая, по направлению удара.
+static func impact(tree: SceneTree, at: Vector2, direction: Vector2, big: bool = false, color: Color = Color(1.0, 0.95, 0.35)) -> void:
+	var star: Node2D = SHAPE.new()
+	star.set(&"mode", &"impact")
+	star.set(&"radius_max", 11.0 if big else 7.0)
+	star.set(&"color", color)
+	star.set(&"life", 0.13 if big else 0.09)
+	star.set(&"dir", direction.normalized() if direction != Vector2.ZERO else Vector2.RIGHT)
+	star.rotation = randf_range(-0.3, 0.3)
+	star.z_index = 22
+	tree.current_scene.add_child(star)
+	star.global_position = at
+
+
+static var _stop_until_ms: int = 0
+
+
+## Стоп-кадр: мир замирает на долю секунды - удар чувствуется рукой. Не чаще, чем раз в HITSTOP_GAP; боты и тесты без него.
+static func hitstop(tree: SceneTree, sec: float) -> void:
+	if Profile.sandbox or not Settings.screen_shake or tree.paused:
+		return
+	var now: int = Time.get_ticks_msec()
+	if now < _stop_until_ms + int(Balance.HITSTOP_GAP_SEC * 1000.0) or Engine.time_scale < 0.2:
+		return
+	_stop_until_ms = now + int(sec * 1000.0)
+	var prev: float = Engine.time_scale
+	var frozen: float = prev * Balance.HITSTOP_TIME_SCALE
+	Engine.time_scale = frozen
+	await tree.create_timer(sec, true, false, true).timeout
+	if is_equal_approx(Engine.time_scale, frozen):   # модификатор волны мог сменить скорость - тогда не трогаем
+		Engine.time_scale = prev
+
+
 ## Вспышка выстрела на конце ствола.
 static func muzzle(tree: SceneTree, at: Vector2, direction: Vector2, color: Color = Color(1.0, 0.9, 0.2), length: float = 11.0) -> void:
 	var flash: Node2D = SHAPE.new()

@@ -58,7 +58,8 @@ func _physics_process(delta: float) -> void:
 	_swing_dir = global_position.direction_to(target.global_position).angle()
 	_swing = 0.0
 	fired.emit(Vector2.from_angle(_swing_dir))
-	EventBus.weapon_fired.emit(&"swing", weapon_id)
+	EventBus.weapon_fired.emit(&"swing", &"")   # на взмахе - свист; свой звук оружия - на попадании
+	var hits: int = 0
 	for node: Node in get_tree().get_nodes_in_group(&"enemies") + get_tree().get_nodes_in_group(&"neutrals"):
 		var enemy: EnemyBase = node as EnemyBase
 		if enemy == null:
@@ -66,6 +67,11 @@ func _physics_process(delta: float) -> void:
 		var to: Vector2 = enemy.global_position - global_position
 		if to.length() <= _reach and absf(angle_difference(_swing_dir, to.angle())) <= _half_arc:
 			enemy.hit_by_weapon(GameState.roll_damage(_damage), to.normalized() * _knockback, weapon_id)
+			hits += 1
+	if hits > 0:   # импакт ближнего боя: свой звук оружия, стоп-кадр, лёгкая тряска
+		EventBus.melee_hit.emit(weapon_id, hits)
+		HitFx.hitstop(get_tree(), Balance.HITSTOP_MELEE_SEC)
+		EventBus.shake_requested.emit(Balance.SHAKE_MELEE_HIT)
 
 
 func _draw() -> void:

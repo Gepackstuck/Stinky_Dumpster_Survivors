@@ -43,6 +43,7 @@ func _ready() -> void:
 			play_sfx_or(StringName("e_" + String(id)), &"enemy_death"))
 	EventBus.player_hit.connect(func(_d: float) -> void: play_sfx(&"player_hurt"))
 	EventBus.xp_collected.connect(func(_a: int) -> void: _play_pickup())
+	EventBus.melee_hit.connect(func(weapon_id: StringName, _hits: int) -> void: play_sfx_or(StringName("w_" + String(weapon_id)), &"hit_crit", 0.06))
 	EventBus.enemy_hurt.connect(func(crit: bool) -> void: play_sfx(&"hit_crit" if crit else &"hit", 0.08))
 	EventBus.player_leveled_up.connect(func(_l: int) -> void: play_sfx(&"level_up"))
 	EventBus.wave_started.connect(func(_w: int) -> void:
