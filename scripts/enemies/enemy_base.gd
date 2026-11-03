@@ -76,9 +76,11 @@ func setup(target: Node2D, spawn_position: Vector2, id: StringName = &"squid_gop
 	_sprite.vframes = int(stats.get("anim_rows", 1))   # у боссов лист: ряд на каждое состояние (ходьба, замахи, ярость)
 	_anim.row = 0
 	var mod_size: float = WaveRules.mod_f("enemy_size", 1.0) if not _neutral and not stats.has("anim_rows") else 1.0   # боссов не трогаем
-	_sprite.scale = Vector2.ONE * mod_size
+	var vis: float = mod_size * (Balance.ENEMY_VISUAL_SCALE if not stats.has("anim_rows") else Balance.BOSS_VISUAL_SCALE)
+	_sprite.scale = Vector2.ONE * vis
 	_base_scale = _sprite.scale
-	_apply_size(float(stats.get("radius", BASE_RADIUS)) * mod_size)
+	var frame_w: float = _sprite.texture.get_width() / float(_sprite.hframes) * vis if _sprite.texture != null else 0.0
+	_apply_size(float(stats.get("radius", BASE_RADIUS)) * mod_size, maxf(float(stats.get("radius", BASE_RADIUS)) * mod_size, frame_w * Balance.ENEMY_BODY_FILL), frame_w)
 	_revived = false
 	modulate = Color.WHITE
 	_bounce_t = randf() * TAU
@@ -204,7 +206,8 @@ func heal_percent(fraction: float) -> void:
 
 ## Обжора растёт: спрайт крупнее (до предела), здоровья чуть добавляется.
 func grow(step: float) -> void:
-	_sprite.scale = Vector2.ONE * minf(_sprite.scale.x + step, Balance.GLUTTON_MAX_SCALE)
+	_base_scale = Vector2.ONE * minf(_base_scale.x + step, Balance.GLUTTON_MAX_SCALE * Balance.ENEMY_VISUAL_SCALE)
+	_sprite.scale = _base_scale
 
 
 ## Яйцо лопается: враг исчезает без дропа и убийства, на его месте вылупляется другой.
@@ -251,7 +254,9 @@ static func _texture_for(id: StringName) -> Texture2D:
 
 
 ## Размер тела/хитбоксов под тип врага (общие ресурсы форм копируем один раз на экземпляр).
-func _apply_size(radius: float) -> void:
+## radius - урон и попадания (как в балансе); body - тело для толкотни (по ширине спрайта, чтобы не налезали);
+## frame_w - ширина видимого спрайта: по нему врага можно задеть (не промахиваешься по краю тушки).
+func _apply_size(radius: float, body_radius: float = -1.0, frame_w: float = 0.0) -> void:
 	var body: CollisionShape2D = $CollisionShape2D
 	var hurt_shape: CollisionShape2D = $Hurtbox/CollisionShape2D
 	var hit_shape: CollisionShape2D = $Hitbox/CollisionShape2D
@@ -261,8 +266,8 @@ func _apply_size(radius: float) -> void:
 		hit_shape.shape = hit_shape.shape.duplicate()
 		_shapes_ready = true
 	var k: float = radius / BASE_RADIUS
-	(body.shape as CircleShape2D).radius = radius
-	(hurt_shape.shape as RectangleShape2D).size = Vector2(14.0, 14.0) * k
+	(body.shape as CircleShape2D).radius = body_radius if body_radius > 0.0 else radius
+	(hurt_shape.shape as RectangleShape2D).size = Vector2.ONE * maxf(14.0 * k, frame_w * 0.6)
 	(hit_shape.shape as RectangleShape2D).size = Vector2(12.0, 12.0) * k
 
 

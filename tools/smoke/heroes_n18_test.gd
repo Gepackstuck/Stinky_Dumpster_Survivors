@@ -24,6 +24,9 @@ func _run() -> void:
 		if hero == &"cat":
 			var hb: HurtboxComponent = player.get_node(^"Hurtbox") as HurtboxComponent
 			var hp0: float = GameState.hp
+			GameState.dodge_percent = 0.0   # у кота 4% уворота - «МИМО» ломал проверку случайно
+			GameState.block_charges = 0
+			GameState.repel_percent = 0.0
 			for k: int in 3:
 				hb.cancel_invulnerability()
 				hb.receive_hit(50.0)
