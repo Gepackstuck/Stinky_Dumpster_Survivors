@@ -40,6 +40,7 @@ func _physics_process(delta: float) -> void:
 		return
 	_cooldown_left = GameState.cooldown_for(_cooldown_sec)
 	fired.emit(Vector2.ZERO)
+	EventBus.weapon_fired.emit(&"swing", weapon_id)
 	var r_sq: float = _radius * _radius
 	var hit_any: bool = false
 	for node: Node in get_tree().get_nodes_in_group(&"enemies") + get_tree().get_nodes_in_group(&"neutrals"):

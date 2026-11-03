@@ -28,6 +28,7 @@ SceneFlow="*res://scripts/autoload/scene_flow.gd"
 InputMode="*res://scripts/autoload/input_mode.gd"
 Achievements="*res://scripts/autoload/achievements.gd"
 SteamService="*res://scripts/autoload/steam_service.gd"
+RunLog="*res://scripts/autoload/run_log.gd"
 
 [display]
 

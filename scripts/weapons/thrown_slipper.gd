@@ -56,7 +56,7 @@ func _physics_process(delta: float) -> void:
 
 func _land() -> void:
 	_landed = true
-	EventBus.weapon_fired.emit(&"explosion")
+	EventBus.weapon_fired.emit(&"explosion", &"")
 	EventBus.shake_requested.emit(Balance.SHAKE_EXPLOSION)
 	_sprite.position = Vector2.ZERO
 	_sprite.hide()

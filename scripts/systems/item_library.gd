@@ -261,7 +261,7 @@ static func describe(data: Dictionary) -> String:
 		match key:
 			&"lottery":
 				lines.append(TranslationServer.translate("СОТРЁШЬ В СЛЕДУЮЩЕМ ЛАРЬКЕ"))
-				lines.append(TranslationServer.translate("60% ПУСТО, 30% 5-15, 9% ПРЕДМЕТ, 1% ДЖЕКПОТ 100"))
+				lines.append(TranslationServer.translate("45% ПУСТО, 40% 5-15, 13% ПРЕДМЕТ, 2% ДЖЕКПОТ 100"))
 			&"dash":
 				lines.append(TranslationServer.translate("+1 РЫВОК"))
 				lines.append(TranslationServer.translate("БОСИКОМ НЕ РВАНЁШЬ" if GameState.item_count(SHOES) == 0 else "ВТОРОЙ ЗАРЯД"))

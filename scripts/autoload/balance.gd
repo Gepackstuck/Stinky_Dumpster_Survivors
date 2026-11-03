@@ -57,19 +57,19 @@ const FINAL_BOSS_SPAWN_SEC: float = 1.5
 const WAVE_END_BONUS_XP_BASE: int = 6          # «копание в помойке» в конце волны (аналог Harvesting в Brotato)
 const WAVE_END_BONUS_XP_PER_WAVE: int = 2
 const WAVE_END_COLLECT_SEC: float = 1.5           # время на авто-сбор материалов после волны
-const ENEMY_HP_MULT: float = 0.8                  # общий множитель HP врагов (под Brotato: враги умирают за 1-2 удара)
+const ENEMY_HP_MULT: float = 0.45                 # общий множитель HP врагов (под Brotato: на 1-й волне 1-2 удара; было 0.8 - на 5-й волне кальмар 120 ХП против зажигалки 9)
 # Поздние волны растут быстрее (как в Brotato: к 10-й волне экран уже забит, к 15-й это настоящая орда).
 const WAVE_LATE_START: int = 7
 const WAVE_ENEMIES_LATE: float = 5.0        # + это * (волна - LATE_START)^2 врагов за волну
-const WAVE_HP_QUAD: float = 0.6           # + это * (волна-1)^2 к множителю HP
+const WAVE_HP_QUAD: float = 0.8           # + это * (волна-1)^2 к множителю HP
 const WAVE_DAMAGE_QUAD: float = 0.07       # + это * (волна-1)^2 к множителю урона
 const BOSS_HP_MULT: float = 1.6                   # боссы последней волны крепче обычного роста
 const ELITE_HP_MULT: float = 3.0
-const WAVE_HP_GROWTH: float = 0.7   # рост HP врагов за волну
+const WAVE_HP_GROWTH: float = 0.55  # рост HP врагов за волну
 const PLAYER_MAX_HIT_FRACTION: float = 0.34   # один удар не снимает больше трети максимума HP (нет ваншотов)
-const WAVE_DAMAGE_GROWTH: float = 0.4   # рост урона врагов за волну
-const WAVE_SPEED_GROWTH: float = 0.055       # +3% скорости за волну
-const WAVE_SPEED_MAX_MULT: float = 1.6
+const WAVE_DAMAGE_GROWTH: float = 0.32  # рост урона врагов за волну
+const WAVE_SPEED_GROWTH: float = 0.03        # +3% скорости за волну
+const WAVE_SPEED_MAX_MULT: float = 1.35
 const GROUND_BODY_LAYER: int = 2                 # тела наземных врагов толкаются друг с другом и со стеной
 const GROUND_BODY_MASK: int = 34
 const FLYER_BODY_LAYER: int = 64                 # летающие: свой слой, сталкиваются только со стеной (бит 6)
@@ -699,7 +699,7 @@ const WEAPON_PRICE: Dictionary = {&"lighter": 22, &"sock": 24, &"slingshot": 22,
 const PERK_PRICE: Dictionary = {&"speed": 14, &"regen": 16, &"double_shot": 30, &"loot_goblin": 12}
 const SHOP_SLOTS: int = 4
 const SHOP_PRICE_TIER_MULT: Array[float] = [1.0, 2.0, 3.5, 6.0, 9.0]
-const COIN_PER_XP: float = 0.5   # сколько говна даёт 1 XP (было 1.3 -> 0.6 -> 0.5: к 15-й волне копилось 8000 - скупал всё)
+const COIN_PER_XP: float = 0.7   # (плейтест 2: на 0.5 и толстых врагах к 5-й волне 1 предмет)  сколько говна даёт 1 XP (было 1.3 -> 0.6 -> 0.5: к 15-й волне копилось 8000 - скупал всё)
 const SHOP_PRICE_WAVE_GROWTH: float = 0.25          # цена *(1 + это * волна)
 const SHOP_WEAPON_CHANCE: float = 0.45              # шанс, что слот — оружие (предмет — SHOP_ITEM_CHANCE, иначе перк)
 const SHOP_TIER2_PER_WAVE: float = 0.05             # II-тир: (волна-1)*это, до 0.5
@@ -744,10 +744,10 @@ const ENEMIES: Dictionary = {
 	&"squid_gopnik": {"hp": 40.0, "damage": 2.0, "speed": 68.0, "xp": 2, "coins": 1},
 	&"microbe": {"hp": 60.0, "damage": 1.2, "speed": 40.0, "xp": 3, "coins": 1},
 	&"npc_bot": {"hp": 32.0, "damage": 1.6, "speed": 50.0, "xp": 2, "coins": 1},
-	&"cockroach": {"hp": 9.0, "damage": 1.2, "speed": 120.0, "xp": 1, "coins": 2},
+	&"cockroach": {"hp": 9.0, "damage": 1.2, "speed": 100.0, "xp": 1, "coins": 2},
 	&"wifi_ghost": {"hp": 50.0, "damage": 2.4, "speed": 70.0, "xp": 4, "coins": 2, "flying": true},
 	# Враги Шага 4 (поведение как в Brotato): group_mult — множитель размера группы.
-	&"chaser": {"hp": 10.0, "damage": 0.8, "speed": 90.0, "xp": 1, "coins": 1, "radius": 5.0, "group_mult": 1.4, "flying": true},
+	&"chaser": {"hp": 10.0, "damage": 0.8, "speed": 78.0, "xp": 1, "coins": 1, "radius": 5.0, "group_mult": 1.4, "flying": true},
 	&"charger": {"hp": 50.0, "damage": 2.0, "speed": 70.0, "xp": 3, "coins": 1, "radius": 8.0, "group_mult": 0.7,
 			"brain": "res://scripts/enemies/brains/charger_brain.gd"},
 	&"spitter": {"hp": 34.0, "damage": 2.0, "speed": 60.0, "xp": 3, "coins": 1, "radius": 7.0, "group_mult": 1.0,
@@ -857,7 +857,7 @@ const BOTTLE_SELF_DAMAGE: float = 3.0
 const TICKET_FROM_WAVE: int = 2
 const TICKET_SHOP_CHANCE: float = 0.25
 const TICKET_PRICE_FIXED: bool = true         # цена 5 говна не растёт с волной
-const TICKET_ODDS: Array[float] = [0.60, 0.30, 0.09, 0.01]
+const TICKET_ODDS: Array[float] = [0.45, 0.40, 0.13, 0.02]   # пусто, мелочь, предмет, джекпот (было 60% пусто - игрок не видел толку)
 const TICKET_SMALL: Vector2i = Vector2i(5, 15)
 const TICKET_JACKPOT: int = 100
 

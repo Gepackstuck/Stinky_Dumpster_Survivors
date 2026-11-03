@@ -58,7 +58,7 @@ func _physics_process(delta: float) -> void:
 	_swing_dir = global_position.direction_to(target.global_position).angle()
 	_swing = 0.0
 	fired.emit(Vector2.from_angle(_swing_dir))
-	EventBus.weapon_fired.emit(&"swing")
+	EventBus.weapon_fired.emit(&"swing", weapon_id)
 	for node: Node in get_tree().get_nodes_in_group(&"enemies") + get_tree().get_nodes_in_group(&"neutrals"):
 		var enemy: EnemyBase = node as EnemyBase
 		if enemy == null:

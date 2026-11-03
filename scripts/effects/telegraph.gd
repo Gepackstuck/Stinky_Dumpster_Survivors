@@ -82,14 +82,47 @@ func _draw() -> void:
 	var t: float = clampf(1.0 - _left / _total, 0.0, 1.0)
 	var blink: bool = _left <= 0.0
 	var ghost: PackedVector2Array = _points(1.0)
+	if _shape != Shape.CIRCLE:
+		_draw_fading(ghost, t, blink)
+		return
 	_fill(ghost, Color(1, 1, 1, GHOST_ALPHA))
 	_fill(_points(t), Color(1, 1, 1, 1.0 if blink else FILL_ALPHA))
 	var closed: PackedVector2Array = ghost.duplicate()
 	closed.append(ghost[0])
 	draw_polyline(closed, Color(0.04, 0.04, 0.04, 0.9), 2.0)   # чёрная подложка: контур читается на любом полу
 	draw_polyline(closed, Color.WHITE if blink else EDGE, 1.0)
-	var tip: Vector2 = Vector2.ZERO if _shape == Shape.CIRCLE else _dir * _length
-	draw_texture(SKULL, (tip - SKULL.get_size() * 0.5).round(), Color(1, 1, 1, 0.5 + 0.5 * t))
+	draw_texture(SKULL, (-SKULL.get_size() * 0.5).round(), Color(1, 1, 1, 0.5 + 0.5 * t))
+
+
+## Линия и конус (рывок, выстрел): к дальнему концу тают в ноль - снаряд улетает за экран, точки «приземления» нет.
+## Без черепа и без торцевой рамки: только боковые края, чтобы не перегружать экран.
+func _draw_fading(ghost: PackedVector2Array, t: float, blink: bool) -> void:
+	var near: PackedInt32Array = PackedInt32Array([0, 3] if _shape == Shape.LINE else [0])   # вершины у врага (остальные - дальний конец)
+	_fill_fading(ghost, near, GHOST_ALPHA * 0.6)
+	_fill_fading(_points(t), near, 1.0 if blink else FILL_ALPHA * 0.8)
+	var edge: Color = Color.WHITE if blink else EDGE
+	var sides: Array[PackedVector2Array] = []
+	if _shape == Shape.LINE:
+		sides.append(PackedVector2Array([ghost[0], ghost[1]]))
+		sides.append(PackedVector2Array([ghost[3], ghost[2]]))
+	else:
+		sides.append(PackedVector2Array([ghost[0], ghost[1]]))
+		sides.append(PackedVector2Array([ghost[0], ghost[ghost.size() - 1]]))
+	for side: PackedVector2Array in sides:
+		var cols: PackedColorArray = PackedColorArray([Color(edge, 0.9), Color(edge, 0.0)])
+		draw_polyline_colors(side, PackedColorArray([Color(0.04, 0.04, 0.04, 0.7), Color(0.04, 0.04, 0.04, 0.0)]), 2.0)
+		draw_polyline_colors(side, cols, 1.0)
+
+
+func _fill_fading(pts: PackedVector2Array, near: PackedInt32Array, alpha: float) -> void:
+	if pts.size() < 3:
+		return
+	var uvs: PackedVector2Array = PackedVector2Array()
+	var cols: PackedColorArray = PackedColorArray()
+	for i: int in pts.size():
+		uvs.append((pts[i] + global_position) / 8.0)
+		cols.append(Color(1, 1, 1, alpha if i in near else 0.0))
+	draw_polygon(pts, cols, uvs, STRIPE)
 
 
 ## Контур формы при заполнении t (0..1).

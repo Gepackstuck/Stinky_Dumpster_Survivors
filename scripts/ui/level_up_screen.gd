@@ -246,10 +246,14 @@ func _close_menu() -> void:
 func _on_menu_pressed(index: int) -> void:
 	var slot: int = _menu_slot
 	if index == 0 and slot >= 0:
+		EventBus.shop_action.emit(&"merge", GameState.weapons[slot]["id"], 0)
 		GameState.merge_weapons(slot)
 		_toast("ОБЪЕДИНИЛ. ПОЛУЧИЛОСЬ ЗЛЕЕ.")
 	elif index == 1 and slot >= 0:
-		_toast("ПЕРЕРАБОТАЛ: +%d ГОВНА." % GameState.recycle_weapon(slot))
+		var wid: StringName = GameState.weapons[slot]["id"]
+		var got: int = GameState.recycle_weapon(slot)
+		EventBus.shop_action.emit(&"recycle", wid, -got)
+		_toast("ПЕРЕРАБОТАЛ: +%d ГОВНА." % got)
 	_menu.hide()
 	_menu_slot = -1
 	_refresh_shop()
@@ -519,6 +523,7 @@ func _on_reroll_pressed() -> void:
 	var cost: int = _reroll_cost()
 	GameState.coins -= cost
 	GameState.card_spend(cost)
+	EventBus.shop_action.emit(&"reroll", &"", cost)
 	if cost == 0:
 		GameState.free_rerolls -= 1
 	GameState.reroll_count += 1
@@ -546,6 +551,7 @@ func _on_card_pressed(index: int) -> void:
 				_flash_coins()
 			return
 		ShopLibrary.buy(offer)
+		EventBus.shop_action.emit(&"buy", offer["id"], offer["price"])
 		var kept: int = _selected
 		_show_choices()
 		_select(mini(kept, maxi(_visible_cards().size() - 1, 0)))
@@ -564,6 +570,7 @@ func _toggle_lock() -> void:
 	var index: int = visible_cards[_selected]
 	var offer: Dictionary = GameState.shop_offers[index]
 	offer["locked"] = not offer["locked"]
+	EventBus.shop_action.emit(&"lock" if offer["locked"] else &"unlock", offer["id"], offer["price"])
 	_cards[index].setup_offer(offer, index + 1, randi() % PerkCard.FRAME_VARIANTS)
 	_toast("ЗАМОРОЖЕНО. ПЕРЕЖИВЁТ ВОЛНУ." if offer["locked"] else "РАЗМОРОЗИЛ.")
 

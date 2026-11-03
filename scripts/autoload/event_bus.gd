@@ -27,7 +27,7 @@ signal parried(at: Vector2)
 signal streak_changed(tier: int, bonus: float, broken: bool)   # серия без урона: ступень, + доля говна; broken - сбили
 
 @warning_ignore("unused_signal")
-signal weapon_fired(sfx: StringName)      # оружие выстрелило/махнуло (звук: shoot, swing, explosion)
+signal weapon_fired(sfx: StringName, weapon_id: StringName)      # оружие выстрелило/махнуло (звук: shoot, swing, explosion)
 @warning_ignore("unused_signal")
 signal shake_requested(amount: float)      # тряска экрана (взрыв, удар босса); игрок решает, учитывая настройки
 @warning_ignore("unused_signal")
@@ -85,4 +85,7 @@ signal roulette_done(mod: StringName)      # рулетка остановила
 signal run_started
 @warning_ignore("unused_signal")
 signal run_ended
+## Действие в Ларьке для журнала забегов (buy, reroll, lock, unlock, merge, recycle).
+@warning_ignore("unused_signal")
+signal shop_action(kind: StringName, id: StringName, price: int)
 signal duel_round_over                       # Н31: игрок прошёл все волны раунда битвы героев

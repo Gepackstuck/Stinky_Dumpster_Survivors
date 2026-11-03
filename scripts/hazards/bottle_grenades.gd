@@ -40,6 +40,7 @@ func _spawn(player: Node2D) -> void:
 	var p: Vector2 = player.global_position + Vector2.from_angle(randf() * TAU) * randf_range(50.0, 150.0)
 	b.global_position = p.clamp(Vector2(20, 20), Vector2(Balance.ARENA_SIZE - 20.0, Balance.ARENA_SIZE - 20.0)).round()
 	b.rotation = randf() * TAU
+	b.z_index = -1   # лежит на полу - под врагами и героем
 	add_child(b)
 	_lying.append(b)
 
@@ -51,6 +52,7 @@ func _try_kick(player: Node2D) -> void:
 	for b: Sprite2D in _lying.duplicate():
 		if b.global_position.distance_to(player.global_position) <= Balance.BOTTLE_KICK_RADIUS:
 			_lying.erase(b)
+			b.z_index = 0   # пнутая летит поверх пола
 			_flying.append({"sprite": b, "dir": vel.normalized(), "left": Balance.BOTTLE_FLY_SEC})
 			HitFx.popup(get_tree(), b.global_position + Vector2(0.0, -10.0), tr("ПНУЛ!"), Color(0.97, 1.0, 0.0), 10.0, 0.5)
 			AudioManager.play_sfx(&"swing")

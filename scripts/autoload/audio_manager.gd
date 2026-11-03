@@ -6,10 +6,11 @@ extends Node
 ## Музыка: боевые треки сменяются от волны к волне, у элиты и боссов свой трек, в меню и на кладбище - свой.
 
 const VOICES: int = 16
-const MIN_GAP: Dictionary = {&"enemy_death": 0.05, &"hit": 0.06, &"hit_crit": 0.08, &"shoot": 0.05, &"swing": 0.07, &"pickup": 0.035, &"warn": 0.15}
+const MIN_GAP: Dictionary = {&"weapon": 0.045, &"w_mosin": 0.25, &"w_frying_pan": 0.15, &"w_shovel": 0.15, &"enemy_death": 0.05, &"hit": 0.06, &"hit_crit": 0.08, &"shoot": 0.05, &"swing": 0.07, &"pickup": 0.035, &"warn": 0.15}
 const DEFAULT_GAP: float = 0.03
 const VOLUME_DB: Dictionary = {&"pickup": -13.0, &"hit": -15.0, &"hit_crit": -12.0, &"shoot": -14.0, &"swing": -12.0, &"enemy_death": -9.0,
-		&"ui_move": -10.0, &"ui_select": -8.0, &"warn": -8.0, &"player_hurt": -5.0, &"explosion": -6.0, &"truck_horn": -8.0, &"wave_horn": -4.0}
+		&"ui_move": -10.0, &"ui_select": -8.0, &"warn": -8.0, &"player_hurt": -5.0, &"explosion": -6.0, &"truck_horn": -8.0, &"wave_horn": -4.0,
+		&"weapon": -12.0, &"w_mosin": -5.0, &"w_pipe_gun": -8.0, &"w_frying_pan": -9.0, &"w_shovel": -9.0, &"w_spray_can": -16.0, &"w_blowtorch": -16.0, &"w_laser_pointer": -17.0}
 const MUSIC_FADE_SEC: float = 0.8
 const BATTLE_TRACKS: Array[StringName] = [&"battle_a", &"battle_b", &"battle_c"]
 const PICKUP_SCALE: Array[int] = [0, 2, 4, 7, 9, 12, 14, 16, 19, 21, 24]   # подбор подряд - вверх по пентатонике, как в Brotato
@@ -35,7 +36,11 @@ func _ready() -> void:
 	_music = AudioStreamPlayer.new()
 	add_child(_music)
 	EventBus.enemy_died.connect(func(id: StringName, _at: Vector2) -> void:
-		play_sfx(&"boss_roar" if Balance.ENEMIES.get(id, {}).has("anim_rows") else &"enemy_death"))
+		if Balance.ENEMIES.get(id, {}).has("anim_rows"):   # босс: взрыв и его собственный рёв
+			play_sfx(&"explosion")
+			play_sfx_or(StringName("r_" + String(id)), &"boss_roar", 0.0)
+		else:
+			play_sfx_or(StringName("e_" + String(id)), &"enemy_death"))
 	EventBus.player_hit.connect(func(_d: float) -> void: play_sfx(&"player_hurt"))
 	EventBus.xp_collected.connect(func(_a: int) -> void: _play_pickup())
 	EventBus.enemy_hurt.connect(func(crit: bool) -> void: play_sfx(&"hit_crit" if crit else &"hit", 0.08))
@@ -44,7 +49,7 @@ func _ready() -> void:
 		play_sfx(&"wave_horn")
 		play_music(battle_track()))
 	EventBus.wave_ended.connect(func(_w: int) -> void: play_music(&"shop"))
-	EventBus.boss_spawned.connect(func(_id: StringName) -> void: play_sfx(&"boss_roar"))
+	EventBus.boss_spawned.connect(func(id: StringName) -> void: play_sfx_or(StringName("r_" + String(id)), &"boss_roar", 0.0))
 	EventBus.dash_used.connect(func(_at: Vector2) -> void: play_sfx(&"dash"))
 	EventBus.player_died.connect(func() -> void:
 		stop_music()
@@ -57,7 +62,8 @@ func _ready() -> void:
 	EventBus.streak_changed.connect(func(_t: int, _b: float, broken: bool) -> void:
 		if broken:
 			play_sfx(&"streak_break"))
-	EventBus.weapon_fired.connect(func(kind: StringName) -> void: play_sfx(kind, 0.12))
+	EventBus.weapon_fired.connect(func(kind: StringName, weapon_id: StringName) -> void:   # у каждого оружия свой звук
+		play_sfx_or(StringName("w_" + String(weapon_id)), kind, 0.08) if weapon_id != &"" else play_sfx(kind, 0.12))
 	EventBus.telegraph_shown.connect(func() -> void: play_sfx(&"warn"))
 	Settings.changed.connect(_apply_music_volume)
 	get_viewport().gui_focus_changed.connect(func(_c: Control) -> void: play_sfx(&"ui_move"))
@@ -75,6 +81,16 @@ func _play_pickup() -> void:
 	_pickup_step = mini(_pickup_step + 1, PICKUP_SCALE.size() - 1) if now - _pickup_last < PICKUP_CHAIN_SEC else 0
 	_pickup_last = now
 	play_sfx(&"pickup", 0.0, pow(2.0, PICKUP_SCALE[_pickup_step] / 12.0))
+
+
+## Семья звука для громкости и интервала: e_* - смерть врага (один общий интервал, иначе толпа умирает какофонией),
+## w_* - оружие (у каждого свой интервал).
+func _family(sfx_name: StringName) -> StringName:
+	if String(sfx_name).begins_with("e_"):
+		return &"enemy_death"
+	if String(sfx_name).begins_with("w_"):
+		return &"weapon"
+	return sfx_name
 
 
 func _variant(sfx_name: StringName) -> StringName:
@@ -95,22 +111,29 @@ func _stream(sfx_name: StringName, folder: String) -> AudioStream:
 	return _cache[key]
 
 
+## Свой звук (w_/e_/r_...), а если его нет - общий.
+func play_sfx_or(sfx_name: StringName, fallback: StringName, pitch_var: float = 0.05) -> void:
+	play_sfx(sfx_name if _stream(sfx_name, "sfx") != null else fallback, pitch_var)   # _stream кеширует и «нет файла»
+
+
 ## Проиграть короткий звук по имени (pitch_var - разброс высоты, чтобы повторы не резали ухо).
 func play_sfx(sfx_name: StringName, pitch_var: float = 0.05, pitch: float = 1.0) -> void:
 	if Settings.sfx_volume <= 0.0 or Profile.sandbox:   # тесты и боты - без звука
 		return
 	var now: float = Time.get_ticks_msec() / 1000.0
-	if now - float(_last_play.get(sfx_name, -1.0)) < float(MIN_GAP.get(sfx_name, DEFAULT_GAP)):
+	var family: StringName = _family(sfx_name)
+	var gap_key: StringName = &"enemy_death" if family == &"enemy_death" else sfx_name
+	if now - float(_last_play.get(gap_key, -1.0)) < float(MIN_GAP.get(sfx_name, MIN_GAP.get(family, DEFAULT_GAP))):
 		return
 	var stream: AudioStream = _stream(_variant(sfx_name), "sfx")
 	if stream == null:
 		return
-	_last_play[sfx_name] = now
+	_last_play[gap_key] = now
 	var p: AudioStreamPlayer = _players[_next]
 	_next = (_next + 1) % _players.size()
 	p.stream = stream
 	p.pitch_scale = pitch * randf_range(1.0 - pitch_var, 1.0 + pitch_var)
-	p.volume_db = linear_to_db(Settings.sfx_volume) + float(VOLUME_DB.get(sfx_name, 0.0))
+	p.volume_db = linear_to_db(Settings.sfx_volume) + float(VOLUME_DB.get(sfx_name, VOLUME_DB.get(family, 0.0)))
 	p.play()
 
 

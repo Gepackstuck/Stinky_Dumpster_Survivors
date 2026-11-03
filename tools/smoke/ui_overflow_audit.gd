@@ -23,6 +23,8 @@ func _check(where: String, root: Node) -> void:
 		var l: Label = node as Label
 		if l == null or not l.is_visible_in_tree() or l.text.strip_edges() == "" or l.clip_text:
 			continue
+		if l.get_parent() is Node2D:   # надпись в мире арены (граффити), не на экране
+			continue
 		var r: Rect2 = l.get_global_rect()
 		var sc: Vector2 = l.get_global_transform().get_scale()
 		var need: Vector2 = l.get_minimum_size() * sc
