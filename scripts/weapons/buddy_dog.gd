@@ -64,7 +64,7 @@ func _physics_process(delta: float) -> void:
 		if _bone_left <= 0.0:   # притащил кость - себе на прокорм
 			_bone_left = _bone_sec()
 			Profile.bones += 1
-			HitFx.popup(get_tree(), global_position + Vector2(0.0, -14.0), tr("+1 КОСТЬ"), Color(0.95, 0.92, 0.8), 12.0, 0.9)
+			HitFx.chatter(get_tree(), global_position + Vector2(0.0, -14.0), tr("+1 КОСТЬ"), Color(0.95, 0.92, 0.8), 12.0, 0.9)
 	var lvl: int = _level()
 	_bite_left -= delta
 	var target: EnemyBase = _find_target()

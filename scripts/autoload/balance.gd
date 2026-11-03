@@ -61,8 +61,8 @@ const ENEMY_HP_MULT: float = 0.45                 # общий множител�
 # Поздние волны растут быстрее (как в Brotato: к 10-й волне экран уже забит, к 15-й это настоящая орда).
 const WAVE_LATE_START: int = 7
 const WAVE_ENEMIES_LATE: float = 5.0        # + это * (волна - LATE_START)^2 врагов за волну
-const WAVE_HP_QUAD: float = 0.8           # + это * (волна-1)^2 к множителю HP
-const WAVE_DAMAGE_QUAD: float = 0.07       # + это * (волна-1)^2 к множителю урона
+const WAVE_HP_QUAD: float = 1.4           # + это * (волна-1)^2 к множителю HP
+const WAVE_DAMAGE_QUAD: float = 0.1       # + это * (волна-1)^2 к множителю урона
 const BOSS_HP_MULT: float = 1.6                   # боссы последней волны крепче обычного роста
 const ELITE_HP_MULT: float = 3.0
 const WAVE_HP_GROWTH: float = 0.55  # рост HP врагов за волну
@@ -706,6 +706,7 @@ const PERK_PRICE: Dictionary = {&"speed": 14, &"regen": 16, &"double_shot": 30, 
 const SHOP_SLOTS: int = 4
 const SHOP_PRICE_TIER_MULT: Array[float] = [1.0, 1.8, 3.0, 5.0, 8.0]
 const COIN_PER_XP: float = 0.7   # (плейтест 2: на 0.5 и толстых врагах к 5-й волне 1 предмет)  сколько говна даёт 1 XP (было 1.3 -> 0.6 -> 0.5: к 15-й волне копилось 8000 - скупал всё)
+const SHOP_PRICE_WAVE_QUAD: float = 0.008     # + это * волна^2: поздно доход 800+/волну (плейтест 4) - цены догоняют
 const SHOP_PRICE_WAVE_GROWTH: float = 0.12   # (плейтест 3: при 0.25 рогатка II на 4-й волне стоила 88 при доходе ~45 за волну)          # цена *(1 + это * волна)
 const SHOP_WEAPON_CHANCE: float = 0.45              # шанс, что слот — оружие (предмет — SHOP_ITEM_CHANCE, иначе перк)
 const SHOP_TIER2_PER_WAVE: float = 0.05             # II-тир: (волна-1)*это, до 0.5
@@ -726,8 +727,14 @@ const HIT_COINS_PER_WAVE: int = 1
 const CRIT_MAX_PERCENT: float = 100.0       # больше 100% крита не бывает
 const ITEM_LIMIT_DEFAULT: int = 4           # предмет без своего предела - не больше стольких штук
 const ITEM_LIMIT_COMPANION: int = 3         # компаньоны (крысы, псы, голуби, турели, мины...) - не больше стольких
-const PERK_DOUBLE_SHOT_MAX_STACKS: int = 3
+const PERK_DOUBLE_SHOT_MAX_STACKS: int = 2   # было 3: +3 снаряда к каждому из 6 стволов = дождь из пуль, ничего не видно
+## Сколько компаньонов каждого вида может быть на поле, из всех источников вместе (предметы, комбо, проклятые).
+## Плейтест: 9 крыс, 5 псов, 3 турели и 2 миномёта - экран превратился в кашу.
+const COMPANION_CAPS: Dictionary = {&"pets": 3, &"dogs": 2, &"pigeons": 2, &"mines": 3, &"lamps": 2, &"mortars": 2, &"turrets": 2, &"ghost_drunk": 2}
 const LOOT_GOBLIN_MAX_STACKS: int = 3
+const PARTICLE_CROWD: int = 30             # врагов больше - брызги и ошмётки вдвое реже
+const CHATTER_GAP_SEC: float = 1.2          # мелкие реплики в мире - не чаще
+const CHATTER_MAX_ENEMIES: int = 12        # больше врагов на поле - мелкие реплики молчат
 const POPUP_MAX_ALIVE: int = 14             # цифр урона на экране одновременно (было 45 - врагов не видно)
 const CRIT_DAMAGE_MULT: float = 2.0
 const REGEN_HP_PER_POINT: float = 0.6               # хп за интервал на 1 очко регена

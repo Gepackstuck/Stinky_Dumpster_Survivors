@@ -20,7 +20,7 @@ func physics_tick(delta: float) -> void:
 	_left -= delta
 	if not _fleeing and (_left <= 0.0 or _stolen >= Balance.THIEF_MAX_STEAL):
 		_fleeing = true
-		HitFx.popup(boss.get_tree(), boss.global_position + Vector2(0.0, -18.0), TranslationServer.translate("СВАЛИВАЮ!"), Color(1.0, 0.6, 0.1))
+		HitFx.chatter(boss.get_tree(), boss.global_position + Vector2(0.0, -18.0), TranslationServer.translate("СВАЛИВАЮ!"), Color(1.0, 0.6, 0.1))
 	var speed: float = float(Balance.ENEMIES[&"thief"]["speed"]) * WaveRules.speed_mult(GameState.wave)
 	if _fleeing:
 		var exit: Vector2 = _nearest_edge()
@@ -44,7 +44,7 @@ func physics_tick(delta: float) -> void:
 		p.set_physics_process(false)
 		PoolManager.release(p)
 		_goal = null
-		HitFx.popup(boss.get_tree(), boss.global_position + Vector2(0.0, -14.0), TranslationServer.translate("СТЫРИЛ!"), Color(0.6, 1.0, 0.3), 10.0, 0.5)
+		HitFx.chatter(boss.get_tree(), boss.global_position + Vector2(0.0, -14.0), TranslationServer.translate("СТЫРИЛ!"), Color(0.6, 1.0, 0.3), 10.0, 0.5)
 
 
 func _nearest_pickup() -> Node2D:

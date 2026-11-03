@@ -6,7 +6,10 @@ extends Node
 ## Музыка: боевые треки сменяются от волны к волне, у элиты и боссов свой трек, в меню и на кладбище - свой.
 
 const VOICES: int = 16
-const MIN_GAP: Dictionary = {&"weapon": 0.045, &"w_mosin": 0.25, &"w_frying_pan": 0.15, &"w_shovel": 0.15, &"enemy_death": 0.05, &"hit": 0.06, &"hit_crit": 0.08, &"shoot": 0.05, &"swing": 0.07, &"pickup": 0.035, &"warn": 0.15}
+const LOW_FAMILIES: Array[StringName] = [&"weapon", &"hit", &"hit_crit", &"shoot", &"swing", &"enemy_death", &"pickup", &"explosion"]
+const LOW_BUDGET: int = 4          # частых звуков за окно LOW_WINDOW_SEC - не больше (много предметов = каша)
+const LOW_WINDOW_SEC: float = 0.1
+const MIN_GAP: Dictionary = {&"weapon": 0.08, &"w_mosin": 0.25, &"w_frying_pan": 0.15, &"w_shovel": 0.15, &"enemy_death": 0.05, &"hit": 0.09, &"hit_crit": 0.1, &"shoot": 0.05, &"swing": 0.07, &"pickup": 0.035, &"warn": 0.15}
 const DEFAULT_GAP: float = 0.03
 const VOLUME_DB: Dictionary = {&"pickup": -13.0, &"hit": -15.0, &"hit_crit": -12.0, &"shoot": -14.0, &"swing": -12.0, &"enemy_death": -9.0,
 		&"ui_move": -10.0, &"ui_select": -8.0, &"warn": -8.0, &"player_hurt": -5.0, &"explosion": -6.0, &"truck_horn": -8.0, &"wave_horn": -4.0,
@@ -24,6 +27,7 @@ var _music: AudioStreamPlayer = null
 var _music_name: StringName = &""
 var _variants: Dictionary = {}   # имя звука -> сколько вариантов лежит в assets/sfx
 var _pickup_step: int = 0
+var _low_times: Array[float] = []
 var _pickup_last: float = -10.0
 
 
@@ -129,6 +133,12 @@ func play_sfx(sfx_name: StringName, pitch_var: float = 0.05, pitch: float = 1.0)
 	var stream: AudioStream = _stream(_variant(sfx_name), "sfx")
 	if stream == null:
 		return
+	if family in LOW_FAMILIES or sfx_name in LOW_FAMILIES:
+		while not _low_times.is_empty() and now - _low_times[0] > LOW_WINDOW_SEC:
+			_low_times.pop_front()
+		if _low_times.size() >= LOW_BUDGET:
+			return
+		_low_times.append(now)
 	_last_play[gap_key] = now
 	var p: AudioStreamPlayer = _players[_next]
 	_next = (_next + 1) % _players.size()

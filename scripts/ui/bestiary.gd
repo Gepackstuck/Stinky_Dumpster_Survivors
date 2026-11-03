@@ -95,6 +95,8 @@ func _build_cell(i: int) -> void:
 
 
 func _select(index: int) -> void:
+	if posmod(index, _ids.size()) != _selected:
+		AudioManager.play_sfx(&"ui_move", 0.0)
 	_selected = posmod(index, _ids.size())
 	var id: StringName = _ids[_selected]
 	_arrow.position = _cell_pos(_selected) + Vector2((CELL.x - ARROW.get_width()) * 0.5, -6.0)

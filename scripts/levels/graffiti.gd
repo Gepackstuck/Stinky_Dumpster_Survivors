@@ -17,6 +17,9 @@ func _ready() -> void:
 	at = at.clamp(Vector2(10.0, 10.0), Vector2(a - 150.0, a - 20.0))   # надпись целиком на арене
 	var color: Color = COLORS[int(e.get("wave", 1)) % COLORS.size()]
 	modulate.a = Balance.GRAFFITI_ALPHA
+	EventBus.wave_started.connect(func(w: int) -> void:   # память о прошлой смерти - только на 1-й волне, потом не мешает бою
+		if w > 1 and is_inside_tree():
+			create_tween().tween_property(self, "modulate:a", 0.0, 1.0))
 	var splat: Sprite2D = Sprite2D.new()
 	splat.texture = SPLAT
 	splat.hframes = 3

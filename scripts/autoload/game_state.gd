@@ -372,7 +372,7 @@ func _recompute_items() -> void:
 	explode_percent = minf(fx.get(&"explode", 0.0), 75.0)
 	lifesteal_percent = minf(fx.get(&"lifesteal", 0.0), 60.0)
 	discount_percent = minf(fx.get(&"discount", 0.0), 60.0)
-	pet_count = roundi(fx.get(&"pets", 0.0))
+	pet_count = mini(roundi(fx.get(&"pets", 0.0)), Balance.COMPANION_CAPS[&"pets"])   # пределы: иначе экран тонет в крысах и псах
 	burn_percent = minf(fx.get(&"burn", 0.0), 75.0)
 	bash_percent = minf(fx.get(&"bash", 0.0), 60.0)
 	crit_coin_percent = minf(fx.get(&"crit_coin", 0.0), 100.0)
@@ -382,11 +382,11 @@ func _recompute_items() -> void:
 	combo_percent = fx.get(&"combo", 0.0)
 	slow_field_count = roundi(fx.get(&"slow_field", 0.0))
 	stash_percent = minf(fx.get(&"stash", 0.0), 80.0)
-	turret_count = roundi(fx.get(&"turrets", 0.0))
+	turret_count = mini(roundi(fx.get(&"turrets", 0.0)), Balance.COMPANION_CAPS[&"turrets"])
 	comp_counts = {}
 	for comp_key: StringName in [&"dogs", &"pigeons", &"mines", &"lamps", &"mortars"]:
-		comp_counts[comp_key] = roundi(fx.get(comp_key, 0.0))
-	ghost_drunk_count = roundi(fx.get(&"ghost_drunk", 0.0))
+		comp_counts[comp_key] = mini(roundi(fx.get(comp_key, 0.0)), Balance.COMPANION_CAPS[comp_key])
+	ghost_drunk_count = mini(roundi(fx.get(&"ghost_drunk", 0.0)), Balance.COMPANION_CAPS[&"ghost_drunk"])
 	hp_drain = fx.get(&"hp_drain", 0.0)
 	ink_percent = fx.get(&"ink", 0.0)
 	steal_percent = fx.get(&"steal", 0.0)

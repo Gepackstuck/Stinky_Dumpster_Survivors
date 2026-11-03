@@ -697,10 +697,12 @@ func _picker_input(event: InputEvent) -> void:
 	if event.is_action_pressed(&"move_left") or event.is_action_pressed(&"ui_left"):
 		get_viewport().set_input_as_handled()
 		_pick_danger = maxi(_pick_danger - 1, 0)
+		AudioManager.play_sfx(&"ui_move", 0.0)
 		_refresh_picker()
 	elif event.is_action_pressed(&"move_right") or event.is_action_pressed(&"ui_right"):
 		get_viewport().set_input_as_handled()
 		_pick_danger = mini(_pick_danger + 1, Profile.danger_unlocked)
+		AudioManager.play_sfx(&"ui_move", 0.0)
 		_refresh_picker()
 	elif event.is_action_pressed(&"ui_accept"):
 		get_viewport().set_input_as_handled()
@@ -724,6 +726,8 @@ func _on_grave_pressed(i: int) -> void:
 
 func _select(i: int) -> void:
 	var changed: bool = i != _selected
+	if changed and not _leaving:
+		AudioManager.play_sfx(&"ui_move", 0.0)
 	_selected = i
 	_refresh()
 	if changed and not _leaving and Profile.is_unlocked(_ids[i]):

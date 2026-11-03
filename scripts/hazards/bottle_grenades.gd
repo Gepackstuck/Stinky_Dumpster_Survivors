@@ -54,7 +54,7 @@ func _try_kick(player: Node2D) -> void:
 			_lying.erase(b)
 			b.z_index = 0   # пнутая летит поверх пола
 			_flying.append({"sprite": b, "dir": vel.normalized(), "left": Balance.BOTTLE_FLY_SEC})
-			HitFx.popup(get_tree(), b.global_position + Vector2(0.0, -10.0), tr("ПНУЛ!"), Color(0.97, 1.0, 0.0), 10.0, 0.5)
+			HitFx.chatter(get_tree(), b.global_position + Vector2(0.0, -10.0), tr("ПНУЛ!"), Color(0.97, 1.0, 0.0), 10.0, 0.5)
 			AudioManager.play_sfx(&"swing")
 			Profile.stat_add(&"bottle_kicks", 1)
 			if Profile.stat(&"bottle_kicks") >= 100:

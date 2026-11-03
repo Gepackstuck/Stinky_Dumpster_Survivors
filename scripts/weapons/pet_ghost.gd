@@ -63,7 +63,7 @@ func _act() -> void:
 	if kind == &"granny" and randf() < Balance.GHOST_GRANNY_HEAL_CHANCE:
 		if player.has_method(&"heal"):
 			player.call(&"heal", Balance.GHOST_GRANNY_HEAL)
-			HitFx.popup(get_tree(), player.global_position + Vector2(0.0, -16.0), "+%d ХП: БАБКА ШЕПЧЕТ" % roundi(Balance.GHOST_GRANNY_HEAL), Color(1.0, 0.0627, 0.94), 12.0, 0.9)
+			HitFx.chatter(get_tree(), player.global_position + Vector2(0.0, -16.0), "+%d ХП: БАБКА ШЕПЧЕТ" % roundi(Balance.GHOST_GRANNY_HEAL), Color(1.0, 0.0627, 0.94), 12.0, 0.9)
 		return
 	var target: Node2D = _nearest_enemy()
 	if target == null:
@@ -78,7 +78,7 @@ func _act() -> void:
 	projectile.slow_sec = 0.0
 	projectile.set_texture(BOTTLE if kind == &"drunk" else SLIPPER)
 	if kind == &"drunk":
-		HitFx.popup(get_tree(), global_position + Vector2(0.0, -14.0), "ИК!", Color(0.968627, 1.0, 0.0), 12.0, 0.5)
+		HitFx.chatter(get_tree(), global_position + Vector2(0.0, -14.0), "ИК!", Color(0.968627, 1.0, 0.0), 12.0, 0.5)
 
 
 func _nearest_enemy() -> Node2D:

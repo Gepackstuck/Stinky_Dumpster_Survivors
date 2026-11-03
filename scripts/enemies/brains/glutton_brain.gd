@@ -30,4 +30,4 @@ func physics_tick(_delta: float) -> void:
 func on_death() -> void:
 	if _eaten > 0:
 		EventBus.xp_drop_requested.emit(boss.global_position, _eaten)
-		HitFx.popup(boss.get_tree(), boss.global_position + Vector2(0.0, -12.0), "ВЫБЛЕВАЛ %d" % _eaten, Color(0.968627, 1, 0, 1), 12.0, 0.9)
+		HitFx.chatter(boss.get_tree(), boss.global_position + Vector2(0.0, -12.0), "ВЫБЛЕВАЛ %d" % _eaten, Color(0.968627, 1, 0, 1), 12.0, 0.9)

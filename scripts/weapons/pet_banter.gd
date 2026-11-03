@@ -7,4 +7,4 @@ static func next_delay() -> float:
 
 
 static func say(node: Node2D, lines: Array, color: Color) -> void:
-	HitFx.popup(node.get_tree(), node.global_position + Vector2(0.0, -16.0), String(lines[randi() % lines.size()]), color, 10.0, 0.9)
+	HitFx.chatter(node.get_tree(), node.global_position + Vector2(0.0, -16.0), String(lines[randi() % lines.size()]), color, 10.0, 0.9)

@@ -85,7 +85,7 @@ func _texts() -> Dictionary:
 		&"cop":
 			return {"face": &"guard", "title": "МЕНТ", "text": "ДОКУМЕНТЫ! ВЗЯТКА %d ГОВНА - И Я ТЕБЯ НЕ ВИДЕЛ. РИСКНЁШЬ - ПОЛОВИНА ШАНСА, ЧТО ОТБЕРУ ТРЕТЬ ВСЕГО ГОВНА." % _bribe(), "yes": "НА, ПОДАВИСЬ", "no": "РИСКНУ"}
 		_:
-			return {"face": &"punk", "title": "СПОРЩИК", "text": "СПОРИМ НА %d ГОВНА: %s? ВЫИГРАЕШЬ - ВТРОЕ БОЛЬШЕ И ПРЕДМЕТ." % [_stake(), _bet_text()], "yes": "СПОРИМ", "no": "СЛАБО"}
+			return {"face": &"punk", "title": "СПОРЩИК", "text": tr("СПОРИМ НА %d ГОВНА: %s? ВЫИГРАЕШЬ - ВТРОЕ БОЛЬШЕ И ПРЕДМЕТ.") % [_stake(), _bet_text()], "yes": "СПОРИМ", "no": "СЛАБО"}
 
 
 func _fortune_price() -> int:
@@ -102,10 +102,10 @@ func _stake() -> int:
 
 func _bet_text() -> String:
 	match _bet:
-		&"no_dash": return "ПРОЙДЁШЬ ВОЛНУ БЕЗ РЫВКОВ"
-		&"kills": return "УБЬЁШЬ %d ЗА ВОЛНУ" % _bet_kills()
-		&"few_hits": return "ПОЛУЧИШЬ НЕ БОЛЬШЕ 3 УДАРОВ"
-		_: return "ЗАКОНЧИШЬ ВОЛНУ С ПОЛОВИНОЙ ХП"
+		&"no_dash": return tr("ПРОЙДЁШЬ ВОЛНУ БЕЗ РЫВКОВ")
+		&"kills": return tr("УБЬЁШЬ %d ЗА ВОЛНУ") % _bet_kills()
+		&"few_hits": return tr("ПОЛУЧИШЬ НЕ БОЛЬШЕ 3 УДАРОВ")
+		_: return tr("ЗАКОНЧИШЬ ВОЛНУ, И ХП БУДЕТ НЕ МЕНЬШЕ ПОЛОВИНЫ")
 
 
 func _bet_kills() -> int:

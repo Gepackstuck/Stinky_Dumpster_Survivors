@@ -112,20 +112,21 @@ func _draw() -> void:
 		for i: int in 7:
 			var t: float = float(i) / 6.0
 			var wob: Vector2 = _direction.orthogonal() * sin(_age * 40.0 + float(i) * 1.7) * (1.0 + t * 2.5)
-			var pos: Vector2 = back * (1.0 + t * 15.0) + wob
-			var radius: float = 2.2 + t * 2.6
-			draw_circle(pos, radius + 1.0, Color(0.1, 0.0, 0.0, 0.8 - t * 0.5))   # тёмный ореол, чтобы пламя не терялось на коричневом
+			var pos: Vector2 = back * (1.0 + t * 7.0) + wob * 0.5
+			var radius: float = 1.3 + t * 1.2
+			draw_circle(pos, radius + 0.8, Color(0.1, 0.0, 0.0, 0.7 - t * 0.5))   # тёмный ореол, чтобы пламя не терялось на коричневом
 		for i: int in 7:
 			var t2: float = float(i) / 6.0
 			var wob2: Vector2 = _direction.orthogonal() * sin(_age * 40.0 + float(i) * 1.7) * (1.0 + t2 * 2.5)
-			var pos2: Vector2 = back * (1.0 + t2 * 15.0) + wob2
+			var pos2: Vector2 = back * (1.0 + t2 * 7.0) + wob2 * 0.5
 			var col: Color = Color(1.0, 0.97, 0.4).lerp(Color(1.0, 0.2, 0.0), t2)
 			col.a = 1.0 - t2 * 0.45
-			draw_circle(pos2, 2.2 + t2 * 2.6, col)
-		draw_circle(Vector2.ZERO, 2.6, Color(1.0, 1.0, 0.85, 1.0))
+			draw_circle(pos2, 1.3 + t2 * 1.2, col)
+		draw_circle(Vector2.ZERO, 1.6, Color(1.0, 1.0, 0.85, 1.0))
 	else:
-		var length: float = clampf(_speed * 0.08, 12.0, 28.0)
+		# маленький росчерк, как в Brotato (было 12-28 px толщиной 6 - «жёлтые брёвна» закрывали врагов)
+		var length: float = clampf(_speed * 0.03, 4.0, 9.0)
 		var tail: Vector2 = back * length
-		draw_line(tail, _direction * 2.0, Color(0.05, 0.0, 0.05, 0.85), 6.0)
-		draw_line(tail * 0.85, Vector2.ZERO, trail_color, 4.0)
-		draw_line(tail * 0.45, _direction * 2.0, Color(1.0, 1.0, 1.0, 1.0), 2.0)
+		draw_line(tail, _direction * 1.5, Color(0.05, 0.0, 0.05, 0.7), 3.0)
+		draw_line(tail * 0.8, _direction, trail_color, 2.0)
+		draw_line(tail * 0.3, _direction * 1.5, Color(1.0, 1.0, 1.0, 1.0), 1.0)

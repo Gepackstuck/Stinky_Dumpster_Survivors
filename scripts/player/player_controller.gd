@@ -70,7 +70,7 @@ func _ready() -> void:
 	EventBus.wave_started.connect(func(_w: int) -> void:
 		if GameState.pies > 0.0:
 			heal(GameState.pies)
-			HitFx.popup(get_tree(), global_position + Vector2(0.0, -16.0), "ПИРОЖОК! +%d" % roundi(GameState.pies), Color(1.0, 0.75, 0.3), 12.0, 0.8))
+			HitFx.chatter(get_tree(), global_position + Vector2(0.0, -16.0), "ПИРОЖОК! +%d" % roundi(GameState.pies), Color(1.0, 0.75, 0.3), 12.0, 0.8))
 	EventBus.wave_started.connect(func(_w: int) -> void: _update_magnet_radius())
 	EventBus.wave_ended.connect(func(_w: int) -> void: _update_magnet_radius.call_deferred())
 	_update_magnet_radius()
@@ -207,7 +207,7 @@ func _update_still_regen(delta: float, standing: bool) -> void:
 	if _still_timer >= Balance.ITEM_STILL_REGEN_SEC:
 		_still_timer = 0.0
 		_health.heal(GameState.still_regen)
-		HitFx.popup(get_tree(), global_position + Vector2(0.0, -12.0), "+%d ХП" % int(GameState.still_regen), Color(0.2235, 1.0, 0.0784), 12.0, 0.5)
+		HitFx.chatter(get_tree(), global_position + Vector2(0.0, -12.0), "+%d ХП" % int(GameState.still_regen), Color(0.2235, 1.0, 0.0784), 12.0, 0.5)
 
 
 func _update_shake(delta: float) -> void:
@@ -292,12 +292,14 @@ func _on_streak_changed(tier: int, bonus: float, broken: bool) -> void:
 
 
 func _on_hurt(raw_damage: float) -> void:
+	if not GameState.run_active and GameState.hp > 0.0:   # забег окончен (победа): мины и снаряды уже не бьют
+		return
 	if randf() * 100.0 < GameState.dodge_percent:
-		HitFx.popup(get_tree(), global_position + Vector2(0.0, -12.0), "МИМО!", Color(0.0, 0.94, 1.0), 14.0, 0.7)
+		HitFx.chatter(get_tree(), global_position + Vector2(0.0, -12.0), "МИМО!", Color(0.0, 0.94, 1.0), 14.0, 0.7)
 		return
 	if GameState.block_charges > 0:
 		GameState.block_charges -= 1
-		HitFx.popup(get_tree(), global_position + Vector2(0.0, -12.0), "КАСКА!", Color(1.0, 1.0, 0.0), 14.0, 0.8)
+		HitFx.chatter(get_tree(), global_position + Vector2(0.0, -12.0), "КАСКА!", Color(1.0, 1.0, 0.0), 14.0, 0.8)
 		HitFx.burst(get_tree(), global_position, Color(1.0, 1.0, 0.0), 8, 50.0, 2.0, 0.4, true)
 		return
 	if randf() * 100.0 < GameState.repel_percent:
@@ -322,7 +324,7 @@ func _on_hurt(raw_damage: float) -> void:
 
 ## «Обосранные портки»: вонь сдувает врагов вокруг, урон по тебе не проходит.
 func _stink_repel() -> void:
-	HitFx.popup(get_tree(), global_position + Vector2(0.0, -12.0), "ВОНЬ!", Color(0.2235, 1.0, 0.0784), 14.0, 0.8)
+	HitFx.chatter(get_tree(), global_position + Vector2(0.0, -12.0), "ВОНЬ!", Color(0.2235, 1.0, 0.0784), 14.0, 0.8)
 	HitFx.burst(get_tree(), global_position, Color(0.2235, 1.0, 0.0784), 18, Balance.ITEM_REPEL_RADIUS * 1.6, 3.0, 0.8, true)
 	var radius_sq: float = Balance.ITEM_REPEL_RADIUS * Balance.ITEM_REPEL_RADIUS
 	for node: Node in get_tree().get_nodes_in_group(&"enemies"):
@@ -349,10 +351,10 @@ func _on_enemy_died_item_fx(enemy_id: StringName, at: Vector2) -> void:
 		_combo_left = Balance.ITEM_COMBO_SEC
 	if GameState.drunk_percent > 0.0 and _drunk_left <= 0.0 and randf() * 100.0 < GameState.drunk_percent:
 		_drunk_left = Balance.ITEM_DRUNK_SEC
-		HitFx.popup(get_tree(), global_position + Vector2(0.0, -14.0), "ПЬЯНКА!", Color(0.0, 0.94, 1.0), 14.0, 0.8)
+		HitFx.chatter(get_tree(), global_position + Vector2(0.0, -14.0), "ПЬЯНКА!", Color(0.0, 0.94, 1.0), 14.0, 0.8)
 	if randf() * 100.0 < GameState.lifesteal_percent:
 		_health.heal(Balance.ITEM_LIFESTEAL_HP)
-		HitFx.popup(get_tree(), global_position + Vector2(0.0, -12.0), "+1 ХП", Color(1.0, 0.0, 0.2), 12.0, 0.6)
+		HitFx.chatter(get_tree(), global_position + Vector2(0.0, -12.0), "+1 ХП", Color(1.0, 0.0, 0.2), 12.0, 0.6)
 	if randf() * 100.0 < GameState.explode_percent:
 		_explode.call_deferred(at)
 
@@ -395,7 +397,7 @@ func pay_hp(amount: float) -> void:
 	var take: float = minf(amount, _health.current_health - 1.0)
 	if take > 0.0:
 		_health.take_damage(take)
-		HitFx.popup(get_tree(), global_position + Vector2(0.0, -14.0), "-%d" % roundi(take), Color(0.6, 0.0, 0.8), 12.0, 0.6)
+		HitFx.chatter(get_tree(), global_position + Vector2(0.0, -14.0), "-%d" % roundi(take), Color(0.6, 0.0, 0.8), 12.0, 0.6)
 
 
 func heal(amount: float) -> void:

@@ -384,7 +384,7 @@ func _update_wind(delta: float) -> void:
 		_wind_dir = Vector2.from_angle(randi_range(0, 7) * TAU / 8.0)
 		var player: Node2D = _player()
 		if player != null:
-			HitFx.popup(get_tree(), player.global_position + Vector2(0.0, -20.0), "ВЕТЕР МЕНЯЕТСЯ!", Color(0.8, 0.9, 1.0), 12.0, 0.8)
+			HitFx.chatter(get_tree(), player.global_position + Vector2(0.0, -20.0), "ВЕТЕР МЕНЯЕТСЯ!", Color(0.8, 0.9, 1.0), 12.0, 0.8)
 	GameState.wind = _wind_dir * Balance.WIND_FORCE
 	_wind_bit_left -= delta
 	if _wind_bit_left <= 0.0:

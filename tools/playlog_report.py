@@ -18,6 +18,9 @@ for rid, evs in runs.items():
         if e["ev"] in ("wave", "end"):
             tag = "КОНЕЦ " + e.get("result", "") if e["ev"] == "end" else ""
             print(f"{e['wave']:>5}  {e['kind']:<7} {e['kills']:>5}  {e['earned']:>5}  {e['coins']:>5}  {e['hp']:>4}/{e['max_hp']:<4}  {e['dmg_taken']:>12}  {e['level']:>2}  {' '.join(e['weapons'])} {tag}")
+            if e.get("dealt"):
+                top = sorted(e["dealt"].items(), key=lambda kv: -kv[1])[:4]
+                print(f"       урон за волну: {', '.join(f'{k} {v}' for k, v in top)}   по тебе: {e.get('taken_by')} ({e.get('hits')} ударов, мин ХП {e.get('hp_min')})   враги ХПx{e.get('enemy_hp_x')} уронx{e.get('enemy_dmg_x')}  fps {e.get('fps')}")
             if e["ev"] == "end":
                 print(f"       убийца: {e.get('killer')}  время {e.get('time')}с  урон: " + ", ".join(f"{k} {int(v)}" for k, v in sorted(e.get('damage_by_source', {}).items(), key=lambda kv: -kv[1])[:5]))
         elif e["ev"] == "shop":

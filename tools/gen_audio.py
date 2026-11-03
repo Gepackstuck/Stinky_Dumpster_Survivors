@@ -619,9 +619,10 @@ def sfx():
     for d, f in ((0, 1568), (0.06, 2093)): x = bell(f, 0.3); s0 = N(d); bu[s0:s0 + len(x)] += x[:len(bu) - s0]
     n = N(0.12); bu[:n] += filt(noise(n), lo=5000) * np.exp(-T(n) / 0.03) * 0.3
     S["buy"] = bu
-    n = N(0.03); t = T(n); S["ui_move"] = np.sin(TAU * 1400 * t) * np.exp(-t / 0.01)
+    n = N(0.05); t = T(n)   # переключение пунктов: низкий мягкий «ток» (было 1400 Гц - пищало)
+    S["ui_move"] = np.sin(phase(sweep(560, 420, n, 0.02), n)) * np.exp(-t / 0.018) + 0.25 * np.sin(TAU * 1100 * t) * np.exp(-t / 0.004)
     us = np.zeros(N(0.25))
-    for d, f in ((0, 880), (0.05, 1320)): x = bell(f, 0.12); s0 = N(d); us[s0:s0 + len(x)] += x[:len(us) - s0]
+    for d, f in ((0, 523), (0.05, 784)): x = bell(f, 0.12); s0 = N(d); us[s0:s0 + len(x)] += x[:len(us) - s0]
     S["ui_select"] = us
     de = []   # смерть: грустный тромбон, но мягкий
     for i, m in enumerate((67, 66, 65, 62)):

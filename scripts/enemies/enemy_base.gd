@@ -17,6 +17,7 @@ static var _textures: Dictionary[StringName, Texture2D] = {}
 @onready var _hitbox: HitboxComponent = $Hitbox
 @onready var _anim: FrameAnimatorComponent = $FrameAnimator
 
+var _squash_tween: Tween = null
 var _target: Node2D = null
 var _speed: float = 0.0
 var _dead: bool = false
@@ -63,6 +64,9 @@ func setup(target: Node2D, spawn_position: Vector2, id: StringName = &"squid_gop
 	else:
 		remove_from_group(&"neutrals")
 		add_to_group(&"enemies")
+	if _squash_tween != null:   # враг из пула: недоигранное сплющивание вернуло бы старый размер (гигантизм оставался)
+		_squash_tween.kill()
+		_squash_tween = null
 	_sprite.scale = Vector2.ONE
 	_hitbox.set_deferred(&"monitoring", stats.get("contact", true))
 	if enemy_id == &"trash_bin":
@@ -338,8 +342,11 @@ var _base_scale: Vector2 = Vector2.ONE
 
 ## Сплющивание при ударе: читается, что попал (возврат за 0.12 с).
 func _squash(amount: Vector2) -> void:
+	if _squash_tween != null:
+		_squash_tween.kill()
 	_sprite.scale = _base_scale * amount
-	create_tween().tween_property(_sprite, "scale", _base_scale, 0.12)
+	_squash_tween = create_tween()
+	_squash_tween.tween_property(_sprite, "scale", _base_scale, 0.12)
 
 
 ## Пятно на полу после смерти (кровь/кишки/говно/слизь), медленно тает; не больше Balance.SPLAT_MAX.
@@ -399,7 +406,7 @@ func _mod_death_effect() -> void:
 				var parent: Node = get_parent()
 				var id: StringName = enemy_id
 				var target: Node2D = _target
-				HitFx.popup(tree, at + Vector2(0.0, -10.0), "ВСТАЁТ!", Color(0.6, 1.0, 0.3), 12.0, 0.8)
+				HitFx.chatter(tree, at + Vector2(0.0, -10.0), "ВСТАЁТ!", Color(0.6, 1.0, 0.3), 12.0, 0.8)
 				tree.create_timer(1.0, false).timeout.connect(func() -> void:
 					if is_instance_valid(parent) and is_instance_valid(target) and GameState.wave_mod == &"zombies":
 						var zombie: EnemyBase = EnemyBase.spawn_enemy(parent, target, id, at, WaveRules.hp_mult(GameState.wave) * 0.6)
@@ -420,9 +427,9 @@ func _on_died() -> void:
 	if _neutral:
 		_bin_hit_fx(true)
 	else:
-		HitFx.burst(get_tree(), global_position, Color(1.0, 0.0625, 0.9412), 18, 130.0, 3.0, 0.5)
-		HitFx.burst(get_tree(), global_position, Color(0.2235, 1.0, 0.0784), 10, 95.0, 2.0, 0.5)
-		HitFx.burst(get_tree(), global_position, Color(0.55, 0.0, 0.05), 6, 70.0, 4.0, 0.8, true)   # ошмётки
+		HitFx.burst(get_tree(), global_position, Color(1.0, 0.0625, 0.9412), 12, 120.0, 3.0, 0.45)
+		HitFx.burst(get_tree(), global_position, Color(0.2235, 1.0, 0.0784), 6, 90.0, 2.0, 0.45)
+		HitFx.burst(get_tree(), global_position, Color(0.55, 0.0, 0.05), 4, 70.0, 4.0, 0.7, true)   # ошмётки
 		HitFx.impact(get_tree(), global_position, Vector2.from_angle(randf() * TAU), true, Color(1.0, 0.3, 0.8))
 		if Balance.ENEMIES[enemy_id].has("anim_rows"):   # элита или босс
 			HitFx.hitstop(get_tree(), Balance.HITSTOP_BIG_KILL_SEC)

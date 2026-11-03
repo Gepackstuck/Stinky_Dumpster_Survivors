@@ -152,7 +152,7 @@ func _try_parry() -> void:
 			shot.pierce = 3
 			proj.call(&"_finish", false)
 			HitFx.burst(get_tree(), proj.global_position, Color(1.0, 1.0, 0.6), 12, 80.0, 3.0, 0.3, true)
-			HitFx.popup(get_tree(), at + Vector2(0.0, -16.0), "ОТБИЛ!", Color(1.0, 1.0, 0.4), 14.0, 0.7)
+			HitFx.chatter(get_tree(), at + Vector2(0.0, -16.0), "ОТБИЛ!", Color(1.0, 1.0, 0.4), 14.0, 0.7)
 			EventBus.parried.emit(at)
 			AudioManager.play_sfx(&"buy", 0.0)
 
@@ -178,7 +178,7 @@ func _fart() -> void:
 		enemy.hit_by_weapon(GameState.roll_damage(Balance.DASH_FART_DAMAGE), at.direction_to(enemy.global_position) * Balance.DASH_FART_KNOCK, &"dash")
 	HitFx.burst(get_tree(), at + Vector2(0.0, 6.0), Color(0.45, 0.85, 0.15), 22, 90.0, 4.0, 0.7, true)
 	HitFx.burst(get_tree(), at + Vector2(0.0, 6.0), Color(0.6, 0.45, 0.15), 10, 60.0, 3.0, 0.6, true)
-	HitFx.popup(get_tree(), at + Vector2(0.0, -14.0), ["ПРРР!", "ПФФФ!", "ОЙ...", "ЭХ, ГОДЫ..."][randi() % 4], Color(0.6, 1.0, 0.2), 12.0, 0.8)
+	HitFx.chatter(get_tree(), at + Vector2(0.0, -14.0), ["ПРРР!", "ПФФФ!", "ОЙ...", "ЭХ, ГОДЫ..."][randi() % 4], Color(0.6, 1.0, 0.2), 12.0, 0.8)
 	AudioManager.play_sfx(&"fart", 0.1)
 	EventBus.dash_used.emit(at)
 
@@ -255,7 +255,7 @@ func _bump() -> void:
 	if Profile.stat(&"bumps") >= 100:
 		Achievements.unlock(&"bump_100")
 	hurtbox.cancel_invulnerability()
-	HitFx.popup(get_tree(), body.global_position + Vector2(0.0, -12.0), "УПЁРСЯ!", Color(1.0, 0.3, 0.2), 12.0, 0.6)
+	HitFx.chatter(get_tree(), body.global_position + Vector2(0.0, -12.0), "УПЁРСЯ!", Color(1.0, 0.3, 0.2), 12.0, 0.6)
 	_finish()
 
 

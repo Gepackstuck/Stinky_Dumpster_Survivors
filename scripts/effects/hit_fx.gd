@@ -8,6 +8,8 @@ const FONT_THEME: Theme = preload("res://assets/ui/theme.tres")
 
 ## Взрыв квадратных пикселей из точки. colors — случайный выбор на каждую частицу пачкой.
 static func burst(tree: SceneTree, at: Vector2, color: Color, count: int, speed: float, size: float = 2.0, lifetime: float = 0.35, upward: bool = false) -> void:
+	if tree.get_node_count_in_group(&"enemies") > Balance.PARTICLE_CROWD:   # толпа - брызг вдвое меньше, врагов видно
+		count = maxi(count / 2, 1)
 	var particles: CPUParticles2D = CPUParticles2D.new()
 	particles.emitting = false
 	particles.one_shot = true
@@ -101,6 +103,19 @@ static func muzzle(tree: SceneTree, at: Vector2, direction: Vector2, color: Colo
 static func sparks(tree: SceneTree, at: Vector2, color: Color = Color(1.0, 0.9, 0.3)) -> void:
 	if randf() < 0.5:
 		burst(tree, at, color, 4, 55.0, 2.0, 0.2)
+
+
+static var _last_chatter_ms: int = -100000
+
+
+## Мелкая реплика (питомцы, «+1 ХП», «МИМО!», «ПНУЛ!»...): только когда на поле мало врагов и не чаще раза в CHATTER_GAP.
+## В толпе молчит - читаемость важнее шуток (плейтест: экран тонул в надписях).
+static func chatter(tree: SceneTree, at: Vector2, text: String, color: Color, rise: float = 14.0, duration: float = 0.55, big: bool = false) -> void:
+	var now: int = Time.get_ticks_msec()
+	if now - _last_chatter_ms < int(Balance.CHATTER_GAP_SEC * 1000.0) or tree.get_node_count_in_group(&"enemies") > Balance.CHATTER_MAX_ENEMIES:
+		return
+	_last_chatter_ms = now
+	popup(tree, at, text, color, rise, duration, big)
 
 
 ## Всплывающая надпись: поднимается и тает.

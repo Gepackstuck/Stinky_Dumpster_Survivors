@@ -18,7 +18,7 @@ static func price(kind: StringName, id: StringName, tier: int, wave: int) -> int
 	var raw: float = float(Balance.ITEMS[id]["price"]) if kind == &"item" else base_price(kind, id) * Balance.SHOP_PRICE_TIER_MULT[tier - 1]
 	if id == ItemLibrary.TICKET and Balance.TICKET_PRICE_FIXED:
 		return int(raw)   # билет всегда 5 говна
-	raw *= 1.0 + Balance.SHOP_PRICE_WAVE_GROWTH * wave
+	raw *= 1.0 + Balance.SHOP_PRICE_WAVE_GROWTH * wave + Balance.SHOP_PRICE_WAVE_QUAD * wave * wave
 	return maxi(roundi(raw * (1.0 - (GameState.discount_percent + GameState.card_discount) / 100.0)), 1)
 
 
