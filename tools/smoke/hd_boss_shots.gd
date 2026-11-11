@@ -7,7 +7,7 @@ const MAIN: PackedScene = preload("res://scenes/levels/main.tscn")
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	Profile.sandbox = true
-	Settings.art_style = "real"   # только на этот запуск, в настройки не пишется
+	Settings.art_style = "new"   # только на этот запуск, в настройки не пишется
 	ArtStyle.apply_ui()
 	_run.call_deferred()
 

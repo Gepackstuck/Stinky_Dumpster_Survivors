@@ -26,13 +26,8 @@ static func burst(tree: SceneTree, at: Vector2, color: Color, count: int, speed:
 	particles.scale_amount_min = size
 	particles.scale_amount_max = size * 1.5
 	particles.color = color
-	if ArtStyle.is_hd():   # детальный стиль: круглые капли в цветах крови и гнили вместо кислотных квадратов
-		particles.texture = _hd_drop()
+	if ArtStyle.is_hd():   # новый стиль: те же пиксельные частицы, но в цветах крови и гнили, а не кислотные
 		particles.color = hd_color(color)
-		particles.scale_amount_min = size * Balance.HD_DROP_SCALE
-		particles.scale_amount_max = size * Balance.HD_DROP_SCALE * 1.6
-		if not upward:
-			particles.gravity = Vector2(0.0, 60.0)
 	particles.z_index = 20
 	particles.global_position = at
 	tree.current_scene.add_child(particles)

@@ -60,7 +60,7 @@ func _refresh() -> void:
 	_rows[4].text = "%s: %s" % [tr("SET_LANGUAGE"), Settings.language.to_upper()]
 	_rows[5].text = "%s: %s" % [tr("SET_VICTORY"), tr("SET_YES") if Settings.victory_cutscene else tr("SET_NO")]
 	_rows[6].text = "%s: %s" % [tr("SET_DMG_NUMBERS"), tr(["SET_NO", "SET_CRITS", "SET_ALL"][Settings.damage_numbers])]
-	_rows[7].text = "%s: %s" % [tr("SET_ART"), tr("SET_ART_REAL") if Settings.art_style == "real" else tr("SET_ART_PIXEL")]
+	_rows[7].text = "%s: %s" % [tr("SET_ART"), tr("SET_ART_REAL") if Settings.art_style == "new" else tr("SET_ART_PIXEL")]
 	_rows[8].text = tr("SET_BACK")
 
 
@@ -90,7 +90,7 @@ func _change(row: int, dir: int) -> void:
 		6:
 			Settings.damage_numbers = posmod(Settings.damage_numbers + (dir if dir != 0 else 1), 3)
 		7:
-			Settings.art_style = "pixel" if Settings.art_style == "real" else "real"
+			Settings.art_style = "pixel" if Settings.art_style == "new" else "new"
 			ArtStyle.apply_ui()
 	Settings.save()
 	_refresh()

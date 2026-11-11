@@ -12,8 +12,8 @@ var fullscreen: bool = true
 var screen_shake: bool = true
 var victory_cutscene: bool = true
 var damage_numbers: int = 1         # цифры урона: 0 - нет, 1 - только криты, 2 - все   # ролик победы за воротами (можно выключить)
-var art_style: String = "pixel"   # pixel - пиксельная рисовка, real - детальная мрачная (assets/hd)
-const ART_STYLES: Array[String] = ["pixel", "real"]
+var art_style: String = "pixel"   # pixel - классика, new - новая пиксельная (крупнее, детальнее, вид 3/4, свет; assets/hd)
+const ART_STYLES: Array[String] = ["pixel", "new"]
 var language: String = "ru"     # ru / en (строки - translations/ui.csv, через tr())
 const LANGUAGES: Array[String] = ["ru", "en"]
 
@@ -29,6 +29,8 @@ func _ready() -> void:
 		damage_numbers = int(cfg.get_value("video", "damage_numbers", damage_numbers))
 		language = str(cfg.get_value("general", "language", language))
 		art_style = str(cfg.get_value("video", "art_style", art_style))
+		if art_style == "real":   # старое имя убранного реалистичного стиля
+			art_style = "new"
 	TranslationServer.set_locale(language)
 	_apply_window()
 

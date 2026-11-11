@@ -29,6 +29,8 @@ def main() -> None:
     vae = AutoencoderKL.from_pretrained(VAE, torch_dtype=torch.float16)
     pipe = StableDiffusionXLPipeline.from_pretrained(MODEL, vae=vae, torch_dtype=torch.float16, variant="fp16", use_safetensors=True)
     pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config, use_karras_sigmas=True)
+    if any(j.get("lora") for j in jobs):   # пиксель-арт: маленькое дополнение к SDXL (nerijs/pixel-art-xl)
+        pipe.load_lora_weights("nerijs/pixel-art-xl", weight_name="pixel-art-xl.safetensors", adapter_name="px")
     pipe.to("mps")
     pipe.set_progress_bar_config(disable=True)
     for i, j in enumerate(jobs):
@@ -39,6 +41,8 @@ def main() -> None:
         n_tok = len(pipe.tokenizer(prompt).input_ids)
         if n_tok > 77:
             print("!! prompt too long (%d tokens): %s" % (n_tok, j["out"]), flush=True)
+        if any(x.get("lora") for x in jobs):
+            pipe.set_adapters(["px"], adapter_weights=[float(j.get("lora", 0.0))])
         img = pipe(prompt=prompt, negative_prompt=j.get("neg", "") + ", " + NEG, width=int(j.get("w", 1024)), height=int(j.get("h", 1024)),
                    num_inference_steps=int(j.get("steps", 22)), guidance_scale=float(j.get("cfg", 6.5)), generator=gen).images[0]
         os.makedirs(os.path.dirname(j["out"]) or ".", exist_ok=True)

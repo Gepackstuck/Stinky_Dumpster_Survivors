@@ -7,7 +7,7 @@ const MAIN: PackedScene = preload("res://scenes/levels/main.tscn")
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	Profile.sandbox = true
-	Settings.art_style = "real"   # только на этот запуск, в настройки не пишется
+	Settings.art_style = "new"   # только на этот запуск, в настройки не пишется
 	ArtStyle.apply_ui()
 	_run.call_deferred()
 
@@ -28,7 +28,7 @@ func _run() -> void:
 	EventBus.items_changed.emit()
 	var player: Node2D = get_tree().get_first_node_in_group(&"player") as Node2D
 	var hb: HurtboxComponent = player.get_node(^"Hurtbox")
-	var ids: Array[StringName] = [&"squid_gopnik", &"chaser", &"microbe", &"spitter"]   # пока только перерисованные
+	var ids: Array[StringName] = [&"spitter", &"spitter", &"squid_gopnik"]   # пока только перерисованные
 	for k: int in 40:
 		EnemyBase.spawn_enemy(level.get_node(^"Enemies"), player, ids[k % ids.size()], player.global_position + Vector2.from_angle(k * 0.37) * randf_range(60.0, 170.0), 12.0)
 	for i: int in 24:

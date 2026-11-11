@@ -30,16 +30,15 @@ func apply_ui() -> void:
 		return
 	if _pixel_theme == null:
 		_pixel_theme = theme.duplicate() as Theme
-	var from: Theme = load(HD_THEME) as Theme if is_hd() else _pixel_theme
+	var from: Theme = load(HD_THEME) as Theme   # новый шрифт - во всей игре, в обоих стилях
 	theme.default_font = from.default_font
 	for key: StringName in [&"font_color", &"font_shadow_color"]:
 		theme.set_color(key, &"Label", from.get_color(key, &"Label"))
-	get_tree().root.canvas_item_default_texture_filter = (Viewport.DEFAULT_CANVAS_ITEM_TEXTURE_FILTER_LINEAR if is_hd()
-			else Viewport.DEFAULT_CANVAS_ITEM_TEXTURE_FILTER_NEAREST)   # гладкий шрифт и картинки в детальном стиле
+	get_tree().root.canvas_item_default_texture_filter = Viewport.DEFAULT_CANVAS_ITEM_TEXTURE_FILTER_LINEAR   # гладкий шрифт; спрайты сами ставят NEAREST
 
 
 func is_hd() -> bool:
-	return Settings.art_style == "real"
+	return Settings.art_style == "new"
 
 
 ## Описание картинки нового стиля ({} - её нет или включён пиксельный стиль).
@@ -64,7 +63,7 @@ func tex(path: String) -> Texture2D:
 			var ct: CanvasTexture = CanvasTexture.new()
 			ct.diffuse_texture = base
 			ct.normal_texture = load(real.replace(".png", "_n.png")) as Texture2D
-			ct.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+			ct.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST if d.get("pixel", true) else CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 			if d.get("repeat", false):
 				ct.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
 			base = ct
@@ -118,5 +117,5 @@ func apply(sprite: Sprite2D, path: String) -> float:
 	sprite.frame = 0
 	sprite.hframes = int(d.get("h", 1))
 	sprite.vframes = int(d.get("v", 1))
-	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST if d.get("pixel", true) else CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 	return float(d.get("scale", 0.25))
