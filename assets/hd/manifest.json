@@ -1363,154 +1363,132 @@
   "v": 1
  },
  "sprites/held_blowtorch.png": {
-  "generic": true,
   "h": 1,
   "pixel": true,
   "scale": 1.0,
   "v": 1
  },
  "sprites/held_bottle.png": {
-  "generic": true,
   "h": 1,
   "pixel": true,
   "scale": 1.0,
   "v": 1
  },
  "sprites/held_condensed_milk.png": {
-  "generic": true,
   "h": 1,
   "pixel": true,
   "scale": 1.0,
   "v": 1
  },
  "sprites/held_crossbow.png": {
-  "generic": true,
   "h": 1,
   "pixel": true,
   "scale": 1.0,
   "v": 1
  },
  "sprites/held_extension_cord.png": {
-  "generic": true,
   "h": 1,
   "pixel": true,
   "scale": 1.0,
   "v": 1
  },
  "sprites/held_frying_pan.png": {
-  "generic": true,
   "h": 1,
   "pixel": true,
   "scale": 1.0,
   "v": 1
  },
  "sprites/held_laser_pointer.png": {
-  "generic": true,
   "h": 1,
   "pixel": true,
   "scale": 1.0,
   "v": 1
  },
  "sprites/held_lighter.png": {
-  "generic": true,
   "h": 1,
   "pixel": true,
   "scale": 1.0,
   "v": 1
  },
  "sprites/held_mop.png": {
-  "generic": true,
   "h": 1,
   "pixel": true,
   "scale": 1.0,
   "v": 1
  },
  "sprites/held_mosin.png": {
-  "generic": true,
   "h": 1,
   "pixel": true,
   "scale": 1.0,
   "v": 1
  },
  "sprites/held_pipe_gun.png": {
-  "generic": true,
   "h": 1,
   "pixel": true,
   "scale": 1.0,
   "v": 1
  },
  "sprites/held_plunger.png": {
-  "generic": true,
   "h": 1,
   "pixel": true,
   "scale": 1.0,
   "v": 1
  },
  "sprites/held_rolling_pin.png": {
-  "generic": true,
   "h": 1,
   "pixel": true,
   "scale": 1.0,
   "v": 1
  },
  "sprites/held_rotten_cheese.png": {
-  "generic": true,
   "h": 1,
   "pixel": true,
   "scale": 1.0,
   "v": 1
  },
  "sprites/held_shiv.png": {
-  "generic": true,
   "h": 1,
   "pixel": true,
   "scale": 1.0,
   "v": 1
  },
  "sprites/held_shovel.png": {
-  "generic": true,
   "h": 1,
   "pixel": true,
   "scale": 1.0,
   "v": 1
  },
  "sprites/held_slingshot.png": {
-  "generic": true,
   "h": 1,
   "pixel": true,
   "scale": 1.0,
   "v": 1
  },
  "sprites/held_slipper.png": {
-  "generic": true,
   "h": 1,
   "pixel": true,
   "scale": 1.0,
   "v": 1
  },
  "sprites/held_sock.png": {
-  "generic": true,
   "h": 1,
   "pixel": true,
   "scale": 1.0,
   "v": 1
  },
  "sprites/held_spray_can.png": {
-  "generic": true,
   "h": 1,
   "pixel": true,
   "scale": 1.0,
   "v": 1
  },
  "sprites/held_syringe.png": {
-  "generic": true,
   "h": 1,
   "pixel": true,
   "scale": 1.0,
   "v": 1
  },
  "sprites/held_tin_bomb.png": {
-  "generic": true,
   "h": 1,
   "pixel": true,
   "scale": 1.0,
