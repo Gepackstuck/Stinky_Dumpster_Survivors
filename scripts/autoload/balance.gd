@@ -1111,3 +1111,4 @@ const HD_PLAYER_LIGHT_HEIGHT: float = 26.0                   # высота фо
 const HD_FLASH_AMOUNT: float = 0.45                           # сила цветовой вспышки спрайта в новом стиле (1 - сплошная заливка)
 const HD_PLAYER_RIM_ALPHA: float = 0.55                      # ободок героя в новом стиле
 const HD_ZOOM_MULT: float = 0.88                             # камера в новом стиле дальше (спрайты крупнее)
+const HD_HEARTBEAT_HP: float = 0.35                          # ниже этой доли здоровья слышно сердцебиение (новый стиль)

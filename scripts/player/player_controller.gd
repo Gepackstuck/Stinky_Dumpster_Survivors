@@ -421,6 +421,9 @@ func _on_health_changed(current: float, maximum: float) -> void:
 	GameState.hp = current
 	_flash.set_outline_by_health(current / maxf(maximum, 1.0))
 	GameState.max_hp = maximum
+	var frac: float = current / maxf(maximum, 1.0)
+	if frac < Balance.HD_HEARTBEAT_HP and current > 0.0:
+		AudioManager.heartbeat(1.0 - frac / Balance.HD_HEARTBEAT_HP)   # новый стиль: сердцебиение при малом здоровье
 
 
 func _on_died() -> void:

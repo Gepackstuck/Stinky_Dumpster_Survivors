@@ -26,12 +26,83 @@ const DEATH_LINES: Array[String] = [
 ]
 
 const WIN_LINES: Array[String] = [
-	"Ты выиграл и нахуя?",
+	"Ты выиграл и зачем?",
 	"Выжил. Лучше бы сдох - было бы честнее",
 	"Победа. Пахнешь всё равно как говно",
 	"Выиграл у помойки. Поздравляю, герой параши",
 	"Ну выиграл. Мамка всё равно не гордится",
 	"Ура. Теперь иди помойся, вонючка",
+]
+
+# --- Новая рисовка: страх (лавкрафтовские, жёсткие, без мата). Переводы - ui.csv ---
+const HD_DEATH_LINES: Array[String] = [
+	"Оно тебя дожидалось. Давно",
+	"Ты не умер. Ты просто стал частью свалки",
+	"Тебя съели медленно. Ты успел всё почувствовать",
+	"Земля теплее, чем ты думал. Это твоя кровь",
+	"Никто не придёт. Здесь некому приходить",
+	"Они запомнят твой вкус",
+	"Тьма взяла своё. Тьма всегда берёт своё",
+	"Ты кричал, но помойка не слушает",
+	"Твоё имя уже стёрто. Осталась только куртка",
+	"Мухи нашли тебя первыми. Они всегда первые",
+	"Теперь ты один из них. Улыбайся шире",
+	"Твои кости тут будут лежать вечно",
+	"Шёпот в стенах стал громче. Он зовёт тебя по имени",
+	"Ты думал, что сбежишь. Смешно",
+	"Ничего не кончилось. Просто теперь ты на той стороне",
+]
+const HD_WIN_LINES: Array[String] = [
+	"Ты выжил. Лучше бы нет",
+	"Победа. Но оно знает, где ты спишь",
+	"Выход открыт. Оглянись только не вздумай",
+	"Ты выбрался. Часть тебя осталась тут",
+	"Они отпустили тебя. Пока что",
+]
+const HD_WAVE_LINES: Array[String] = [
+	"Они идут. Слышишь, как хлюпает под ногами?",
+	"Что-то шевелится в темноте. Много чего",
+	"Не смотри им в глаза. Все эти глаза",
+	"Тьма голодна. Накормишь её",
+	"Шёпот стал ближе. Он знает твоё имя",
+	"Новая волна. Старая ещё не остыла",
+	"Они пахнут тобой. Ты ими тоже",
+	"Свет гаснет. Они это любят",
+]
+const HD_BOSS_LINES: Array[String] = [
+	"Земля дрожит. Это не землетрясение",
+	"Оно здесь. Оно всегда было здесь",
+	"Беги. Хотя бы красиво",
+	"Помойка проснулась целиком",
+]
+const HD_INTRO_LINES: Array[String] = [
+	"Добро пожаловать в яму. Выхода нет, есть только дно",
+	"Здесь пахнет смертью. Твоей, пока ещё не случившейся",
+	"Тут всё живое. Даже то, что мёртвое",
+	"Не шуми. Оно любит, когда шумят",
+	"Огонь у тебя только один. Береги его",
+	"Что-то дышит в куче мусора. Оно не одно",
+	"Если услышишь свое имя из темноты, не отвечай",
+	"Мёртвые здесь ходят. Живые здесь бегают",
+]
+const HD_ELITE_LINES: Array[String] = [
+	"Оно крупнее остальных. И давно голодное",
+	"Это существо помнит, как ты выглядишь изнутри",
+	"Лучше бы ты его не будил",
+	"Оно идёт прямо к тебе. Не оглядывайся",
+]
+const HD_HORDE_LINES: Array[String] = [
+	"Их слишком много. Темнота шевелится",
+	"Они лезут из всех щелей. Из всех, что есть",
+	"Тишина кончилась. Началась орда",
+]
+const HD_STREAK_BREAK_LINES: Array[String] = [
+	"Тебя задели. Оно почуяло кровь",
+	"Серия оборвалась. Как и ты скоро",
+]
+const HD_STREAK_UP_LINES: Array[String] = [
+	"Пока цел. Оно ждёт",
+	"Тьма вежливо расступается. Пока",
 ]
 
 static var _last_death: int = -1
@@ -105,16 +176,21 @@ const BOSS_TAGLINES: Dictionary = {
 }
 
 
+static func _pool(classic: Array[String], horror: Array[String]) -> String:
+	var lines: Array[String] = horror if ArtStyle.is_hd() else classic
+	return TranslationServer.translate(lines[randi() % lines.size()])
+
+
 static func random_intro() -> String:
-	return INTRO_LINES[randi() % INTRO_LINES.size()]
+	return _pool(INTRO_LINES, HD_INTRO_LINES)
 
 
 static func random_elite() -> String:
-	return ELITE_LINES[randi() % ELITE_LINES.size()]
+	return _pool(ELITE_LINES, HD_ELITE_LINES)
 
 
 static func random_horde() -> String:
-	return HORDE_LINES[randi() % HORDE_LINES.size()]
+	return _pool(HORDE_LINES, HD_HORDE_LINES)
 
 
 static func boss_tagline(boss_id: StringName) -> String:
@@ -122,11 +198,11 @@ static func boss_tagline(boss_id: StringName) -> String:
 
 
 static func random_wave() -> String:
-	return WAVE_LINES[randi() % WAVE_LINES.size()]
+	return _pool(WAVE_LINES, HD_WAVE_LINES)
 
 
 static func random_boss() -> String:
-	return BOSS_LINES[randi() % BOSS_LINES.size()]
+	return _pool(BOSS_LINES, HD_BOSS_LINES)
 
 
 ## Звуки, которые выдаёт игрок при уроне (всплывают над ним).
@@ -162,11 +238,11 @@ static func random_clean() -> String:
 
 
 static func random_streak_break() -> String:
-	return STREAK_BREAK_LINES[randi() % STREAK_BREAK_LINES.size()]
+	return _pool(STREAK_BREAK_LINES, HD_STREAK_BREAK_LINES)
 
 
 static func random_streak_up() -> String:
-	return STREAK_UP_LINES[randi() % STREAK_UP_LINES.size()]
+	return _pool(STREAK_UP_LINES, HD_STREAK_UP_LINES)
 
 
 static func random_hit_word() -> String:
@@ -174,12 +250,16 @@ static func random_hit_word() -> String:
 
 
 static func random_death() -> String:
+	if ArtStyle.is_hd():
+		return _pool(DEATH_LINES, HD_DEATH_LINES)
 	_last_death = _pick(DEATH_LINES, _last_death)
 	return DEATH_LINES[_last_death]
 
 
 ## Пока не используется: экран победы появится в Шаге 7.
 static func random_win() -> String:
+	if ArtStyle.is_hd():
+		return _pool(WIN_LINES, HD_WIN_LINES)
 	_last_win = _pick(WIN_LINES, _last_win)
 	return WIN_LINES[_last_win]
 
