@@ -58,8 +58,10 @@ static func hd_color(c: Color) -> Color:
 	if c.r > 0.85 and c.g > 0.35 and c.b < 0.5:
 		return c                                        # огонь, искры, золото
 	if c.g > c.r and c.g > c.b:
-		return Color(0.42, 0.5, 0.12, c.a)              # гниль
-	return Color(0.34, 0.01, 0.02, c.a).lerp(c, 0.08)    # кровь
+		return Color(0.55, 0.92, 0.12, c.a)             # блевотина: кислотно-зелёная, яркая
+	if c.b > c.g and c.r > c.g * 1.3:
+		return Color(0.80, 0.04, 0.08, c.a)             # кровь: ярко-красная, мокрая
+	return Color(0.46, 0.25, 0.08, c.a)                 # дерьмо и грязь: глянцево-коричневые
 
 
 const SHAPE: GDScript = preload("res://scripts/effects/shape_fx.gd")

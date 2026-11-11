@@ -1020,10 +1020,10 @@
   "v": 1
  },
  "sprites/ground_decals.png": {
-  "generic": true,
-  "h": 1,
+  "blood": 3,
+  "h": 9,
   "pixel": true,
-  "scale": 1.0,
+  "scale": 0.5,
   "v": 1
  },
  "sprites/ground_tile.png": {

@@ -454,7 +454,8 @@ func _leave_splat() -> void:
 		splat.scale = _base_scale
 	else:   # детальный стиль: лужа крови из листа декалей (первые ячейки - кровь)
 		var k: float = ArtStyle.apply(splat, HD_DECALS)
-		splat.frame = randi() % int(hd_decals.get("blood", 1))
+		var roll: float = randf()   # смерть оставляет кровь, чаще всего; иногда блевотину, а то и кучку
+		splat.frame = randi() % int(hd_decals.get("blood", 1)) if roll < 0.68 else (int(hd_decals["blood"]) + randi() % 2 if roll < 0.86 else int(hd_decals["blood"]) + 2 + randi() % 3)
 		splat.rotation = randf() * TAU
 		splat.global_scale = Vector2.ONE * k * Balance.HD_SPLAT_SCALE
 	splat.global_position = global_position + Vector2(0.0, 4.0)
