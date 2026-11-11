@@ -10,6 +10,7 @@ const HD_THEME: String = "res://assets/hd/ui/theme_hd.tres"
 const MANIFEST: String = "res://assets/hd/manifest.json"
 
 var _manifest: Dictionary = {}
+var _pending: Array[WeakRef] = []
 var _grade: CanvasLayer = null
 var _pixel_theme: Theme = null   # копия пиксельной темы, чтобы вернуть её при переключении
 var _cache: Dictionary[String, Texture2D] = {}
@@ -65,12 +66,21 @@ func _on_node_added(n: Node) -> void:
 	if not is_hd():
 		return
 	if n is TextureRect or n is TextureProgressBar or n is Sprite2D or n is NinePatchRect:
-		_reskin.call_deferred(n)
+		_pending.append(weakref(n))
+
+
+func _process(_delta: float) -> void:
+	if _pending.is_empty():
+		return
+	var batch: Array[WeakRef] = _pending
+	_pending = []
+	for ref: WeakRef in batch:
+		var obj: Object = ref.get_ref()
+		if obj != null:
+			_reskin(obj as Node)
 
 
 func _reskin(n: Node) -> void:
-	if not is_instance_valid(n):
-		return
 	var cur: Texture2D = n.get(&"texture") if not (n is TextureProgressBar) else null
 	if n is TextureProgressBar:
 		var bar: TextureProgressBar = n as TextureProgressBar
