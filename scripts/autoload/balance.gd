@@ -1097,3 +1097,6 @@ const HD_VIGNETTE: float = 0.6
 const HD_GRAIN: float = 0.05
 const HD_FOG: float = 0.12
 const HD_CORPSE_FADE_SEC: float = 0.7                       # тело после анимации смерти тает
+const HD_SPLAT_SCALE: float = 0.6                            # лужа крови от убитого врага относительно декали пола
+const HD_DECAL_AREA_PX2: float = 30000.0                     # одна декаль (кровь, потроха) на столько квадратных единиц арены
+const HD_DECAL_ALPHA: float = 0.8

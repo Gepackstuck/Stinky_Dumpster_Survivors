@@ -6,6 +6,7 @@ extends CharacterBody2D
 const BASE_RADIUS: float = 6.0
 const PUDDLE_SCENE: PackedScene = preload("res://scenes/hazards/poop_puddle.tscn")
 const PIXEL_HFRAMES: int = 4
+const HD_DECALS: String = "res://assets/sprites/ground_decals.png"
 const SPLAT: Texture2D = preload("res://assets/sprites/fx_splat.png")
 static var _textures: Dictionary[StringName, Texture2D] = {}
 
@@ -44,7 +45,7 @@ var forced_sec: float = 0.0
 func _ready() -> void:
 	_hurtbox.hurt.connect(_on_hurt)
 	_health.died.connect(_on_died)
-	_hitbox.landed.connect(func() -> void: _play_hd(&"attack"))
+	_hitbox.landed.connect(func() -> void: play_hd(&"attack"))
 	_health.health_changed.connect(func(current: float, maximum: float) -> void: _flash.set_outline_by_health(current / maxf(maximum, 1.0)))
 
 
@@ -297,7 +298,7 @@ func set_anim_row(row: int, restart: bool = true) -> void:
 
 
 ## Детальный стиль: разовый ряд анимации (attack, hurt), если он нарисован у этого врага.
-func _play_hd(row_name: StringName) -> void:
+func play_hd(row_name: StringName) -> void:
 	if _dead or not _hd_rows.has(row_name):
 		return
 	_anim.play_once(int(_hd_rows[row_name][0]), int(_hd_rows[row_name][1]))
@@ -370,7 +371,7 @@ func _on_hurt(damage: float) -> void:
 		if damage <= 0.0:
 			return
 	_flash.flash(Color.WHITE)
-	_play_hd(&"hurt")
+	play_hd(&"hurt")
 	_squash(Vector2(1.45, 0.7))   # сильнее сплющивает - видно, что попал
 	var crit: bool = GameState.is_crit_damage(damage)
 	if _neutral:
@@ -430,14 +431,21 @@ func _leave_splat() -> void:
 	if splats.size() >= Balance.SPLAT_KEEP_MAX:
 		splats[0].queue_free()
 	var splat: Sprite2D = Sprite2D.new()
-	splat.texture = SPLAT
-	splat.hframes = 4
-	splat.frame = randi() % 4
-	splat.flip_h = randf() < 0.5
-	splat.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	splat.scale = _base_scale
+	var hd_decals: Dictionary = ArtStyle.info(HD_DECALS)
 	splat.add_to_group(&"splats")
 	ground.add_child(splat)
+	if hd_decals.is_empty():
+		splat.texture = SPLAT
+		splat.hframes = 4
+		splat.frame = randi() % 4
+		splat.flip_h = randf() < 0.5
+		splat.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		splat.scale = _base_scale
+	else:   # детальный стиль: лужа крови из листа декалей (первые ячейки - кровь)
+		var k: float = ArtStyle.apply(splat, HD_DECALS)
+		splat.frame = randi() % int(hd_decals.get("blood", 1))
+		splat.rotation = randf() * TAU
+		splat.global_scale = Vector2.ONE * k * Balance.HD_SPLAT_SCALE
 	splat.global_position = global_position + Vector2(0.0, 4.0)
 	var tw: Tween = splat.create_tween()
 	tw.tween_interval(Balance.SPLAT_FADE_SEC * 0.6)

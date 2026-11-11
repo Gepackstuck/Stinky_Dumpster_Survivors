@@ -41,4 +41,5 @@ func physics_tick(delta: float) -> void:
 		_spit_left = SPIT_INTERVAL_SEC + Balance.SPITTER_WINDUP_SEC
 		_aim = direction_to_target()
 		_windup_left = Balance.SPITTER_WINDUP_SEC
+		boss.play_hd(&"attack")   # детальный стиль: надул горло и харкнул
 		Telegraph.line(boss.get_tree(), boss.global_position, _aim, Balance.SPITTER_AIM_LENGTH, 3.5, Balance.SPITTER_WINDUP_SEC, boss)

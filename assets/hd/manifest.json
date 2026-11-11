@@ -24,8 +24,33 @@
   "scale": 0.2,
   "v": 4
  },
+ "sprites/enemy_spitter.png": {
+  "body_w": 34.0,
+  "fps": 12,
+  "h": 10,
+  "rows": {
+   "attack": [
+    1,
+    8
+   ],
+   "death": [
+    3,
+    10
+   ],
+   "hurt": [
+    2,
+    4
+   ],
+   "walk": [
+    0,
+    10
+   ]
+  },
+  "scale": 0.22667,
+  "v": 4
+ },
  "sprites/enemy_squid_gopnik.png": {
-  "body_w": 31.0,
+  "body_w": 32.0,
   "fps": 12,
   "h": 12,
   "rows": {
@@ -46,8 +71,14 @@
     12
    ]
   },
-  "scale": 0.21528,
+  "scale": 0.21477,
   "v": 4
+ },
+ "sprites/ground_decals.png": {
+  "blood": 2,
+  "h": 4,
+  "scale": 0.1796875,
+  "v": 1
  },
  "sprites/ground_tile.png": {
   "h": 1,

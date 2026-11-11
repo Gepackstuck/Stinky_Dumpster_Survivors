@@ -3,6 +3,7 @@ extends Sprite2D
 ## Декали новые в каждом забеге; приглушены, чтобы не мешать читать врагов.
 
 const DECALS: Texture2D = preload("res://assets/sprites/ground_decals.png")
+const DECALS_PATH: String = "res://assets/sprites/ground_decals.png"
 const TILE_PATH: String = "res://assets/sprites/ground_tile.png"
 const CELL: float = 24.0
 const DECAL_ALPHA: float = 0.4   # спокойный пол: враги и пикапы читаются (как в Brotato)
@@ -21,6 +22,7 @@ func _ready() -> void:
 	EventBus.wave_started.connect(func(_w: int) -> void: _apply_season())
 	EventBus.wave_ended.connect(func(_w: int) -> void: _apply_season.call_deferred())
 	if not hd.is_empty():
+		_scatter_hd_decals(arena)
 		return
 	var kinds: int = int(DECALS.get_width() / CELL)
 	var count: int = int(arena * arena / Balance.GROUND_DECAL_AREA_PX2)
@@ -60,3 +62,20 @@ func _on_bin_destroyed(at: Vector2) -> void:
 	decal.modulate = Color(DECAL_TINT, 0.9)
 	decal.position = to_local(at).round()
 	add_child(decal)
+
+
+## Детальный стиль: лужи крови и кучи потрохов по арене, новые в каждом забеге; тёмные, чтобы не спорить с врагами.
+func _scatter_hd_decals(arena: float) -> void:
+	var d: Dictionary = ArtStyle.info(DECALS_PATH)
+	if d.is_empty():
+		return
+	for i: int in int(arena * arena / Balance.HD_DECAL_AREA_PX2):
+		var decal: Sprite2D = Sprite2D.new()
+		add_child(decal)
+		var k: float = ArtStyle.apply(decal, DECALS_PATH)
+		decal.frame = randi() % decal.hframes
+		decal.rotation = randf() * TAU
+		decal.flip_h = randf() < 0.5
+		decal.modulate.a = Balance.HD_DECAL_ALPHA
+		decal.global_scale = Vector2.ONE * k * randf_range(0.7, 1.2)
+		decal.global_position = global_position + Vector2(randf_range(0.0, arena), randf_range(0.0, arena))
