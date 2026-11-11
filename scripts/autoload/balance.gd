@@ -1118,3 +1118,4 @@ const HD_PROPS_INNER: int = 16                               # декораци�
 const HD_PROPS_CLEAR_RADIUS: float = 110.0                   # вокруг центра (старт героя) пусто
 const HD_PROPS_LIGHTS: int = 7                               # фонарей и бочек с огнём на арене
 const HD_PROPS_MIN_GAP: float = 34.0                         # минимальное расстояние между декорациями
+const HD_DEATH_GROSS_CHANCE: float = 0.22                    # шанс, что смерть врага сопровождается пердежом, отрыжкой, рвотой или хлюпом (новый стиль)

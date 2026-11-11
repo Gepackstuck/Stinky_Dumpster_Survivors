@@ -6,12 +6,12 @@ extends Node
 ## Музыка: боевые треки сменяются от волны к волне, у элиты и боссов свой трек, в меню и на кладбище - свой.
 
 const VOICES: int = 16
-const LOW_FAMILIES: Array[StringName] = [&"wet_hit", &"bone_crack", &"gore_burst", &"weapon", &"hit", &"hit_crit", &"shoot", &"swing", &"enemy_death", &"pickup", &"explosion"]
+const LOW_FAMILIES: Array[StringName] = [&"fart", &"burp", &"puke", &"poop_splat", &"hiccup", &"wet_hit", &"bone_crack", &"gore_burst", &"weapon", &"hit", &"hit_crit", &"shoot", &"swing", &"enemy_death", &"pickup", &"explosion"]
 const LOW_BUDGET: int = 4          # частых звуков за окно LOW_WINDOW_SEC - не больше (много предметов = каша)
 const LOW_WINDOW_SEC: float = 0.1
 const MIN_GAP: Dictionary = {&"weapon": 0.08, &"w_mosin": 0.25, &"w_frying_pan": 0.15, &"w_shovel": 0.15, &"enemy_death": 0.05, &"hit": 0.09, &"hit_crit": 0.1, &"shoot": 0.05, &"swing": 0.07, &"pickup": 0.035, &"warn": 0.15}
 const DEFAULT_GAP: float = 0.03
-const VOLUME_DB: Dictionary = {&"wet_hit": -13.0, &"bone_crack": -11.0, &"gore_burst": -9.0, &"pickup": -13.0, &"hit": -15.0, &"hit_crit": -12.0, &"shoot": -14.0, &"swing": -12.0, &"enemy_death": -9.0,
+const VOLUME_DB: Dictionary = {&"fart": -12.0, &"burp": -12.0, &"puke": -11.0, &"poop_splat": -12.0, &"hiccup": -13.0, &"wet_hit": -13.0, &"bone_crack": -11.0, &"gore_burst": -9.0, &"pickup": -13.0, &"hit": -15.0, &"hit_crit": -12.0, &"shoot": -14.0, &"swing": -12.0, &"enemy_death": -9.0,
 		&"ui_move": -10.0, &"ui_select": -8.0, &"warn": -8.0, &"player_hurt": -5.0, &"explosion": -6.0, &"truck_horn": -8.0, &"wave_horn": -4.0,
 		&"weapon": -12.0, &"w_mosin": -5.0, &"w_pipe_gun": -8.0, &"w_frying_pan": -9.0, &"w_shovel": -9.0, &"w_spray_can": -16.0, &"w_blowtorch": -16.0, &"w_laser_pointer": -17.0}
 const MUSIC_FADE_SEC: float = 0.8
@@ -60,7 +60,9 @@ func _ready() -> void:
 		else:
 			play_sfx_or(StringName("e_" + String(id)), &"enemy_death")
 			if ArtStyle.is_hd():
-				play_sfx(&"gore_burst", 0.1))
+				play_sfx(&"gore_burst", 0.1)
+				if randf() < Balance.HD_DEATH_GROSS_CHANCE:
+					play_sfx([&"fart", &"poop_splat", &"burp", &"puke", &"hiccup"][randi() % 5], 0.12))
 	EventBus.player_hit.connect(func(_d: float) -> void: play_sfx(&"player_hurt"))
 	EventBus.xp_collected.connect(func(_a: int) -> void: _play_pickup())
 	EventBus.melee_hit.connect(func(weapon_id: StringName, _hits: int) -> void: play_sfx_or(StringName("w_" + String(weapon_id)), &"hit_crit", 0.06))
@@ -220,7 +222,7 @@ var _amb: AudioStreamPlayer
 var _scare: AudioStreamPlayer
 var _beat: AudioStreamPlayer
 var _scare_timer: Timer
-const SCARES: Array[StringName] = [&"whisper", &"whisper_2", &"whisper_3", &"whisper_4", &"creak", &"creak_2", &"creak_3", &"moan", &"moan_2", &"moan_3"]
+const SCARES: Array[StringName] = [&"fart", &"fart_2", &"fart_3", &"fart_4", &"fart_5", &"burp", &"burp_2", &"burp_3", &"puke", &"puke_2", &"hiccup", &"hiccup_2", &"drunk_moan", &"drunk_moan_2", &"bottle_clink", &"whisper", &"creak", &"moan"]   # случайный «фон помойки»: отрыжки, пердёж, рвота, икота, звон бутылок, редкий шёпот
 
 
 func _horror_start() -> void:
