@@ -54,11 +54,57 @@ func has_hd(path: String) -> bool:
 
 
 ## Текстура по пути пиксельной картинки: в новом стиле - её детальная версия, если нарисована.
+## Если у детальной есть карта нормалей (<имя>_n.png, "n" в описании) - отдаётся CanvasTexture: свет ложится рельефно.
 func tex(path: String) -> Texture2D:
-	var real: String = HD_ROOT + path.trim_prefix(ROOT) if has_hd(path) else path
+	var d: Dictionary = info(path)
+	var real: String = HD_ROOT + path.trim_prefix(ROOT) if not d.is_empty() else path
 	if not _cache.has(real):
-		_cache[real] = load(real) as Texture2D
+		var base: Texture2D = load(real) as Texture2D
+		if d.get("n", false):
+			var ct: CanvasTexture = CanvasTexture.new()
+			ct.diffuse_texture = base
+			ct.normal_texture = load(real.replace(".png", "_n.png")) as Texture2D
+			ct.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+			if d.get("repeat", false):
+				ct.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
+			base = ct
+		_cache[real] = base
 	return _cache[real]
+
+
+## Мягкая тень под существом детального стиля (width - ширина тела, foot - от центра до подошвы; мировые единицы).
+func shadow(host: Node2D, width: float, foot: float, cx: float = 0.0) -> Sprite2D:
+	var sh: Sprite2D = host.get_node_or_null(^"HdShadow") as Sprite2D
+	if sh == null:
+		sh = Sprite2D.new()
+		sh.name = "HdShadow"
+		sh.texture = _shadow_tex()
+		sh.show_behind_parent = true
+		sh.z_index = -1
+		host.add_child(sh)
+		host.move_child(sh, 0)
+	sh.visible = true
+	sh.position = Vector2(cx, foot - width * 0.04)
+	sh.scale = Vector2(width * Balance.HD_SHADOW_WIDTH / 64.0, width * Balance.HD_SHADOW_WIDTH * 0.42 / 64.0)
+	return sh
+
+
+var _shadow: GradientTexture2D = null
+
+
+func _shadow_tex() -> Texture2D:
+	if _shadow == null:
+		var grad: Gradient = Gradient.new()
+		grad.offsets = PackedFloat32Array([0.0, 0.55, 1.0])
+		grad.colors = PackedColorArray([Color(0, 0, 0, Balance.HD_SHADOW_ALPHA), Color(0, 0, 0, Balance.HD_SHADOW_ALPHA * 0.7), Color(0, 0, 0, 0)])
+		_shadow = GradientTexture2D.new()
+		_shadow.gradient = grad
+		_shadow.fill = GradientTexture2D.FILL_RADIAL
+		_shadow.fill_from = Vector2(0.5, 0.5)
+		_shadow.fill_to = Vector2(1.0, 0.5)
+		_shadow.width = 64
+		_shadow.height = 64
+	return _shadow
 
 
 ## Поставить спрайту картинку в текущем стиле: текстура, сетка кадров, сглаживание.

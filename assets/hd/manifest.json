@@ -1,8 +1,47 @@
 {
+ "sprites/enemy_boss_trash_golem.png": {
+  "body_w": 84.0,
+  "cx": -0.42,
+  "foot": 40.94,
+  "fps": 12,
+  "h": 12,
+  "n": true,
+  "rows": {
+   "death": [
+    5,
+    12
+   ],
+   "enrage": [
+    4,
+    12
+   ],
+   "pound": [
+    2,
+    8
+   ],
+   "summon": [
+    3,
+    8
+   ],
+   "throw": [
+    1,
+    8
+   ],
+   "walk": [
+    0,
+    12
+   ]
+  },
+  "scale": 0.42211,
+  "v": 6
+ },
  "sprites/enemy_chaser.png": {
   "body_w": 30.0,
+  "cx": -0.1,
+  "foot": 17.8,
   "fps": 14,
   "h": 10,
+  "n": true,
   "rows": {
    "attack": [
     1,
@@ -26,8 +65,11 @@
  },
  "sprites/enemy_microbe.png": {
   "body_w": 32.0,
+  "cx": -0.21,
+  "foot": 14.85,
   "fps": 12,
   "h": 12,
+  "n": true,
   "rows": {
    "attack": [
     1,
@@ -51,8 +93,11 @@
  },
  "sprites/enemy_spitter.png": {
   "body_w": 34.0,
+  "cx": -0.11,
+  "foot": 15.41,
   "fps": 12,
   "h": 10,
+  "n": true,
   "rows": {
    "attack": [
     1,
@@ -76,8 +121,11 @@
  },
  "sprites/enemy_squid_gopnik.png": {
   "body_w": 32.0,
+  "cx": 0.21,
+  "foot": 15.03,
   "fps": 12,
   "h": 12,
+  "n": true,
   "rows": {
    "attack": [
     1,
@@ -99,6 +147,26 @@
   "scale": 0.21477,
   "v": 4
  },
+ "sprites/enemy_trash_bin.png": {
+  "body_w": 30.0,
+  "cx": -0.1,
+  "foot": 14.04,
+  "fps": 12,
+  "h": 4,
+  "n": true,
+  "rows": {
+   "hurt": [
+    1,
+    4
+   ],
+   "walk": [
+    0,
+    1
+   ]
+  },
+  "scale": 0.19231,
+  "v": 2
+ },
  "sprites/ground_decals.png": {
   "blood": 2,
   "h": 4,
@@ -107,13 +175,18 @@
  },
  "sprites/ground_tile.png": {
   "h": 1,
+  "n": true,
+  "repeat": true,
   "scale": 0.146484375,
   "v": 1
  },
  "sprites/player_hobo.png": {
   "body_w": 17.0,
+  "cx": -1.23,
+  "foot": 20.56,
   "fps": 12,
   "h": 8,
+  "n": true,
   "rows": {
    "back": [
     1,
@@ -130,5 +203,21 @@
   },
   "scale": 0.27419,
   "v": 3
+ },
+ "sprites/xp_pixel.png": {
+  "body_w": 9.0,
+  "cx": -0.07,
+  "foot": 5.52,
+  "fps": 8,
+  "h": 1,
+  "n": true,
+  "rows": {
+   "idle": [
+    0,
+    1
+   ]
+  },
+  "scale": 0.14516,
+  "v": 1
  }
 }

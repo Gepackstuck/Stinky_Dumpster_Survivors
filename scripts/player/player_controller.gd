@@ -59,6 +59,8 @@ func _ready() -> void:
 		_sprite.scale = Vector2.ONE * ArtStyle.apply(_sprite, look_path)
 		_animator.fps = float(hd.get("fps", 12))
 		_shoes.visible = false   # ботинки уже нарисованы на герое
+		$ItemsVisual.visible = false   # пиксельные шапки на детального героя не надеваем (пока не перерисованы)
+		ArtStyle.shadow(self, float(hd.get("body_w", 16.0)), float(hd.get("foot", 12.0)), float(hd.get("cx", 0.0)))
 	EventBus.weapons_changed.connect(_sync_weapons)
 	EventBus.enemy_died.connect(_on_enemy_died_item_fx)
 	EventBus.wave_started.connect(_on_wave_started_items)

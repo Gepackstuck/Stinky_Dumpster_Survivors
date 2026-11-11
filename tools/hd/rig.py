@@ -62,6 +62,7 @@ class Rig:
         self.bones = []   # name, pivot, tip, radius, parent
         self.statics = []
         self.warps = {}   # мягкие деформации: имя -> (cx, cy, радиус) в пикселях
+        self.lids = {}    # веки: имя -> (cx, cy, rx, ry) в пикселях
         self.blend = 0.012   # ширина размытия границ между частями (доля картинки)
         self._weights = None
 
@@ -85,6 +86,36 @@ class Rig:
         s = float(self.w)
         self.warps[name] = (center[0] * s, center[1] * s, radius * s)
         return self
+
+    def lid(self, name: str, center, rx: float, ry: float) -> "Rig":
+        """Веко над глазом (эллипс center, rx, ry в долях). В позе: {"^имя": 0..1} - насколько закрыт глаз (моргание, прищур).
+        Цвет века берётся с кожи вокруг глаза, по краю века - тёмная складка."""
+        s = float(self.w)
+        self.lids[name] = (center[0] * s, center[1] * s, rx * s, ry * s)
+        return self
+
+    def _with_lids(self, pose: dict) -> np.ndarray:
+        img = self.img
+        for name, (cx, cy, rx, ry) in self.lids.items():
+            v = float(pose.get("^" + name, 0.0))
+            if v <= 0.01:
+                continue
+            if img is self.img:
+                img = self.img.copy()
+            yy, xx = np.mgrid[0:self.h, 0:self.w].astype(np.float32)
+            nx, ny = (xx - cx) / rx, (yy - cy) / ry
+            d = np.sqrt(nx * nx + ny * ny)
+            ring = (d > 1.25) & (d < 1.8) & (self.img[..., 3] > 0.8)
+            skin = np.median(self.img[..., :3][ring], axis=0) if ring.any() else np.array([0.4, 0.3, 0.3], np.float32)
+            top = -1.0 + 1.75 * v - 0.25 * nx * nx * (1.0 - v)    # край верхнего века (дугой)
+            bot = 1.0 - 0.45 * v + 0.15 * nx * nx * (1.0 - v)     # нижнее веко поднимается чуть-чуть
+            cover = np.clip((top - ny) / 0.08, 0.0, 1.0) + np.clip((ny - bot) / 0.08, 0.0, 1.0)
+            cover = np.clip(cover, 0.0, 1.0) * np.clip((1.05 - d) / 0.12, 0.0, 1.0)
+            crease = np.exp(-((ny - top) / 0.14) ** 2) + np.exp(-((ny - bot) / 0.14) ** 2)
+            shade = (0.92 - 0.25 * ny * 0.5) * (1.0 - 0.5 * np.clip(crease, 0.0, 1.0))
+            col = skin[None, None, :] * shade[..., None]
+            img[..., :3] = img[..., :3] * (1.0 - cover[..., None]) + col * cover[..., None]
+        return img
 
     def body(self, pivot, tip, radius: float) -> "Rig":
         """Неподвижная часть тела (туловище): пиксели рядом с ней не достаются конечностям."""
@@ -148,15 +179,17 @@ class Rig:
                 continue
             v = tuple(v) + (0.0, 0.0, 1.0, 0.0)[len(v):]
             dx, dy, sc, ang = v[0] * s, v[1] * s, v[2], math.radians(v[3])
+            scy = v[4] if len(v) > 4 else sc   # пятое число - отдельный масштаб по вертикали (пасть шире/уже, глаз щурится)
             g = np.exp(-((dst_x - cx - dx) ** 2 + (dst_y - cy - dy) ** 2) / (2.0 * rad * rad))
             lx, ly = dst_x - cx - dx, dst_y - cy - dy
             ca, sa = math.cos(-ang), math.sin(-ang)
             fx = cx + (ca * lx - sa * ly) / sc
-            fy = cy + (sa * lx + ca * ly) / sc
+            fy = cy + (sa * lx + ca * ly) / scy
             dst_x = dst_x + g * (fx - dst_x)
             dst_y = dst_y + g * (fy - dst_y)
         frame = np.zeros((out, out, 4), np.float32)   # premultiplied
-        pm = self.img[..., :3] * self.img[..., 3:4]
+        src = self._with_lids(pose)
+        pm = src[..., :3] * src[..., 3:4]
         for i in sorted(range(len(allm)), key=lambda n: (zs[n], n)):
             inv = np.linalg.inv(allm[i])
             sx = inv[0, 0] * dst_x + inv[0, 1] * dst_y + inv[0, 2]
@@ -255,3 +288,31 @@ def polish(frame: np.ndarray, gamma: float = 0.68, sat: float = 1.25, rim: float
 
 def ease(t: float) -> float:
     return t * t * (3.0 - 2.0 * t)
+
+
+def normal_map(frame: np.ndarray, dome: float = 1.0, detail: float = 0.5) -> np.ndarray:
+    """Карта нормалей кадра для рельефного света: фигура «надута» от края к середине (объём) + мелкий рельеф по яркости.
+    Возвращает RGBA uint8 (альфа как у кадра)."""
+    a = frame[..., 3].astype(np.float32) / 255.0
+    inside = a > 0.5
+    dist = ndimage.distance_transform_edt(inside).astype(np.float32)
+    r = max(float(dist.max()), 1.0)
+    edge = np.clip(dist / (r * 0.55), 0.0, 1.0)
+    height = np.sqrt(1.0 - (1.0 - edge) ** 2) * r * 0.55 * dome          # купол: круглый край, плоская середина
+    lum = frame[..., :3].astype(np.float32).mean(-1) / 255.0
+    height = ndimage.gaussian_filter(height, 1.5) + ndimage.gaussian_filter(lum, 1.0) * detail * r * 0.25
+    gy, gx = np.gradient(height)
+    n = np.stack([-gx, -gy, np.ones_like(gx)], -1)
+    n /= np.linalg.norm(n, axis=-1, keepdims=True)
+    out = np.zeros(frame.shape, np.uint8)
+    out[..., 0] = ((n[..., 0] * 0.5 + 0.5) * 255).astype(np.uint8)
+    out[..., 1] = ((-n[..., 1] * 0.5 + 0.5) * 255).astype(np.uint8)   # в Godot зелёный канал нормали смотрит вверх
+    out[..., 2] = ((n[..., 2] * 0.5 + 0.5) * 255).astype(np.uint8)
+    out[..., 3] = frame[..., 3]
+    return out
+
+
+def blink(i: int, n: int, at: float = 0.6) -> float:
+    """Моргание раз за цикл: 0 - открыт, 1 - закрыт. at - доля цикла, где глаз закрыт полностью."""
+    d = abs(i / float(n) - at) * n
+    return max(0.0, 1.0 - d / 1.6)

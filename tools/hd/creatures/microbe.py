@@ -23,6 +23,7 @@ def build() -> rig.Rig:
     for name, at in SPIKES:
         r.warp(name, at, 0.06)
     r.warp("jaw", (0.48, 0.62), 0.14).warp("brow", (0.48, 0.33), 0.16).warp("eye_l", (0.34, 0.37), 0.05).warp("eye_r", (0.61, 0.35), 0.05)
+    r.lid("eye_l", (0.335, 0.375), 0.042, 0.04).lid("eye_r", (0.61, 0.355), 0.042, 0.04)
     return r
 
 
@@ -42,7 +43,8 @@ def frames(r: rig.Rig) -> dict:
     for i in range(n):
         p = i / n * math.tau
         pose = limbs(p)
-        pose.update({"~jaw": (0.0, 0.010 * math.sin(2 * p), 1.0 + 0.03 * math.sin(2 * p)),
+        pose.update({"~jaw": (0.0, 0.016 * math.sin(2 * p), 1.0, 0.0, 1.0 + 0.18 * math.sin(2 * p)),   # чавкает
+                     "^eye_l": rig.blink(i, n, 0.5), "^eye_r": rig.blink(i, n, 0.62),
                      "~eye_l": (0.0, 0.0, 1.0 + 0.08 * math.sin(p + 1.0)), "~eye_r": (0.0, 0.0, 1.0 + 0.08 * math.sin(p + 2.5))})
         breathe = math.sin(2 * p)
         rows["walk"].append(rig.polish(r.render(pose, FS, {"sx": 1.0 + 0.03 * breathe, "sy": 1.0 - 0.03 * breathe, "dy": -0.012 * abs(math.sin(p)), "rot": 2.0 * math.sin(p), "pivot": (0.5, 0.8)}, PAD)))
@@ -54,13 +56,13 @@ def frames(r: rig.Rig) -> dict:
         rows["attack"].append(rig.polish(r.render(pose, FS, {"sy": 1.0 - 0.12 * wind + 0.10 * hit, "sx": 1.0 + 0.08 * wind + 0.08 * hit, "pivot": (0.5, 0.8)}, PAD)))
     for k in [1.0, 0.75, 0.4, 0.1]:
         pose = limbs(2.0, 1.0 + k)
-        pose.update({"~brow": (0.0, 0.02 * k), "~jaw": (0.0, 0.02 * k), "~eye_l": (0.0, 0.0, 1.0 - 0.3 * k), "~eye_r": (0.0, 0.0, 1.0 - 0.3 * k)})
+        pose.update({"^eye_l": k, "^eye_r": k, "~brow": (0.0, 0.02 * k), "~jaw": (0.0, 0.02 * k), "~eye_l": (0.0, 0.0, 1.0 - 0.3 * k), "~eye_r": (0.0, 0.0, 1.0 - 0.3 * k)})
         rows["hurt"].append(rig.polish(r.render(pose, FS, {"sy": 1.0 - 0.14 * k, "sx": 1.0 + 0.12 * k, "rot": -5 * k, "pivot": (0.5, 0.8)}, PAD)))
     m = 10
     for i in range(m):   # сдувается: шар оседает и расползается, пасть отваливается, отростки подкашиваются
         k = rig.ease(i / (m - 1))
         pose = limbs(i * 0.9, 1.0 - k)
-        pose.update({"~jaw": (0.0, 0.05 * k, 1.0 + 0.12 * k), "~brow": (0.0, 0.07 * k, 1.0 - 0.10 * k),
+        pose.update({"^eye_l": k, "^eye_r": min(k * 1.4, 1.0), "~jaw": (0.0, 0.05 * k, 1.0 + 0.12 * k), "~brow": (0.0, 0.07 * k, 1.0 - 0.10 * k),
                      "~eye_l": (-0.02 * k, 0.05 * k, 1.0 - 0.4 * k), "~eye_r": (0.02 * k, 0.05 * k, 1.0 - 0.4 * k)})
         wob = math.sin(k * 9.0) * (1.0 - k) * 4.0
         rows["death"].append(rig.polish(r.render(pose, FS, {"sy": 1.0 - 0.52 * k, "sx": 1.0 + 0.20 * k, "rot": wob, "pivot": (0.5, 0.86)}, PAD)))

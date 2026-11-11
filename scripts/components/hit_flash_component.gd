@@ -18,6 +18,8 @@ func _ready() -> void:
 
 ## Цвет внешней обводки (игрок и враги разные, чтобы читались на земле).
 func set_outline(color: Color) -> void:
+	if ArtStyle.is_hd():
+		color.a = 0.0   # детальный стиль: своя тёмная обводка уже в картинке, цветная по здоровью не нужна
 	_material.set_shader_parameter(&"outline_color", color)
 
 

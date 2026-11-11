@@ -76,6 +76,8 @@ func setup(target: Node2D, spawn_position: Vector2, id: StringName = &"squid_gop
 	_hitbox.set_deferred(&"monitoring", stats.get("contact", true))
 	var tex_id: StringName = StringName("trash_bin_%d" % randi_range(0, Balance.BIN_VARIANTS - 1)) if enemy_id == &"trash_bin" else enemy_id  # разная начинка баков
 	var tex_path: String = "res://assets/sprites/enemy_%s.png" % tex_id
+	if enemy_id == &"trash_bin" and ArtStyle.has_hd("res://assets/sprites/enemy_trash_bin.png"):
+		tex_path = "res://assets/sprites/enemy_trash_bin.png"   # детальный стиль: бак один, без вариантов начинки
 	var hd: Dictionary = ArtStyle.info(tex_path)   # реалистичный стиль: свой лист кадров, своя сетка и масштаб
 	var tex_scale: float = 1.0
 	_sprite.frame = 0   # враг из пула мог стоять на кадре, которого нет в новом листе
@@ -97,8 +99,12 @@ func setup(target: Node2D, spawn_position: Vector2, id: StringName = &"squid_gop
 	_sprite.scale = Vector2.ONE * vis * tex_scale
 	_base_scale = _sprite.scale
 	var frame_w: float = _sprite.texture.get_width() / float(_sprite.hframes) * vis if _sprite.texture != null else 0.0
+	var shadow: Node2D = get_node_or_null(^"HdShadow") as Node2D
+	if shadow != null:
+		shadow.visible = false
 	if not hd.is_empty():
 		frame_w = float(hd.get("body_w", 16.0)) * vis   # у детального листа поля вокруг фигуры: ширину тела берём из описания
+		ArtStyle.shadow(self, frame_w, float(hd.get("foot", 8.0)) * vis, float(hd.get("cx", 0.0)) * vis)
 	_apply_size(float(stats.get("radius", BASE_RADIUS)) * mod_size, maxf(float(stats.get("radius", BASE_RADIUS)) * mod_size, frame_w * Balance.ENEMY_BODY_FILL), frame_w)
 	_revived = false
 	modulate = Color.WHITE
@@ -293,6 +299,11 @@ func set_anim_row(row: int, restart: bool = true) -> void:
 	if _anim.row == row and not restart:
 		return
 	_anim.row = row
+	if not _hd_rows.is_empty():   # детальный стиль: у каждого ряда своя длина
+		_anim.row_frames = 0
+		for pair: Variant in _hd_rows.values():
+			if int(pair[0]) == row:
+				_anim.row_frames = int(pair[1])
 	if restart:
 		_anim.restart()
 

@@ -36,7 +36,8 @@ def frames(r: rig.Rig) -> dict:
         p = i / n * math.tau
         pose = wings(math.sin(p * 2))
         pose.update({"~legs_l": (0.012 * math.sin(p), 0.010 * math.cos(p)), "~legs_r": (0.012 * math.sin(p + 0.8), 0.010 * math.cos(p + 0.8)),
-                     "~belly": (0.0, 0.006 * math.sin(p), 1.0 + 0.03 * math.sin(p))})
+                     "~belly": (0.0, 0.006 * math.sin(p), 1.0 + 0.06 * math.sin(p)),
+                     "~head": (0.008 * math.sin(2 * p), 0.0, 1.0 + 0.05 * math.sin(2 * p + 1.0), 6 * math.sin(p))})   # вертит башкой, трёт морду
         rows["walk"].append(rig.polish(r.render(pose, FS, {"dy": 0.025 * math.sin(p), "rot": 2.5 * math.sin(p)}, PAD)))
     for j, k in enumerate([-0.6, -1.0, 0.6, 1.0, 0.6, 0.15]):   # отлёт назад -> бросок мордой на зрителя
         wind, hit = max(-k, 0.0), max(k, 0.0)
@@ -62,4 +63,4 @@ def frames(r: rig.Rig) -> dict:
 if __name__ == "__main__":
     r = build()
     r.debug("tools/_hd_raw/rig_chaser.png")
-    bake.emit("sprites/enemy_chaser.png", frames(r), 30.0, 14, "муха")
+    bake.emit("sprites/enemy_chaser.png", frames(r), 30.0, 14, "муха", lift=7.0)

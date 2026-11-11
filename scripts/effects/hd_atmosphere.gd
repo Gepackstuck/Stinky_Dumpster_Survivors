@@ -18,6 +18,12 @@ func setup(player: Node2D) -> void:
 	var dark: CanvasModulate = CanvasModulate.new()
 	dark.color = Balance.HD_AMBIENT
 	add_child(dark)
+	var moon: DirectionalLight2D = DirectionalLight2D.new()
+	moon.color = Balance.HD_MOON_COLOR
+	moon.energy = Balance.HD_MOON_ENERGY
+	moon.height = Balance.HD_MOON_HEIGHT
+	moon.rotation_degrees = Balance.HD_MOON_ANGLE_DEG
+	add_child(moon)
 	_light = _make_light(Balance.HD_PLAYER_LIGHT_RADIUS, Balance.HD_PLAYER_LIGHT_COLOR, Balance.HD_PLAYER_LIGHT_ENERGY)
 	_flash = _make_light(Balance.HD_FLASH_RADIUS, Balance.HD_FLASH_COLOR, 0.0)
 	var layer: CanvasLayer = CanvasLayer.new()
@@ -52,6 +58,7 @@ func _make_light(radius: float, color: Color, energy: float) -> PointLight2D:
 	light.texture_scale = radius * 2.0 / 256.0
 	light.color = color
 	light.energy = energy
+	light.height = Balance.HD_PLAYER_LIGHT_HEIGHT
 	add_child(light)
 	return light
 
