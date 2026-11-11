@@ -226,3 +226,12 @@ def pixelize(frame_hi, F, palette, outline=True, island=3):
 
 def preview(frames, path, fps=10, scale=6, bg=(52, 44, 44)):
     rig1.save_gif(frames, path, fps, bg=bg, scale=scale)
+
+
+def grade_palette(pal, sat=0.82, gamma=1.18, tint=(0.96, 1.0, 1.05)):
+    """Мрачная цветокоррекция палитры: приглушить цвета, затемнить, холодный оттенок. Применяется один раз к палитре спрайта."""
+    p = np.clip(np.asarray(pal, np.float64), 0.0, 1.0)
+    g = p.mean(-1, keepdims=True)
+    p = np.clip(g + (p - g) * sat, 0.0, 1.0)
+    p = np.power(p, gamma)
+    return np.clip(p * np.array(tint), 0.0, 1.0)

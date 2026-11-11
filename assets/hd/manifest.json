@@ -29,9 +29,9 @@
   "v": 4
  },
  "sprites/enemy_squid_gopnik.png": {
-  "body_w": 36.5,
-  "cx": -0.5,
-  "foot": 17.0,
+  "body_w": 43.0,
+  "cx": -0.25,
+  "foot": 18.5,
   "fps": 10,
   "h": 12,
   "n": true,
