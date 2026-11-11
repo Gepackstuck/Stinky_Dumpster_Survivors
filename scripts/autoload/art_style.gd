@@ -10,6 +10,7 @@ const HD_THEME: String = "res://assets/hd/ui/theme_hd.tres"
 const MANIFEST: String = "res://assets/hd/manifest.json"
 
 var _manifest: Dictionary = {}
+var _grade: CanvasLayer = null
 var _pixel_theme: Theme = null   # копия пиксельной темы, чтобы вернуть её при переключении
 var _cache: Dictionary[String, Texture2D] = {}
 
@@ -20,6 +21,7 @@ func _ready() -> void:
 		if parsed is Dictionary:
 			_manifest = parsed
 	apply_ui()
+	get_tree().node_added.connect(_on_node_added)
 
 
 ## Шрифт и цвета интерфейса текущего стиля (вызывать после смены стиля в настройках). Меняем саму тему проекта:
@@ -35,6 +37,67 @@ func apply_ui() -> void:
 	for key: StringName in [&"font_color", &"font_shadow_color"]:
 		theme.set_color(key, &"Label", from.get_color(key, &"Label"))
 	get_tree().root.canvas_item_default_texture_filter = Viewport.DEFAULT_CANVAS_ITEM_TEXTURE_FILTER_LINEAR   # гладкий шрифт; спрайты сами ставят NEAREST
+	_apply_grade()
+
+
+## Мрачная цветокоррекция всего экрана (игра и интерфейс) в новом стиле; в классике убирается.
+func _apply_grade() -> void:
+	if is_hd() and _grade == null:
+		_grade = CanvasLayer.new()
+		_grade.layer = 120
+		_grade.process_mode = Node.PROCESS_MODE_ALWAYS
+		var rect: ColorRect = ColorRect.new()
+		rect.set_anchors_preset(Control.PRESET_FULL_RECT)
+		rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var mat: ShaderMaterial = ShaderMaterial.new()
+		mat.shader = load("res://assets/shaders/horror_grade.gdshader") as Shader
+		rect.material = mat
+		_grade.add_child(rect)
+		get_tree().root.add_child.call_deferred(_grade)
+	elif not is_hd() and _grade != null:
+		_grade.queue_free()
+		_grade = null
+
+
+## Подмена картинок в новом стиле «на лету»: любой узел с текстурой, у которой есть версия в assets/hd/, получает её.
+## Так интерфейс, оружие в руках и снаряды меняются без правки сцен (картинка - тот же путь внутри assets/hd/).
+func _on_node_added(n: Node) -> void:
+	if not is_hd():
+		return
+	if n is TextureRect or n is TextureProgressBar or n is Sprite2D or n is NinePatchRect:
+		_reskin.call_deferred(n)
+
+
+func _reskin(n: Node) -> void:
+	if not is_instance_valid(n):
+		return
+	var cur: Texture2D = n.get(&"texture") if not (n is TextureProgressBar) else null
+	if n is TextureProgressBar:
+		var bar: TextureProgressBar = n as TextureProgressBar
+		bar.texture_under = _swap(bar.texture_under)
+		bar.texture_progress = _swap(bar.texture_progress)
+		bar.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		return
+	if cur != null:
+		var swapped: Texture2D = _swap(cur)
+		if swapped != cur or cur is AtlasTexture:
+			n.set(&"texture", swapped)
+			(n as CanvasItem).texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+
+
+func _swap(t: Texture2D) -> Texture2D:
+	if t == null:
+		return null
+	if t is AtlasTexture:
+		var at: AtlasTexture = t as AtlasTexture
+		var repl: Texture2D = _swap(at.atlas)
+		if repl != at.atlas:
+			at.atlas = repl
+		return t
+	var path: String = t.resource_path
+	if path.begins_with(ROOT) and has_hd(path):
+		return tex(path)
+	return t
 
 
 func is_hd() -> bool:

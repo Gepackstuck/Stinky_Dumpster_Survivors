@@ -1085,7 +1085,7 @@ const CHARACTERS: Dictionary = {
 
 
 # --- Реалистичный стиль (ArtStyle "real"): свет и воздух ---
-const HD_AMBIENT: Color = Color(0.17, 0.17, 0.22)            # тьма вокруг: что не освещено, видно тускло
+const HD_AMBIENT: Color = Color(0.25, 0.24, 0.30)            # тьма вокруг: что не освещено, видно тускло
 const HD_PLAYER_LIGHT_RADIUS: float = 230.0                  # радиус света героя, мировые единицы
 const HD_PLAYER_LIGHT_COLOR: Color = Color(1.0, 0.74, 0.5)
 const HD_PLAYER_LIGHT_ENERGY: float = 1.7
@@ -1108,3 +1108,6 @@ const HD_MOON_ENERGY: float = 0.3
 const HD_MOON_HEIGHT: float = 0.45                           # 0 - свет стелется по земле, 1 - прямо сверху
 const HD_MOON_ANGLE_DEG: float = -35.0
 const HD_PLAYER_LIGHT_HEIGHT: float = 26.0                   # высота фонаря героя над землёй (рельеф от него)
+const HD_FLASH_AMOUNT: float = 0.45                           # сила цветовой вспышки спрайта в новом стиле (1 - сплошная заливка)
+const HD_PLAYER_RIM_ALPHA: float = 0.55                      # ободок героя в новом стиле
+const HD_ZOOM_MULT: float = 0.88                             # камера в новом стиле дальше (спрайты крупнее)

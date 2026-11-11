@@ -85,7 +85,9 @@ static func _tex(name: String) -> Texture2D:
 		return _cache[name]
 	var path: String = "res://assets/ui/%s.png" % name
 	var texture: Texture2D = null
-	if ResourceLoader.exists(path):
+	if ArtStyle.has_hd(path):   # новый стиль: ржавые кнопки
+		texture = ArtStyle.tex(path)
+	elif ResourceLoader.exists(path):
 		texture = load(path) as Texture2D
 	else:
 		var image: Image = Image.load_from_file(ProjectSettings.globalize_path(path))

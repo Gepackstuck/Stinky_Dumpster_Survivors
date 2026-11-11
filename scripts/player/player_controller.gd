@@ -37,7 +37,7 @@ func _ready() -> void:
 	_arena_max = Vector2(Balance.ARENA_SIZE, Balance.ARENA_SIZE)
 	# Камера не показывает пространство за ареной.
 	var border: int = int(Balance.ARENA_BORDER_THICKNESS)
-	_camera.zoom = Vector2.ONE * Balance.CAMERA_ZOOM
+	_camera.zoom = Vector2.ONE * Balance.CAMERA_ZOOM * (Balance.HD_ZOOM_MULT if ArtStyle.is_hd() else 1.0)
 	_camera.limit_left = -border
 	_camera.limit_top = -border
 	_camera.limit_right = int(Balance.ARENA_SIZE) + border

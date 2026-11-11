@@ -187,7 +187,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _open() -> void:
 	var panel: AtlasTexture = AtlasTexture.new()
-	panel.atlas = PANELS
+	panel.atlas = ArtStyle.tex("res://assets/ui/death_panels.png")
 	panel.region = Rect2(Vector2(randi_range(0, PANEL_VARIANTS - 1) * PANEL_SIZE.x, 0.0), PANEL_SIZE)
 	_panel.texture = panel
 	_root.show()

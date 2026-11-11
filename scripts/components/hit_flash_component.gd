@@ -19,7 +19,7 @@ func _ready() -> void:
 ## Цвет внешней обводки (игрок и враги разные, чтобы читались на земле).
 func set_outline(color: Color) -> void:
 	if ArtStyle.is_hd():
-		color.a = 0.0   # детальный стиль: своя тёмная обводка уже в картинке, цветная по здоровью не нужна
+		color.a = 0.0 if get_parent().is_in_group(&"enemies") else Balance.HD_PLAYER_RIM_ALPHA   # у врагов своя тёмная обводка; герою - тёплый ободок, чтобы не терялся
 	_material.set_shader_parameter(&"outline_color", color)
 
 
@@ -34,6 +34,6 @@ func flash(color: Color) -> void:
 	if _tween != null and _tween.is_valid():
 		_tween.kill()
 	_material.set_shader_parameter(&"flash_color", color)
-	_material.set_shader_parameter(&"amount", 1.0)
+	_material.set_shader_parameter(&"amount", Balance.HD_FLASH_AMOUNT if ArtStyle.is_hd() else 1.0)   # новый стиль: вспышка тонирует, а не заливает силуэт
 	_tween = create_tween()
 	_tween.tween_property(_material, "shader_parameter/amount", 0.0, FLASH_SEC)

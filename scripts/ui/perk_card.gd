@@ -121,7 +121,7 @@ func _line_h(l: Label) -> float:
 
 func _frame_texture(variant: int, row: int) -> AtlasTexture:
 	var atlas: AtlasTexture = AtlasTexture.new()
-	atlas.atlas = FRAMES
+	atlas.atlas = ArtStyle.tex("res://assets/ui/card_frames.png")   # новый стиль: ржавые рамки
 	atlas.region = Rect2(Vector2(variant * FRAME_SIZE.x, row * FRAME_SIZE.y), FRAME_SIZE)
 	return atlas
 
