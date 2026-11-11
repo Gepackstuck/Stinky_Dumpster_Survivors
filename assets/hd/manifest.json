@@ -24,6 +24,31 @@
   "scale": 0.2,
   "v": 4
  },
+ "sprites/enemy_microbe.png": {
+  "body_w": 32.0,
+  "fps": 12,
+  "h": 12,
+  "rows": {
+   "attack": [
+    1,
+    8
+   ],
+   "death": [
+    3,
+    10
+   ],
+   "hurt": [
+    2,
+    4
+   ],
+   "walk": [
+    0,
+    12
+   ]
+  },
+  "scale": 0.20915,
+  "v": 4
+ },
  "sprites/enemy_spitter.png": {
   "body_w": 34.0,
   "fps": 12,

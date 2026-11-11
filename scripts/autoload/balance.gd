@@ -1100,3 +1100,4 @@ const HD_CORPSE_FADE_SEC: float = 0.7                       # тело посл�
 const HD_SPLAT_SCALE: float = 0.6                            # лужа крови от убитого врага относительно декали пола
 const HD_DECAL_AREA_PX2: float = 30000.0                     # одна декаль (кровь, потроха) на столько квадратных единиц арены
 const HD_DECAL_ALPHA: float = 0.8
+const HD_DROP_SCALE: float = 0.075                          # размер капли-частицы в детальном стиле (текстура 16 px)

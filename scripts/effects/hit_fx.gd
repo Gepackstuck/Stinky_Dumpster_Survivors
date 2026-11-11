@@ -26,11 +26,45 @@ static func burst(tree: SceneTree, at: Vector2, color: Color, count: int, speed:
 	particles.scale_amount_min = size
 	particles.scale_amount_max = size * 1.5
 	particles.color = color
+	if ArtStyle.is_hd():   # детальный стиль: круглые капли в цветах крови и гнили вместо кислотных квадратов
+		particles.texture = _hd_drop()
+		particles.color = hd_color(color)
+		particles.scale_amount_min = size * Balance.HD_DROP_SCALE
+		particles.scale_amount_max = size * Balance.HD_DROP_SCALE * 1.6
+		if not upward:
+			particles.gravity = Vector2(0.0, 60.0)
 	particles.z_index = 20
 	particles.global_position = at
 	tree.current_scene.add_child(particles)
 	particles.finished.connect(particles.queue_free)
 	particles.emitting = true
+
+
+static var _drop: GradientTexture2D = null
+
+
+static func _hd_drop() -> Texture2D:
+	if _drop == null:
+		var grad: Gradient = Gradient.new()
+		grad.offsets = PackedFloat32Array([0.0, 0.7, 1.0])
+		grad.colors = PackedColorArray([Color(1, 1, 1, 1), Color(1, 1, 1, 1), Color(1, 1, 1, 0)])
+		_drop = GradientTexture2D.new()
+		_drop.gradient = grad
+		_drop.fill = GradientTexture2D.FILL_RADIAL
+		_drop.fill_from = Vector2(0.5, 0.5)
+		_drop.fill_to = Vector2(1.0, 0.5)
+		_drop.width = 16
+		_drop.height = 16
+	return _drop
+
+
+## Цвет эффекта в детальном стиле: огонь и искры остаются, кислотные розовый/зелёный уходят в кровь и гниль.
+static func hd_color(c: Color) -> Color:
+	if c.r > 0.85 and c.g > 0.35 and c.b < 0.5:
+		return c                                        # огонь, искры, золото
+	if c.g > c.r and c.g > c.b:
+		return Color(0.42, 0.5, 0.12, c.a)              # гниль
+	return Color(0.34, 0.01, 0.02, c.a).lerp(c, 0.08)    # кровь
 
 
 const SHAPE: GDScript = preload("res://scripts/effects/shape_fx.gd")
