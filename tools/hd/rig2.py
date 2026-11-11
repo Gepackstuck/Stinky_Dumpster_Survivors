@@ -251,3 +251,144 @@ def grade_palette(pal, sat=0.82, gamma=1.18, tint=(0.96, 1.0, 1.05)):
     p = np.clip(g + (p - g) * sat, 0.0, 1.0)
     p = np.power(p, gamma)
     return np.clip(p * np.array(tint), 0.0, 1.0)
+
+
+# ---------------------------------------------------------------- смерти: разлёт, обезглавливание, таяние, рассыпание
+def death_frame(rig, mode, t, goo=(0.55, 0.04, 0.06), out=96, pad=0.1, seed=3, head_y=0.28, hi=None):
+    """Кадр смерти t (0..1) на большом холсте. Каждая смерть своя: burst - тварь разрывает на куски, они летят, крутятся, падают, оставляют лужу;
+    headpop - голова отлетает фонтаном, тело валится; melt - тает и стекает лужей с пузырями; dissolve - рассыпается пикселями вверх.
+    goo - цвет крови/слизи. Возвращает холст RGBA float как render()."""
+    if not rig._ready:
+        rig._build()
+    rng = np.random.default_rng(seed)
+    s = float(rig.w)
+    X, Y = rig.X, rig.Y
+    n = len(X)
+    col = rig.img[rig.iy, rig.ix]
+    cx = float(X.mean()); top = float(Y.min()); bot = float(Y.max())
+    ground = bot
+    hi = hi or int(rig.w * (1.0 + 2.0 * pad))
+    ox, oy = pad * s, pad * s
+    px = X.copy(); py = Y.copy()
+    drops = []
+    ease = t * t * (3 - 2 * t)
+    if mode in ("burst", "headpop"):
+        if mode == "burst":
+            k_chunks = 16                                             # органические осколки: ячейки Вороного по телу
+            sel_pts = rng.choice(n, k_chunks, replace=False)
+            sx_, sy_ = X[sel_pts], Y[sel_pts]
+            d2 = (X[:, None] - sx_[None]) ** 2 + (Y[:, None] - sy_[None]) ** 2
+            key = d2.argmin(1)
+        else:
+            neck = top + head_y * (bot - top)
+            key = np.where(Y < neck, 0, 1 + (X > cx).astype(int) * 1 + (Y > (top + 0.65 * (bot - top))).astype(int) * 2)
+        ids = np.unique(key)
+        remap = {k: i for i, k in enumerate(ids)}
+        cid = np.array([remap[k] for k in key])
+        m = len(ids)
+        ccx = np.array([X[cid == i].mean() for i in range(m)]); ccy = np.array([Y[cid == i].mean() for i in range(m)])
+        dirx = ccx - cx; diry = ccy - (top + bot) * 0.5
+        norm = np.hypot(dirx, diry) + 1e-6
+        speed = rng.uniform(0.4, 0.9, m) * s * (0.34 if mode == "burst" else 0.3)
+        vx = dirx / norm * speed + rng.normal(0, 0.12 * s, m)
+        vy = -np.abs(diry / norm) * speed * 0.8 - rng.uniform(0.25, 0.8, m) * s * 0.55
+        if mode == "headpop":
+            vx[:] *= 0.45; vy[:] *= 0.35
+            vy[0] = -0.38 * s; vx[0] = rng.choice([-1, 1]) * rng.uniform(0.25, 0.4) * s                      # голова взлетает
+            tilt = ease * 0.0
+        spin = rng.uniform(-5, 5, m) * (1.0 if mode == "burst" else 0.6)
+        g = 2.6 * s
+        swell = 0.0
+        if mode == "burst":                                          # сначала раздувается и трясётся, потом лопается
+            hold = 0.22
+            swell = np.sin(min(t / hold, 1.0) * np.pi * 0.5) if t < hold else 0.0
+            tt = max(0.0, (t - hold) / (1.0 - hold)) ** 1.15
+        else:
+            tt = t * 1.0
+        px = np.zeros(n); py = np.zeros(n)
+        for i in range(m):
+            sel = cid == i
+            x0 = ccx[i] + vx[i] * tt
+            y0 = ccy[i] + vy[i] * tt + 0.5 * g * tt * tt
+            hh = (Y[sel].max() - Y[sel].min()) * 0.45 + 1.0
+            floor_y = ground - hh * 0.55 - rng.uniform(0, 0.05) * s
+            if y0 > floor_y:
+                y0 = floor_y - abs(np.sin((tt - 0.6) * 9)) * 0.02 * s * max(0.0, 1.0 - tt) if tt > 0.6 else floor_y
+                x0 = ccx[i] + vx[i] * min(tt, 0.62)
+            ang = spin[i] * min(tt, 0.7)
+            ca, sa = np.cos(ang), np.sin(ang)
+            lx, ly = X[sel] - ccx[i], Y[sel] - ccy[i]
+            sc = 1.0
+            if swell > 0.0:
+                x0 = ccx[i] + (ccx[i] - cx) * 0.18 * swell + np.sin(t * 90 + i) * 0.006 * s * swell
+                y0 = ccy[i] + (ccy[i] - (top + bot) * 0.5) * 0.18 * swell
+            px[sel] = x0 + (ca * lx - sa * ly) * sc
+            py[sel] = y0 + (sa * lx + ca * ly) * sc
+        if mode == "headpop":                                                    # туловище оседает на колени и заваливается
+            body = cid != 0
+            fall = min(1.0, max(0.0, (t - 0.25) / 0.6)); fall = fall * fall * (3 - 2 * fall)
+            ang = 0.95 * fall * (1 if seed % 2 else -1)
+            ca, sa = np.cos(ang), np.sin(ang)
+            lx, ly = X[body] - cx, Y[body] - ground
+            sq = 1.0 - 0.25 * min(1.0, t * 2.0)
+            px[body] = cx + ca * lx - sa * ly * sq
+            py[body] = ground + sa * lx + ca * ly * sq - fall * 0.0
+        for _ in range(70 if (mode == 'headpop' or t > 0.22) else 0):                                                      # кровавые брызги
+            a = rng.uniform(-np.pi, 0.0) if mode == "burst" else rng.uniform(-np.pi * 0.65, -np.pi * 0.35)
+            sp = rng.uniform(0.4, 1.3) * s
+            sx = cx if mode == "burst" else cx
+            sy = (top + bot) * 0.5 if mode == "burst" else top + head_y * (bot - top)
+            tb = t if mode == 'headpop' else max(0.0, (t - 0.22) / 0.78)
+            tx = sx + np.cos(a) * sp * 0.6 * tb + rng.normal(0, 0.02 * s)
+            ty = sy + np.sin(a) * sp * 0.6 * tb + 0.5 * g * tb * tb * rng.uniform(0.5, 1.1)
+            if ty < ground + 0.03 * s and t < 0.95:
+                drops.append((tx, min(ty, ground + 0.03 * s)))
+        pool_r = (ease if mode == 'headpop' else max(0.0, (t - 0.3) / 0.7)) * 0.26 * s
+    elif mode == "melt":
+        h = max(bot - top, 1.0)
+        k = ease
+        yy = (Y - top) / h
+        sag = 1.0 - 0.82 * k
+        py = ground - (ground - Y) * sag
+        spread = 1.0 + 1.1 * k * (1.0 - yy * 0.5)
+        px = cx + (X - cx) * spread + np.sin(Y * 0.31 + t * 8) * 0.012 * s * k
+        drip = (np.sin(X * 0.57) > 0.55) & (yy > 0.35)
+        py = np.where(drip, py + (0.25 * s * k * (0.4 + 0.6 * np.sin(X * 1.3) ** 2)), py)
+        g3 = np.array(goo)
+        mix = np.clip(k * 1.25 * (0.4 + 0.6 * yy), 0, 1)[:, None]
+        col = col.copy(); col[:, :3] = col[:, :3] * (1 - mix * 0.7) + g3[None, :] * mix * 0.7
+        for _ in range(26):
+            bx = cx + rng.normal(0, 0.18 * s) * (0.4 + k); by = ground - rng.uniform(0, 0.05) * s
+            if rng.random() < k:
+                drops.append((bx, by))
+        pool_r = ease * 0.26 * s
+    else:  # dissolve: тело рассыпается пикселями вверх и в стороны, лёгкий дымок
+        k = t
+        r2 = rng.random(n)
+        delay = (1.0 - (Y - top) / max(bot - top, 1.0)) * 0.35 + r2 * 0.2
+        u = np.clip((t - delay) / 0.55, 0.0, 1.0)
+        px = X + (r2 - 0.5) * 0.5 * s * u + np.sin(Y * 0.2) * 0.02 * s * u
+        py = Y - u * u * (0.9 + r2) * 0.5 * s
+        alive = u < 0.97 + 0.0
+        col = col.copy(); col[:, 3] = np.where(alive, col[:, 3] * (1.0 - u), 0.0)
+        pool_r = 0.0
+    canvas = np.zeros((hi, hi, 4), np.float32)
+    Xd = np.floor(px + ox).astype(int); Yd = np.floor(py + oy).astype(int)
+    order = np.argsort(py, kind="stable")
+    for dx in (0, 1):
+        for dy in (0, 1):
+            xx, yy2 = Xd[order] + dx, Yd[order] + dy
+            ok = (xx >= 0) & (yy2 >= 0) & (xx < hi) & (yy2 < hi) & (col[order][:, 3] > 0.2)
+            canvas[yy2[ok], xx[ok]] = col[order][ok]
+    if pool_r > 1.0:                                                            # лужа под тушей
+        yy, xx = np.mgrid[0:hi, 0:hi].astype(np.float32)
+        e = ((xx - (cx + ox)) / pool_r) ** 2 + ((yy - (ground + oy - 0.01 * s)) / (pool_r * 0.34)) ** 2
+        puddle = (e < 1.0) & (canvas[..., 3] < 0.2)
+        canvas[puddle] = (*goo, 1.0)
+    for (dx_, dy_) in drops:
+        xi, yi = int(dx_ + ox), int(dy_ + oy)
+        for a_ in (0, 1):
+            for b_ in (0, 1):
+                if 0 <= xi + a_ < hi and 0 <= yi + b_ < hi:
+                    canvas[yi + b_, xi + a_] = (*goo, 1.0)
+    return canvas

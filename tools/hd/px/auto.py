@@ -110,8 +110,15 @@ def frames(spec, r, pal):
         pose = _chains_pose(spec, 2.4, "hurt", k)
         face(pose, 2.4, 0, 4, jaw=k, jaw_amp=0.3, lid=k)
         rows["hurt"].append(shot(pose, {"rot": -7 * k, "sy": 1.0 - 0.07 * k, "sx": 1.0 + 0.05 * k, "dx": -0.012 * k, "pivot": (0.5, 0.82)}))
-    m = 10
+    m = 14
     kind = spec.get("death", "collapse")
+    goo = spec.get("goo", (0.55, 0.04, 0.06))
+    if kind in ("burst", "headpop", "melt", "dissolve"):
+        for i in range(m):                                  # настоящая смерть: куски, кровь, лужа (rig2.death_frame)
+            t = (i + 1) / m
+            big = rig2.death_frame(r, kind, t, goo, F, pad, seed=spec.get("seed", 3), head_y=spec.get("head_y", 0.28))
+            rows["death"].append(rig2.pixelize(big, F, pal))
+        return rows
     for i in range(m):
         t = i / (m - 1)
         k = rig1.ease(t)
@@ -132,4 +139,5 @@ def run(spec):
     pad = (0.92 * F / (2.0 * spec["world_w"]) - 1.0) / 2.0
     r = build(spec)
     pal = rig2.grade_palette(rig2.make_palette(r.render({}, {}, F, pad), F, 28), *spec.get("grade", GRADE))
+    pal = np.concatenate([pal, np.array([spec.get("goo", (0.55, 0.04, 0.06)), (0.32, 0.02, 0.04)])], 0)   # кровь и слизь для смерти
     bake.emit("sprites/%s.png" % spec["id"], frames(spec, r, pal), spec["world_w"], 10, spec.get("title", spec["id"]), lift=spec.get("lift", 0.0), texel=0.5)
