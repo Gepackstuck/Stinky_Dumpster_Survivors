@@ -1082,3 +1082,18 @@ const CHARACTERS: Dictionary = {
 	&"cat": {"weapon": &"tin_bomb", "mods": {&"speed": 8.0, &"dodge": 4.0, &"pickup": 10.0}, "fx": {&"nine_lives": 9.0}, "unlock": &"ach", "ach": &"deaths_50", "need": 1, "tint": Color(1, 1, 1), "hat": &"old_milk"},
 	&"slime": {"weapon": &"plunger", "mods": {&"max_hp": 20.0, &"speed": 6.0, &"damage": 14.0, &"armor": 2.0, &"pickup": 10.0, &"attack_speed": 8.0}, "fx": {&"slime_touch": 40.0, &"thorns": 2.0}, "unlock": &"kills", "need": 5000, "tint": Color(1, 1, 1), "hat": &"rubber_boot"},
 }
+
+
+# --- Реалистичный стиль (ArtStyle "real"): свет и воздух ---
+const HD_AMBIENT: Color = Color(0.34, 0.31, 0.36)            # тьма вокруг: что не освещено, видно тускло
+const HD_PLAYER_LIGHT_RADIUS: float = 300.0                  # радиус света героя, мировые единицы
+const HD_PLAYER_LIGHT_COLOR: Color = Color(1.0, 0.86, 0.68)
+const HD_PLAYER_LIGHT_ENERGY: float = 1.25
+const HD_FLASH_RADIUS: float = 150.0                         # вспышка от выстрела
+const HD_FLASH_COLOR: Color = Color(1.0, 0.7, 0.35)
+const HD_FLASH_ENERGY: float = 0.6
+const HD_FLASH_SEC: float = 0.08
+const HD_VIGNETTE: float = 0.6
+const HD_GRAIN: float = 0.05
+const HD_FOG: float = 0.12
+const HD_CORPSE_FADE_SEC: float = 0.7                       # тело после анимации смерти тает

@@ -3,6 +3,7 @@ extends Sprite2D
 ## Декали новые в каждом забеге; приглушены, чтобы не мешать читать врагов.
 
 const DECALS: Texture2D = preload("res://assets/sprites/ground_decals.png")
+const TILE_PATH: String = "res://assets/sprites/ground_tile.png"
 const CELL: float = 24.0
 const DECAL_ALPHA: float = 0.4   # спокойный пол: враги и пикапы читаются (как в Brotato)
 const DECAL_TINT: Color = Color(0.92, 0.72, 0.78)  # приглушает зелёное: декали не должны путаться с опытом
@@ -11,9 +12,16 @@ const DECAL_TINT: Color = Color(0.92, 0.72, 0.78)  # приглушает зел
 func _ready() -> void:
 	var arena: float = Balance.ARENA_SIZE
 	region_rect = Rect2(Vector2.ZERO, Vector2(arena, arena))
+	var hd: Dictionary = ArtStyle.info(TILE_PATH)
+	if not hd.is_empty():   # детальный стиль: своя плитка грязи, пиксельные декали не кладём
+		var k: float = ArtStyle.apply(self, TILE_PATH)
+		scale = Vector2.ONE * k
+		region_rect = Rect2(Vector2.ZERO, Vector2(arena, arena) / k)
 	EventBus.bin_destroyed.connect(_on_bin_destroyed)
 	EventBus.wave_started.connect(func(_w: int) -> void: _apply_season())
 	EventBus.wave_ended.connect(func(_w: int) -> void: _apply_season.call_deferred())
+	if not hd.is_empty():
+		return
 	var kinds: int = int(DECALS.get_width() / CELL)
 	var count: int = int(arena * arena / Balance.GROUND_DECAL_AREA_PX2)
 	for i: int in count:
@@ -39,6 +47,8 @@ func _apply_season() -> void:
 
 ## На месте разбитого бака остаётся случайный мусор (декаль пола) — до конца забега, ярче обычных.
 func _on_bin_destroyed(at: Vector2) -> void:
+	if ArtStyle.has_hd(TILE_PATH):
+		return
 	var kinds: int = int(DECALS.get_width() / CELL)
 	var decal: Sprite2D = Sprite2D.new()
 	decal.texture = DECALS

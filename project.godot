@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 
 EventBus="*res://scripts/autoload/event_bus.gd"
 Settings="*res://scripts/autoload/settings.gd"
+ArtStyle="*res://scripts/autoload/art_style.gd"
 GameState="*res://scripts/autoload/game_state.gd"
 Balance="*res://scripts/autoload/balance.gd"
 AudioManager="*res://scripts/autoload/audio_manager.gd"

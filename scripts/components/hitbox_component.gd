@@ -3,6 +3,8 @@ extends Area2D
 ## Область, которой наносим урон при контакте. Пока пересекается с HurtboxComponent —
 ## каждый физический кадр пытается ударить; частоту ограничивает неуязвимость у Hurtbox.
 
+signal landed   # удар прошёл по цели (анимация удара у врага)
+
 @export var damage: float = 0.0
 var source_id: StringName = &""   # кто бьёт (для экрана смерти: «что убило»)
 
@@ -25,6 +27,7 @@ func _physics_process(_delta: float) -> void:
 		if is_instance_valid(target):
 			if target.receive_hit(damage):
 				GameState.last_damage_source = source_id
+				landed.emit()
 
 
 func _on_area_entered(area: Area2D) -> void:

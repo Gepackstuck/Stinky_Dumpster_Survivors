@@ -1,0 +1,57 @@
+{
+ "sprites/enemy_chaser.png": {
+  "body_w": 30.0,
+  "fps": 14,
+  "h": 10,
+  "rows": {
+   "attack": [
+    1,
+    6
+   ],
+   "death": [
+    3,
+    10
+   ],
+   "hurt": [
+    2,
+    4
+   ],
+   "walk": [
+    0,
+    8
+   ]
+  },
+  "scale": 0.2,
+  "v": 4
+ },
+ "sprites/enemy_squid_gopnik.png": {
+  "body_w": 31.0,
+  "fps": 12,
+  "h": 12,
+  "rows": {
+   "attack": [
+    1,
+    8
+   ],
+   "death": [
+    3,
+    10
+   ],
+   "hurt": [
+    2,
+    4
+   ],
+   "walk": [
+    0,
+    12
+   ]
+  },
+  "scale": 0.21528,
+  "v": 4
+ },
+ "sprites/ground_tile.png": {
+  "h": 1,
+  "scale": 0.146484375,
+  "v": 1
+ }
+}

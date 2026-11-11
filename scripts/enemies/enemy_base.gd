@@ -5,6 +5,7 @@ extends CharacterBody2D
 
 const BASE_RADIUS: float = 6.0
 const PUDDLE_SCENE: PackedScene = preload("res://scenes/hazards/poop_puddle.tscn")
+const PIXEL_HFRAMES: int = 4
 const SPLAT: Texture2D = preload("res://assets/sprites/fx_splat.png")
 static var _textures: Dictionary[StringName, Texture2D] = {}
 
@@ -16,6 +17,7 @@ static var _textures: Dictionary[StringName, Texture2D] = {}
 @onready var _flash: HitFlashComponent = $HitFlash
 @onready var _hitbox: HitboxComponent = $Hitbox
 @onready var _anim: FrameAnimatorComponent = $FrameAnimator
+var _hd_rows: Dictionary = {}   # детальный стиль: ряды листа {имя: [ряд, кадров]}
 
 var _sep_radius: float = 6.0   # радиус мягкого расталкивания (по ширине спрайта)
 var _squash_tween: Tween = null
@@ -42,6 +44,7 @@ var forced_sec: float = 0.0
 func _ready() -> void:
 	_hurtbox.hurt.connect(_on_hurt)
 	_health.died.connect(_on_died)
+	_hitbox.landed.connect(func() -> void: _play_hd(&"attack"))
 	_health.health_changed.connect(func(current: float, maximum: float) -> void: _flash.set_outline_by_health(current / maxf(maximum, 1.0)))
 
 
@@ -70,17 +73,31 @@ func setup(target: Node2D, spawn_position: Vector2, id: StringName = &"squid_gop
 		_squash_tween = null
 	_sprite.scale = Vector2.ONE
 	_hitbox.set_deferred(&"monitoring", stats.get("contact", true))
-	if enemy_id == &"trash_bin":
-		_sprite.texture = _texture_for(StringName("trash_bin_%d" % randi_range(0, Balance.BIN_VARIANTS - 1)))  # разная начинка
+	var tex_id: StringName = StringName("trash_bin_%d" % randi_range(0, Balance.BIN_VARIANTS - 1)) if enemy_id == &"trash_bin" else enemy_id  # разная начинка баков
+	var tex_path: String = "res://assets/sprites/enemy_%s.png" % tex_id
+	var hd: Dictionary = ArtStyle.info(tex_path)   # реалистичный стиль: свой лист кадров, своя сетка и масштаб
+	var tex_scale: float = 1.0
+	_sprite.frame = 0   # враг из пула мог стоять на кадре, которого нет в новом листе
+	if hd.is_empty():
+		_sprite.texture = _texture_for(tex_id)
+		_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		_sprite.hframes = PIXEL_HFRAMES
+		_sprite.vframes = int(stats.get("anim_rows", 1))   # у боссов лист: ряд на каждое состояние (ходьба, замахи, ярость)
+		_anim.fps = FrameAnimatorComponent.PIXEL_FPS
 	else:
-		_sprite.texture = _texture_for(enemy_id)
-	_sprite.vframes = int(stats.get("anim_rows", 1))   # у боссов лист: ряд на каждое состояние (ходьба, замахи, ярость)
-	_anim.row = 0
+		tex_scale = ArtStyle.apply(_sprite, tex_path)
+		_anim.fps = float(hd.get("fps", 12))
+	_anim.reset()
+	_hd_rows = hd.get("rows", {})
+	if _hd_rows.has("walk"):
+		_anim.row_frames = int(_hd_rows["walk"][1])
 	var mod_size: float = WaveRules.mod_f("enemy_size", 1.0) if not _neutral and not stats.has("anim_rows") else 1.0   # боссов не трогаем
 	var vis: float = mod_size * (Balance.ENEMY_VISUAL_SCALE if not stats.has("anim_rows") else Balance.BOSS_VISUAL_SCALE)
-	_sprite.scale = Vector2.ONE * vis
+	_sprite.scale = Vector2.ONE * vis * tex_scale
 	_base_scale = _sprite.scale
 	var frame_w: float = _sprite.texture.get_width() / float(_sprite.hframes) * vis if _sprite.texture != null else 0.0
+	if not hd.is_empty():
+		frame_w = float(hd.get("body_w", 16.0)) * vis   # у детального листа поля вокруг фигуры: ширину тела берём из описания
 	_apply_size(float(stats.get("radius", BASE_RADIUS)) * mod_size, maxf(float(stats.get("radius", BASE_RADIUS)) * mod_size, frame_w * Balance.ENEMY_BODY_FILL), frame_w)
 	_revived = false
 	modulate = Color.WHITE
@@ -279,6 +296,13 @@ func set_anim_row(row: int, restart: bool = true) -> void:
 		_anim.restart()
 
 
+## Детальный стиль: разовый ряд анимации (attack, hurt), если он нарисован у этого врага.
+func _play_hd(row_name: StringName) -> void:
+	if _dead or not _hd_rows.has(row_name):
+		return
+	_anim.play_once(int(_hd_rows[row_name][0]), int(_hd_rows[row_name][1]))
+
+
 func flash(color: Color) -> void:
 	_flash.flash(color)
 
@@ -346,6 +370,7 @@ func _on_hurt(damage: float) -> void:
 		if damage <= 0.0:
 			return
 	_flash.flash(Color.WHITE)
+	_play_hd(&"hurt")
 	_squash(Vector2(1.45, 0.7))   # сильнее сплющивает - видно, что попал
 	var crit: bool = GameState.is_crit_damage(damage)
 	if _neutral:
@@ -489,6 +514,8 @@ func _on_died() -> void:
 		_leave_splat()
 		if Balance.ENEMIES[enemy_id].has("anim_rows"):
 			EventBus.shake_requested.emit(Balance.SHAKE_BOSS_SLAM * 1.5)
+	if _hd_rows.has("death"):   # детальный стиль: тело доигрывает смерть и тает
+		HdCorpse.spawn(get_parent(), _sprite, global_position, int(_hd_rows["death"][0]), int(_hd_rows["death"][1]), _anim.fps)
 	EventBus.enemy_died.emit(enemy_id, global_position)
 	if _brain != null:
 		_brain.on_death()

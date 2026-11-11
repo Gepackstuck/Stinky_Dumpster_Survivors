@@ -190,3 +190,6 @@ SET_ALL,ВСЕ,ALL
 "ПУСТО. ЛОХ.","ПУСТО. ЛОХ.","NOTHING. LOSER."
 "ПРОБЕЛ - БЫСТРЕЕ","ПРОБЕЛ - БЫСТРЕЕ","SPACE - FASTER"
 "A - БЫСТРЕЕ","A - БЫСТРЕЕ","A - FASTER"
+SET_ART,РИСОВКА,ART STYLE
+SET_ART_PIXEL,ПИКСЕЛЬНАЯ,PIXEL
+SET_ART_REAL,РЕАЛИСТИЧНАЯ,REALISTIC
