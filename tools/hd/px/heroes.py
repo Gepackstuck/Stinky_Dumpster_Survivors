@@ -1,4 +1,5 @@
 """18 героев в тоне «В с абсурдом»: заготовки tools/_hd_raw/pf/hero_<id>_<вид>_<сид>.png, три вида (side смотрит ВЛЕВО, back, front) по 8 кадров, скелет по силуэту."""
+import json
 import math
 import os
 import sys
@@ -44,15 +45,17 @@ for f in os.listdir(P):
         SEED0.setdefault(key[0], []).append(f)
 
 
+FRONT = json.load(open(P + "hv/front.json"))
+
+
 def src(hero, view, idx):
-    fs = sorted(SEED0["%s_%s" % (hero, view)])
-    return P + fs[min(idx, len(fs) - 1)]
+    """Одна модель на все виды (как в Brotato): эталонный фас героя. Вбок игра зеркалит сама, вверх - тот же силуэт."""
+    own = P + "hv/%s_front.png" % hero
+    return own if os.path.exists(own) else P + FRONT[hero]
 
 
 def build(hero, view, idx, flip):
     cut = rig1.cutout(src(hero, view, idx), 768, 0.04)
-    if flip:
-        cut = cut[:, ::-1].copy()
     img, _ = ph.recrop(cut)
     spec = {"auto": True}
     warps = auto.detect_warps(img)
@@ -67,7 +70,7 @@ def pose_for(view, warps, i):
     sn, cs = math.sin(p), math.cos(p)
     ll, lr = max(sn, 0.0) ** 0.7, max(-sn, 0.0) ** 0.7
     pose = {}
-    if view == "side":                                         # шаг ножницами вдоль экрана
+    if False:                                         # шаг ножницами вдоль экрана
         if "footL" in warps:
             pose["~footL"] = (0.05 * sn, -0.05 * ll, 1.0, 0.0)
             pose["~footR"] = (-0.05 * sn, -0.05 * lr, 1.0, 0.0)

@@ -1566,9 +1566,9 @@
   "v": 1
  },
  "sprites/player_blogger.png": {
-  "body_w": 25.5,
-  "cx": -1.0,
-  "foot": 22.0,
+  "body_w": 23.0,
+  "cx": -0.75,
+  "foot": 22.5,
   "fps": 12,
   "h": 8,
   "n": true,
@@ -1591,9 +1591,9 @@
   "v": 3
  },
  "sprites/player_cat.png": {
-  "body_w": 31.0,
-  "cx": -1.25,
-  "foot": 15.5,
+  "body_w": 23.0,
+  "cx": -0.25,
+  "foot": 15.0,
   "fps": 12,
   "h": 8,
   "n": true,
@@ -1616,307 +1616,7 @@
   "v": 3
  },
  "sprites/player_clerk.png": {
-  "body_w": 19.0,
-  "cx": -1.25,
-  "foot": 22.0,
-  "fps": 12,
-  "h": 8,
-  "n": true,
-  "pixel": true,
-  "rows": {
-   "back": [
-    1,
-    8
-   ],
-   "front": [
-    2,
-    8
-   ],
-   "side": [
-    0,
-    8
-   ]
-  },
-  "scale": 0.5,
-  "v": 3
- },
- "sprites/player_courier.png": {
-  "body_w": 40.5,
-  "cx": -0.5,
-  "foot": 22.5,
-  "fps": 12,
-  "h": 8,
-  "n": true,
-  "pixel": true,
-  "rows": {
-   "back": [
-    1,
-    8
-   ],
-   "front": [
-    2,
-    8
-   ],
-   "side": [
-    0,
-    8
-   ]
-  },
-  "scale": 0.5,
-  "v": 3
- },
- "sprites/player_dacha.png": {
-  "body_w": 23.5,
-  "cx": -2.0,
-  "foot": 22.0,
-  "fps": 12,
-  "h": 8,
-  "n": true,
-  "pixel": true,
-  "rows": {
-   "back": [
-    1,
-    8
-   ],
-   "front": [
-    2,
-    8
-   ],
-   "side": [
-    0,
-    8
-   ]
-  },
-  "scale": 0.5,
-  "v": 3
- },
- "sprites/player_gopnik_jock.png": {
-  "body_w": 24.0,
-  "cx": -0.25,
-  "foot": 22.5,
-  "fps": 12,
-  "h": 8,
-  "n": true,
-  "pixel": true,
-  "rows": {
-   "back": [
-    1,
-    8
-   ],
-   "front": [
-    2,
-    8
-   ],
-   "side": [
-    0,
-    8
-   ]
-  },
-  "scale": 0.5,
-  "v": 3
- },
- "sprites/player_granny.png": {
-  "body_w": 30.0,
-  "cx": -1.25,
-  "foot": 21.0,
-  "fps": 12,
-  "h": 8,
-  "n": true,
-  "pixel": true,
-  "rows": {
-   "back": [
-    1,
-    8
-   ],
-   "front": [
-    2,
-    8
-   ],
-   "side": [
-    0,
-    8
-   ]
-  },
-  "scale": 0.5,
-  "v": 3
- },
- "sprites/player_guard.png": {
-  "body_w": 22.0,
-  "cx": -1.25,
-  "foot": 23.0,
-  "fps": 12,
-  "h": 8,
-  "n": true,
-  "pixel": true,
-  "rows": {
-   "back": [
-    1,
-    8
-   ],
-   "front": [
-    2,
-    8
-   ],
-   "side": [
-    0,
-    8
-   ]
-  },
-  "scale": 0.5,
-  "v": 3
- },
- "sprites/player_hobo.png": {
-  "body_w": 31.0,
-  "cx": -1.25,
-  "foot": 22.0,
-  "fps": 12,
-  "h": 8,
-  "n": true,
-  "pixel": true,
-  "rows": {
-   "back": [
-    1,
-    8
-   ],
-   "front": [
-    2,
-    8
-   ],
-   "side": [
-    0,
-    8
-   ]
-  },
-  "scale": 0.5,
-  "v": 3
- },
- "sprites/player_janitor.png": {
-  "body_w": 29.5,
-  "cx": -1.0,
-  "foot": 22.5,
-  "fps": 12,
-  "h": 8,
-  "n": true,
-  "pixel": true,
-  "rows": {
-   "back": [
-    1,
-    8
-   ],
-   "front": [
-    2,
-    8
-   ],
-   "side": [
-    0,
-    8
-   ]
-  },
-  "scale": 0.5,
-  "v": 3
- },
- "sprites/player_pigeon.png": {
-  "body_w": 30.0,
-  "cx": -0.75,
-  "foot": 16.0,
-  "fps": 12,
-  "h": 8,
-  "n": true,
-  "pixel": true,
-  "rows": {
-   "back": [
-    1,
-    8
-   ],
-   "front": [
-    2,
-    8
-   ],
-   "side": [
-    0,
-    8
-   ]
-  },
-  "scale": 0.5,
-  "v": 3
- },
- "sprites/player_plumber.png": {
-  "body_w": 35.5,
-  "cx": -1.0,
-  "foot": 22.5,
-  "fps": 12,
-  "h": 8,
-  "n": true,
-  "pixel": true,
-  "rows": {
-   "back": [
-    1,
-    8
-   ],
-   "front": [
-    2,
-    8
-   ],
-   "side": [
-    0,
-    8
-   ]
-  },
-  "scale": 0.5,
-  "v": 3
- },
- "sprites/player_punk.png": {
-  "body_w": 38.0,
-  "cx": -1.25,
-  "foot": 18.0,
-  "fps": 12,
-  "h": 8,
-  "n": true,
-  "pixel": true,
-  "rows": {
-   "back": [
-    1,
-    8
-   ],
-   "front": [
-    2,
-    8
-   ],
-   "side": [
-    0,
-    8
-   ]
-  },
-  "scale": 0.5,
-  "v": 3
- },
- "sprites/player_shawarma.png": {
-  "body_w": 24.0,
-  "cx": -1.25,
-  "foot": 22.5,
-  "fps": 12,
-  "h": 8,
-  "n": true,
-  "pixel": true,
-  "rows": {
-   "back": [
-    1,
-    8
-   ],
-   "front": [
-    2,
-    8
-   ],
-   "side": [
-    0,
-    8
-   ]
-  },
-  "scale": 0.5,
-  "v": 3
- },
- "sprites/player_skater.png": {
-  "body_w": 29.5,
+  "body_w": 27.5,
   "cx": 0.0,
   "foot": 22.5,
   "fps": 12,
@@ -1940,7 +1640,132 @@
   "scale": 0.5,
   "v": 3
  },
- "sprites/player_slime.png": {
+ "sprites/player_courier.png": {
+  "body_w": 21.5,
+  "cx": -1.0,
+  "foot": 22.5,
+  "fps": 12,
+  "h": 8,
+  "n": true,
+  "pixel": true,
+  "rows": {
+   "back": [
+    1,
+    8
+   ],
+   "front": [
+    2,
+    8
+   ],
+   "side": [
+    0,
+    8
+   ]
+  },
+  "scale": 0.5,
+  "v": 3
+ },
+ "sprites/player_dacha.png": {
+  "body_w": 23.0,
+  "cx": -1.25,
+  "foot": 22.0,
+  "fps": 12,
+  "h": 8,
+  "n": true,
+  "pixel": true,
+  "rows": {
+   "back": [
+    1,
+    8
+   ],
+   "front": [
+    2,
+    8
+   ],
+   "side": [
+    0,
+    8
+   ]
+  },
+  "scale": 0.5,
+  "v": 3
+ },
+ "sprites/player_gopnik_jock.png": {
+  "body_w": 19.0,
+  "cx": -1.25,
+  "foot": 22.5,
+  "fps": 12,
+  "h": 8,
+  "n": true,
+  "pixel": true,
+  "rows": {
+   "back": [
+    1,
+    8
+   ],
+   "front": [
+    2,
+    8
+   ],
+   "side": [
+    0,
+    8
+   ]
+  },
+  "scale": 0.5,
+  "v": 3
+ },
+ "sprites/player_granny.png": {
+  "body_w": 17.5,
+  "cx": -1.0,
+  "foot": 21.0,
+  "fps": 12,
+  "h": 8,
+  "n": true,
+  "pixel": true,
+  "rows": {
+   "back": [
+    1,
+    8
+   ],
+   "front": [
+    2,
+    8
+   ],
+   "side": [
+    0,
+    8
+   ]
+  },
+  "scale": 0.5,
+  "v": 3
+ },
+ "sprites/player_guard.png": {
+  "body_w": 32.5,
+  "cx": -1.0,
+  "foot": 23.5,
+  "fps": 12,
+  "h": 8,
+  "n": true,
+  "pixel": true,
+  "rows": {
+   "back": [
+    1,
+    8
+   ],
+   "front": [
+    2,
+    8
+   ],
+   "side": [
+    0,
+    8
+   ]
+  },
+  "scale": 0.5,
+  "v": 3
+ },
+ "sprites/player_hobo.png": {
   "body_w": 24.5,
   "cx": -1.0,
   "foot": 22.0,
@@ -1965,9 +1790,9 @@
   "scale": 0.5,
   "v": 3
  },
- "sprites/player_squid.png": {
-  "body_w": 20.5,
-  "cx": -1.5,
+ "sprites/player_janitor.png": {
+  "body_w": 30.5,
+  "cx": -1.0,
   "foot": 22.5,
   "fps": 12,
   "h": 8,
@@ -1990,9 +1815,184 @@
   "scale": 0.5,
   "v": 3
  },
+ "sprites/player_pigeon.png": {
+  "body_w": 26.5,
+  "cx": -0.5,
+  "foot": 15.5,
+  "fps": 12,
+  "h": 8,
+  "n": true,
+  "pixel": true,
+  "rows": {
+   "back": [
+    1,
+    8
+   ],
+   "front": [
+    2,
+    8
+   ],
+   "side": [
+    0,
+    8
+   ]
+  },
+  "scale": 0.5,
+  "v": 3
+ },
+ "sprites/player_plumber.png": {
+  "body_w": 24.5,
+  "cx": -1.0,
+  "foot": 22.5,
+  "fps": 12,
+  "h": 8,
+  "n": true,
+  "pixel": true,
+  "rows": {
+   "back": [
+    1,
+    8
+   ],
+   "front": [
+    2,
+    8
+   ],
+   "side": [
+    0,
+    8
+   ]
+  },
+  "scale": 0.5,
+  "v": 3
+ },
+ "sprites/player_punk.png": {
+  "body_w": 31.5,
+  "cx": -1.0,
+  "foot": 18.5,
+  "fps": 12,
+  "h": 8,
+  "n": true,
+  "pixel": true,
+  "rows": {
+   "back": [
+    1,
+    8
+   ],
+   "front": [
+    2,
+    8
+   ],
+   "side": [
+    0,
+    8
+   ]
+  },
+  "scale": 0.5,
+  "v": 3
+ },
+ "sprites/player_shawarma.png": {
+  "body_w": 36.0,
+  "cx": -1.25,
+  "foot": 22.0,
+  "fps": 12,
+  "h": 8,
+  "n": true,
+  "pixel": true,
+  "rows": {
+   "back": [
+    1,
+    8
+   ],
+   "front": [
+    2,
+    8
+   ],
+   "side": [
+    0,
+    8
+   ]
+  },
+  "scale": 0.5,
+  "v": 3
+ },
+ "sprites/player_skater.png": {
+  "body_w": 30.0,
+  "cx": -0.25,
+  "foot": 22.0,
+  "fps": 12,
+  "h": 8,
+  "n": true,
+  "pixel": true,
+  "rows": {
+   "back": [
+    1,
+    8
+   ],
+   "front": [
+    2,
+    8
+   ],
+   "side": [
+    0,
+    8
+   ]
+  },
+  "scale": 0.5,
+  "v": 3
+ },
+ "sprites/player_slime.png": {
+  "body_w": 26.0,
+  "cx": -0.75,
+  "foot": 22.5,
+  "fps": 12,
+  "h": 8,
+  "n": true,
+  "pixel": true,
+  "rows": {
+   "back": [
+    1,
+    8
+   ],
+   "front": [
+    2,
+    8
+   ],
+   "side": [
+    0,
+    8
+   ]
+  },
+  "scale": 0.5,
+  "v": 3
+ },
+ "sprites/player_squid.png": {
+  "body_w": 38.5,
+  "cx": -1.0,
+  "foot": 21.5,
+  "fps": 12,
+  "h": 8,
+  "n": true,
+  "pixel": true,
+  "rows": {
+   "back": [
+    1,
+    8
+   ],
+   "front": [
+    2,
+    8
+   ],
+   "side": [
+    0,
+    8
+   ]
+  },
+  "scale": 0.5,
+  "v": 3
+ },
  "sprites/player_student.png": {
-  "body_w": 25.5,
-  "cx": 0.0,
+  "body_w": 25.0,
+  "cx": -1.25,
   "foot": 22.5,
   "fps": 12,
   "h": 8,
@@ -2016,9 +2016,9 @@
   "v": 3
  },
  "sprites/player_uncle_vitya.png": {
-  "body_w": 22.5,
-  "cx": -1.0,
-  "foot": 23.0,
+  "body_w": 30.0,
+  "cx": -0.75,
+  "foot": 23.5,
   "fps": 12,
   "h": 8,
   "n": true,

@@ -21,6 +21,7 @@ const CASING_WEAPONS: Array[StringName] = [&"pipe_gun", &"mosin", &"crossbow", &
 const KICK_LIFT: float = 0.35       # ствол задирается при выстреле (рад)
 const ANIM_STEP_SEC: float = 0.14   # смена кадров анимации (лист из 4 кадров)
 
+var _held_scale: float = HELD_SCALE   # у картинки нового стиля другой размер: мировой размер оружия остаётся прежним
 var slot_index: int = 0
 var slot_count: int = 1
 
@@ -43,7 +44,14 @@ func _ready() -> void:
 	_home = Vector2(cos(angle) * RING_X, sin(angle) * RING_Y)
 	_aim = _home.normalized()
 	_sprite = Sprite2D.new()
-	_build_frames(_load_texture("res://assets/sprites/held_%s.png" % _weapon_id), get_parent().tier)
+	var held_path: String = "res://assets/sprites/held_%s.png" % _weapon_id
+	var held_tex: Texture2D = _load_texture(held_path)
+	_held_scale = HELD_SCALE
+	if ArtStyle.is_hd() and ArtStyle.has_hd(held_path) and held_tex != null:
+		var hd_tex: Texture2D = ArtStyle.tex(held_path)
+		_held_scale = HELD_SCALE * float(held_tex.get_height()) / float(hd_tex.get_height())
+		held_tex = hd_tex
+	_build_frames(held_tex, get_parent().tier)
 	_sprite.texture = _frames[0] if not _frames.is_empty() else null
 	_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	var back_layer: Node = get_parent().get_parent().get_node_or_null("HeldBack")
@@ -144,7 +152,7 @@ func _track_target() -> void:
 func _place() -> void:
 	var angle: float = snappedf(_aim.angle(), SNAP_RAD)
 	var offset: Vector2 = Vector2.ZERO
-	_sprite.scale = Vector2.ONE * HELD_SCALE
+	_sprite.scale = Vector2.ONE * _held_scale
 	_sprite.rotation = angle
 	_sprite.flip_v = absf(angle) > PI * 0.5 + 0.01    # чтобы смотря влево, не быть вверх ногами
 	match _weapon_id:
@@ -153,14 +161,14 @@ func _place() -> void:
 			_sprite.rotation = angle + side * (-0.5 + SWING_RAD * sin(_kick * PI))   # взмах
 			offset = _aim * 3.0 * _kick
 		&"sock", &"rotten_cheese":
-			_sprite.scale = Vector2.ONE * HELD_SCALE * (1.0 + 0.4 * _kick)                          # раздувается при вони
+			_sprite.scale = Vector2.ONE * _held_scale * (1.0 + 0.4 * _kick)                          # раздувается при вони
 			offset = Vector2(roundf(sin(_kick * 40.0)), 0.0)
 		_:   # отдача: резкий толчок назад вдоль выстрела, ствол задирается, плавный возврат
 			var k: float = _kick * _kick
 			offset = -_aim * RECOIL_PX * 1.6 * k
 			var lift: float = -1.0 if not _sprite.flip_v else 1.0
 			_sprite.rotation = angle + lift * KICK_LIFT * k
-			_sprite.scale = Vector2(HELD_SCALE * (1.0 - 0.12 * k), HELD_SCALE * (1.0 + 0.12 * k))
+			_sprite.scale = Vector2(_held_scale * (1.0 - 0.12 * k), _held_scale * (1.0 + 0.12 * k))
 	var base: Vector2 = Vector2(roundf(_home.x), roundf(_home.y))
 	var shifted: Vector2 = base + offset
 	_sprite.position = Vector2(roundf(shifted.x), roundf(shifted.y))
