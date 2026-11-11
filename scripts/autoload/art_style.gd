@@ -6,9 +6,11 @@ extends Node
 
 const ROOT: String = "res://assets/"
 const HD_ROOT: String = "res://assets/hd/"
+const HD_THEME: String = "res://assets/hd/ui/theme_hd.tres"
 const MANIFEST: String = "res://assets/hd/manifest.json"
 
 var _manifest: Dictionary = {}
+var _pixel_theme: Theme = null   # копия пиксельной темы, чтобы вернуть её при переключении
 var _cache: Dictionary[String, Texture2D] = {}
 
 
@@ -17,6 +19,23 @@ func _ready() -> void:
 		var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(MANIFEST))
 		if parsed is Dictionary:
 			_manifest = parsed
+	apply_ui()
+
+
+## Шрифт и цвета интерфейса текущего стиля (вызывать после смены стиля в настройках). Меняем саму тему проекта:
+## тема на корневом окне не доходит до элементов внутри CanvasLayer.
+func apply_ui() -> void:
+	var theme: Theme = ThemeDB.get_project_theme()
+	if theme == null:
+		return
+	if _pixel_theme == null:
+		_pixel_theme = theme.duplicate() as Theme
+	var from: Theme = load(HD_THEME) as Theme if is_hd() else _pixel_theme
+	theme.default_font = from.default_font
+	for key: StringName in [&"font_color", &"font_shadow_color"]:
+		theme.set_color(key, &"Label", from.get_color(key, &"Label"))
+	get_tree().root.canvas_item_default_texture_filter = (Viewport.DEFAULT_CANVAS_ITEM_TEXTURE_FILTER_LINEAR if is_hd()
+			else Viewport.DEFAULT_CANVAS_ITEM_TEXTURE_FILTER_NEAREST)   # гладкий шрифт и картинки в детальном стиле
 
 
 func is_hd() -> bool:

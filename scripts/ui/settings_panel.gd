@@ -91,6 +91,7 @@ func _change(row: int, dir: int) -> void:
 			Settings.damage_numbers = posmod(Settings.damage_numbers + (dir if dir != 0 else 1), 3)
 		7:
 			Settings.art_style = "pixel" if Settings.art_style == "real" else "real"
+			ArtStyle.apply_ui()
 	Settings.save()
 	_refresh()
 
