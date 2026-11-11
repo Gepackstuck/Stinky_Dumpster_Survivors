@@ -196,14 +196,33 @@
   "v": 1
  },
  "sprites/enemy_blinker.png": {
-  "body_w": 32.0,
-  "foot": 17.0,
-  "fps": 8,
-  "generic": true,
-  "h": 4,
+  "body_w": 31.5,
+  "cx": -0.5,
+  "foot": 17.5,
+  "fps": 10,
+  "h": 12,
+  "n": true,
   "pixel": true,
-  "scale": 1.0,
-  "v": 1
+  "rows": {
+   "attack": [
+    1,
+    8
+   ],
+   "death": [
+    3,
+    10
+   ],
+   "hurt": [
+    2,
+    4
+   ],
+   "walk": [
+    0,
+    12
+   ]
+  },
+  "scale": 0.5,
+  "v": 4
  },
  "sprites/enemy_boss_blue_whale.png": {
   "body_w": 130.0,
@@ -422,14 +441,33 @@
   "v": 4
  },
  "sprites/enemy_egg.png": {
-  "body_w": 30.0,
-  "foot": 16.0,
-  "fps": 8,
-  "generic": true,
-  "h": 4,
+  "body_w": 26.5,
+  "cx": 0.0,
+  "foot": 17.0,
+  "fps": 10,
+  "h": 12,
+  "n": true,
   "pixel": true,
-  "scale": 1.0,
-  "v": 1
+  "rows": {
+   "attack": [
+    1,
+    8
+   ],
+   "death": [
+    3,
+    10
+   ],
+   "hurt": [
+    2,
+    4
+   ],
+   "walk": [
+    0,
+    12
+   ]
+  },
+  "scale": 0.5,
+  "v": 4
  },
  "sprites/enemy_glutton.png": {
   "body_w": 48.0,
@@ -490,24 +528,62 @@
   "v": 4
  },
  "sprites/enemy_looter.png": {
-  "body_w": 42.0,
-  "foot": 15.0,
-  "fps": 8,
-  "generic": true,
-  "h": 4,
+  "body_w": 19.5,
+  "cx": -0.5,
+  "foot": 16.0,
+  "fps": 10,
+  "h": 12,
+  "n": true,
   "pixel": true,
-  "scale": 1.0,
-  "v": 1
+  "rows": {
+   "attack": [
+    1,
+    8
+   ],
+   "death": [
+    3,
+    10
+   ],
+   "hurt": [
+    2,
+    4
+   ],
+   "walk": [
+    0,
+    12
+   ]
+  },
+  "scale": 0.5,
+  "v": 4
  },
  "sprites/enemy_mamka.png": {
-  "body_w": 48.0,
-  "foot": 22.0,
-  "fps": 8,
-  "generic": true,
-  "h": 4,
+  "body_w": 17.5,
+  "cx": -0.5,
+  "foot": 14.0,
+  "fps": 10,
+  "h": 12,
+  "n": true,
   "pixel": true,
-  "scale": 1.0,
-  "v": 1
+  "rows": {
+   "attack": [
+    1,
+    8
+   ],
+   "death": [
+    3,
+    10
+   ],
+   "hurt": [
+    2,
+    4
+   ],
+   "walk": [
+    0,
+    12
+   ]
+  },
+  "scale": 0.5,
+  "v": 4
  },
  "sprites/enemy_microbe.png": {
   "body_w": 42.5,
@@ -539,14 +615,33 @@
   "v": 4
  },
  "sprites/enemy_mirror.png": {
-  "body_w": 32.0,
-  "foot": 19.0,
-  "fps": 8,
-  "generic": true,
-  "h": 4,
+  "body_w": 21.0,
+  "cx": -0.25,
+  "foot": 16.5,
+  "fps": 10,
+  "h": 12,
+  "n": true,
   "pixel": true,
-  "scale": 1.0,
-  "v": 1
+  "rows": {
+   "attack": [
+    1,
+    8
+   ],
+   "death": [
+    3,
+    10
+   ],
+   "hurt": [
+    2,
+    4
+   ],
+   "walk": [
+    0,
+    12
+   ]
+  },
+  "scale": 0.5,
+  "v": 4
  },
  "sprites/enemy_npc_bot.png": {
   "body_w": 20.0,
@@ -578,14 +673,33 @@
   "v": 4
  },
  "sprites/enemy_shield_bearer.png": {
-  "body_w": 28.0,
-  "foot": 17.0,
-  "fps": 8,
-  "generic": true,
-  "h": 4,
+  "body_w": 24.0,
+  "cx": 0.25,
+  "foot": 19.0,
+  "fps": 10,
+  "h": 12,
+  "n": true,
   "pixel": true,
-  "scale": 1.0,
-  "v": 1
+  "rows": {
+   "attack": [
+    1,
+    8
+   ],
+   "death": [
+    3,
+    10
+   ],
+   "hurt": [
+    2,
+    4
+   ],
+   "walk": [
+    0,
+    12
+   ]
+  },
+  "scale": 0.5,
+  "v": 4
  },
  "sprites/enemy_spitter.png": {
   "body_w": 36.0,
@@ -646,14 +760,33 @@
   "v": 4
  },
  "sprites/enemy_thief.png": {
-  "body_w": 32.0,
-  "foot": 16.0,
-  "fps": 8,
-  "generic": true,
-  "h": 4,
+  "body_w": 18.5,
+  "cx": 0.0,
+  "foot": 15.5,
+  "fps": 10,
+  "h": 12,
+  "n": true,
   "pixel": true,
-  "scale": 1.0,
-  "v": 1
+  "rows": {
+   "attack": [
+    1,
+    8
+   ],
+   "death": [
+    3,
+    10
+   ],
+   "hurt": [
+    2,
+    4
+   ],
+   "walk": [
+    0,
+    12
+   ]
+  },
+  "scale": 0.5,
+  "v": 4
  },
  "sprites/enemy_trash_bin.png": {
   "body_w": 38.0,
@@ -706,14 +839,33 @@
   "v": 1
  },
  "sprites/enemy_wifi_ghost.png": {
-  "body_w": 32.0,
-  "foot": 17.0,
-  "fps": 8,
-  "generic": true,
-  "h": 4,
+  "body_w": 27.0,
+  "cx": -0.25,
+  "foot": 22.5,
+  "fps": 10,
+  "h": 12,
+  "n": true,
   "pixel": true,
-  "scale": 1.0,
-  "v": 1
+  "rows": {
+   "attack": [
+    1,
+    8
+   ],
+   "death": [
+    3,
+    10
+   ],
+   "hurt": [
+    2,
+    4
+   ],
+   "walk": [
+    0,
+    12
+   ]
+  },
+  "scale": 0.5,
+  "v": 4
  },
  "sprites/fx_blink_mark.png": {
   "generic": true,
