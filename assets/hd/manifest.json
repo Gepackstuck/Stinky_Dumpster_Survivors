@@ -225,104 +225,418 @@
   "v": 4
  },
  "sprites/enemy_boss_blue_whale.png": {
-  "body_w": 130.0,
-  "foot": 48.0,
-  "fps": 8,
-  "generic": true,
-  "h": 4,
+  "body_w": 69.0,
+  "cx": -0.25,
+  "foot": 36.5,
+  "fps": 10,
+  "h": 14,
+  "n": true,
   "pixel": true,
-  "scale": 1.0,
-  "v": 5
+  "rows": {
+   "act2": [
+    2,
+    8
+   ],
+   "act3": [
+    3,
+    8
+   ],
+   "act4": [
+    4,
+    8
+   ],
+   "attack": [
+    1,
+    8
+   ],
+   "death": [
+    6,
+    14
+   ],
+   "hurt": [
+    5,
+    4
+   ],
+   "walk": [
+    0,
+    12
+   ]
+  },
+  "scale": 0.5,
+  "v": 7
  },
  "sprites/enemy_boss_mega_hamster.png": {
-  "body_w": 126.0,
-  "foot": 55.0,
-  "fps": 8,
-  "generic": true,
-  "h": 4,
+  "body_w": 73.0,
+  "cx": -0.25,
+  "foot": 43.0,
+  "fps": 10,
+  "h": 14,
+  "n": true,
   "pixel": true,
-  "scale": 1.0,
-  "v": 5
+  "rows": {
+   "act2": [
+    2,
+    8
+   ],
+   "act3": [
+    3,
+    8
+   ],
+   "act4": [
+    4,
+    8
+   ],
+   "attack": [
+    1,
+    8
+   ],
+   "death": [
+    6,
+    14
+   ],
+   "hurt": [
+    5,
+    4
+   ],
+   "walk": [
+    0,
+    12
+   ]
+  },
+  "scale": 0.5,
+  "v": 7
  },
  "sprites/enemy_boss_minion.png": {
-  "body_w": 122.0,
-  "foot": 62.0,
-  "fps": 8,
-  "generic": true,
-  "h": 4,
+  "body_w": 76.0,
+  "cx": -0.25,
+  "foot": 36.0,
+  "fps": 10,
+  "h": 14,
+  "n": true,
   "pixel": true,
-  "scale": 1.0,
-  "v": 5
+  "rows": {
+   "act2": [
+    2,
+    8
+   ],
+   "act3": [
+    3,
+    8
+   ],
+   "act4": [
+    4,
+    8
+   ],
+   "attack": [
+    1,
+    8
+   ],
+   "death": [
+    6,
+    14
+   ],
+   "hurt": [
+    5,
+    4
+   ],
+   "walk": [
+    0,
+    12
+   ]
+  },
+  "scale": 0.5,
+  "v": 7
  },
  "sprites/enemy_boss_mother_in_law.png": {
-  "body_w": 106.0,
-  "foot": 48.0,
-  "fps": 8,
-  "generic": true,
-  "h": 4,
+  "body_w": 68.0,
+  "cx": -0.25,
+  "foot": 43.5,
+  "fps": 10,
+  "h": 14,
+  "n": true,
   "pixel": true,
-  "scale": 1.0,
-  "v": 5
+  "rows": {
+   "act2": [
+    2,
+    8
+   ],
+   "act3": [
+    3,
+    8
+   ],
+   "act4": [
+    4,
+    8
+   ],
+   "attack": [
+    1,
+    8
+   ],
+   "death": [
+    6,
+    14
+   ],
+   "hurt": [
+    5,
+    4
+   ],
+   "walk": [
+    0,
+    12
+   ]
+  },
+  "scale": 0.5,
+  "v": 7
  },
  "sprites/enemy_boss_pigeon_papa.png": {
-  "body_w": 114.0,
-  "foot": 48.0,
-  "fps": 8,
-  "generic": true,
-  "h": 4,
+  "body_w": 63.0,
+  "cx": -0.25,
+  "foot": 44.0,
+  "fps": 10,
+  "h": 14,
+  "n": true,
   "pixel": true,
-  "scale": 1.0,
-  "v": 5
+  "rows": {
+   "act2": [
+    2,
+    8
+   ],
+   "act3": [
+    3,
+    8
+   ],
+   "act4": [
+    4,
+    8
+   ],
+   "attack": [
+    1,
+    8
+   ],
+   "death": [
+    6,
+    14
+   ],
+   "hurt": [
+    5,
+    4
+   ],
+   "walk": [
+    0,
+    12
+   ]
+  },
+  "scale": 0.5,
+  "v": 7
  },
  "sprites/enemy_boss_rat_queen.png": {
-  "body_w": 106.0,
-  "foot": 46.0,
-  "fps": 8,
-  "generic": true,
-  "h": 4,
+  "body_w": 73.0,
+  "cx": -0.75,
+  "foot": 44.0,
+  "fps": 10,
+  "h": 14,
+  "n": true,
   "pixel": true,
-  "scale": 1.0,
-  "v": 5
+  "rows": {
+   "act2": [
+    2,
+    8
+   ],
+   "act3": [
+    3,
+    8
+   ],
+   "act4": [
+    4,
+    8
+   ],
+   "attack": [
+    1,
+    8
+   ],
+   "death": [
+    6,
+    14
+   ],
+   "hurt": [
+    5,
+    4
+   ],
+   "walk": [
+    0,
+    12
+   ]
+  },
+  "scale": 0.5,
+  "v": 7
  },
  "sprites/enemy_boss_roach_king.png": {
-  "body_w": 106.0,
-  "foot": 44.0,
-  "fps": 8,
-  "generic": true,
-  "h": 4,
+  "body_w": 70.0,
+  "cx": -0.25,
+  "foot": 36.5,
+  "fps": 10,
+  "h": 14,
+  "n": true,
   "pixel": true,
-  "scale": 1.0,
-  "v": 5
+  "rows": {
+   "act2": [
+    2,
+    8
+   ],
+   "act3": [
+    3,
+    8
+   ],
+   "act4": [
+    4,
+    8
+   ],
+   "attack": [
+    1,
+    8
+   ],
+   "death": [
+    6,
+    14
+   ],
+   "hurt": [
+    5,
+    4
+   ],
+   "walk": [
+    0,
+    12
+   ]
+  },
+  "scale": 0.5,
+  "v": 7
  },
  "sprites/enemy_boss_trash_golem.png": {
-  "body_w": 118.0,
-  "foot": 52.0,
-  "fps": 8,
-  "generic": true,
-  "h": 4,
+  "body_w": 73.0,
+  "cx": -0.75,
+  "foot": 36.0,
+  "fps": 10,
+  "h": 14,
+  "n": true,
   "pixel": true,
-  "scale": 1.0,
-  "v": 5
+  "rows": {
+   "act2": [
+    2,
+    8
+   ],
+   "act3": [
+    3,
+    8
+   ],
+   "act4": [
+    4,
+    8
+   ],
+   "attack": [
+    1,
+    8
+   ],
+   "death": [
+    6,
+    14
+   ],
+   "hurt": [
+    5,
+    4
+   ],
+   "walk": [
+    0,
+    12
+   ]
+  },
+  "scale": 0.5,
+  "v": 7
  },
  "sprites/enemy_boss_uk.png": {
-  "body_w": 102.0,
-  "foot": 55.0,
-  "fps": 8,
-  "generic": true,
-  "h": 4,
+  "body_w": 89.0,
+  "cx": -0.25,
+  "foot": 43.0,
+  "fps": 10,
+  "h": 14,
+  "n": true,
   "pixel": true,
-  "scale": 1.0,
-  "v": 5
+  "rows": {
+   "act2": [
+    2,
+    8
+   ],
+   "act3": [
+    3,
+    8
+   ],
+   "act4": [
+    4,
+    8
+   ],
+   "attack": [
+    1,
+    8
+   ],
+   "death": [
+    6,
+    14
+   ],
+   "hurt": [
+    5,
+    4
+   ],
+   "walk": [
+    0,
+    12
+   ]
+  },
+  "scale": 0.5,
+  "v": 7
  },
  "sprites/enemy_boss_zakhar.png": {
-  "body_w": 126.0,
-  "foot": 78.0,
-  "fps": 8,
-  "generic": true,
-  "h": 4,
+  "body_w": 46.5,
+  "cx": 0.0,
+  "foot": 44.0,
+  "fps": 10,
+  "h": 14,
+  "n": true,
   "pixel": true,
-  "scale": 1.0,
-  "v": 6
+  "rows": {
+   "act2": [
+    2,
+    8
+   ],
+   "act3": [
+    3,
+    8
+   ],
+   "act4": [
+    4,
+    8
+   ],
+   "act5": [
+    5,
+    8
+   ],
+   "attack": [
+    1,
+    8
+   ],
+   "death": [
+    7,
+    14
+   ],
+   "hurt": [
+    6,
+    4
+   ],
+   "walk": [
+    0,
+    12
+   ]
+  },
+  "scale": 0.5,
+  "v": 8
  },
  "sprites/enemy_bruiser.png": {
   "body_w": 36.5,
@@ -1252,88 +1566,83 @@
   "v": 1
  },
  "sprites/player_blogger.png": {
-  "body_w": 32.0,
-  "foot": 15.0,
-  "fps": 8,
-  "generic": true,
-  "h": 4,
+  "body_w": 25.5,
+  "cx": -1.0,
+  "foot": 22.0,
+  "fps": 12,
+  "h": 8,
+  "n": true,
   "pixel": true,
-  "scale": 1.0,
+  "rows": {
+   "back": [
+    1,
+    8
+   ],
+   "front": [
+    2,
+    8
+   ],
+   "side": [
+    0,
+    8
+   ]
+  },
+  "scale": 0.5,
   "v": 3
  },
  "sprites/player_cat.png": {
-  "body_w": 32.0,
-  "foot": 15.0,
-  "fps": 8,
-  "generic": true,
-  "h": 4,
+  "body_w": 31.0,
+  "cx": -1.25,
+  "foot": 15.5,
+  "fps": 12,
+  "h": 8,
+  "n": true,
   "pixel": true,
-  "scale": 1.0,
+  "rows": {
+   "back": [
+    1,
+    8
+   ],
+   "front": [
+    2,
+    8
+   ],
+   "side": [
+    0,
+    8
+   ]
+  },
+  "scale": 0.5,
   "v": 3
  },
  "sprites/player_clerk.png": {
-  "body_w": 32.0,
-  "foot": 15.0,
-  "fps": 8,
-  "generic": true,
-  "h": 4,
+  "body_w": 19.0,
+  "cx": -1.25,
+  "foot": 22.0,
+  "fps": 12,
+  "h": 8,
+  "n": true,
   "pixel": true,
-  "scale": 1.0,
+  "rows": {
+   "back": [
+    1,
+    8
+   ],
+   "front": [
+    2,
+    8
+   ],
+   "side": [
+    0,
+    8
+   ]
+  },
+  "scale": 0.5,
   "v": 3
  },
  "sprites/player_courier.png": {
-  "body_w": 32.0,
-  "foot": 15.0,
-  "fps": 8,
-  "generic": true,
-  "h": 4,
-  "pixel": true,
-  "scale": 1.0,
-  "v": 3
- },
- "sprites/player_dacha.png": {
-  "body_w": 32.0,
-  "foot": 15.0,
-  "fps": 8,
-  "generic": true,
-  "h": 4,
-  "pixel": true,
-  "scale": 1.0,
-  "v": 3
- },
- "sprites/player_gopnik_jock.png": {
-  "body_w": 32.0,
-  "foot": 15.0,
-  "fps": 8,
-  "generic": true,
-  "h": 4,
-  "pixel": true,
-  "scale": 1.0,
-  "v": 3
- },
- "sprites/player_granny.png": {
-  "body_w": 32.0,
-  "foot": 15.0,
-  "fps": 8,
-  "generic": true,
-  "h": 4,
-  "pixel": true,
-  "scale": 1.0,
-  "v": 3
- },
- "sprites/player_guard.png": {
-  "body_w": 32.0,
-  "foot": 15.0,
-  "fps": 8,
-  "generic": true,
-  "h": 4,
-  "pixel": true,
-  "scale": 1.0,
-  "v": 3
- },
- "sprites/player_hobo.png": {
-  "body_w": 19.0,
-  "cx": 1.25,
+  "body_w": 40.5,
+  "cx": -0.5,
   "foot": 22.5,
   "fps": 12,
   "h": 8,
@@ -1356,104 +1665,379 @@
   "scale": 0.5,
   "v": 3
  },
- "sprites/player_janitor.png": {
-  "body_w": 32.0,
-  "foot": 15.0,
-  "fps": 8,
-  "generic": true,
-  "h": 4,
+ "sprites/player_dacha.png": {
+  "body_w": 23.5,
+  "cx": -2.0,
+  "foot": 22.0,
+  "fps": 12,
+  "h": 8,
+  "n": true,
   "pixel": true,
-  "scale": 1.0,
+  "rows": {
+   "back": [
+    1,
+    8
+   ],
+   "front": [
+    2,
+    8
+   ],
+   "side": [
+    0,
+    8
+   ]
+  },
+  "scale": 0.5,
+  "v": 3
+ },
+ "sprites/player_gopnik_jock.png": {
+  "body_w": 24.0,
+  "cx": -0.25,
+  "foot": 22.5,
+  "fps": 12,
+  "h": 8,
+  "n": true,
+  "pixel": true,
+  "rows": {
+   "back": [
+    1,
+    8
+   ],
+   "front": [
+    2,
+    8
+   ],
+   "side": [
+    0,
+    8
+   ]
+  },
+  "scale": 0.5,
+  "v": 3
+ },
+ "sprites/player_granny.png": {
+  "body_w": 30.0,
+  "cx": -1.25,
+  "foot": 21.0,
+  "fps": 12,
+  "h": 8,
+  "n": true,
+  "pixel": true,
+  "rows": {
+   "back": [
+    1,
+    8
+   ],
+   "front": [
+    2,
+    8
+   ],
+   "side": [
+    0,
+    8
+   ]
+  },
+  "scale": 0.5,
+  "v": 3
+ },
+ "sprites/player_guard.png": {
+  "body_w": 22.0,
+  "cx": -1.25,
+  "foot": 23.0,
+  "fps": 12,
+  "h": 8,
+  "n": true,
+  "pixel": true,
+  "rows": {
+   "back": [
+    1,
+    8
+   ],
+   "front": [
+    2,
+    8
+   ],
+   "side": [
+    0,
+    8
+   ]
+  },
+  "scale": 0.5,
+  "v": 3
+ },
+ "sprites/player_hobo.png": {
+  "body_w": 31.0,
+  "cx": -1.25,
+  "foot": 22.0,
+  "fps": 12,
+  "h": 8,
+  "n": true,
+  "pixel": true,
+  "rows": {
+   "back": [
+    1,
+    8
+   ],
+   "front": [
+    2,
+    8
+   ],
+   "side": [
+    0,
+    8
+   ]
+  },
+  "scale": 0.5,
+  "v": 3
+ },
+ "sprites/player_janitor.png": {
+  "body_w": 29.5,
+  "cx": -1.0,
+  "foot": 22.5,
+  "fps": 12,
+  "h": 8,
+  "n": true,
+  "pixel": true,
+  "rows": {
+   "back": [
+    1,
+    8
+   ],
+   "front": [
+    2,
+    8
+   ],
+   "side": [
+    0,
+    8
+   ]
+  },
+  "scale": 0.5,
   "v": 3
  },
  "sprites/player_pigeon.png": {
-  "body_w": 32.0,
-  "foot": 15.0,
-  "fps": 8,
-  "generic": true,
-  "h": 4,
+  "body_w": 30.0,
+  "cx": -0.75,
+  "foot": 16.0,
+  "fps": 12,
+  "h": 8,
+  "n": true,
   "pixel": true,
-  "scale": 1.0,
+  "rows": {
+   "back": [
+    1,
+    8
+   ],
+   "front": [
+    2,
+    8
+   ],
+   "side": [
+    0,
+    8
+   ]
+  },
+  "scale": 0.5,
   "v": 3
  },
  "sprites/player_plumber.png": {
-  "body_w": 32.0,
-  "foot": 15.0,
-  "fps": 8,
-  "generic": true,
-  "h": 4,
+  "body_w": 35.5,
+  "cx": -1.0,
+  "foot": 22.5,
+  "fps": 12,
+  "h": 8,
+  "n": true,
   "pixel": true,
-  "scale": 1.0,
+  "rows": {
+   "back": [
+    1,
+    8
+   ],
+   "front": [
+    2,
+    8
+   ],
+   "side": [
+    0,
+    8
+   ]
+  },
+  "scale": 0.5,
   "v": 3
  },
  "sprites/player_punk.png": {
-  "body_w": 32.0,
-  "foot": 15.0,
-  "fps": 8,
-  "generic": true,
-  "h": 4,
+  "body_w": 38.0,
+  "cx": -1.25,
+  "foot": 18.0,
+  "fps": 12,
+  "h": 8,
+  "n": true,
   "pixel": true,
-  "scale": 1.0,
+  "rows": {
+   "back": [
+    1,
+    8
+   ],
+   "front": [
+    2,
+    8
+   ],
+   "side": [
+    0,
+    8
+   ]
+  },
+  "scale": 0.5,
   "v": 3
  },
  "sprites/player_shawarma.png": {
-  "body_w": 32.0,
-  "foot": 15.0,
-  "fps": 8,
-  "generic": true,
-  "h": 4,
+  "body_w": 24.0,
+  "cx": -1.25,
+  "foot": 22.5,
+  "fps": 12,
+  "h": 8,
+  "n": true,
   "pixel": true,
-  "scale": 1.0,
+  "rows": {
+   "back": [
+    1,
+    8
+   ],
+   "front": [
+    2,
+    8
+   ],
+   "side": [
+    0,
+    8
+   ]
+  },
+  "scale": 0.5,
   "v": 3
  },
  "sprites/player_skater.png": {
-  "body_w": 32.0,
-  "foot": 15.0,
-  "fps": 8,
-  "generic": true,
-  "h": 4,
+  "body_w": 29.5,
+  "cx": 0.0,
+  "foot": 22.5,
+  "fps": 12,
+  "h": 8,
+  "n": true,
   "pixel": true,
-  "scale": 1.0,
+  "rows": {
+   "back": [
+    1,
+    8
+   ],
+   "front": [
+    2,
+    8
+   ],
+   "side": [
+    0,
+    8
+   ]
+  },
+  "scale": 0.5,
   "v": 3
  },
  "sprites/player_slime.png": {
-  "body_w": 26.0,
-  "foot": 12.0,
-  "fps": 8,
-  "generic": true,
-  "h": 4,
+  "body_w": 24.5,
+  "cx": -1.0,
+  "foot": 22.0,
+  "fps": 12,
+  "h": 8,
+  "n": true,
   "pixel": true,
-  "scale": 1.0,
+  "rows": {
+   "back": [
+    1,
+    8
+   ],
+   "front": [
+    2,
+    8
+   ],
+   "side": [
+    0,
+    8
+   ]
+  },
+  "scale": 0.5,
   "v": 3
  },
  "sprites/player_squid.png": {
-  "body_w": 32.0,
-  "foot": 15.0,
-  "fps": 8,
-  "generic": true,
-  "h": 4,
+  "body_w": 20.5,
+  "cx": -1.5,
+  "foot": 22.5,
+  "fps": 12,
+  "h": 8,
+  "n": true,
   "pixel": true,
-  "scale": 1.0,
+  "rows": {
+   "back": [
+    1,
+    8
+   ],
+   "front": [
+    2,
+    8
+   ],
+   "side": [
+    0,
+    8
+   ]
+  },
+  "scale": 0.5,
   "v": 3
  },
  "sprites/player_student.png": {
-  "body_w": 32.0,
-  "foot": 15.0,
-  "fps": 8,
-  "generic": true,
-  "h": 4,
+  "body_w": 25.5,
+  "cx": 0.0,
+  "foot": 22.5,
+  "fps": 12,
+  "h": 8,
+  "n": true,
   "pixel": true,
-  "scale": 1.0,
+  "rows": {
+   "back": [
+    1,
+    8
+   ],
+   "front": [
+    2,
+    8
+   ],
+   "side": [
+    0,
+    8
+   ]
+  },
+  "scale": 0.5,
   "v": 3
  },
  "sprites/player_uncle_vitya.png": {
-  "body_w": 32.0,
-  "foot": 15.0,
-  "fps": 8,
-  "generic": true,
-  "h": 4,
+  "body_w": 22.5,
+  "cx": -1.0,
+  "foot": 23.0,
+  "fps": 12,
+  "h": 8,
+  "n": true,
   "pixel": true,
-  "scale": 1.0,
+  "rows": {
+   "back": [
+    1,
+    8
+   ],
+   "front": [
+    2,
+    8
+   ],
+   "side": [
+    0,
+    8
+   ]
+  },
+  "scale": 0.5,
   "v": 3
  },
  "sprites/proj_bill.png": {

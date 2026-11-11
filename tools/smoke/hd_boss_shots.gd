@@ -31,6 +31,6 @@ func _run() -> void:
 		await get_tree().create_timer(0.2).timeout
 		if i in [6, 14, 22, 30, 38]:
 			await RenderingServer.frame_post_draw
-			get_viewport().get_texture().get_image().save_png(ProjectSettings.globalize_path("res://tools/_preview/hd/03_в_игре/boss_%d.png" % i))
+			get_viewport().get_texture().get_image().save_png(ProjectSettings.globalize_path("res://tools/_preview/hd/05_пиксели/босс_голем_%d.png" % i))
 	print("HD BOSS DONE")
 	get_tree().quit()
