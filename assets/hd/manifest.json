@@ -1,4 +1,236 @@
 {
+ "sprites/enemy_bruiser.png": {
+  "body_w": 47.0,
+  "cx": -0.25,
+  "foot": 20.5,
+  "fps": 10,
+  "h": 12,
+  "n": true,
+  "pixel": true,
+  "rows": {
+   "attack": [
+    1,
+    8
+   ],
+   "death": [
+    3,
+    10
+   ],
+   "hurt": [
+    2,
+    4
+   ],
+   "walk": [
+    0,
+    12
+   ]
+  },
+  "scale": 0.5,
+  "v": 4
+ },
+ "sprites/enemy_charger.png": {
+  "body_w": 40.0,
+  "cx": -0.25,
+  "foot": 23.5,
+  "fps": 10,
+  "h": 12,
+  "n": true,
+  "pixel": true,
+  "rows": {
+   "attack": [
+    1,
+    8
+   ],
+   "death": [
+    3,
+    10
+   ],
+   "hurt": [
+    2,
+    4
+   ],
+   "walk": [
+    0,
+    12
+   ]
+  },
+  "scale": 0.5,
+  "v": 4
+ },
+ "sprites/enemy_chaser.png": {
+  "body_w": 43.0,
+  "cx": -0.25,
+  "foot": 22.5,
+  "fps": 10,
+  "h": 12,
+  "n": true,
+  "pixel": true,
+  "rows": {
+   "attack": [
+    1,
+    8
+   ],
+   "death": [
+    3,
+    10
+   ],
+   "hurt": [
+    2,
+    4
+   ],
+   "walk": [
+    0,
+    12
+   ]
+  },
+  "scale": 0.5,
+  "v": 4
+ },
+ "sprites/enemy_cockroach.png": {
+  "body_w": 40.0,
+  "cx": -0.25,
+  "foot": 12.5,
+  "fps": 10,
+  "h": 12,
+  "n": true,
+  "pixel": true,
+  "rows": {
+   "attack": [
+    1,
+    8
+   ],
+   "death": [
+    3,
+    10
+   ],
+   "hurt": [
+    2,
+    4
+   ],
+   "walk": [
+    0,
+    12
+   ]
+  },
+  "scale": 0.5,
+  "v": 4
+ },
+ "sprites/enemy_glutton.png": {
+  "body_w": 48.0,
+  "cx": -0.25,
+  "foot": 22.5,
+  "fps": 10,
+  "h": 12,
+  "n": true,
+  "pixel": true,
+  "rows": {
+   "attack": [
+    1,
+    8
+   ],
+   "death": [
+    3,
+    10
+   ],
+   "hurt": [
+    2,
+    4
+   ],
+   "walk": [
+    0,
+    12
+   ]
+  },
+  "scale": 0.5,
+  "v": 4
+ },
+ "sprites/enemy_healer.png": {
+  "body_w": 19.5,
+  "cx": -0.5,
+  "foot": 13.0,
+  "fps": 10,
+  "h": 12,
+  "n": true,
+  "pixel": true,
+  "rows": {
+   "attack": [
+    1,
+    8
+   ],
+   "death": [
+    3,
+    10
+   ],
+   "hurt": [
+    2,
+    4
+   ],
+   "walk": [
+    0,
+    12
+   ]
+  },
+  "scale": 0.5,
+  "v": 4
+ },
+ "sprites/enemy_microbe.png": {
+  "body_w": 42.5,
+  "cx": 0.0,
+  "foot": 19.5,
+  "fps": 10,
+  "h": 12,
+  "n": true,
+  "pixel": true,
+  "rows": {
+   "attack": [
+    1,
+    8
+   ],
+   "death": [
+    3,
+    10
+   ],
+   "hurt": [
+    2,
+    4
+   ],
+   "walk": [
+    0,
+    12
+   ]
+  },
+  "scale": 0.5,
+  "v": 4
+ },
+ "sprites/enemy_npc_bot.png": {
+  "body_w": 20.0,
+  "cx": -0.25,
+  "foot": 15.5,
+  "fps": 10,
+  "h": 12,
+  "n": true,
+  "pixel": true,
+  "rows": {
+   "attack": [
+    1,
+    8
+   ],
+   "death": [
+    3,
+    10
+   ],
+   "hurt": [
+    2,
+    4
+   ],
+   "walk": [
+    0,
+    12
+   ]
+  },
+  "scale": 0.5,
+  "v": 4
+ },
  "sprites/enemy_spitter.png": {
   "body_w": 36.0,
   "cx": -0.25,

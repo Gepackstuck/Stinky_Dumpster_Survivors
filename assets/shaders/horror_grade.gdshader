@@ -4,7 +4,7 @@ shader_type canvas_item;
 
 uniform sampler2D screen_tex : hint_screen_texture, filter_linear_mipmap;
 uniform float saturation = 0.5;
-uniform float darken = 1.12;        // >1 - плотнее тени
+uniform float darken = 1.0;        // >1 - плотнее тени
 uniform vec3 tint = vec3(1.06, 0.94, 0.90);
 uniform float aberration = 0.0016;
 uniform float glitch = 0.5;
