@@ -56,5 +56,13 @@
   },
   "scale": 0.5,
   "v": 4
+ },
+ "sprites/ground_tile.png": {
+  "h": 1,
+  "n": true,
+  "pixel": true,
+  "repeat": true,
+  "scale": 0.5,
+  "v": 1
  }
 }

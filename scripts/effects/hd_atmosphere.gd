@@ -70,6 +70,6 @@ func _process(delta: float) -> void:
 	_light.global_position = _player.global_position
 	_flash.global_position = _player.global_position
 	# свет героя чуть дрожит, как фонарь на севших батарейках
-	_light.energy = Balance.HD_PLAYER_LIGHT_ENERGY * (1.0 + 0.04 * sin(_t * 9.0) + 0.03 * sin(_t * 23.0))
+	_light.energy = Balance.HD_PLAYER_LIGHT_ENERGY * (1.0 + 0.07 * sin(_t * 7.0) + 0.05 * sin(_t * 23.0) + 0.10 * maxf(sin(_t * 1.3) * sin(_t * 0.37) - 0.6, 0.0) * -4.0)
 	_flash_left = maxf(_flash_left - delta, 0.0)
 	_flash.energy = Balance.HD_FLASH_ENERGY * _flash_left / Balance.HD_FLASH_SEC

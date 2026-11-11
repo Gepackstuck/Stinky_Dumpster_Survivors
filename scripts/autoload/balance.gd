@@ -1085,17 +1085,17 @@ const CHARACTERS: Dictionary = {
 
 
 # --- Реалистичный стиль (ArtStyle "real"): свет и воздух ---
-const HD_AMBIENT: Color = Color(0.46, 0.42, 0.46)            # тьма вокруг: что не освещено, видно тускло
-const HD_PLAYER_LIGHT_RADIUS: float = 300.0                  # радиус света героя, мировые единицы
-const HD_PLAYER_LIGHT_COLOR: Color = Color(1.0, 0.86, 0.68)
-const HD_PLAYER_LIGHT_ENERGY: float = 1.25
+const HD_AMBIENT: Color = Color(0.17, 0.17, 0.22)            # тьма вокруг: что не освещено, видно тускло
+const HD_PLAYER_LIGHT_RADIUS: float = 230.0                  # радиус света героя, мировые единицы
+const HD_PLAYER_LIGHT_COLOR: Color = Color(1.0, 0.74, 0.5)
+const HD_PLAYER_LIGHT_ENERGY: float = 1.7
 const HD_FLASH_RADIUS: float = 150.0                         # вспышка от выстрела
 const HD_FLASH_COLOR: Color = Color(1.0, 0.7, 0.35)
 const HD_FLASH_ENERGY: float = 0.6
 const HD_FLASH_SEC: float = 0.08
-const HD_VIGNETTE: float = 0.6
+const HD_VIGNETTE: float = 0.85
 const HD_GRAIN: float = 0.05
-const HD_FOG: float = 0.12
+const HD_FOG: float = 0.2
 const HD_CORPSE_FADE_SEC: float = 0.7                       # тело после анимации смерти тает
 const HD_SPLAT_SCALE: float = 0.6                            # лужа крови от убитого врага относительно декали пола
 const HD_DECAL_AREA_PX2: float = 30000.0                     # одна декаль (кровь, потроха) на столько квадратных единиц арены
@@ -1103,8 +1103,8 @@ const HD_DECAL_ALPHA: float = 0.8
 const HD_DROP_SCALE: float = 0.075                          # размер капли-частицы в детальном стиле (текстура 16 px)
 const HD_SHADOW_WIDTH: float = 1.15                          # ширина тени относительно ширины тела
 const HD_SHADOW_ALPHA: float = 0.6
-const HD_MOON_COLOR: Color = Color(0.75, 0.8, 1.0)          # холодный «лунный» свет сбоку: рельеф виден везде, не только у героя
-const HD_MOON_ENERGY: float = 0.7
+const HD_MOON_COLOR: Color = Color(0.55, 0.7, 0.9)          # холодный «лунный» свет сбоку: рельеф виден везде, не только у героя
+const HD_MOON_ENERGY: float = 0.3
 const HD_MOON_HEIGHT: float = 0.45                           # 0 - свет стелется по земле, 1 - прямо сверху
 const HD_MOON_ANGLE_DEG: float = -35.0
 const HD_PLAYER_LIGHT_HEIGHT: float = 26.0                   # высота фонаря героя над землёй (рельеф от него)
