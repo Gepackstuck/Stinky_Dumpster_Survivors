@@ -1085,7 +1085,7 @@ const CHARACTERS: Dictionary = {
 
 
 # --- Реалистичный стиль (ArtStyle "real"): свет и воздух ---
-const HD_AMBIENT: Color = Color(0.25, 0.24, 0.30)            # тьма вокруг: что не освещено, видно тускло
+const HD_AMBIENT: Color = Color(0.46, 0.44, 0.46)            # тьма вокруг: что не освещено, видно тускло
 const HD_PLAYER_LIGHT_RADIUS: float = 230.0                  # радиус света героя, мировые единицы
 const HD_PLAYER_LIGHT_COLOR: Color = Color(1.0, 0.74, 0.5)
 const HD_PLAYER_LIGHT_ENERGY: float = 1.7
@@ -1093,7 +1093,7 @@ const HD_FLASH_RADIUS: float = 150.0                         # вспышка о
 const HD_FLASH_COLOR: Color = Color(1.0, 0.7, 0.35)
 const HD_FLASH_ENERGY: float = 0.6
 const HD_FLASH_SEC: float = 0.08
-const HD_VIGNETTE: float = 0.85
+const HD_VIGNETTE: float = 0.6
 const HD_GRAIN: float = 0.05
 const HD_FOG: float = 0.2
 const HD_CORPSE_FADE_SEC: float = 0.7                       # тело после анимации смерти тает

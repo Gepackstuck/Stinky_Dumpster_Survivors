@@ -30,6 +30,15 @@ def cutout(path: str, work: int = 640, pad: float = 0.12) -> np.ndarray:
         sizes = ndimage.sum(alpha > 0.5, lab, range(1, n + 1))
         keep = ndimage.binary_dilation(lab == (1 + int(np.argmax(sizes))), iterations=6)
         alpha = alpha * keep
+    holes = ndimage.binary_fill_holes(alpha > 0.5) & ~(alpha > 0.5)   # глаза и зубы, которые модель приняла за фон, - возвращаем
+    lab_h, nh = ndimage.label(holes)
+    if nh:
+        sizes_h = ndimage.sum(holes, lab_h, range(1, nh + 1))
+        fill = np.isin(lab_h, [i + 1 for i in range(nh) if sizes_h[i] < 0.012 * alpha.size])
+        alpha = np.where(fill, 1.0, alpha)
+        # цвет в дырах берём у ближайшего заполненного пикселя (иначе там прозрачный чёрный)
+        idx = ndimage.distance_transform_edt(~((a[..., 3] > 0.5) & ~fill), return_distances=False, return_indices=True)
+        a[..., :3] = np.where(fill[..., None], a[idx[0], idx[1], :3], a[..., :3])
     a[..., 3] = alpha
     ys, xs = np.where(alpha > 0.05)
     a = a[ys.min():ys.max() + 1, xs.min():xs.max() + 1]

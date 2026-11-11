@@ -385,7 +385,7 @@
  "sprites/enemy_chaser.png": {
   "body_w": 43.0,
   "cx": -0.25,
-  "foot": 22.5,
+  "foot": 28.0,
   "fps": 10,
   "h": 12,
   "n": true,
@@ -586,9 +586,9 @@
   "v": 4
  },
  "sprites/enemy_microbe.png": {
-  "body_w": 42.5,
-  "cx": 0.0,
-  "foot": 19.5,
+  "body_w": 42.0,
+  "cx": -0.25,
+  "foot": 19.0,
   "fps": 10,
   "h": 12,
   "n": true,
@@ -702,11 +702,11 @@
   "v": 4
  },
  "sprites/enemy_spitter.png": {
-  "body_w": 36.0,
+  "body_w": 42.0,
   "cx": -0.25,
-  "foot": 20.0,
+  "foot": 19.0,
   "fps": 10,
-  "h": 10,
+  "h": 12,
   "n": true,
   "pixel": true,
   "rows": {
@@ -724,16 +724,16 @@
    ],
    "walk": [
     0,
-    10
+    12
    ]
   },
   "scale": 0.5,
   "v": 4
  },
  "sprites/enemy_squid_gopnik.png": {
-  "body_w": 43.0,
-  "cx": -0.25,
-  "foot": 18.5,
+  "body_w": 40.5,
+  "cx": 0.0,
+  "foot": 21.0,
   "fps": 10,
   "h": 12,
   "n": true,
@@ -789,14 +789,33 @@
   "v": 4
  },
  "sprites/enemy_trash_bin.png": {
-  "body_w": 38.0,
-  "foot": 20.0,
-  "fps": 8,
-  "generic": true,
-  "h": 4,
+  "body_w": 24.0,
+  "cx": -0.75,
+  "foot": 17.5,
+  "fps": 10,
+  "h": 12,
+  "n": true,
   "pixel": true,
-  "scale": 1.0,
-  "v": 1
+  "rows": {
+   "attack": [
+    1,
+    8
+   ],
+   "death": [
+    3,
+    10
+   ],
+   "hurt": [
+    2,
+    4
+   ],
+   "walk": [
+    0,
+    12
+   ]
+  },
+  "scale": 0.5,
+  "v": 4
  },
  "sprites/enemy_trash_bin_0.png": {
   "body_w": 38.0,

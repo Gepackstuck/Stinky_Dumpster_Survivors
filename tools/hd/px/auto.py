@@ -25,7 +25,7 @@ import bake
 import rig as rig1
 import rig2
 
-GRADE = (1.1, 0.66)
+GRADE = (1.18, 1.0)   # смешной блевотный стиль: яркие тошнотворные цвета, без обесцвечивания
 
 
 def build(spec):
