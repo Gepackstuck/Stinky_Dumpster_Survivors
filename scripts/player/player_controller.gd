@@ -53,6 +53,12 @@ func _ready() -> void:
 	var look: Texture2D = CharacterLibrary.sprite_sheet(GameState.character)   # у каждого героя свой внешний вид
 	if look != null:
 		_sprite.texture = look
+	var look_path: String = "res://assets/sprites/player_%s.png" % GameState.character
+	var hd: Dictionary = ArtStyle.info(look_path)
+	if not hd.is_empty():   # детальный стиль: свой лист (те же ряды: бок, спина, лицо), больше кадров
+		_sprite.scale = Vector2.ONE * ArtStyle.apply(_sprite, look_path)
+		_animator.fps = float(hd.get("fps", 12))
+		_shoes.visible = false   # ботинки уже нарисованы на герое
 	EventBus.weapons_changed.connect(_sync_weapons)
 	EventBus.enemy_died.connect(_on_enemy_died_item_fx)
 	EventBus.wave_started.connect(_on_wave_started_items)

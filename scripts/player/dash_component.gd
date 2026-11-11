@@ -202,11 +202,12 @@ func _pipe_travel(iframe: float) -> void:
 		tw.tween_property(pipe, "modulate:a", 0.0, 0.2)
 		tw.tween_callback(pipe.queue_free)
 	AudioManager.play_sfx(&"pipe")
+	var full_y: float = sprite.scale.y   # у детального стиля масштаб спрайта не 1
 	var tw2: Tween = create_tween()
 	tw2.tween_property(sprite, "scale:y", 0.0, Balance.DASH_PIPE_SEC * 0.4)
 	tw2.tween_callback(func() -> void: body.global_position = exit)
 	tw2.tween_interval(Balance.DASH_PIPE_SEC * 0.2)
-	tw2.tween_property(sprite, "scale:y", 1.0, Balance.DASH_PIPE_SEC * 0.4)
+	tw2.tween_property(sprite, "scale:y", full_y, Balance.DASH_PIPE_SEC * 0.4)
 
 
 func _finish() -> void:
@@ -310,7 +311,8 @@ func _spawn_ghost() -> void:
 	ghost.frame = sprite.frame
 	ghost.flip_h = sprite.flip_h
 	ghost.offset = sprite.offset
-	ghost.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	ghost.scale = sprite.scale
+	ghost.texture_filter = sprite.texture_filter
 	ghost.modulate = Color(0.2235, 1.0, 0.0784, 0.55) if StringName(_p["fx"]) != &"fly" else Color(0.7, 0.7, 1.0, 0.55)
 	ghost.z_index = -1
 	get_tree().current_scene.add_child(ghost)

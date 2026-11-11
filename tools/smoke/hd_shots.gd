@@ -13,11 +13,13 @@ func _ready() -> void:
 
 
 func _run() -> void:
-	GameState.character = &"guard"
+	GameState.character = &"hobo"
 	var level: Node = MAIN.instantiate()
 	get_tree().root.add_child(level)
 	get_tree().current_scene = level
-	await get_tree().create_timer(3.2).timeout
+	await get_tree().create_timer(1.5).timeout
+	level.get_node(^"LevelUpScreen").call(&"_on_card_pressed", 0)   # у бомжа нет стартового оружия: берём первое
+	await get_tree().create_timer(1.7).timeout
 	get_tree().paused = false
 	GameState.weapons.clear()
 	for w: Array in [[&"mosin", 2], [&"pipe_gun", 2], [&"mop", 3], [&"crossbow", 2], [&"lighter", 2]]:
