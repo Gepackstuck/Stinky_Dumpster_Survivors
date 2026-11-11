@@ -106,5 +106,5 @@ def frames(r, pal):
 if __name__ == "__main__":
     r = build()
     pal = rig2.make_palette(r.render({}, {}, F, PAD), F, 30)
-    pal = rig2.grade_palette(pal, 1.0, 0.85)
+    pal = rig2.grade_palette(pal, 1.05, 0.7)
     bake.emit("sprites/enemy_squid_gopnik.png", frames(r, pal), WORLD_W, 10, "кальмар_гопник_жуть", texel=0.5)

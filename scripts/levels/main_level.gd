@@ -23,6 +23,10 @@ func _ready() -> void:
 		var air: HdAtmosphere = HdAtmosphere.new()   # свет, тьма, туман реалистичного стиля
 		add_child(air)
 		air.setup(_player)
+		y_sort_enabled = true   # вид 3/4: герой, враги и декорации сортируются по высоте экрана (кто ниже - тот ближе)
+		$Enemies.y_sort_enabled = true
+		$Pickups.z_index = -1
+		add_child(ArenaProps.new())
 	EventBus.run_won.connect(_open_gate)
 	if not GameState.weapons.is_empty():
 		# у персонажа своё стартовое оружие: выдаём его и запускаем 1-ю волну без выбора

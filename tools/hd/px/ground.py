@@ -21,7 +21,7 @@ im = Image.fromarray((np.clip(a, 0, 1) * 255).astype(np.uint8)).resize((T, T), I
 a = np.asarray(im).astype(np.float32) / 255.0
 grey = a.mean(-1, keepdims=True)
 a = np.clip(grey + (a - grey) * 1.1, 0, 1)
-a = np.clip(0.04 + (a - a.mean()) * 0.8 + a.mean() * 0.62, 0, 1)    # темнее, контраст ниже
+a = np.clip(0.03 + (a - a.mean()) * 0.5 + a.mean() * 0.5, 0, 1)    # темнее и спокойнее: враги должны читаться
 pal = rig2.make_palette(np.concatenate([a, np.ones((T, T, 1), np.float32)], -1), T, 22)
 d = ((a[..., None, :] - pal[None, None]) ** 2).sum(-1)
 q = pal[d.argmin(-1)]

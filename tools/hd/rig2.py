@@ -203,7 +203,7 @@ def make_palette(frame_hi, F, n=24, seed=1):
     return np.clip(cent, 0, 1)
 
 
-def pixelize(frame_hi, F, palette, outline=True, island=3):
+def pixelize(frame_hi, F, palette, outline=True, island=3, rim=0.55, lift_dark=0.45):
     arr = _box(frame_hi, F)
     mask = arr[..., 3] > 0.5
     lab, cnt = ndimage.label(mask)
@@ -215,6 +215,22 @@ def pixelize(frame_hi, F, palette, outline=True, island=3):
     rgb = arr[..., :3]
     d = ((rgb[..., None, :] - palette[None, None]) ** 2).sum(-1)
     q = palette[d.argmin(-1)]
+    q = q.copy()
+    if rim > 0.0:
+        # читаемость на тёмном полу: контровой свет - верх и левый край фигуры светлеют (1-2 пикселя), тело выпуклое, силуэт не сливается
+        up1 = np.zeros_like(mask); up1[1:] = mask[:-1]
+        up2 = np.zeros_like(mask); up2[2:] = mask[:-2]
+        lf1 = np.zeros_like(mask); lf1[:, 1:] = mask[:, :-1]
+        top = mask & ~up1
+        top2 = mask & up1 & ~up2
+        left = mask & ~lf1 & ~top
+        lum = q.mean(-1, keepdims=True)
+        warm = np.array([1.0, 0.86, 0.72])
+        for sel, k in ((top, 1.0), (top2, 0.55), (left, 0.7)):
+            lit = np.clip(q + (warm[None, None, :] * (0.40 + 0.5 * lum) - q) * (rim * k), 0, 1)
+            q = np.where(sel[..., None], lit, q)
+        # общая «подсветка» тёмных тел: поднять тени, чтобы не терялись на полу
+        q = np.clip(q * (1.0 + lift_dark * (1.0 - lum)), 0, 1)
     out = np.zeros((F, F, 4), np.uint8)
     out[..., :3] = (q * 255).astype(np.uint8)
     out[..., 3] = np.where(mask, 255, 0)

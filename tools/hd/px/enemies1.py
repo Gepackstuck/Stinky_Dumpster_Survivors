@@ -10,12 +10,27 @@ import auto
 
 
 def keep_dark_shadow_off(cut, y0=0.66, lum_max=0.20, sat_max=0.12):
+    """Убрать тень под ногами, не трогая ноги: тень - плоская однотонная заливка (ноль текстуры), а у ног есть контур и свет.
+    Ищем нижние пиксели, у которых соседи 5x5 почти того же цвета, и которые тёмные и серые; потом держим только крупные плоские куски."""
+    from scipy import ndimage
     h = cut.shape[0]
-    lum = cut[..., :3].mean(-1)
-    sat = cut[..., :3].max(-1) - cut[..., :3].min(-1)
+    rgb = cut[..., :3]
+    lum = rgb.mean(-1)
+    sat = rgb.max(-1) - rgb.min(-1)
+    mean = ndimage.uniform_filter(rgb, size=(5, 5, 1))
+    var = ndimage.uniform_filter((rgb - mean) ** 2, size=(5, 5, 1)).sum(-1)
+    flat = (var < 0.0012) & (lum < max(lum_max, 0.30)) & (sat < max(sat_max, 0.12)) & (cut[..., 3] > 0.3)
     low = np.zeros(cut.shape[:2], bool)
     low[int(y0 * h):] = True
-    cut[..., 3] = np.where(low & (lum < lum_max) & (sat < sat_max), 0.0, cut[..., 3])
+    cand = flat & low
+    lab, n = ndimage.label(cand)
+    kill = np.zeros_like(cand)
+    for i in range(1, n + 1):
+        m = lab == i
+        ys, xs = np.where(m)
+        if m.sum() > 60 and (xs.max() - xs.min()) > 2.2 * (ys.max() - ys.min() + 1):   # широкий плоский овал - тень
+            kill |= m
+    cut[..., 3] = np.where(kill, 0.0, cut[..., 3])
     return cut
 
 

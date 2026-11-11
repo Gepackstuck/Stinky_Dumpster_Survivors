@@ -70,5 +70,5 @@ def frames(r, pal):
 
 if __name__ == "__main__":
     r = build()
-    pal = rig2.grade_palette(rig2.make_palette(r.render({}, {}, F, PAD), F, 28), 1.1, 0.78)
+    pal = rig2.grade_palette(rig2.make_palette(r.render({}, {}, F, PAD), F, 28), 1.1, 0.66)
     bake.emit("sprites/enemy_spitter.png", frames(r, pal), WORLD_W, 10, "плевун_жуть", texel=0.5)

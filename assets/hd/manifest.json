@@ -198,7 +198,7 @@
  "sprites/enemy_blinker.png": {
   "body_w": 31.5,
   "cx": -0.5,
-  "foot": 17.5,
+  "foot": 18.5,
   "fps": 10,
   "h": 12,
   "n": true,
@@ -414,7 +414,7 @@
  "sprites/enemy_cockroach.png": {
   "body_w": 40.0,
   "cx": -0.25,
-  "foot": 12.5,
+  "foot": 13.5,
   "fps": 10,
   "h": 12,
   "n": true,
@@ -472,7 +472,7 @@
  "sprites/enemy_glutton.png": {
   "body_w": 48.0,
   "cx": -0.25,
-  "foot": 22.5,
+  "foot": 23.5,
   "fps": 10,
   "h": 12,
   "n": true,
@@ -646,7 +646,7 @@
  "sprites/enemy_npc_bot.png": {
   "body_w": 20.0,
   "cx": -0.25,
-  "foot": 15.5,
+  "foot": 15.0,
   "fps": 10,
   "h": 12,
   "n": true,
@@ -675,7 +675,7 @@
  "sprites/enemy_shield_bearer.png": {
   "body_w": 24.0,
   "cx": 0.25,
-  "foot": 19.0,
+  "foot": 19.5,
   "fps": 10,
   "h": 12,
   "n": true,

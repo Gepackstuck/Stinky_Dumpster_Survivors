@@ -99,7 +99,7 @@ if __name__ == "__main__":
     rigs = {"side": side(), "back": back(), "front": front()}
     pal_src = np.concatenate([rig2.pixelize(rigs[k].render({}, {}, F, PAD), F, np.zeros((1, 3))) for k in rigs], 0)
     big = np.concatenate([rigs[k].render({}, {}, F, PAD) for k in rigs], 0)
-    pal = rig2.grade_palette(rig2.make_palette(big, F * 3, 30), 1.1, 0.58)
+    pal = rig2.grade_palette(rig2.make_palette(big, F * 3, 30), 1.1, 0.55)
     rows = {}
     for k, r in rigs.items():
         rows[k] = []

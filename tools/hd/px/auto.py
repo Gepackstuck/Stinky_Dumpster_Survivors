@@ -25,7 +25,7 @@ import bake
 import rig as rig1
 import rig2
 
-GRADE = (1.05, 0.82)
+GRADE = (1.1, 0.66)
 
 
 def build(spec):
@@ -56,7 +56,7 @@ def _chains_pose(spec, p, mode, k=1.0, hit=0.0, wind=0.0):
             elif role == "leg":
                 li = legs.index((name, pts, rad, role))
                 lift = max(math.sin(p + (math.pi if li % 2 else 0.0)), 0.0)
-                pose[key] = sg * ((14.0 * math.sin(p + (math.pi if li % 2 else 0.0)) if i == 0 else -22.0 * lift) * k)
+                pose[key] = sg * ((20.0 * math.sin(p + (math.pi if li % 2 else 0.0)) if i == 0 else -30.0 * lift) * k)
             elif role == "arm":
                 pose[key] = sg * (10.0 * math.sin(p + math.pi * (idx % 2)) * k) * (0.6 + 0.4 * i)
             elif role == "wing":

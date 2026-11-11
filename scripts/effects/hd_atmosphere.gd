@@ -42,6 +42,25 @@ func setup(player: Node2D) -> void:
 	EventBus.weapon_fired.connect(func(_k: StringName, _w: StringName) -> void: _flash_left = Balance.HD_FLASH_SEC)
 
 
+static var _light_tex: GradientTexture2D = null
+
+
+## Общая радиальная текстура света (декорации, фонари).
+static func light_texture() -> Texture2D:
+	if _light_tex == null:
+		var grad: Gradient = Gradient.new()
+		grad.offsets = PackedFloat32Array([0.0, 0.35, 0.7, 1.0])
+		grad.colors = PackedColorArray([Color(1, 1, 1, 1), Color(0.75, 0.75, 0.75, 1), Color(0.25, 0.25, 0.25, 1), Color(0, 0, 0, 1)])
+		_light_tex = GradientTexture2D.new()
+		_light_tex.gradient = grad
+		_light_tex.fill = GradientTexture2D.FILL_RADIAL
+		_light_tex.fill_from = Vector2(0.5, 0.5)
+		_light_tex.fill_to = Vector2(1.0, 0.5)
+		_light_tex.width = 256
+		_light_tex.height = 256
+	return _light_tex
+
+
 func _make_light(radius: float, color: Color, energy: float) -> PointLight2D:
 	var grad: Gradient = Gradient.new()
 	grad.offsets = PackedFloat32Array([0.0, 0.35, 0.7, 1.0])
