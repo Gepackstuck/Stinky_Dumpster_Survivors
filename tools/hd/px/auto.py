@@ -32,6 +32,9 @@ def build(spec):
     cut = rig1.cutout(spec["src"], 768, 0.04)
     if spec.get("clean"):
         cut = spec["clean"](cut)
+    if spec.get("auto"):
+        spec["warps"] = dict(spec.get("warps", {}), **detect_warps(cut))
+        spec.setdefault("chains", [])
     r = rig2.Rig2(cut)
     for name, pts, rad, role in spec["chains"]:
         r.chain(name, pts, rad)
@@ -40,6 +43,47 @@ def build(spec):
     for name, (x, y, rx, ry) in spec.get("lids", {}).items():
         r.lid(name, (x, y), rx, ry)
     return r
+
+
+def detect_warps(cut):
+    """Скелет без ручной разметки: по силуэту находим ступни, руки, голову и торс и вешаем на них мягкие зоны. Работает для любого существа."""
+    import numpy as np
+    m = cut[..., 3] > 0.5
+    ys, xs = np.where(m)
+    x0, x1, y0, y1 = xs.min(), xs.max() + 1, ys.min(), ys.max() + 1
+    W, H = float(cut.shape[1]), float(cut.shape[0])
+    w, h = x1 - x0, y1 - y0
+    cx = (x0 + x1) / 2.0
+    out = {}
+
+    def cen(sel):
+        yy, xx = np.where(sel)
+        return (float(xx.mean()) / W, float(yy.mean()) / H) if len(xx) else None
+
+    low = np.zeros_like(m); low[int(y1 - 0.2 * h):y1] = True
+    left = np.zeros_like(m); left[:, :int(cx)] = True
+    right = ~left
+    for name, side in (("footL", left), ("footR", right)):
+        c = cen(m & low & side)
+        if c:
+            out[name] = (c[0], c[1], 0.09 * w / W + 0.03)
+    mid = np.zeros_like(m); mid[int(y0 + 0.3 * h):int(y0 + 0.7 * h)] = True
+    for name, side, edge in (("armL", left, x0), ("armR", right, x1 - 1)):
+        band = m & mid & side
+        yy, xx = np.where(band)
+        if len(xx):
+            k = np.argsort(np.abs(xx - edge))[:max(30, len(xx) // 10)]
+            out[name] = (float(xx[k].mean()) / W, float(yy[k].mean()) / H, 0.1 * w / W + 0.03)
+    top = np.zeros_like(m); top[y0:int(y0 + 0.28 * h)] = True
+    c = cen(m & top)
+    if c:
+        out["head"] = (c[0], c[1], 0.17 * w / W + 0.04)
+    c = cen(m & mid)
+    if c:
+        out["torso"] = (c[0], c[1], 0.28 * w / W + 0.05)
+    for k, fx in enumerate((0.2, 0.5, 0.8)):                       # волна по низу: щупальца, подол, лохмотья колышутся
+        out["wave%d" % k] = ((x0 + fx * w) / W, (y0 + 0.78 * h) / H, 0.12 * w / W + 0.02)
+    return out
 
 
 def _chains_pose(spec, p, mode, k=1.0, hit=0.0, wind=0.0):
@@ -100,15 +144,33 @@ def frames(spec, r, pal):
         p = i / n * math.tau
         pose = _chains_pose(spec, p, "walk")
         face(pose, p, i, n, jaw=math.sin(2 * p), jaw_amp=0.3)
+        if spec.get("auto"):
+            sn = math.sin(p)
+            ll, lr = max(sn, 0.0) ** 0.7, max(-sn, 0.0) ** 0.7
+            pose["~footL"] = (0.018 * ll, -0.07 * ll, 1.0 + 0.10 * ll)
+            pose["~footR"] = (-0.018 * lr, -0.07 * lr, 1.0 + 0.10 * lr)
+            pose["~armL"] = (0.0, -0.03 * lr, 1.0, 16 * sn)
+            pose["~armR"] = (0.0, -0.03 * ll, 1.0, 16 * sn)
+            for kk in range(3):
+                pose["~wave%d" % kk] = (0.018 * math.sin(p + kk * 1.4), 0.006 * math.cos(p * 2 + kk), 1.0, 7 * math.sin(p + kk * 1.4 + 0.8))
+            pose["~torso"] = (0.008 * sn, 0.0, 1.0 + 0.03 * math.sin(2 * p))
+            pose["~head"] = (0.006 * sn, 0.004 * math.cos(2 * p), 1.0, 3 * sn)
         root = {"dy": (-0.03 * math.sin(p) if fly else -0.016 * abs(math.cos(p))), "rot": 2.0 * math.sin(p), "pivot": (0.5, 0.82)}
         rows["walk"].append(shot(pose, root))
     for wind, hit in [(0.0, 0.0), (0.6, 0.0), (1.0, 0.0), (0.4, 0.5), (0.0, 1.0), (0.0, 0.8), (0.0, 0.4), (0.0, 0.1)]:
         pose = _chains_pose(spec, 1.7, "attack", 0.4, hit, wind)
         face(pose, 1.7, 0, 8, jaw=hit - 0.3 * wind, jaw_amp=0.7, lid=0.6 * wind)
+        if spec.get("auto"):
+            pose["~armL"] = (-0.03 * hit + 0.02 * wind, -0.05 * hit, 1.0 + 0.12 * hit, -22 * hit + 15 * wind)
+            pose["~armR"] = (0.03 * hit - 0.02 * wind, -0.05 * hit, 1.0 + 0.12 * hit, 22 * hit - 15 * wind)
+            pose["~head"] = (0.0, 0.015 * wind - 0.02 * hit, 1.0 + 0.06 * hit - 0.03 * wind)
         rows["attack"].append(shot(pose, {"sy": 1.0 - 0.10 * wind + 0.10 * hit, "sx": 1.0 + 0.06 * wind + 0.05 * hit, "dy": 0.02 * wind - 0.025 * hit, "pivot": (0.5, 0.82)}))
     for k in (1.0, 0.75, 0.4, 0.1):
         pose = _chains_pose(spec, 2.4, "hurt", k)
         face(pose, 2.4, 0, 4, jaw=k, jaw_amp=0.3, lid=k)
+        if spec.get("auto"):
+            pose["~armL"] = (-0.02 * k, -0.02 * k, 1.0, 14 * k); pose["~armR"] = (0.02 * k, -0.02 * k, 1.0, -14 * k)
+            pose["~head"] = (-0.015 * k, -0.01 * k, 1.0 - 0.04 * k)
         rows["hurt"].append(shot(pose, {"rot": -7 * k, "sy": 1.0 - 0.07 * k, "sx": 1.0 + 0.05 * k, "dx": -0.012 * k, "pivot": (0.5, 0.82)}))
     m = 14
     kind = spec.get("death", "collapse")
