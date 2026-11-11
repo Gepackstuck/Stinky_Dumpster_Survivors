@@ -18,23 +18,25 @@ depth_frac = float(sys.argv[3]) if len(sys.argv) > 3 else 0.45
 S = 512
 cut = rig.cutout(src, S, 0.04)
 mask = cut[..., 3] > 0.5
-dist = ndimage.distance_transform_edt(mask).astype(np.float32)
+band = ndimage.binary_dilation(mask, iterations=5)      # сетка чуть шире силуэта: край вырезает альфа текстуры, а не пила сетки
+dist = ndimage.distance_transform_edt(mask).astype(np.float32)     # снаружи силуэта толщина 0
 r = dist.max() * 0.75
 d = np.clip(dist / r, 0.0, 1.0)
-T = np.sqrt(1.0 - (1.0 - d) ** 2)                      # круглый край, плоская середина
-T = ndimage.gaussian_filter(T, 2.0)
+T = 1.0 - (1.0 - d) ** 2                               # пологий край (угол конечный): текстура на ребре не растягивается в полоски
+T = ndimage.gaussian_filter(T, 3.0)
 ys, xs = np.where(mask)
 width = float(xs.max() - xs.min() + 1)
 T = T * depth_frac * width * 0.5                       # половина толщины в пикселях изображения
-# текстура: цвет вытянут за край силуэта
+# текстура: цвет вытянут за край силуэта, альфа гладкая - по ней вырезается край
 rgb = cut[..., :3].copy()
 idx = ndimage.distance_transform_edt(~mask, return_distances=False, return_indices=True)
 rgb = rgb[idx[0], idx[1]]
-tex = Image.fromarray((np.clip(rgb, 0, 1) * 255).astype(np.uint8))
+alpha = ndimage.gaussian_filter(cut[..., 3], 0.8)
+tex = Image.fromarray((np.clip(np.concatenate([rgb, alpha[..., None]], -1), 0, 1) * 255).astype(np.uint8), "RGBA")
 # сетка вершин: шаг 2 px
-step = 2
+step = 1
 gy, gx = np.mgrid[0:S:step, 0:S:step]
-inside = ndimage.binary_erosion(mask, iterations=1)[gy, gx]
+inside = band[gy, gx]
 vid = -np.ones(gy.shape, int)
 vid[inside] = np.arange(inside.sum())
 px = gx[inside].astype(np.float32)
@@ -56,7 +58,7 @@ a, b, c, e = a[ok], b[ok], c[ok], e[ok]
 faces.append(np.stack([a, c, b], 1)); faces.append(np.stack([b, c, e], 1))          # перед (нормаль к +z)
 faces.append(np.stack([a + n, b + n, c + n], 1)); faces.append(np.stack([b + n, e + n, c + n], 1))   # зад
 faces = np.concatenate(faces)
-mat = trimesh.visual.material.PBRMaterial(baseColorTexture=tex, metallicFactor=0.0, roughnessFactor=0.75)
+mat = trimesh.visual.material.PBRMaterial(baseColorTexture=tex, metallicFactor=0.0, roughnessFactor=0.75, alphaMode="MASK", alphaCutoff=0.5, doubleSided=True)
 mesh = trimesh.Trimesh(vertices=verts, faces=faces, process=False, visual=trimesh.visual.TextureVisuals(uv=uv, material=mat))
 # шов по краю: вершины с одинаковым положением и uv у перед/зад склеиваем (тело закрытое)
 mesh.merge_vertices(merge_tex=True, digits_vertex=3)
