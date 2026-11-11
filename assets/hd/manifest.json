@@ -1,4 +1,310 @@
 {
+ "sprites/airdrop_crate.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/arena_border.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/arena_wire.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/bone.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/border_cars.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/border_dumps.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/border_ground.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/border_house_0.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/border_house_1.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/border_house_2.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/border_house_3.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/border_house_4.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/border_houses.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/border_swamp.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/border_swamp_0.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/border_swamp_1.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/border_swamp_2.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/border_swamp_3.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/border_swamp_4.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/border_tombs.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/bottle_grenade.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/buddy_dog.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/buddy_wear_bandana.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/buddy_wear_bow.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/buddy_wear_cap.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/buddy_wear_cloak.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/buddy_wear_collar.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/buddy_wear_glasses.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/enemy_blinker.png": {
+  "body_w": 32.0,
+  "foot": 17.0,
+  "fps": 8,
+  "generic": true,
+  "h": 4,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/enemy_boss_blue_whale.png": {
+  "body_w": 130.0,
+  "foot": 48.0,
+  "fps": 8,
+  "generic": true,
+  "h": 4,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 5
+ },
+ "sprites/enemy_boss_mega_hamster.png": {
+  "body_w": 126.0,
+  "foot": 55.0,
+  "fps": 8,
+  "generic": true,
+  "h": 4,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 5
+ },
+ "sprites/enemy_boss_minion.png": {
+  "body_w": 122.0,
+  "foot": 62.0,
+  "fps": 8,
+  "generic": true,
+  "h": 4,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 5
+ },
+ "sprites/enemy_boss_mother_in_law.png": {
+  "body_w": 106.0,
+  "foot": 48.0,
+  "fps": 8,
+  "generic": true,
+  "h": 4,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 5
+ },
+ "sprites/enemy_boss_pigeon_papa.png": {
+  "body_w": 114.0,
+  "foot": 48.0,
+  "fps": 8,
+  "generic": true,
+  "h": 4,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 5
+ },
+ "sprites/enemy_boss_rat_queen.png": {
+  "body_w": 106.0,
+  "foot": 46.0,
+  "fps": 8,
+  "generic": true,
+  "h": 4,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 5
+ },
+ "sprites/enemy_boss_roach_king.png": {
+  "body_w": 106.0,
+  "foot": 44.0,
+  "fps": 8,
+  "generic": true,
+  "h": 4,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 5
+ },
+ "sprites/enemy_boss_trash_golem.png": {
+  "body_w": 118.0,
+  "foot": 52.0,
+  "fps": 8,
+  "generic": true,
+  "h": 4,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 5
+ },
+ "sprites/enemy_boss_uk.png": {
+  "body_w": 102.0,
+  "foot": 55.0,
+  "fps": 8,
+  "generic": true,
+  "h": 4,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 5
+ },
+ "sprites/enemy_boss_zakhar.png": {
+  "body_w": 126.0,
+  "foot": 78.0,
+  "fps": 8,
+  "generic": true,
+  "h": 4,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 6
+ },
  "sprites/enemy_bruiser.png": {
   "body_w": 47.0,
   "cx": -0.25,
@@ -115,6 +421,16 @@
   "scale": 0.5,
   "v": 4
  },
+ "sprites/enemy_egg.png": {
+  "body_w": 30.0,
+  "foot": 16.0,
+  "fps": 8,
+  "generic": true,
+  "h": 4,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
  "sprites/enemy_glutton.png": {
   "body_w": 48.0,
   "cx": -0.25,
@@ -173,6 +489,26 @@
   "scale": 0.5,
   "v": 4
  },
+ "sprites/enemy_looter.png": {
+  "body_w": 42.0,
+  "foot": 15.0,
+  "fps": 8,
+  "generic": true,
+  "h": 4,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/enemy_mamka.png": {
+  "body_w": 48.0,
+  "foot": 22.0,
+  "fps": 8,
+  "generic": true,
+  "h": 4,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
  "sprites/enemy_microbe.png": {
   "body_w": 42.5,
   "cx": 0.0,
@@ -202,6 +538,16 @@
   "scale": 0.5,
   "v": 4
  },
+ "sprites/enemy_mirror.png": {
+  "body_w": 32.0,
+  "foot": 19.0,
+  "fps": 8,
+  "generic": true,
+  "h": 4,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
  "sprites/enemy_npc_bot.png": {
   "body_w": 20.0,
   "cx": -0.25,
@@ -230,6 +576,16 @@
   },
   "scale": 0.5,
   "v": 4
+ },
+ "sprites/enemy_shield_bearer.png": {
+  "body_w": 28.0,
+  "foot": 17.0,
+  "fps": 8,
+  "generic": true,
+  "h": 4,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
  },
  "sprites/enemy_spitter.png": {
   "body_w": 36.0,
@@ -289,6 +645,216 @@
   "scale": 0.5,
   "v": 4
  },
+ "sprites/enemy_thief.png": {
+  "body_w": 32.0,
+  "foot": 16.0,
+  "fps": 8,
+  "generic": true,
+  "h": 4,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/enemy_trash_bin.png": {
+  "body_w": 38.0,
+  "foot": 20.0,
+  "fps": 8,
+  "generic": true,
+  "h": 4,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/enemy_trash_bin_0.png": {
+  "body_w": 38.0,
+  "foot": 20.0,
+  "fps": 8,
+  "generic": true,
+  "h": 4,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/enemy_trash_bin_1.png": {
+  "body_w": 38.0,
+  "foot": 20.0,
+  "fps": 8,
+  "generic": true,
+  "h": 4,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/enemy_trash_bin_2.png": {
+  "body_w": 38.0,
+  "foot": 20.0,
+  "fps": 8,
+  "generic": true,
+  "h": 4,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/enemy_trash_bin_3.png": {
+  "body_w": 38.0,
+  "foot": 20.0,
+  "fps": 8,
+  "generic": true,
+  "h": 4,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/enemy_wifi_ghost.png": {
+  "body_w": 32.0,
+  "foot": 17.0,
+  "fps": 8,
+  "generic": true,
+  "h": 4,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/fx_blink_mark.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/fx_casing.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/fx_fly.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/fx_mirror_glow.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/fx_muzzle.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/fx_pipe.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/fx_season_heat.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/fx_season_leaf.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/fx_season_rain.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/fx_season_snow.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/fx_shield_lid.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/fx_splat.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/fx_weather_autumn.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/fx_weather_spring.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/fx_weather_summer.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/fx_weather_winter.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/garbage_truck.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/gate.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/graffiti_splat.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/ground_decals.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
  "sprites/ground_tile.png": {
   "h": 1,
   "n": true,
@@ -296,6 +862,303 @@
   "repeat": true,
   "scale": 0.5,
   "v": 1
+ },
+ "sprites/hazard_poop_puddle.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/hazard_stink_cloud.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/held_blowtorch.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/held_bottle.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/held_condensed_milk.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/held_crossbow.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/held_extension_cord.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/held_frying_pan.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/held_laser_pointer.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/held_lighter.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/held_mop.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/held_mosin.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/held_pipe_gun.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/held_plunger.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/held_rolling_pin.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/held_rotten_cheese.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/held_shiv.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/held_shovel.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/held_slingshot.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/held_slipper.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/held_sock.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/held_spray_can.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/held_syringe.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/held_tin_bomb.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/mod_pile.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/pet_dog.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/pet_ghost_drunk.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/pet_ghost_granny.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/pet_pigeon.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/pet_rat.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/player.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/player_blogger.png": {
+  "body_w": 32.0,
+  "foot": 15.0,
+  "fps": 8,
+  "generic": true,
+  "h": 4,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 3
+ },
+ "sprites/player_cat.png": {
+  "body_w": 32.0,
+  "foot": 15.0,
+  "fps": 8,
+  "generic": true,
+  "h": 4,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 3
+ },
+ "sprites/player_clerk.png": {
+  "body_w": 32.0,
+  "foot": 15.0,
+  "fps": 8,
+  "generic": true,
+  "h": 4,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 3
+ },
+ "sprites/player_courier.png": {
+  "body_w": 32.0,
+  "foot": 15.0,
+  "fps": 8,
+  "generic": true,
+  "h": 4,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 3
+ },
+ "sprites/player_dacha.png": {
+  "body_w": 32.0,
+  "foot": 15.0,
+  "fps": 8,
+  "generic": true,
+  "h": 4,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 3
+ },
+ "sprites/player_gopnik_jock.png": {
+  "body_w": 32.0,
+  "foot": 15.0,
+  "fps": 8,
+  "generic": true,
+  "h": 4,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 3
+ },
+ "sprites/player_granny.png": {
+  "body_w": 32.0,
+  "foot": 15.0,
+  "fps": 8,
+  "generic": true,
+  "h": 4,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 3
+ },
+ "sprites/player_guard.png": {
+  "body_w": 32.0,
+  "foot": 15.0,
+  "fps": 8,
+  "generic": true,
+  "h": 4,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 3
  },
  "sprites/player_hobo.png": {
   "body_w": 19.0,
@@ -321,6 +1184,645 @@
   },
   "scale": 0.5,
   "v": 3
+ },
+ "sprites/player_janitor.png": {
+  "body_w": 32.0,
+  "foot": 15.0,
+  "fps": 8,
+  "generic": true,
+  "h": 4,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 3
+ },
+ "sprites/player_pigeon.png": {
+  "body_w": 32.0,
+  "foot": 15.0,
+  "fps": 8,
+  "generic": true,
+  "h": 4,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 3
+ },
+ "sprites/player_plumber.png": {
+  "body_w": 32.0,
+  "foot": 15.0,
+  "fps": 8,
+  "generic": true,
+  "h": 4,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 3
+ },
+ "sprites/player_punk.png": {
+  "body_w": 32.0,
+  "foot": 15.0,
+  "fps": 8,
+  "generic": true,
+  "h": 4,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 3
+ },
+ "sprites/player_shawarma.png": {
+  "body_w": 32.0,
+  "foot": 15.0,
+  "fps": 8,
+  "generic": true,
+  "h": 4,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 3
+ },
+ "sprites/player_skater.png": {
+  "body_w": 32.0,
+  "foot": 15.0,
+  "fps": 8,
+  "generic": true,
+  "h": 4,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 3
+ },
+ "sprites/player_slime.png": {
+  "body_w": 26.0,
+  "foot": 12.0,
+  "fps": 8,
+  "generic": true,
+  "h": 4,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 3
+ },
+ "sprites/player_squid.png": {
+  "body_w": 32.0,
+  "foot": 15.0,
+  "fps": 8,
+  "generic": true,
+  "h": 4,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 3
+ },
+ "sprites/player_student.png": {
+  "body_w": 32.0,
+  "foot": 15.0,
+  "fps": 8,
+  "generic": true,
+  "h": 4,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 3
+ },
+ "sprites/player_uncle_vitya.png": {
+  "body_w": 32.0,
+  "foot": 15.0,
+  "fps": 8,
+  "generic": true,
+  "h": 4,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 3
+ },
+ "sprites/proj_bill.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/proj_bottle.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/proj_carrot.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/proj_dung.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/proj_flame.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/proj_glass.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/proj_letter_1040.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/proj_letter_1041.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/proj_letter_1044.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/proj_letter_1045.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/proj_letter_1047.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/proj_letter_1048.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/proj_letter_1049.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/proj_letter_1050.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/proj_letter_1051.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/proj_letter_1053.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/proj_letter_1054.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/proj_letter_1055.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/proj_letter_1056.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/proj_letter_1058.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/proj_letter_1059.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/proj_letter_1061.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/proj_letter_1062.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/proj_letter_1063.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/proj_letter_1068.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/proj_letter_1071.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/proj_milk.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/proj_poison.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/proj_poop.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/proj_seed.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/proj_slipper.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/proj_slipper_flat.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/proj_spit.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/proj_stone.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/proj_tin_bomb.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/proj_wrench.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/projectile.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/shoes_blogger.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/shoes_cat.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/shoes_clerk.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/shoes_courier.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/shoes_dacha.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/shoes_gopnik_jock.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/shoes_granny.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/shoes_guard.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/shoes_hobo.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/shoes_janitor.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/shoes_pigeon.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/shoes_plumber.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/shoes_punk.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/shoes_shawarma.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/shoes_skater.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/shoes_slime.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/shoes_squid.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/shoes_student.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/shoes_uncle_vitya.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/spawn_marker.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/stash_dumpster.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/structure_lamp.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/structure_mine.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/structure_mortar.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/structure_turret.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/tele_skull.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/tele_stripe.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/trophy_hat_0.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/trophy_hat_1.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/trophy_hat_2.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/trophy_hat_3.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/trophy_hat_4.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/trophy_hat_5.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/weather_drift.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/weather_puddle.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/weather_snowdrop.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "sprites/xp_pixel.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/achievement_cup.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/banners.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/book_cursor.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
  },
  "ui/button.png": {
   "h": 1,
@@ -424,7 +1926,175 @@
   "scale": 1.0,
   "v": 1
  },
+ "ui/class_fire.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/class_fire_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/class_guns.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/class_guns_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/class_household.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/class_household_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/class_kitchen.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/class_kitchen_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/class_prison.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/class_prison_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/class_stinky.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/class_stinky_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/danger_0.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/danger_1.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/danger_2.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/danger_3.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/danger_4.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/danger_5.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
  "ui/death_panels.png": {
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/dim_checker.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/enemy_pointers.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/grave_closed.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/grave_monument.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/grave_mushroom.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/grave_open.png": {
+  "generic": true,
   "h": 1,
   "pixel": true,
   "scale": 1.0,
@@ -442,7 +2112,77 @@
   "scale": 1.0,
   "v": 1
  },
+ "ui/hud_cd_fill.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/hud_cd_under.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/hud_dash_empty.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/hud_dash_full.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
  "ui/hud_heart.png": {
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/hud_season_autumn.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/hud_season_spring.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/hud_season_summer.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/hud_season_winter.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/hud_ult_empty.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/hud_ult_full.png": {
+  "generic": true,
   "h": 1,
   "pixel": true,
   "scale": 1.0,
@@ -454,7 +2194,2303 @@
   "scale": 1.0,
   "v": 1
  },
+ "ui/item_bandage.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_bandage_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_barbed_wire.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_barbed_wire_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_battery.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_battery_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_binoculars.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_binoculars_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_bloody_rag.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_bloody_rag_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_bomber_pigeon.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_bomber_pigeon_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_bone_club.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_bone_club_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_bottle_cap.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_bottle_cap_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_bottle_mine.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_bottle_mine_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_bottle_silencer.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_bottle_silencer_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_bucket_turret.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_bucket_turret_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_cart_mortar.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_cart_mortar_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_chef_apron.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_chef_apron_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_cigarette.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_cigarette_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_combo_dacha_defense.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_combo_dacha_defense_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_combo_double_head.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_combo_double_head_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_combo_friendship.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_combo_friendship_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_combo_golden_poop.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_combo_golden_poop_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_combo_rotten_lunch.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_combo_rotten_lunch_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_combo_russian_winter.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_combo_russian_winter_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_combo_smoke.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_combo_smoke_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_combo_stink_set.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_combo_stink_set_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_coupon.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_coupon_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_crowbar.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_crowbar_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_crown.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_crown_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_cursed_chain.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_cursed_chain_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_cursed_cigcase.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_cursed_cigcase_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_cursed_mirror.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_cursed_mirror_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_cursed_rat_crown.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_cursed_rat_crown_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_cursed_shawarma.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_cursed_shawarma_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_cursed_teeth.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_cursed_teeth_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_cursed_voodoo.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_cursed_voodoo_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_cursed_wallet.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_cursed_wallet_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_dead_rat.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_dead_rat_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_diarrhea.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_diarrhea_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_dirty_glasses.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_dirty_glasses_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_dog_house.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_dog_house_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_dried_fish.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_dried_fish_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_energy_can.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_energy_can_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_foil_hat.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_foil_hat_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_gas_can.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_gas_can_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_ghost_drunk.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_ghost_drunk_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_ghost_granny.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_ghost_granny_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_gold_tooth.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_gold_tooth_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_golden_toilet.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_golden_toilet_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_gum.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_gum_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_helmet.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_helmet_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_holey_sock.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_holey_sock_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_hot_dog.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_hot_dog_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_junk_backpack.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_junk_backpack_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_junk_magnet.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_junk_magnet_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_lighter.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_lighter_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_lottery_ticket.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_lottery_ticket_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_nail_knuckles.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_nail_knuckles_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_old_milk.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_old_milk_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_pigeon_loft.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_pigeon_loft_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_plastic_bag.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_plastic_bag_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_poop_wallet.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_poop_wallet_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_pot.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_pot_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_prison_tattoo.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_prison_tattoo_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_rubber_boot.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_rubber_boot_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_sandwich.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_sandwich_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_scarf.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_scarf_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_shawarma.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_shawarma_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_shoes_blogger.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_shoes_blogger_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_shoes_cat.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_shoes_cat_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_shoes_clerk.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_shoes_clerk_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_shoes_courier.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_shoes_courier_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_shoes_dacha.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_shoes_dacha_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_shoes_gopnik_jock.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_shoes_gopnik_jock_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_shoes_granny.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_shoes_granny_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_shoes_guard.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_shoes_guard_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_shoes_hobo.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_shoes_hobo_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_shoes_janitor.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_shoes_janitor_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_shoes_pigeon.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_shoes_pigeon_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_shoes_plumber.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_shoes_plumber_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_shoes_punk.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_shoes_punk_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_shoes_shawarma.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_shoes_shawarma_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_shoes_skater.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_shoes_skater_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_shoes_slime.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_shoes_slime_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_shoes_squid.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_shoes_squid_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_shoes_student.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_shoes_student_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_shoes_uncle_vitya.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_shoes_uncle_vitya_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_skateboard.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_skateboard_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_stink_lamp.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_stink_lamp_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_stinky_pants.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_stinky_pants_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_stray_dog.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_stray_dog_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_ushanka.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_ushanka_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_vodka.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_vodka_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_week_socks.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_week_socks_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_work_gloves.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/item_work_gloves_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/kennel.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
  "ui/level_badge.png": {
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/lock_icon.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mark_0.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mark_1.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mark_2.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mark_3.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mark_4.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mark_5.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mark_empty.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_acid_rain.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_acid_rain_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_airdrop.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_airdrop_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_crooked.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_crooked_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_darkness.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_darkness_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_disco.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_disco_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_dwarfs.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_dwarfs_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_explosive.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_explosive_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_fast_forward.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_fast_forward_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_few_fat.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_few_fat_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_garbage_truck.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_garbage_truck_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_giants.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_giants_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_hangover.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_hangover_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_ice.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_ice_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_lottery.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_lottery_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_magnet.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_magnet_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_manholes.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_manholes_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_payday.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_payday_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_pigeon_raid.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_pigeon_raid_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_poop_death.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_poop_death_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_roach_exodus.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_roach_exodus_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_sewer_flood.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_sewer_flood_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_slipper_storm.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_slipper_storm_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_slowmo.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_slowmo_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_smoke_break.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_smoke_break_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_thunder.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_thunder_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_wind.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_wind_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_zombies.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/mod_zombies_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_double_shot.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_double_shot_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_loot_goblin.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_loot_goblin_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_regen.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_regen_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_speed.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_speed_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_blowtorch.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_blowtorch_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_bottle.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_bottle_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_condensed_milk.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_condensed_milk_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_crossbow.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_crossbow_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_extension_cord.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_extension_cord_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_frying_pan.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_frying_pan_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_laser_pointer.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_laser_pointer_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_lighter.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_lighter_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_mop.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_mop_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_mosin.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_mosin_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_pipe_gun.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_pipe_gun_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_plunger.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_plunger_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_rolling_pin.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_rolling_pin_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_rotten_cheese.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_rotten_cheese_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_shiv.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_shiv_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_shovel.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_shovel_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_slingshot.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_slingshot_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_slipper.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_slipper_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_sock.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_sock_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_spray_can.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_spray_can_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_syringe.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_syringe_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_tin_bomb.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/perk_w_tin_bomb_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/pile_pointer.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/quest_note.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/roulette_nail.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/roulette_stand.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/roulette_tire.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/select_arrow.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/stat_armor.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/stat_armor_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/stat_attack_speed.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/stat_attack_speed_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/stat_crit.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/stat_crit_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/stat_damage.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/stat_damage_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/stat_dodge.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/stat_dodge_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/stat_max_hp.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/stat_max_hp_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/stat_pickup.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/stat_pickup_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/stat_regen.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/stat_regen_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/stat_speed.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/stat_speed_s.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/ticket_big.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/ticket_foil.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/victory_far.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/victory_near.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/victory_road.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/victory_sky.png": {
+  "generic": true,
+  "h": 1,
+  "pixel": true,
+  "scale": 1.0,
+  "v": 1
+ },
+ "ui/victory_yard.png": {
+  "generic": true,
   "h": 1,
   "pixel": true,
   "scale": 1.0,
