@@ -87,7 +87,7 @@ func _ready() -> void:
 		back.size = Vector2(320.0, 14.0)
 		root.add_child(back)
 		var fill: ColorRect = ColorRect.new()
-		fill.color = Color(0.85, 0.1, 0.9)
+		fill.color = Color(0.72, 0.03, 0.06) if ArtStyle.is_hd() else Color(0.85, 0.1, 0.9)   # новая рисовка: полоса босса - густая кровь, а не кислотный пурпур
 		fill.position = Vector2(2.0, 2.0)
 		fill.size = Vector2(316.0, 10.0)
 		root.add_child(fill)

@@ -116,7 +116,7 @@ def _chains_pose(spec, p, mode, k=1.0, hit=0.0, wind=0.0):
 
 def frames(spec, r, pal):
     F = spec.get("F", 96)
-    pad = (0.92 * F / (2.0 * spec["world_w"]) - 1.0) / 2.0
+    pad = spec["pad"] if "pad" in spec else (0.92 * F * spec.get("texel", 0.5) / spec["world_w"] - 1.0) / 2.0
     fly = spec.get("fly", False)
     warps = spec.get("warps", {})
     lids = spec.get("lids", {})
@@ -196,10 +196,20 @@ def frames(spec, r, pal):
     return rows
 
 
+def fit_pad(r, F, pad, fill=0.66):
+    a = r.render({}, {}, F, pad)[..., 3] > 0.15
+    ys, xs = np.where(a)
+    f = max(ys.max() - ys.min(), xs.max() - xs.min()) / float(a.shape[0])
+    return ((1 + 2 * pad) * f / fill - 1.0) / 2.0
+
+
 def run(spec):
     F = spec.get("F", 96)
-    pad = (0.92 * F / (2.0 * spec["world_w"]) - 1.0) / 2.0
+    pad = (0.92 * F * spec.get("texel", 0.5) / spec["world_w"] - 1.0) / 2.0
     r = build(spec)
+    if spec.get("fit"):                                   # размер по самой фигуре: большая сторона = доля fit кадра (любая форма, запас на замахи)
+        pad = fit_pad(r, F, pad, spec["fit"])
+        spec["pad"] = pad
     pal = rig2.grade_palette(rig2.make_palette(r.render({}, {}, F, pad), F, 28), *spec.get("grade", GRADE))
     pal = np.concatenate([pal, np.array([spec.get("goo", (0.55, 0.04, 0.06)), (0.32, 0.02, 0.04)])], 0)   # кровь и слизь для смерти
-    bake.emit("sprites/%s.png" % spec["id"], frames(spec, r, pal), spec["world_w"], 10, spec.get("title", spec["id"]), lift=spec.get("lift", 0.0), texel=0.5)
+    bake.emit("sprites/%s.png" % spec["id"], frames(spec, r, pal), spec["world_w"], 10, spec.get("title", spec["id"]), lift=spec.get("lift", 0.0), texel=spec.get("texel", 0.5))

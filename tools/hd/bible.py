@@ -49,7 +49,7 @@ HEROES = {
 
 # ---------------------------------------------------------------- ВРАГИ (один вид)
 ENEMIES = {
-    "squid_gopnik": "A gopnik squid thug squatting in a slav squat: bloated crimson squid head with a beard of writhing tentacles and a gaping maw of crooked teeth, a red flat cap, a cigarette butt, a black tracksuit with three stripes. He spits sunflower seed husks, brass knuckles on a tentacle, slime and blood dripping. Menacing and stupid. Front view.",
+    "squid_gopnik": "A gopnik squid thug standing with hands in pockets: bloated crimson squid head with a beard of writhing tentacles and a gaping maw of crooked teeth, a red flat cap, a cigarette butt, a black tracksuit with three stripes. He spits sunflower seed husks, brass knuckles on a tentacle, slime and blood dripping. Menacing and stupid. Front view.",
     "microbe": "A giant slimy microbe that grew in an old fridge: a translucent sickly green blob with dozens of tiny eyes of different sizes, a drooling toothless mouth, hairy cilia, bubbles and mold spots inside, a piece of rotten sausage and a fridge magnet stuck in its body. Slow and dumb. Front view.",
     "npc_bot": "A soulless NPC bot: a stiff grey mannequin office worker with a blank smooth face that has only a pasted paper smile, a wind-up key in its back, a yellow exclamation mark floating above its head, cheap suit, arms stretched forward like a sleepwalker, cracks in its plastic skin leaking black oil. Front view.",
     "cockroach": "A small fast disgusting cockroach standing on its hind legs: glossy brown shell, long twitching antennae, a tiny human face with a mustache, six hairy legs, it carries a bread crumb, crushed wing oozing yellow goo. Front view.",
@@ -85,6 +85,59 @@ BOSSES = {
 }
 
 
+# ---------------------------------------------------------------- ОРУЖИЕ В РУКАХ (лежит горизонтально, рабочим концом ВПРАВО)
+WEAPON_END = "The object lies horizontally, its business end points to the RIGHT, side view, no hands, no person. "
+WEAPONS = {
+    "lighter": "A battered cheap plastic cigarette lighter with a sparking flint wheel and a tall crooked flame, a naked lady sticker peeling off, greasy fingerprints, a burnt fly stuck to it.",
+    "sock": "A stiff stinking week-old sock full of holes, standing on its own, with a big toe hole like a screaming mouth, green toxic stink fumes rising from it, flies falling dead around it, mold spots.",
+    "slingshot": "A crude wooden Y-shaped slingshot made of a chewed branch and a condom-colored rubber band, loaded with a tooth, electrical tape on the handle, a dried blood stain.",
+    "mop": "A filthy mop on a long wooden stick, its head is a mass of grey rotten rags like wet hair with a staring eyeball and worms tangled in it, dripping brown water.",
+    "bottle": "A broken green glass vodka bottle held by the neck, a jagged 'rose' edge with blood and a piece of skin on it, the label half torn, a drop of vodka inside.",
+    "condensed_milk": "A dented blue and white tin can of condensed milk with a jagged opened lid, thick yellowish milk oozing out with ants and a cockroach drowning in it, a bent spoon stuck inside.",
+    "crossbow": "A homemade crossbow built from a chair leg, a bicycle spring and wire, loaded with a rusty rebar bolt that has a pigeon skewered on it, electrical tape everywhere.",
+    "extension_cord": "A coiled dirty white extension cord with a power strip at the end, bare sparking wires, a burnt rat stuck in one socket, blue electric sparks jumping.",
+    "frying_pan": "A heavy black cast iron frying pan with burnt fried eggs stuck to it that look like two terrified eyes, a dent shaped like a face, blood and hair on the edge, grease dripping.",
+    "laser_pointer": "A cheap keychain laser pointer shooting a thin bright red beam, the beam burns a smoking hole, a cat hair ball and a tiny burnt eye hang on its chain.",
+    "mosin": "An old Mosin rifle with a cracked wooden stock wrapped with tape, a rusty bayonet with a dried sausage on it, carved tally marks, a spider web in the sight.",
+    "pipe_gun": "A homemade sawn-off pipe shotgun made of two rusty water pipes, duct tape and a door bolt, smoke curling from the barrels, a nail and a tooth sticking out of the muzzle.",
+    "plunger": "A dirty toilet plunger with a cracked red rubber cup dripping brown sludge, a tangle of hair and a goldfish skeleton stuck to it, the wooden handle chewed.",
+    "rolling_pin": "A heavy wooden rolling pin stained with blood and dough, a tooth embedded in it, flour hand prints, a hair curler stuck to one handle.",
+    "rotten_cheese": "A wedge of rotten cheese covered with green and blue fuzzy mold, big holes with maggots peeking out and waving, a green stink cloud above it, a mouse trap tail stuck to it.",
+    "shiv": "A prison shiv: a sharpened spoon with a handle wrapped in dirty cloth and thread, blood on the blade, a tiny tattoo-style skull scratched on it.",
+    "shovel": "A rusty garden shovel with a chipped blade covered with grave dirt, blood and a worm, a skull fragment stuck to it, the wooden handle split and taped.",
+    "slipper": "An old worn plaid house slipper flattened by years, a hole at the toe with a cockroach looking out, a squashed bug on the sole, legendary and menacing.",
+    "spray_can": "A rusty aerosol spray can of insect poison with a skull label, spraying a cloud of sickly green gas, dead flies glued to the can, a dented bottom.",
+    "syringe": "A huge used glass syringe full of glowing acid green liquid with a bubble, a bent bloody needle with a drop hanging from it, cracked glass, dirty finger grips.",
+    "tin_bomb": "A homemade bomb from a rusty tin can stuffed with nails, wrapped in blue electrical tape, a sparking burning fuse, an alarm clock taped to it, a smiley face drawn in marker.",
+    "blowtorch": "A rusty gas blowtorch with a dented red canister and a roaring blue and orange flame jet, soot, a burnt sausage skewered on its nozzle guard.",
+}
+
+# ---------------------------------------------------------------- РЕКВИЗИТ АРЕНЫ (вид 3/4 сверху, предметы без лиц)
+PROP_END = "A lifeless prop object for a top-down game, three-quarter top-down view. "
+PROPS = {
+    "dumpster": "A big rusty green metal dumpster overflowing with rotting garbage, a bloated purple dead hand hangs over the edge holding a bottle, a fat rat sits on the lid, green vomit drips down the side, flies.",
+    "container": "A rusty dented blue shipping container with bloody handprints dragged along its side, a puddle of brown sludge leaking from under the door, a crooked graffiti skull, a boot sticking out of the gap.",
+    "car_wreck": "A burnt-out rusty soviet sedan car wreck without wheels standing on bricks, a skeleton in a flat cap behind the wheel, grass and garbage inside, broken glass, a pigeon nest on the roof.",
+    "tires": "A pile of old black tires with a rotting dead dog on top, flies, a syringe and bottles in the middle tire, green slime pooled inside.",
+    "barrel_fire": "A rusty oil barrel with a fire burning inside, orange flames and sparks, a rat roasting on a stick over it, soot streaks, two empty vodka bottles beside it.",
+    "lamp": "A bent rusty street lamp post with a flickering sickly yellow lamp, a noose and a pair of boots hanging from it, moths, torn posters glued to the pole.",
+    "fence": "A section of broken rotten wooden fence with rusty barbed wire, a crow sitting on it, bloody rags and a torn jacket hanging on the nails, a crude skull drawn in paint.",
+    "trash_pile": "A huge heap of black garbage bags, torn open with rotting meat, bones and a doll head spilling out, a pair of legs in sneakers sticking out upside down, maggots, a stink cloud.",
+    "fridge": "An old white soviet fridge lying open on its side, full of black mold and rotting meat, something with eyes hiding inside, a magnet and a child's drawing on the door, yellow liquid leaking.",
+    "mattress": "A filthy striped mattress with yellow and brown stains and springs sticking out, a bloated drunk hobo sleeping on it face down with a bottle, a puddle of green vomit beside his head.",
+    "toilet": "A cracked white porcelain toilet standing alone in the dirt, overflowing with brown sludge, a hand reaching out of the bowl, toilet paper trailing, flies, a newspaper beside it.",
+    "gravestone": "A crooked grave marker made of an old door and a tire, a portrait photo oval, plastic flowers, empty vodka bottles and a shot glass with a slice of bread on top, fresh dirt mound with a hand sticking out.",
+    "corpse": "A bloated rotting corpse of a hobo lying on its back, belly burst open with guts, covered with flies and maggots, in a puddle of green and red slime, one boot missing, a bottle still in the hand.",
+    "bones": "A pile of gnawed bones and human skulls mixed with garbage, a rat crown of bottle caps on one skull, candles made of fat, dried blood.",
+    "sofa": "A rotten torn brown sofa with springs sticking out, a dead rat on the cushion, a big stain shaped like a person, an old TV with a broken screen standing on it.",
+    "bathtub": "A rusty cast iron bathtub full of thick brown and green sludge with bubbles, a rubber duck and an eyeball floating in it, an arm hanging over the edge, a shower hose like a snake.",
+}
+
+GROUND = ("Top-down seamless texture of the ground at a stinking garbage dump at night, detailed 16-bit pixel art: dark wet black-brown mud, squashed cans, bottle caps, "
+          "cigarette butts, small bones, rags, a few maggots, faint dried blood stains and faint dull green puke stains. Very dark, low contrast, calm and even, no big objects, "
+          "no characters, flat view straight from above, uniform lighting, tileable.")
+
+
 def jobs(group):
     out = []
     root = "tools/_hd_raw/fx/"
@@ -102,6 +155,16 @@ def jobs(group):
         for i, (name, d) in enumerate(BOSSES.items()):
             for s in (1, 2):
                 out.append({"out": "%s%s_%d.png" % (root, name, s), "seed": 500 + i * 2 + s, "w": 896, "h": 896, "prompt": PRE + d + " " + LOOK + ONE})
+    if group in ("weapons", "all"):
+        for i, (name, d) in enumerate(WEAPONS.items()):
+            for sd in (1, 2):
+                out.append({"out": "%sweapon_%s_%d.png" % (root, name, sd), "seed": 700 + i * 2 + sd, "w": 768, "h": 768, "prompt": PRE + WEAPON_END + d + " " + OBJ})
+    if group in ("props", "all"):
+        for i, (name, d) in enumerate(PROPS.items()):
+            for sd in (1, 2):
+                out.append({"out": "%sprop_%s_%d.png" % (root, name, sd), "seed": 800 + i * 2 + sd, "w": 768, "h": 768, "prompt": PRE + PROP_END + d + " " + OBJ})
+        for sd in range(1, 5):
+            out.append({"out": "%sground_%d.png" % (root, sd), "seed": 900 + sd, "w": 1024, "h": 1024, "prompt": GROUND, "any_bg": True})
     return out
 
 

@@ -15,19 +15,21 @@ import rig2
 BLOOD = (0.80, 0.04, 0.08)
 VOMIT = (0.55, 0.92, 0.12)
 BROWN = (0.42, 0.26, 0.06)
-P = "tools/_hd_raw/pf/"
+P = "tools/_hd_raw/fx/"
+PICK = {}   # id -> номер заготовки FLUX (после просмотра и сверки с лором)
+TEXEL = 1.0 / 3.0
 # id, файл, размер (мир. ед.), смерть, цвет, летун, ряды действий (виды), вид ярости
 B = [
-    ("boss_mega_hamster", "boss_mega_hamster_2039", 80, "burst", BLOOD, False, ["spit", "slam", "spin", "rage"]),
-    ("boss_zakhar", "boss_zakhar_2041", 86, "headpop", BLOOD, False, ["throw", "roar", "slam", "rage", "spin"]),
-    ("boss_rat_queen", "boss_rat_queen_2045", 80, "burst", BLOOD, False, ["roar", "lunge", "spin", "rage"]),
-    ("boss_roach_king", "boss_roach_king_2049", 84, "burst", BROWN, False, ["lunge", "roar", "slam", "rage"]),
-    ("boss_trash_golem", "boss_trash_golem_2057", 92, "melt", VOMIT, False, ["throw", "slam", "roar", "rage"]),
-    ("boss_pigeon_papa", "boss_pigeon_papa_2051", 84, "burst", BLOOD, True, ["lunge", "spit", "spin", "rage"]),
-    ("boss_mother_in_law", "boss_mother_in_law_2053", 86, "headpop", BLOOD, False, ["roar", "lunge", "roar", "rage"]),
-    ("boss_uk", "boss_uk_2055", 86, "headpop", BLOOD, False, ["slam", "throw", "throw", "spit"]),
-    ("boss_blue_whale", "boss_blue_whale_2047", 94, "burst", VOMIT, False, ["spit", "slam", "roar", "rage"]),
-    ("boss_minion", "boss_minion_2043", 80, "headpop", BLOOD, False, ["slam", "spit", "rage", "spin"]),
+    ("boss_mega_hamster", "boss_mega_hamster", 80, "burst", BLOOD, False, ["spit", "slam", "spin", "rage"]),
+    ("boss_zakhar", "boss_zakhar", 86, "headpop", BLOOD, False, ["throw", "roar", "slam", "rage", "spin"]),
+    ("boss_rat_queen", "boss_rat_queen", 80, "burst", BLOOD, False, ["roar", "lunge", "spin", "rage"]),
+    ("boss_roach_king", "boss_roach_king", 84, "burst", BROWN, False, ["lunge", "roar", "slam", "rage"]),
+    ("boss_trash_golem", "boss_trash_golem", 92, "melt", VOMIT, False, ["throw", "slam", "roar", "rage"]),
+    ("boss_pigeon_papa", "boss_pigeon_papa", 84, "burst", BLOOD, True, ["lunge", "spit", "spin", "rage"]),
+    ("boss_mother_in_law", "boss_mother_in_law", 86, "headpop", BLOOD, False, ["roar", "lunge", "roar", "rage"]),
+    ("boss_uk", "boss_uk", 86, "headpop", BLOOD, False, ["slam", "throw", "throw", "spit"]),
+    ("boss_blue_whale", "boss_blue_whale", 94, "burst", VOMIT, False, ["spit", "slam", "roar", "rage"]),
+    ("boss_minion", "boss_minion", 80, "headpop", BLOOD, False, ["slam", "spit", "rage", "spin"]),
 ]
 
 
@@ -131,7 +133,7 @@ def frames(spec, r, pal):
 
 def run(e):
     id_, f, w, death, goo, fly, acts = e
-    spec = {"id": "enemy_" + id_, "src": P + f + ".png", "title": id_ + "_финал", "world_w": float(w) * 1.15, "F": 256, "death": death, "goo": goo, "fly": fly,
+    spec = {"id": "enemy_" + id_, "src": "%s%s_%d.png" % (P, f, PICK.get(f, 1)), "title": id_ + "_финал", "world_w": float(w) * 1.15, "F": 448, "death": death, "goo": goo, "fly": fly,
             "lift": 8.0 if fly else 0.0, "auto": True, "seed": (sum(map(ord, id_)) % 5) + 1, "head_y": 0.3, "actions": acts}
     r = auto.build(spec)
     F = spec["F"]
@@ -139,7 +141,7 @@ def run(e):
     spec["pad"] = pad
     pal = rig2.grade_palette(rig2.make_palette(r.render({}, {}, F, pad), F, 32), *auto.GRADE)
     pal = np.concatenate([pal, np.array([goo, (0.32, 0.02, 0.04)])], 0)
-    bake.emit("sprites/%s.png" % spec["id"], frames(spec, r, pal), spec["world_w"], 10, spec["title"], lift=spec["lift"], texel=0.5)
+    bake.emit("sprites/%s.png" % spec["id"], frames(spec, r, pal), spec["world_w"], 10, spec["title"], lift=spec["lift"], texel=TEXEL)
 
 
 if __name__ == "__main__":

@@ -900,9 +900,9 @@
   "v": 4
  },
  "sprites/enemy_microbe.png": {
-  "body_w": 22.5,
-  "cx": -0.5,
-  "foot": 18.5,
+  "body_w": 27.666666666666664,
+  "cx": 0.0,
+  "foot": 18.33,
   "fps": 10,
   "h": 14,
   "n": true,
@@ -925,7 +925,7 @@
     12
    ]
   },
-  "scale": 0.5,
+  "scale": 0.33333,
   "v": 4
  },
  "sprites/enemy_mirror.png": {
@@ -1744,9 +1744,9 @@
   "v": 3
  },
  "sprites/player_hobo.png": {
-  "body_w": 24.5,
+  "body_w": 26.9973,
   "cx": -1.0,
-  "foot": 22.0,
+  "foot": 23.0,
   "fps": 12,
   "h": 8,
   "n": true,
@@ -1765,7 +1765,7 @@
     8
    ]
   },
-  "scale": 0.5,
+  "scale": 0.3333,
   "v": 3
  },
  "sprites/player_janitor.png": {
