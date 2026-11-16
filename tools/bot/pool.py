@@ -38,6 +38,8 @@ def godot_cmd(skill, seed, runs, out, heroes="all", brain=None, danger=0):
            f"--skill={skill}", f"--seed={seed}", f"--runs={runs}", f"--heroes={heroes}", f"--out={out}", f"--danger={danger}"]
     if brain:
         cmd.append(f"--brain={brain}")
+    if os.environ.get("BOT_ART"):
+        cmd.append("--art=" + os.environ["BOT_ART"])
     return cmd
 
 

@@ -16,6 +16,8 @@ const SKILLS: Dictionary = {
 	&"noob": {"dash": &"random", "react": 0.30, "dirs": 8, "noise": 22.0, "mistake": 0.12, "look": [0.3], "see_proj": false, "shop": &"random", "cards": &"random"},
 	&"mid": {"dash": &"smart", "react": 0.12, "dirs": 12, "noise": 7.0, "mistake": 0.03, "look": [0.2, 0.5], "see_proj": true, "shop": &"greedy", "cards": &"weighted"},
 	&"god": {"dash": &"smart", "react": 0.0, "dirs": 32, "noise": 0.0, "mistake": 0.0, "look": [0.1, 0.25, 0.45, 0.8], "see_proj": true, "shop": &"sets", "cards": &"weighted", "god": true},
+	&"afk": {"dash": &"random", "react": 0.0, "dirs": 24, "noise": 0.0, "mistake": 0.0, "look": [0.15], "see_proj": false, "shop": &"sets", "cards": &"weighted", "afk": true},   # стоит на месте, закупается умно: мерило «можно ли не играть»
+	&"turret": {"dash": &"smart", "react": 0.0, "dirs": 24, "noise": 0.0, "mistake": 0.0, "look": [0.15, 0.4, 0.8], "see_proj": true, "shop": &"sets", "cards": &"weighted", "afk_from": 4},   # играет как задрот 3 волны, потом встаёт столбом
 	&"pro": {"dash": &"smart", "react": 0.0, "dirs": 24, "noise": 0.0, "mistake": 0.0, "look": [0.15, 0.4, 0.8], "see_proj": true, "shop": &"sets", "cards": &"weighted"},
 }
 # «Мозг» бота: веса манёвров. Подбираются обучением (tools/bot/train.py) и лежат в tools/bot/brain.json.
@@ -98,6 +100,9 @@ func _parse_args() -> void:
 	_skill = SKILLS.get(_skill_id, SKILLS[&"mid"])
 	_runs_total = int(args.get("runs", "1"))
 	GameState.danger = int(args.get("danger", "0"))
+	if args.has("art"):   # рисовка на время прогона (в настройки не пишется): у новой другие размеры тел
+		Settings.art_style = String(args["art"])
+		ArtStyle.apply_ui()
 	_seed = int(args.get("seed", "1"))
 	_out_dir = args.get("out", ProjectSettings.globalize_path("res://tools/_bot_runs/manual"))
 	_brain = BRAIN_DEFAULT.duplicate()
@@ -242,6 +247,9 @@ func _physics_process(delta: float) -> void:
 	_last_hp = GameState.hp
 	if _game_time > GAME_TIMEOUT_SEC:
 		_end_run("timeout")
+		return
+	if _skill.get("afk", false) or (_skill.has("afk_from") and GameState.wave >= int(_skill["afk_from"])):
+		_release_keys()
 		return
 	_steer(delta)
 

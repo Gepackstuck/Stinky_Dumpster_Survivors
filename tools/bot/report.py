@@ -34,7 +34,7 @@ def main(d):
     L.append("## Скиллозависимость\n")
     L.append("| Скилл | Забегов | Побед | Цель | Медиана волны смерти | Еле выжил (победы с ХП<25%) | Окружён при смерти | Длина победы, мин |")
     L.append("|---|---|---|---|---|---|---|---|")
-    for s in ["noob", "mid", "pro", "god"]:
+    for s in ["afk", "turret", "noob", "mid", "pro", "god"]:
         rs = by_skill.get(s, [])
         if not rs:
             continue
@@ -50,7 +50,7 @@ def main(d):
         L.append(f"| {s} | {len(rs)} | {wr:.0f}% | {lo}-{hi}% ({mark}) | {med} | {pct(close, len(wins)):.0f}% | {pct(surr, len(deaths)):.0f}% | {dur:.1f} |")
     L.append("\n## Где умирают (волна: смертей по скиллам)\n")
     waves = sorted({r["wave"] for r in runs if r["result"] == "death"})
-    SK = [s for s in ["noob", "mid", "pro", "god"] if s in by_skill]
+    SK = [s for s in ["afk", "turret", "noob", "mid", "pro", "god"] if s in by_skill]
     L.append("| Волна | " + " | ".join(SK) + " |")
     L.append("|---|" + "---|" * len(SK))
     for w in waves:

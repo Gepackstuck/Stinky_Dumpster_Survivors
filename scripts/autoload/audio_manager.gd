@@ -9,13 +9,18 @@ const VOICES: int = 16
 const LOW_FAMILIES: Array[StringName] = [&"fart", &"burp", &"puke", &"poop_splat", &"hiccup", &"wet_hit", &"bone_crack", &"gore_burst", &"weapon", &"hit", &"hit_crit", &"shoot", &"swing", &"enemy_death", &"pickup", &"explosion"]
 const LOW_BUDGET: int = 4          # частых звуков за окно LOW_WINDOW_SEC - не больше (много предметов = каша)
 const LOW_WINDOW_SEC: float = 0.1
-const MIN_GAP: Dictionary = {&"weapon": 0.08, &"w_mosin": 0.25, &"w_frying_pan": 0.15, &"w_shovel": 0.15, &"enemy_death": 0.05, &"hit": 0.09, &"hit_crit": 0.1, &"shoot": 0.05, &"swing": 0.07, &"pickup": 0.035, &"warn": 0.15}
+const MIN_GAP: Dictionary = {&"weapon": 0.08, &"w_mosin": 0.25, &"w_frying_pan": 0.15, &"w_shovel": 0.15, &"enemy_death": 0.05, &"kill_note": 0.045, &"hit": 0.09, &"hit_crit": 0.1, &"shoot": 0.05, &"swing": 0.07, &"pickup": 0.035, &"warn": 0.15}
 const DEFAULT_GAP: float = 0.03
-const VOLUME_DB: Dictionary = {&"fart": -12.0, &"burp": -12.0, &"puke": -11.0, &"poop_splat": -12.0, &"hiccup": -13.0, &"wet_hit": -13.0, &"bone_crack": -11.0, &"gore_burst": -9.0, &"pickup": -13.0, &"hit": -15.0, &"hit_crit": -12.0, &"shoot": -14.0, &"swing": -12.0, &"enemy_death": -9.0,
+const VOLUME_DB: Dictionary = {&"fart": -12.0, &"burp": -12.0, &"puke": -11.0, &"poop_splat": -12.0, &"hiccup": -13.0, &"wet_hit": -13.0, &"bone_crack": -11.0, &"gore_burst": -11.0, &"kill_note": -8.0, &"pickup": -13.0, &"hit": -15.0, &"hit_crit": -12.0, &"shoot": -14.0, &"swing": -12.0, &"enemy_death": -9.0,
 		&"ui_move": -10.0, &"ui_select": -8.0, &"warn": -8.0, &"player_hurt": -5.0, &"explosion": -6.0, &"truck_horn": -8.0, &"wave_horn": -4.0,
 		&"weapon": -12.0, &"w_mosin": -5.0, &"w_pipe_gun": -8.0, &"w_frying_pan": -9.0, &"w_shovel": -9.0, &"w_spray_can": -16.0, &"w_blowtorch": -16.0, &"w_laser_pointer": -17.0}
 const MUSIC_FADE_SEC: float = 0.8
 const BATTLE_TRACKS: Array[StringName] = [&"battle_a", &"battle_b", &"battle_c", &"battle_d", &"battle_e"]
+const DUMP_TRACKS: Array[StringName] = [&"dump_a", &"dump_b", &"dump_c"]   # новая рисовка: «помойный оркестр» (пердящий бас, кости, отрыжки в аккорд)
+const TUNED: Array[StringName] = [&"fart", &"burp", &"puke", &"poop_splat", &"hiccup", &"drunk_moan", &"bottle_clink", &"wet_hit", &"bone_crack", &"gore_burst"]   # настроены в ре минор: высоту меняем только по ладу
+const TUNED_STEPS: Array[int] = [0, 0, 3, 5, 7, -5, 12]   # полутона минорной пентатоники: любой сдвиг остаётся в тональности
+const KILL_SCALE: Array[int] = [0, 3, 5, 7, 10, 12, 15, 17, 19, 22, 24]   # серия убийств поднимается по пентатонике - бойня играет арпеджио
+const KILL_CHAIN_SEC: float = 0.9
 const SHOP_TRACKS: Array[StringName] = [&"shop", &"shop_b", &"shop_c"]   # Ларёк: случайный, не тот же подряд
 const PICKUP_SCALE: Array[int] = [-12, -9, -7, -5, -2, 0, 3, 5, 7]   # подбор подряд - вверх по минорной пентатонике (тон меню), как в Brotato
 const PICKUP_CHAIN_SEC: float = 0.45
@@ -30,6 +35,8 @@ var _variants: Dictionary = {}   # имя звука -> сколько вари�
 var _pickup_step: int = 0
 var _low_times: Array[float] = []
 var _pickup_last: float = -10.0
+var _kill_step: int = 0
+var _kill_last: float = -10.0
 
 
 func _ready() -> void:
@@ -60,6 +67,7 @@ func _ready() -> void:
 		else:
 			play_sfx_or(StringName("e_" + String(id)), &"enemy_death")
 			if ArtStyle.is_hd():
+				_play_kill_note()
 				play_sfx(&"gore_burst", 0.1)
 				if randf() < Balance.HD_DEATH_GROSS_CHANCE:
 					play_sfx([&"fart", &"poop_splat", &"burp", &"puke", &"hiccup"][randi() % 5], 0.12))
@@ -99,7 +107,9 @@ func _ready() -> void:
 ## Трек волны: элита и боссы - свой, остальные боевые по кругу (каждая волна - следующий).
 func battle_track() -> StringName:
 	if GameState.wave_kind in [&"boss", &"elite"] or GameState.wave == Balance.WAVE_COUNT:
-		return &"boss"
+		return &"dump_boss" if ArtStyle.is_hd() and _stream(&"dump_boss", "music") != null else &"boss"
+	if ArtStyle.is_hd() and _stream(DUMP_TRACKS[0], "music") != null:
+		return DUMP_TRACKS[maxi(GameState.wave - 1, 0) % DUMP_TRACKS.size()]
 	return BATTLE_TRACKS[maxi(GameState.wave - 1, 0) % BATTLE_TRACKS.size()]
 
 
@@ -119,6 +129,14 @@ func _play_pickup() -> void:
 	play_sfx(&"pickup", 0.0, pow(2.0, PICKUP_SCALE[_pickup_step] / 12.0))
 
 
+## Новая рисовка: каждое убийство - нота костяной маримбы; убийства подряд идут вверх по ладу, пауза - серия начинается с тоники.
+func _play_kill_note() -> void:
+	var now: float = Time.get_ticks_msec() / 1000.0
+	_kill_step = (_kill_step + 1) % KILL_SCALE.size() if now - _kill_last < KILL_CHAIN_SEC else 0
+	_kill_last = now
+	play_sfx(&"kill_note", 0.0, pow(2.0, KILL_SCALE[_kill_step] / 12.0))
+
+
 ## Семья звука для громкости и интервала: e_* - смерть врага (один общий интервал, иначе толпа умирает какофонией),
 ## w_* - оружие (у каждого свой интервал).
 func _family(sfx_name: StringName) -> StringName:
@@ -127,6 +145,13 @@ func _family(sfx_name: StringName) -> StringName:
 	if String(sfx_name).begins_with("w_"):
 		return &"weapon"
 	return sfx_name
+
+
+func _tuned(sfx_name: StringName) -> bool:
+	for t: StringName in TUNED:
+		if String(sfx_name).begins_with(String(t)):
+			return true
+	return false
 
 
 func _variant(sfx_name: StringName) -> StringName:
@@ -174,7 +199,10 @@ func play_sfx(sfx_name: StringName, pitch_var: float = 0.05, pitch: float = 1.0)
 	var p: AudioStreamPlayer = _players[_next]
 	_next = (_next + 1) % _players.size()
 	p.stream = stream
-	p.pitch_scale = pitch * randf_range(1.0 - pitch_var, 1.0 + pitch_var)
+	if ArtStyle.is_hd() and _tuned(sfx_name):
+		p.pitch_scale = pitch * pow(2.0, TUNED_STEPS[randi() % TUNED_STEPS.size()] / 12.0)
+	else:
+		p.pitch_scale = pitch * randf_range(1.0 - pitch_var, 1.0 + pitch_var)
 	p.volume_db = linear_to_db(Settings.sfx_volume) + float(VOLUME_DB.get(sfx_name, VOLUME_DB.get(family, 0.0)))
 	p.play()
 
@@ -228,7 +256,7 @@ const SCARES: Array[StringName] = [&"fart", &"fart_2", &"fart_3", &"fart_4", &"f
 func _horror_start() -> void:
 	if Profile.sandbox or not ArtStyle.is_hd():
 		return
-	var stream: AudioStreamWAV = _stream(&"amb_horror", "music") as AudioStreamWAV
+	var stream: AudioStreamWAV = (_stream(&"amb_dump", "music") if _stream(&"amb_dump", "music") != null else _stream(&"amb_horror", "music")) as AudioStreamWAV
 	if stream != null:
 		stream.loop_mode = AudioStreamWAV.LOOP_FORWARD
 		stream.loop_end = int(stream.get_length() * stream.mix_rate)
@@ -251,7 +279,7 @@ func _on_scare_timer() -> void:
 	var stream: AudioStream = _stream(name, "sfx")
 	if stream != null and not get_tree().paused:
 		_scare.stream = stream
-		_scare.pitch_scale = randf_range(0.85, 1.1)
+		_scare.pitch_scale = pow(2.0, TUNED_STEPS[randi() % TUNED_STEPS.size()] / 12.0) if _tuned(name) else randf_range(0.85, 1.1)
 		_scare.volume_db = linear_to_db(Settings.sfx_volume) - randf_range(8.0, 15.0)
 		_scare.play()
 	_scare_timer.start(randf_range(6.0, 16.0))

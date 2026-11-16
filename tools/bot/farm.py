@@ -36,7 +36,7 @@ random.Random(1).shuffle(jobs)   # вперемешку: промежуточн�
 def live():
     rs = [json.load(open(p)) for p in glob.glob(os.path.join(out, "*_s*_r*.json"))]
     lines = ["Промежуточно (побед / забегов):"]
-    for s in ("noob", "mid", "pro", "god"):
+    for s in ("afk", "turret", "noob", "mid", "pro", "god"):
         sr = [r for r in rs if r["skill"] == s]
         if sr:
             w = sum(r["result"] == "win" for r in sr)
